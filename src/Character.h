@@ -2,10 +2,12 @@
 #include"stdio.h"
 #include <iostream>
 #include <SDL3/SDL.h>
+#include <vector>
 
 #include "SkillTree.h"
 #include "Inventory.h"
 #include "Animation.h"
+#include "Skill.h"
 
 class Character {
 private:
@@ -40,9 +42,11 @@ private:
 	int speedLevelScaling;
 	int powerLevelScaling;
 
+	std::vector<Skill> skills;
+
 public:
 
-	Character(int _health, int _maxHealth, int _experience, int _initiative,
+	Character(std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 		      int _maxInitiative, int _power, int _durability, int _maxDurability, 
 		      int _speed, int _lifesteal, int _healingPower, bool _isPoisoned, 
 		      int _poisonedStatMod, int _burnedStatMod, int _level, int _maxHealthLevelScaling,
@@ -50,7 +54,9 @@ public:
 
 	~Character();
 
-	void Attack(Character target);
+	//void AttackPhysical(Character& target, int damage);
+	//void AttackMagical(Character& target, int damage);
+
 	void Heal(int amunt);
 	void ReceivePhysicalDamage(int damageReceived);
 	void ReceiveMagicalDamage(int damageReceived);
@@ -58,6 +64,18 @@ public:
 	void LevelUp();
 
 	void Draw(float dt);
+
+	void AddSkill(Skill skill);
+	void UseSkill(int index, Character& target);
+
+	void ModifyDurability(int amount);
+	void SetBurned(bool state, int damage);
+	void SetPoisoned(bool state, int damage);
+
+#pragma region GETTERS
+	int GetPower() { return power; }
+	int GetLifesteal() { return lifesteal; }
+#pragma endregion
 
 
 };
