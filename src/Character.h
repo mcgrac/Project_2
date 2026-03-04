@@ -4,7 +4,6 @@
 #include <SDL3/SDL.h>
 #include <vector>
 
-#include "SkillTree.h"
 #include "Inventory.h"
 #include "Animation.h"
 #include "Skill.h"
@@ -34,7 +33,6 @@ private:
 
 	bool isAlive;
 
-	SkillTree* skillTree = nullptr;
 	Inventory* inventory = nullptr;
 
 
