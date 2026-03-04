@@ -7,7 +7,7 @@ class Character; // forward declaration
 
 enum class DamageType { Physical, Magical, None };
 
-// Cada efecto es una función que se aplica al target (o al caster)
+//Each effect contains a function that is applied to the caster or target
 struct SkillEffect {
     std::string description;
     std::function<void(Character& caster, Character& target)> apply;

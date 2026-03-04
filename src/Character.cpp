@@ -11,6 +11,9 @@ Character::Character(std::string _name, int _health, int _maxHealth, int _experi
 	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true)
 {
 	//add loading of the spritesheet
+
+	//initialize upgrade tree
+	upgradeTree = new UpgradeTree();
 }
 
 Character::~Character()

@@ -8,6 +8,7 @@
 #include "Inventory.h"
 #include "Animation.h"
 #include "Skill.h"
+#include "UpgradeTree.h"
 
 class Character {
 private:
@@ -36,6 +37,7 @@ private:
 	SkillTree* skillTree = nullptr;
 	Inventory* inventory = nullptr;
 
+
 	AnimationSet anims;
 
 	SDL_Texture* texture = nullptr;
@@ -47,6 +49,9 @@ private:
 	std::vector<Skill> skills;
 
 	Character* killedBy = nullptr; //to know which was the character that killed
+
+protected:
+	UpgradeTree* upgradeTree = nullptr;
 
 public:
 
@@ -84,6 +89,11 @@ public:
 	int GetLevel() { return level; }
 	bool GetIsAlive() { return isAlive; }
 	Character* GetKilledBy() const { return killedBy; }
+
+	void ModifyPower(int amount) { power += amount; }
+	void ModifySpeed(int amount) { speed += amount; }
+	void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
+	void ModifyHealingPower(int amount) { healingPower += amount; }
 #pragma endregion
 
 
