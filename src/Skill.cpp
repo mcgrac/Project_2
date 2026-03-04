@@ -15,11 +15,11 @@ void Skill::Use(Character& caster, Character& target)
 
     if (damageType == DamageType::Physical)
     {
-        target.ReceivePhysicalDamage(totalDamage);
+        target.ReceivePhysicalDamage(totalDamage, &caster);
     }
     else if (damageType == DamageType::Magical)
     {
-        target.ReceiveMagicalDamage(totalDamage);
+        target.ReceiveMagicalDamage(totalDamage, &caster);
     }
 
     //apply lifesteal if necessary

@@ -31,6 +31,8 @@ private:
 
 	int level;
 
+	bool isAlive;
+
 	SkillTree* skillTree = nullptr;
 	Inventory* inventory = nullptr;
 
@@ -44,12 +46,14 @@ private:
 
 	std::vector<Skill> skills;
 
+	Character* killedBy = nullptr; //to know which was the character that killed
+
 public:
 
 	Character(std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 		      int _maxInitiative, int _power, int _durability, int _maxDurability, 
-		      int _speed, int _lifesteal, int _healingPower, bool _isPoisoned, 
-		      int _poisonedStatMod, int _burnedStatMod, int _level, int _maxHealthLevelScaling,
+		      int _speed, int _lifesteal, int _healingPower, int _poisonedStatMod, 
+		      int _burnedStatMod, int _level, int _maxHealthLevelScaling,
 		      int _speedLevelScaling, int _powerLevelScaling);
 
 	~Character();
@@ -58,8 +62,8 @@ public:
 	//void AttackMagical(Character& target, int damage);
 
 	void Heal(int amunt);
-	void ReceivePhysicalDamage(int damageReceived);
-	void ReceiveMagicalDamage(int damageReceived);
+	void ReceivePhysicalDamage(int damageReceived, Character* attacker);
+	void ReceiveMagicalDamage(int damageReceived, Character* attacker);
 	void GainExperience(int amount);
 	void LevelUp();
 
@@ -72,9 +76,14 @@ public:
 	void SetBurned(bool state, int damage);
 	void SetPoisoned(bool state, int damage);
 
+	void SetKilledBy(Character* killer) { killedBy = killer; }
+
 #pragma region GETTERS
 	int GetPower() { return power; }
 	int GetLifesteal() { return lifesteal; }
+	int GetLevel() { return level; }
+	bool GetIsAlive() { return isAlive; }
+	Character* GetKilledBy() const { return killedBy; }
 #pragma endregion
 
 

@@ -3,12 +3,12 @@
 
 Character::Character(std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 	int _maxInitiative, int _power, int _durability, int _maxDurability, int _speed,
-	int _lifesteal, int _healingPower, bool _isPoisoned, int _poisonedStatMod, int _burnedStatMod, 
+	int _lifesteal, int _healingPower, int _poisonedStatMod, int _burnedStatMod, 
 	int _level, int _maxHealthLevelScaling, int _speedLevelScaling, int _powerLevelScaling) :
 	name(_name), health(_health), maxHealth(_maxHealth), experience(_experience), initiative(_initiative), maxInitiative(_maxInitiative),
 	power(_power), durability(_durability), maxDurability(_maxDurability), speed(_speed), lifesteal(_lifesteal), healingPower(_healingPower),
 	isPoisoned(false), isBurned(false), poisonStatMod(_poisonedStatMod), burnedStatMod(_burnedStatMod), level(_level), 
-	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling)
+	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true)
 {
 	//add loading of the spritesheet
 }
@@ -37,28 +37,49 @@ void Character::Heal(int amount)
 	health = std::min(maxHealth, currentHealth);
 }
 
-void Character::ReceivePhysicalDamage(int damageReceived)
+void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 {
 	int currentHealth = health;
 	currentHealth -= std::max(0, damageReceived - durability); //avoids that damage < 0
 	health = std::max(0, currentHealth); //avoids having negative health
+
+	//check if character is dead
+	if (health == 0 && attacker != nullptr) {
+		killedBy = attacker;
+	}
 }
 
-void Character::ReceiveMagicalDamage(int damageReceived)
+void Character::ReceiveMagicalDamage(int damageReceived, Character* attacker)
 {
 	int currentHealth = health;
 	currentHealth -= damageReceived;
 	health = std::max(0, currentHealth); //avoids having negative health
+
+	//check if character is dead
+	if (health == 0 && attacker != nullptr) {
+		killedBy = attacker;
+	}
 }
 
 void Character::GainExperience(int amount)
 {
 	experience += amount;
+
+	if (experience >= 100) {
+		experience -= 100;		//if gained xp is 150, do level up and mantain that 50xp that is left.
+		LevelUp();
+	}
 }
 
 void Character::LevelUp()
 {
 	level++;
+
+	//update stats
+	maxHealth += maxHealthLevelScaling;
+	health += maxHealthLevelScaling;
+	power += powerLevelScaling;
+	speed += speedLevelScaling;
 }
 
 void Character::Draw(float dt) 
@@ -111,7 +132,6 @@ void Character::UseSkill(int index, Character& target)
 			skill.Use(*this, target);
 		}
 	}
-
 }
 
 void Character::ModifyDurability(int amount)
