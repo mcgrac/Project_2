@@ -9,6 +9,7 @@
 #include "Entity.h"
 #include "EntityManager.h"
 #include "Player.h"
+#include "WorldMap.h"
 #include "Map.h"
 #include "Item.h"
 #include "Enemy.h"
@@ -61,6 +62,11 @@ bool Scene::Update(float dt)
 	case SceneID::LEVEL2:
 		UpdateLevel2(dt);
 		break;
+	case SceneID::WORLDMAP:
+		UpdateWorldMap(dt);
+		break;
+	case SceneID::COMBAT:
+		break;
 	}
 
 	return true;
@@ -104,6 +110,10 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 		break;
 	case SceneID::LEVEL2:
 		break;
+	case SceneID::WORLDMAP:
+		break;
+	case SceneID::COMBAT:
+		break;
 	default:
 		break;
 	}
@@ -145,7 +155,13 @@ void Scene::LoadScene(SceneID newScene)
 	case SceneID::LEVEL2:
 		LoadLevel2();
 		break;
+	case SceneID::WORLDMAP:
+		LoadWorldMap();
+		break;
+	case SceneID::COMBAT:
+		break;
 	}
+	
 }
 
 void Scene::ChangeScene(SceneID newScene)
@@ -169,6 +185,10 @@ void Scene::UnloadCurrentScene() {
 
 	case SceneID::LEVEL2:
 		UnloadLevel2();
+		break;
+	case SceneID::WORLDMAP:
+		break;
+	case SceneID::COMBAT:
 		break;
 	}
 
@@ -309,3 +329,36 @@ void Scene::UnloadLevel2() {
 
 }
 
+//****************************************
+//WORLDMAP FUCTIONS
+//***************************************
+void Scene::LoadWorldMap() {
+	//Load resources
+	Engine::GetInstance().worldMap->LoadWorld();
+	//get ship's position (actual island)
+	
+	// get ship's health
+	//get next islands
+	//position them
+}
+void Scene::UpdateWorldMap(float dt) {
+	//update the ships position's
+	//check if the enter key is pressed, if it is move to the selected island, change actual island 
+	//check if the change key, if it is change selected island
+}
+void Scene::UnloadWorldMap() {
+	
+}
+
+//****************************************
+//WORLDMAP FUCTIONS
+//***************************************
+void Scene::LoadCombat() {
+
+}
+void Scene::UpdateCombat(float dt) {
+
+}
+void Scene::UnloadCombat() {
+
+}

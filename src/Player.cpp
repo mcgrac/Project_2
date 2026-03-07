@@ -109,8 +109,7 @@ void Player::ApplyPhysics() {
 }
 
 void Player::Draw(float dt) {
-
-	anims.Update(dt);
+	/*anims.Update(dt);
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
 	// Update render position using your PhysBody helper
@@ -134,7 +133,8 @@ void Player::Draw(float dt) {
 	}
 
 	// L10: TODO 5: Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
+	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);*/
+	
 }
 
 bool Player::CleanUp()

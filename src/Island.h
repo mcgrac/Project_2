@@ -12,7 +12,11 @@ private:
 	Faction* faction;
 	string* name;
 	//saves the info of the rest of the nodes
-	vector<Island*> next;
-
+	vector<Island*> nextIslands;
+public:
+	Island();
+	int getNextSize();
+	void SetNext(vector<Island*> nxt);
+	void AddNext(Island* island);
 };
 

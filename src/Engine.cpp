@@ -11,6 +11,7 @@
 #include "Scene.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include "WorldMap.h"
 #include "Physics.h"
 #include "Log.h"
 #include "UIManager.h"
@@ -39,6 +40,7 @@ Engine::Engine() {
     physics = std::make_shared<Physics>();
     scene = std::make_shared<Scene>();
     map = std::make_shared<Map>();
+    worldMap = std::make_shared<WorldMap>();
     entityManager = std::make_shared<EntityManager>();
 	uiManager = std::make_shared<UIManager>(); 
 
@@ -51,6 +53,7 @@ Engine::Engine() {
     // L08: TODO 2: Add Physics module
     AddModule(std::static_pointer_cast<Module>(physics));
     AddModule(std::static_pointer_cast<Module>(map));
+    AddModule(std::static_pointer_cast<Module>(worldMap));
     AddModule(std::static_pointer_cast<Module>(scene));
     AddModule(std::static_pointer_cast<Module>(entityManager));
 	// UI Manager on top of the other modules

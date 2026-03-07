@@ -12,7 +12,9 @@ enum class SceneID
 	INTRO_SCREEN,
 	MAIN_MENU,
 	LEVEL1,
-	LEVEL2
+	LEVEL2,
+	WORLDMAP,
+	COMBAT
 };
 
 
@@ -78,6 +80,16 @@ private:
 	void UpdateLevel2(float dt);
 	void UnloadLevel2();
 
+	//defien functions for the worldmap scene
+	void LoadWorldMap();
+	void UpdateWorldMap(float dt);
+	void UnloadWorldMap();
+
+	//defien functions for the worldmap scene
+	void LoadCombat();
+	void UpdateCombat(float dt);
+	void UnloadCombat();
+
 private:
 
 	//L03: TODO 3b: Declare a Player attribute
@@ -91,5 +103,5 @@ private:
 	float volume = 1.0;
 
 	// L17 TODO 1: Current scene attribute with initial value
-	SceneID currentScene = SceneID::MAIN_MENU;
+	SceneID currentScene = SceneID::WORLDMAP;
 };

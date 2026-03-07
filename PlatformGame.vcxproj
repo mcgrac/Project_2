@@ -150,7 +150,9 @@
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
+    <ClCompile Include="src\Faction.cpp" />
     <ClCompile Include="src\Input.cpp" />
+    <ClCompile Include="src\Island.cpp" />
     <ClCompile Include="src\Item.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\Map.cpp" />
@@ -167,6 +169,7 @@
     <ClCompile Include="src\UIManager.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
     <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\WorldMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Animation.h" />
@@ -175,7 +178,9 @@
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\Faction.h" />
     <ClInclude Include="src\Input.h" />
+    <ClInclude Include="src\Island.h" />
     <ClInclude Include="src\Item.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Map.h" />
@@ -193,6 +198,7 @@
     <ClInclude Include="src\UIManager.h" />
     <ClInclude Include="src\Vector2D.h" />
     <ClInclude Include="src\Window.h" />
+    <ClInclude Include="src\WorldMap.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml" />
