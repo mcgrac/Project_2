@@ -4,6 +4,7 @@
 // Class: Incantor  Role: Mage/Support  Lane: Side
 
 Markus::Markus() : Character(
+    {0,0},      // position
     "Markus",   // name
     90,         // health
     90,         // maxHealth
@@ -38,8 +39,8 @@ void Markus::InitSkills()
     baileRojo.AddEffect(
         {
         "Inflict 10 Fire",
-        [](Character& caster, Character& target) {
-            target.SetBurned(true, 10);
+        [](Character* caster, Character* target) {
+            target->SetBurned(true, 10);
         }
         });
     AddSkill(baileRojo);
@@ -49,8 +50,8 @@ void Markus::InitSkills()
     divineLight.AddEffect(
         {
         "Heal ally or damage enemy",
-        [](Character& caster, Character& target) {
-            target.Heal((int)(caster.GetPower() * 0.5f));
+        [](Character* caster, Character* target) {
+            target->Heal((int)(caster->GetPower() * 0.5f));
         }
         });
     AddSkill(divineLight);
@@ -64,7 +65,7 @@ void Markus::InitSkills()
     ascend.AddEffect(
         {
         "Buff team PhysDmg",
-        [](Character& caster, Character& target) {
+        [](Character* caster, Character* target) {
             // apply buff when team logic is created
         }
         });
@@ -75,8 +76,8 @@ void Markus::InitSkills()
     healingHalo.AddEffect(
         {
         "Heal all allies over time",
-        [](Character& caster, Character& target) {
-            target.Heal((int)(caster.GetPower() * 0.3f));
+        [](Character* caster, Character* target) {
+            target->Heal((int)(caster->GetPower() * 0.3f));
         }
         });
     AddSkill(healingHalo);

@@ -10,7 +10,7 @@ enum class DamageType { Physical, Magical, None };
 //Each effect contains a function that is applied to the caster or target
 struct SkillEffect {
     std::string description;
-    std::function<void(Character& caster, Character& target)> apply;
+    std::function<void(Character* caster, Character* target)> apply;
 };
 
 class Skill {
@@ -29,5 +29,11 @@ public:
         effects.push_back(effect);
     }
 
-    void Use(Character& caster, Character& target);
+    void Use(Character* caster, Character* target);
+
+#pragma region GETTERS
+    std::string GetName() { return name; }
+    int GetInitiativeCost() { return initiativeCost; }
+#pragma endregion
+
 };

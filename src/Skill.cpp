@@ -9,23 +9,23 @@ Skill::~Skill()
 {
 }
 
-void Skill::Use(Character& caster, Character& target)
+void Skill::Use(Character* caster, Character* target)
 {
-    int totalDamage = baseDamage + (int)(caster.GetPower() * powerMultiplier);
+    int totalDamage = baseDamage + (int)(caster->GetPower() * powerMultiplier);
 
     if (damageType == DamageType::Physical)
     {
-        target.ReceivePhysicalDamage(totalDamage, &caster);
+        target->ReceivePhysicalDamage(totalDamage, caster);
     }
     else if (damageType == DamageType::Magical)
     {
-        target.ReceiveMagicalDamage(totalDamage, &caster);
+        target->ReceiveMagicalDamage(totalDamage, caster);
     }
 
     //apply lifesteal if necessary
     if (totalDamage > 0)
     {
-        caster.Heal((int)(totalDamage * (caster.GetLifesteal() / 100.0f)));
+        caster->Heal((int)(totalDamage * (caster->GetLifesteal() / 100.0f)));
     }
 
     for (auto& effect : effects)

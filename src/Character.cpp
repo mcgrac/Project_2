@@ -1,11 +1,11 @@
 #include "Character.h"
 #include "Engine.h"
 
-Character::Character(std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
+Character::Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 	int _maxInitiative, int _power, int _durability, int _maxDurability, int _speed,
 	int _lifesteal, int _healingPower, int _poisonedStatMod, int _burnedStatMod, 
 	int _level, int _maxHealthLevelScaling, int _speedLevelScaling, int _powerLevelScaling) :
-	name(_name), health(_health), maxHealth(_maxHealth), experience(_experience), initiative(_initiative), maxInitiative(_maxInitiative),
+	position(_position), name(_name), health(_health), maxHealth(_maxHealth), experience(_experience), initiative(_initiative), maxInitiative(_maxInitiative),
 	power(_power), durability(_durability), maxDurability(_maxDurability), speed(_speed), lifesteal(_lifesteal), healingPower(_healingPower),
 	isPoisoned(false), isBurned(false), poisonStatMod(_poisonedStatMod), burnedStatMod(_burnedStatMod), level(_level), 
 	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true)
@@ -123,7 +123,7 @@ void Character::AddSkill(Skill skill)
 	}
 }
 
-void Character::UseSkill(int index, Character& target)
+void Character::UseSkill(int index, Character* target)
 {
 	if (index >= 0 && index < skills.size())
 	{
@@ -132,7 +132,7 @@ void Character::UseSkill(int index, Character& target)
 		if (initiative >= skill.initiativeCost)
 		{
 			initiative -= skill.initiativeCost;
-			skill.Use(*this, target);
+			skill.Use(this, target);
 		}
 	}
 }
@@ -152,4 +152,12 @@ void Character::SetPoisoned(bool state, int damage)
 {
 	isPoisoned = state;
 	poisonStatMod = damage;
+}
+
+void Character::ClearStatusEffects()
+{
+	isPoisoned = false;
+	poisonStatMod = 0;
+	isBurned = false;
+	burnedStatMod = 0;
 }

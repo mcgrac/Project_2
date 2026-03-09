@@ -3,6 +3,7 @@
 #include <iostream>
 #include <SDL3/SDL.h>
 #include <vector>
+#include "Vector2D.h"
 
 #include "Inventory.h"
 #include "Animation.h"
@@ -11,6 +12,8 @@
 
 class Character {
 private:
+	Vector2D position;
+
 	std::string name;
 	int health;
 	int maxHealth;
@@ -53,7 +56,7 @@ protected:
 
 public:
 
-	Character(std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
+	Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 		      int _maxInitiative, int _power, int _durability, int _maxDurability, 
 		      int _speed, int _lifesteal, int _healingPower, int _poisonedStatMod, 
 		      int _burnedStatMod, int _level, int _maxHealthLevelScaling,
@@ -73,13 +76,15 @@ public:
 	void Draw(float dt);
 
 	void AddSkill(Skill skill);
-	void UseSkill(int index, Character& target);
+	void UseSkill(int index, Character* target);
 
 	void ModifyDurability(int amount);
 	void SetBurned(bool state, int damage);
 	void SetPoisoned(bool state, int damage);
 
 	void SetKilledBy(Character* killer) { killedBy = killer; }
+
+	void ClearStatusEffects();
 
 #pragma region GETTERS
 	int GetPower() { return power; }
@@ -92,6 +97,26 @@ public:
 	void ModifySpeed(int amount) { speed += amount; }
 	void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
 	void ModifyHealingPower(int amount) { healingPower += amount; }
+
+	// Requeridos por Combat
+	int GetSpeed() { return speed; }
+	int GetCurrentHP() { return health; }
+	int GetCurrentInitiative() { return initiative; }
+	bool IsPoisoned() { return isPoisoned; }
+	bool IsBurning() { return isBurned; }
+	int GetPoisonDamage() { return poisonStatMod; }
+	int GetBurnDamage() { return burnedStatMod; }
+	std::string GetName() { return name; }
+	std::vector<Skill>& GetSkills() { return skills; }
+	void TakePoisonDamage() { ReceiveMagicalDamage(poisonStatMod, nullptr); }
+	void TakeBurnDamage() { ReceiveMagicalDamage(burnedStatMod, nullptr); }
+
+	// Manipulación de iniciativa
+	void AddInitiative(int amount) { initiative += amount; }
+	void ResetCurrentInitiative() { initiative = 0; }
+
+	// Posición en pantalla (para StartCombat)
+	void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
 #pragma endregion
 
 

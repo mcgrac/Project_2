@@ -148,6 +148,7 @@
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Character.cpp" />
+    <ClCompile Include="src\Combat.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
@@ -157,6 +158,7 @@
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\Markus.cpp" />
+    <ClCompile Include="src\Party.cpp" />
     <ClCompile Include="src\Pathfinding.cpp" />
     <ClCompile Include="src\PerfTimer.cpp" />
     <ClCompile Include="src\Physics.cpp" />
@@ -179,6 +181,7 @@
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
     <ClInclude Include="src\Character.h" />
+    <ClInclude Include="src\Combat.h" />
     <ClInclude Include="src\Enemy.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
@@ -190,6 +193,7 @@
     <ClInclude Include="src\Map.h" />
     <ClInclude Include="src\Markus.h" />
     <ClInclude Include="src\Module.h" />
+    <ClInclude Include="src\Party.h" />
     <ClInclude Include="src\Pathfinding.h" />
     <ClInclude Include="src\PerfTimer.h" />
     <ClInclude Include="src\Physics.h" />
