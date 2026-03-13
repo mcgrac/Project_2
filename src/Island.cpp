@@ -9,6 +9,10 @@ int Island::getNextSize() {
 	return nextIslands.size();
 }
 
+Island* Island::getIslandIndex(int ind) {
+	return nextIslands[ind];
+}
+
 void Island::SetNext(vector<Island*> nxt) {
 	nextIslands = nxt;
 }

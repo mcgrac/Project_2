@@ -12,6 +12,7 @@ private:
 	Island* actualIsland;
 	SDL_Texture* background = nullptr;
 	int islandsVisited;
+	bool firstIslandSelected;
 	//create a list or node tree of islands
 public:
 	WorldMap();
