@@ -156,6 +156,7 @@
     <ClCompile Include="src\Inventory.cpp" />
     <ClCompile Include="src\Item.cpp" />
     <ClCompile Include="src\Log.cpp" />
+    <ClCompile Include="src\MainMenuScene.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\Markus.cpp" />
     <ClCompile Include="src\Party.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="src\Inventory.h" />
     <ClInclude Include="src\Item.h" />
     <ClInclude Include="src\Log.h" />
+    <ClInclude Include="src\MainMenuScene.h" />
     <ClInclude Include="src\Map.h" />
     <ClInclude Include="src\Markus.h" />
     <ClInclude Include="src\Module.h" />
