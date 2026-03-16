@@ -3,6 +3,8 @@
 #include "Module.h"
 #include "Player.h"
 #include "UIButton.h"
+#include <stack>
+#include "BaseScene.h"
 
 struct SDL_Texture;
 
@@ -21,32 +23,19 @@ class Scene : public Module
 public:
 
 	Scene();
-
-	// Destructor
 	virtual ~Scene();
 
-	// Called before render is available
-	bool Awake();
+	bool Awake() override;
+	bool Start() override;
+	bool PreUpdate() override;
+	bool Update(float dt) override;
+	bool PostUpdate() override;
+	bool CleanUp() override;
 
-	// Called before the first frame
-	bool Start();
-
-	// Called before all Updates
-	bool PreUpdate();
-
-	// Called each loop iteration
-	bool Update(float dt);
-
-	// Called before all Updates
-	bool PostUpdate();
-
-	// Called before quitting
-	bool CleanUp();
-
-	// Return the player position
+	//Return the player position
 	Vector2D GetPlayerPosition();
 
-	// Get tilePosDebug value
+	//Get tilePosDebug value
 	std::string GetTilePosDebug() {
 		return tilePosDebug;
 	}
@@ -58,6 +47,20 @@ public:
 	void ChangeScene(SceneID newScene);
 	void UnloadCurrentScene();
 	void LoadScene(SceneID newScene);
+
+#pragma region SCENE MANAGER
+	// Push that scene to the top of the stack. The other one remains frozen
+	// Use it for PauseScene (Pause will be loaded but the combar or ingame scene will remain visible at the back and frozen)
+	void PushScene(BaseScene* scene);
+
+	// Eliminates the scene at the top of the stack(calls unload of the scene)
+	// The previous scene becomes the active one
+	void PopScene();
+
+	// Empy all the stack and loads a single scene as the only one
+	// Use it for changing scenes totally (e.g.: InGame -> MainMenu)
+	void ReplaceScene(BaseScene* scene);
+#pragma endregion
 
 private:
 
@@ -78,7 +81,6 @@ private:
 	void UpdateLevel2(float dt);
 	void UnloadLevel2();
 
-private:
 
 	//L03: TODO 3b: Declare a Player attribute
 	std::shared_ptr<Player> player;
@@ -92,4 +94,12 @@ private:
 
 	// L17 TODO 1: Current scene attribute with initial value
 	SceneID currentScene = SceneID::MAIN_MENU;
+
+#pragma region SCENE MANAGER (STACK)
+	//----STACK SCENE MANAGER----//
+	std::stack<BaseScene*> sceneStack;
+
+	//Destroy and unload all scenes
+	void ClearStack();
+#pragma endregion
 };

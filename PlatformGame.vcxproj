@@ -180,6 +180,7 @@
   <ItemGroup>
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Audio.h" />
+    <ClInclude Include="src\BaseScene.h" />
     <ClInclude Include="src\Character.h" />
     <ClInclude Include="src\Combat.h" />
     <ClInclude Include="src\Enemy.h" />

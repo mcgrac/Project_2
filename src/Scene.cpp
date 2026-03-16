@@ -13,6 +13,7 @@
 #include "Item.h"
 #include "Enemy.h"
 #include "UIManager.h"
+#include "MainMenuScene.h"
 
 Scene::Scene() : Module()
 {
@@ -26,8 +27,12 @@ Scene::~Scene()
 // Called before render is available
 bool Scene::Awake()
 {
-	LOG("Loading Scene");
 	LoadScene(currentScene); // empieza en MAIN_MENU
+
+
+	LOG("Loading Scene");
+	// Arranca en el menú principal
+	PushScene(new MainMenuScene());
 	bool ret = true;
 
 	return ret;
@@ -63,6 +68,11 @@ bool Scene::Update(float dt)
 		break;
 	}
 
+	if (!sceneStack.empty())
+	{
+		sceneStack.top()->Update(dt);
+	}
+
 	return true;
 }
 
@@ -86,7 +96,15 @@ bool Scene::PostUpdate()
 	}
 
 	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
+	{
 		ret = false;
+	}
+
+	if (!sceneStack.empty())
+	{
+		sceneStack.top()->PostUpdate(0.f);
+	}
+
 
 	return ret;
 }
@@ -115,6 +133,9 @@ bool Scene::CleanUp()
 {
 	LOG("Freeing scene");
 	UnloadCurrentScene();
+
+	LOG("Freeing scene");
+	ClearStack();
 	return true;
 }
 
@@ -147,7 +168,34 @@ void Scene::LoadScene(SceneID newScene)
 		break;
 	}
 }
+#pragma region SCENE MANAGER
+void Scene::PushScene(BaseScene* scene){
+	scene->Load();
+	sceneStack.push(scene);
+}
 
+void Scene::PopScene(){
+	if (sceneStack.empty()) return;
+
+	sceneStack.top()->Unload();
+	delete sceneStack.top();
+	sceneStack.pop();
+}
+
+void Scene::ReplaceScene(BaseScene* scene){
+	ClearStack();
+	PushScene(scene);
+}
+
+void Scene::ClearStack() {
+	while (!sceneStack.empty())
+	{
+		sceneStack.top()->Unload();
+		delete sceneStack.top();
+		sceneStack.pop();
+	}
+}
+#pragma endregion
 void Scene::ChangeScene(SceneID newScene)
 {
 	UnloadCurrentScene();
@@ -308,4 +356,5 @@ void Scene::UnloadLevel2() {
 	Engine::GetInstance().entityManager->CleanUp();
 
 }
+
 
