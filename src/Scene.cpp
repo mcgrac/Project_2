@@ -30,8 +30,7 @@ Scene::~Scene(){
 bool Scene::Awake()
 {
 	LOG("Loading Scene");
-	// Arranca en el menú principal
-	PushScene(new MainMenuScene());
+
 	bool ret = true;
 
 	return ret;
@@ -40,6 +39,8 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
+	// Arranca en el menú principal
+	PushScene(new MainMenuScene());
 	return true;
 }
 
