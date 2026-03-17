@@ -4,6 +4,7 @@
 #include <functional>
 
 class Character; // forward declaration
+class Party;
 
 enum class DamageType { Physical, Magical, None };
 

@@ -113,6 +113,10 @@ public:
 	void TakePoisonDamage() { ReceiveMagicalDamage(poisonStatMod, nullptr); }
 	void TakeBurnDamage() { ReceiveMagicalDamage(burnedStatMod, nullptr); }
 
+	float GetFirePower() { return firePower; }
+	float GetPoisonPower() { return pisonPower; }
+	float GetHealingPower() { return healingPower; }
+
 	// Manipulación de iniciativa
 	void AddInitiative(int amount) { initiative += amount; }
 	void ResetCurrentInitiative() { initiative = 0; }

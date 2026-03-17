@@ -22,5 +22,8 @@ public:
     // Llamado una vez al descargar la escena
     virtual void Unload() = 0;
 
+    // Llamado para cargar texturas de escenas
+    virtual void LoadTextures() = 0;
+
     virtual bool OnUIMouseClickEvent(UIElement* uiElement) { return true; }
 };

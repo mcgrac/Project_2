@@ -1,7 +1,5 @@
 #include "Theresia.h"
 
-// HP: 90(+5)  Power: 70(+2)  Durability: 0  Speed: 38(+1)
-// Class: Incantor  Role: Mage/Support  Lane: Side
 
 Theresia::Theresia() : Character(
     {0,0},      // position
@@ -72,9 +70,8 @@ void Theresia::InitSkills()
         });
     AddSkill(slash);
 
-    //PREGUNTAR
     // Skill 4 - Deal 5(+Durability) [durability dificil implementar] and reduce inititive by 15(+level)
-    Skill shieldBash("Shield Bash", DamageType::Physical, 5, 0.0f, 100);
+    Skill shieldBash("Shield Bash", DamageType::Physical, 5 + durability, 100.0f, 100);
     shieldBash.AddEffect(
         {
         "Reduce inititive by 15(+level)",
@@ -84,14 +81,16 @@ void Theresia::InitSkills()
         });
     AddSkill(shieldBash);
 
-    // PREGUNTAR
     // Skill 5 - Deal 10(+25%Power) Physical Damage and Inflict 0(+FireMod) Fire
     Skill doubleBlade("Double Blade", DamageType::Physical, 10, 0.25f, 100);
     doubleBlade.AddEffect(
         {
         "Inflict 0(+FireMod) Fire",
         [](Character* caster, Character* target) {
-            target->Heal((int)(caster->GetPower() * 0.3f));
+            if((int)caster->GetFirePower() > 0)
+            {
+                target->SetBurned(true, 0 + (int)caster->GetFirePower());
+            }
         }
         });
     AddSkill(doubleBlade);

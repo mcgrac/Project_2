@@ -39,6 +39,10 @@ void MainMenuScene::Unload()
     Engine::GetInstance().uiManager->CleanUp();
 }
 
+void MainMenuScene::LoadTextures(){
+
+}
+
 bool MainMenuScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
     switch (uiElement->id)

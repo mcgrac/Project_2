@@ -69,6 +69,10 @@ void InGameScene::Unload()
     Engine::GetInstance().entityManager->CleanUp();
 }
 
+void InGameScene::LoadTextures(){
+
+}
+
 bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
     switch (uiElement->id)

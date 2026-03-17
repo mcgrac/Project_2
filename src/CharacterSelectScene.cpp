@@ -59,6 +59,10 @@ void CharacterSelectScene::Unload()
     selectedNames.clear();
 }
 
+void CharacterSelectScene::LoadTextures(){
+
+}
+
 
 bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
 {

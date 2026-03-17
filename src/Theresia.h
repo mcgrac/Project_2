@@ -1,6 +1,6 @@
 #pragma once
-#pragma once
 #include "Character.h"
+#include "Party.h"
 
 class Theresia : public Character {
 public:

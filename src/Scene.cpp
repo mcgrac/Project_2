@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "UIManager.h"
 #include "MainMenuScene.h"
+#include "SplashScene.h"
 
 Scene::Scene() : Module()
 {
@@ -40,7 +41,7 @@ bool Scene::Awake()
 bool Scene::Start()
 {
 	// Arranca en el menú principal
-	PushScene(new MainMenuScene());
+	PushScene(new SplashScene());
 	return true;
 }
 

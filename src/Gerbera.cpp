@@ -1,8 +1,5 @@
 #include "Gerbera.h"
 
-// HP: 90(+5)  Power: 70(+2)  Durability: 0  Speed: 38(+1)
-// Class: Incantor  Role: Mage/Support  Lane: Side
-
 Gerbera::Gerbera() : Character(
     {0,0},      // position
     "Gerbera",   // name
