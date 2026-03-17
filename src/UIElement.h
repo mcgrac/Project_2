@@ -2,8 +2,10 @@
 
 #include "Input.h"
 #include "Render.h"
-#include "Module.h"
+//#include "Module.h"
 #include "Vector2D.h"
+#include "IUIObserver.h"
+#include <functional>
 
 enum class UIElementType
 {
@@ -61,16 +63,18 @@ public:
 		section = { 0, 0, 0, 0 };
 	}
 
-	// 
-	void SetObserver(Module* module)
-	{
-		observer = module;
-	}
+	//void SetObserver(IUIObserver* obs)
+	//{
+	//	observer = obs;
+	//}
 
-	// 
 	void NotifyObserver()
 	{
-		observer->OnUIMouseClickEvent(this);
+		if (onClickCallback) {
+			onClickCallback(this);
+		}
+		
+		//observer->OnUIMouseClickEvent(this);
 	}
 
 	virtual bool CleanUp()
@@ -96,7 +100,9 @@ public:
 	SDL_Texture* texture;   // Texture atlas reference
 	SDL_Rect section;       // Texture atlas base section
 
-	Module* observer;        // Observer 
+	//IUIObserver* observer;        // Observer 
+
+	std::function<bool(UIElement*)> onClickCallback;
 
 	bool pendingToDelete = false;
 };

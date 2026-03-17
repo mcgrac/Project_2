@@ -16,7 +16,7 @@ bool UIManager::Start()
 	return true;
 }
 
-std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id, const char* text, SDL_Rect bounds, Module* observer, SDL_Rect sliderBounds)
+std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id, const char* text, SDL_Rect bounds, std::function<bool(UIElement*)> callback, SDL_Rect sliderBounds)
 {
 	std::shared_ptr<UIElement> uiElement = std::make_shared<UIElement>();
 
@@ -29,8 +29,7 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 		break;
 	}
 
-	//Set the observer
-	uiElement->observer = observer;
+	uiElement->onClickCallback = callback;
 
 	// Created GuiControls are add it to the list of controls
 	UIElementsList.push_back(uiElement);
