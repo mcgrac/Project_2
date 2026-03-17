@@ -22,7 +22,7 @@ public:
     std::vector<SkillEffect> effects;
     int initiativeCost;
 
-    Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier);
+    Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost);
     ~Skill();
 
     void AddEffect(SkillEffect effect) {
@@ -34,6 +34,10 @@ public:
 #pragma region GETTERS
     std::string GetName() { return name; }
     int GetInitiativeCost() { return initiativeCost; }
+
+    //---------Test debug-------
+    const std::vector<SkillEffect>& GetEffects() const { return effects; }
+    //--------------------------
 #pragma endregion
 
 };

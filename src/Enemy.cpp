@@ -82,7 +82,7 @@ void Enemy::PerformPathfinding() {
 	pathfinding->ResetPath(tilePos);
 
 	while(pathfinding->CanPropagateAStar(tilePos)) {
-		pathfinding->PropagateAStar(SQUARED);
+		/*pathfinding->PropagateAStar(SQUARED);*/
 	}
 }
 

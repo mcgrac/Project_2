@@ -3,6 +3,8 @@
 // Clase base abstracta para todas las escenas del juego.
 // Cada pantalla (MainMenu, InGame, Pause, etc.) hereda de esta clase
 // e implementa sus propios Load, Update, PostUpdate y Unload.
+class UIElement;
+
 class BaseScene
 {
 public:
@@ -19,4 +21,6 @@ public:
 
     // Llamado una vez al descargar la escena
     virtual void Unload() = 0;
+
+    virtual bool OnUIMouseClickEvent(UIElement* uiElement) { return true; }
 };

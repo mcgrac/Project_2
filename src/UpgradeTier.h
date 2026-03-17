@@ -16,10 +16,10 @@ public:
 
     bool ChooseUpgrade(int choice, Character& character);
 
-    bool IsUnlocked()           const;
+    bool IsUnlocked() const;
     bool IsAvailable(int level) const;
-    int  GetRequiredLevel()     const;
+    int  GetRequiredLevel() const;
     const Upgrade& GetOptionA() const;
     const Upgrade& GetOptionB() const;
-    const Upgrade* GetChosen()  const;
+    const Upgrade* GetChosen() const;
 };

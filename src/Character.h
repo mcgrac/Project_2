@@ -11,7 +11,7 @@
 #include "UpgradeTree.h"
 
 class Character {
-private:
+protected:
 	Vector2D position;
 
 	std::string name;
@@ -25,7 +25,9 @@ private:
 	int maxDurability;
 	int speed;
 	int lifesteal;
-	int healingPower;
+	float healingPower;
+	float pisonPower;
+	float firePower;
 
 	bool isPoisoned;
 	bool isBurned;
@@ -51,14 +53,14 @@ private:
 
 	Character* killedBy = nullptr; //to know which was the character that killed
 
-protected:
+
 	UpgradeTree* upgradeTree = nullptr;
 
 public:
 
 	Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 		      int _maxInitiative, int _power, int _durability, int _maxDurability, 
-		      int _speed, int _lifesteal, int _healingPower, int _poisonedStatMod, 
+		      int _speed, int _lifesteal, float _healingPower, float _poisonPower, float _firePower, int _poisonedStatMod, 
 		      int _burnedStatMod, int _level, int _maxHealthLevelScaling,
 		      int _speedLevelScaling, int _powerLevelScaling);
 
@@ -119,5 +121,7 @@ public:
 	void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
 #pragma endregion
 
-
+#pragma region TEST
+	void PrintDebugInfo();
+#pragma endregion
 };

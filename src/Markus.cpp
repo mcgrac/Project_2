@@ -17,6 +17,8 @@ Markus::Markus() : Character(
     38,         // speed
     0,          // lifesteal
     0,          // healingPower
+    0,          // poisonPower
+    0,          // firePower
     0,          // poisonStatMod
     0,          // burnedStatMod
     1,          // level
@@ -35,7 +37,7 @@ Markus::~Markus()
 void Markus::InitSkills()
 {
     // Skill 1 - Baile Rojo: Deal 10(+25%Power) Magic Damage and Inflict 10 Fire
-    Skill baileRojo("Red dance", DamageType::Magical, 10, 0.25f);
+    Skill baileRojo("Red dance", DamageType::Magical, 10, 0.25f, 100);
     baileRojo.AddEffect(
         {
         "Inflict 10 Fire",
@@ -46,7 +48,7 @@ void Markus::InitSkills()
     AddSkill(baileRojo);
 
     // Skill 2 - Divine Light: Heal or deal magic damage depending on target
-    Skill divineLight("Divine Light", DamageType::Magical, 0, 0.5f);
+    Skill divineLight("Divine Light", DamageType::Magical, 0, 0.5f, 100);
     divineLight.AddEffect(
         {
         "Heal ally or damage enemy",
@@ -57,11 +59,11 @@ void Markus::InitSkills()
     AddSkill(divineLight);
 
     // Skill 2 - Laser Upward: Pure magic damage //stiull include "or Heal 10(+30%Power+HealingMod) to an ally"
-    Skill laserUpward("Laser Upward", DamageType::Magical, 15, 0.2f);
+    Skill laserUpward("Laser Upward", DamageType::Magical, 15, 0.2f, 100);
     AddSkill(laserUpward);
 
     // Skill 4 - Ascend: Team buff (Physical Damage buff)
-    Skill ascend("Ascend", DamageType::None, 0, 0.0f);
+    Skill ascend("Ascend", DamageType::None, 0, 0.0f, 100);
     ascend.AddEffect(
         {
         "Buff team PhysDmg",
@@ -72,7 +74,7 @@ void Markus::InitSkills()
     AddSkill(ascend);
 
     // Skill 5 - Healing Halo: Ally healing aura
-    Skill healingHalo("Healing Halo", DamageType::None, 0, 0.0f);
+    Skill healingHalo("Healing Halo", DamageType::None, 0, 0.0f, 100);
     healingHalo.AddEffect(
         {
         "Heal all allies over time",
