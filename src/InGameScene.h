@@ -1,18 +1,14 @@
 #pragma once
 #include "BaseScene.h"
 #include "Party.h"
+#include "WorldMap.h"
 #include <vector>
 #include <string>
 
 // IDs de personaje — definidos aquí para que CharacterSelectScene
 // también pueda incluir este header sin circularidad
-enum class CharacterID
-{
-    WARRIOR,
-    MAGE,
-    ROGUE
-    // Añade más según tu juego
-};
+
+struct SDL_Texture;
 
 class InGameScene : public BaseScene
 {
@@ -37,6 +33,10 @@ private:
 
     // InGameScene es owner de la party y los characters — los crea y destruye
     Party* alliedParty;
-
     void DestroyParty();
+
+    WorldMap worldMap;
+
+    //textures
+    SDL_Texture* background;
 };

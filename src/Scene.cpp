@@ -11,7 +11,6 @@
 #include "Player.h"
 #include "Map.h"
 #include "Item.h"
-#include "Enemy.h"
 #include "UIManager.h"
 #include "MainMenuScene.h"
 #include "SplashScene.h"

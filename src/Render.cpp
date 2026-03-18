@@ -365,4 +365,26 @@ bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int margin)
 	return result;
 }
 
+void Render::UpdateCamera(){
+	int w = 0;
+	int h = 0;
+	SDL_GetWindowSize(Engine::GetInstance().window->window, &w, &h);
 
+	int scale = Engine::GetInstance().window->GetScale();
+
+	LOG("UpdateCamera: SDL_GetWindowSize devuelve %dx%d | escala=%d", w, h, scale);
+	LOG("UpdateCamera: camera ANTES — w=%d h=%d x=%d y=%d", camera.w, camera.h, camera.x, camera.y);
+
+	camera.w = w * scale;
+	camera.h = h * scale;
+
+	// Decirle al renderer el nuevo tamaño de output
+	SDL_SetRenderLogicalPresentation(
+		renderer,
+		1280, 720,
+		SDL_LOGICAL_PRESENTATION_LETTERBOX
+	);
+
+
+	LOG("UpdateCamera: camera DESPUES — w=%d h=%d", camera.w, camera.h);
+}

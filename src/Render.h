@@ -45,6 +45,8 @@ public:
 	// L19 TODO 4: Create a method to know if a rectangle is inside the camera frustum
 	bool IsOnScreenWorldRect(float x, float y, float w, float h, int margin = 0) const;
 
+	//for fullscreen mode
+	void UpdateCamera();
 public:
 
 	SDL_Renderer* renderer;

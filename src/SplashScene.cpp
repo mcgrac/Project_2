@@ -13,8 +13,6 @@
 SplashScene::SplashScene(){
     timer = 0.0f;
     logo = nullptr;
-
-    LoadTextures();
 }
 
 SplashScene::~SplashScene(){
@@ -23,21 +21,8 @@ SplashScene::~SplashScene(){
 
 void SplashScene::Load()
 {
-    //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/retro-gaming-short-248416.wav");
-
-    // Crear botones del menú principal aquí
-    // SDL_Rect btPos = { 520, 350, 120, 20 };
-    // Engine::GetInstance().uiManager->CreateUIElement(...);
-
-    // La lambda captura 'this' (MainMenuScene) y llama a OnUIMouseClickEvent.
-    // UIElement no sabe nada de Module ni de BaseScene — solo guarda la función.
-    //SDL_Rect btPos = { 520, 350, 120, 20 };
-    //Engine::GetInstance().uiManager->CreateUIElement(
-    //    UIElementType::BUTTON, 1, "Nueva Partida", btPos,
-    //    [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
-    //);
-
     StartTimer();
+    LoadTextures();
 }
 
 void SplashScene::Update(float dt)
@@ -48,8 +33,10 @@ void SplashScene::Update(float dt)
 
 void SplashScene::PostUpdate(float dt)
 {
-    //draw textures
-    Engine::GetInstance().render->DrawTexture(logo, Engine::GetInstance().window->width / 2, Engine::GetInstance().window->height / 2);
+    //draw logo in the middle
+    float xMidPos = Engine::GetInstance().window->width / 2;
+    float yMidPos = Engine::GetInstance().window->height / 2;
+    Engine::GetInstance().render->DrawTexture(logo, xMidPos - logo->w / 2, yMidPos-logo->h / 2);
 }
 
 void SplashScene::Unload()
@@ -59,19 +46,14 @@ void SplashScene::Unload()
 
     //textures
     Engine::GetInstance().textures->UnLoad(logo);
+
+    //audio effect
+    //---missing---//
 }
 
 bool SplashScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
-    switch (uiElement->id)
-    {
-    case 1: // Botón "Nueva Partida"
-        LOG("MainMenu: Nueva Partida clicked!");
-        Engine::GetInstance().scene->ReplaceScene(new MainMenuScene());
-        break;
-    default:
-        break;
-    }
+    //empty no buttons
     return true;
 }
 
