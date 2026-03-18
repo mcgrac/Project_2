@@ -26,7 +26,7 @@ protected:
 	int speed;
 	int lifesteal;
 	float healingPower;
-	float pisonPower;
+	float poisonPower;
 	float firePower;
 
 	bool isPoisoned;
