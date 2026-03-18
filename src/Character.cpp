@@ -8,7 +8,7 @@ Character::Character(Vector2D _position, std::string _name, int _health, int _ma
 	int _level, int _maxHealthLevelScaling, int _speedLevelScaling, int _powerLevelScaling) :
 	position(_position), name(_name), health(_health), maxHealth(_maxHealth), experience(_experience), initiative(_initiative), maxInitiative(_maxInitiative),
 	power(_power), durability(_durability), maxDurability(_maxDurability), speed(_speed), lifesteal(_lifesteal), healingPower(_healingPower),
-	pisonPower(_poisonPower), firePower(_firePower),
+	poisonPower(_poisonPower), firePower(_firePower),
 	isPoisoned(false), isBurned(false), poisonStatMod(_poisonedStatMod), burnedStatMod(_burnedStatMod), level(_level), 
 	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true)
 {
@@ -169,7 +169,7 @@ void Character::PrintDebugInfo(){
 	LOG("CHARACTER: %s | Level %d", name.c_str(), level);
 	LOG("  HP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, power, speed, durability);
 	LOG("  Initiative: %d/%d  Lifesteal: %d", initiative, maxInitiative, lifesteal);
-	LOG("  HealingPower: %.2f  PoisonPower: %.2f  FirePower: %.2f", healingPower, pisonPower, firePower);
+	LOG("  HealingPower: %.2f  PoisonPower: %.2f  FirePower: %.2f", healingPower, poisonPower, firePower);
 
 	LOG("--- SKILLS (%d) ---", (int)skills.size());
 	for (int i = 0; i < (int)skills.size(); ++i)
