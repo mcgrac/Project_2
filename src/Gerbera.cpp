@@ -24,8 +24,8 @@ Gerbera::Gerbera() : Character(
     4           // powerLevelScaling      (+2 per level)
 )
 {
-    InitSkills();
-    InitUpgradeTree();
+    //InitSkills();
+    //InitUpgradeTree();
 }
 
 Gerbera::~Gerbera()

@@ -25,8 +25,8 @@ Theresia::Theresia() : Character(
     2           // powerLevelScaling      (+2 per level)
 )
 {
-    InitSkills();
-    InitUpgradeTree();
+    //InitSkills();
+    //InitUpgradeTree();
 }
 
 Theresia::~Theresia()

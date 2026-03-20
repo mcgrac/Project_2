@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<character name="Markus">
+
+	<stats
+        health="90"
+        maxHealth="90"
+        power="70"
+        durability="0"
+        maxDurability="0"
+        speed="38"
+        lifesteal="0"
+        healingPower="0"
+        poisonPower="0"
+        firePower="0"
+        maxInitiative="300"
+    />
+
+	<levelScaling
+        maxHealth="5"
+        power="2"
+        speed="1"
+    />
+
+	<skills>
+		<skill id="red_dance"    initiativeCost="100" />
+		<skill id="divine_light" initiativeCost="100" />
+		<skill id="laser_upward" initiativeCost="100" />
+		<skill id="ascend"       initiativeCost="100" />
+		<skill id="healing_halo" initiativeCost="100" />
+	</skills>
+
+	<upgradeTree>
+		<tier requiredLevel="5">
+			<optionA name="Arcane Focus"  description="Power +15"       effect="power+15"      />
+			<optionB name="Vital Surge"   description="Max Health +20"  effect="maxHealth+20"  />
+		</tier>
+		<tier requiredLevel="10">
+			<optionA name="Swift Cast"    description="Speed +8"        effect="speed+8"       />
+			<optionB name="Mending Light" description="Healing Power +1" effect="healingPower+1" />
+		</tier>
+		<tier requiredLevel="15">
+			<optionA name="Overload"      description="Power +25"       effect="power+25"      />
+			<optionB name="Inner Shield"  description="Max Health +40"  effect="maxHealth+40"  />
+		</tier>
+	</upgradeTree>
+
+</character>

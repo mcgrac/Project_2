@@ -84,9 +84,11 @@ public:
 	void SetBurned(bool state, int damage);
 	void SetPoisoned(bool state, int damage);
 
-	void SetKilledBy(Character* killer) { killedBy = killer; }
+	inline void SetKilledBy(Character* killer) { killedBy = killer; }
 
 	void ClearStatusEffects();
+
+	inline void AddUpgradeTier(UpgradeTier tier) { upgradeTree->AddTier(tier); }
 
 #pragma region GETTERS
 	int GetPower() { return power; }
