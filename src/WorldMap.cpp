@@ -10,6 +10,11 @@
 WorldMap::WorldMap() {
 	//smth
 	islandsVisited = 0;
+	ship = new Ship;
+}
+
+WorldMap::~WorldMap() {
+	delete ship;
 }
 
 void WorldMap::LoadWorld() {
@@ -24,64 +29,91 @@ void WorldMap::LoadWorld() {
 }
 void WorldMap::UpdateWorld() {
 	//ckeck for enter key and arrow key
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN) {//when pressing tab change island
-		firstIslandSelected = !firstIslandSelected;
-	}
+	if (!traveling) {
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN) {//when pressing tab change island
+			firstIslandSelected = !firstIslandSelected;
+			traveling = true;
+		}
 
-	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) {
-		//travel to selected island
-		if (actualIsland->getNextSize() == 2) {
-			if (firstIslandSelected) {
-				//travel to island 0
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) {
+			//travel to selected island
+			if (actualIsland->getNextSize() == 2) {
+				if (firstIslandSelected) {
+					//travel to island 0
+					actualIsland = actualIsland->getIslandIndex(0);
+				}
+				else {
+					//travel to island 1
+					actualIsland = actualIsland->getIslandIndex(1);
+				}
+			}
+			else {//the list has 1 member
+				//travel to islnd 0
 				actualIsland = actualIsland->getIslandIndex(0);
 			}
-			else {
-				//travel to island 1
-				actualIsland = actualIsland->getIslandIndex(1);
-			}
 		}
-		else {//the list has 1 member
-			//travel to islnd 0
-			actualIsland = actualIsland->getIslandIndex(0);
-		}
-	}
-}
-void WorldMap::RenderWorld() {
-	//draw background
-	//Engine::GetInstance().render->SetBackgroundColor();
-	//draw square for island
-	SDL_Rect act = { 300, 100, 100, 100 };
-	Engine::GetInstance().render->DrawRectangle(act, 0, 0, 255, 255);
-	if (actualIsland->getNextSize() == 1) {
-		act = { 200, 300, 100, 100 };
-		Engine::GetInstance().render->DrawRectangle(act, 0, 255, 0, 255);
-		//draw marker on selected island
-		act = {200, 300, 25, 25};
-		Engine::GetInstance().render->DrawRectangle(act, 255, 255, 0, 255);
-	}
-	else if (actualIsland->getNextSize() == 2) {
-		act = { 200, 300, 100, 100 };
-		Engine::GetInstance().render->DrawRectangle(act, 0, 255, 0, 255);
-		act = { 500, 300, 100, 100 };
-		Engine::GetInstance().render->DrawRectangle(act, 255, 0, 0, 255);
-
-		//draw marker on selected island
-		if (firstIslandSelected) {
-			act = { 200, 300, 25, 25 };
-		}
-		else {
-			act = { 500, 300, 25, 25 };
-		}
-		Engine::GetInstance().render->DrawRectangle(act, 255, 255, 0, 255);
-	}
-	else if (actualIsland->getNextSize() == 0) {
-		LOG("actual island has no other islands to go to");
 	}
 	else {
-		LOG("error: more than 2 islands in the next vector, or less than 0");
+		//make the ship travel
+		//ckeck if the ship reached its destination, if it reached its destination -> travel = false
 	}
-	//draw squares for other islands
+	
 }
+void WorldMap::RenderWorld() {
+	SDL_Rect pos = { 50, 500, 100, 100 };
+	RenderDaughter(actualIsland, &pos, 0);
+
+	//draw selector
+	if (actualIsland->getNextSize() == 1) {
+		//selector shown on the only island
+		pos = { 150, 500, 100, 100 };
+	}
+	else if(firstIslandSelected){
+		//selector shown on the first island
+		pos = { 150, 550, 100, 100 };
+	}
+	else {
+		pos = { 150, 450, 100, 100 };
+	}
+	//draw rectangle
+		
+	}
+
+void WorldMap::RenderDaughter(Island* islnd, SDL_Rect* pos, int level) {
+	//draw actual island
+	Engine::GetInstance().render->DrawRectangle(*pos, 0, 255, 0, 255);
+	if (level < 2) {
+		SDL_Rect act;
+		switch (islnd->getNextSize()) {
+		case 0:
+			//no daughters to print
+			break;
+		case 1:
+			act = { pos->x + 100, pos->y,  pos->w, pos->h };
+			RenderDaughter(islnd->getIslandIndex(0), &act, level++);
+			break;
+		case 2:
+			//RenderDaughter(); illa 1
+			act = { pos->x + 100, pos->y + 50,  pos->w, pos->h };
+			RenderDaughter(islnd->getIslandIndex(0), &act, level++);
+			//RenderDaughter(); illa 2
+			act = { pos->x + 100, pos->y - 50,  pos->w, pos->h };
+			RenderDaughter(islnd->getIslandIndex(1), &act, level++);
+			break;
+		default:
+			//i don now
+			break;
+		}
+	}
+	
+
+	return;
+		
+
+}
+	
+	//draw squares for other islands
+
 void WorldMap::UnloadWorld() {
 	//to do
 }

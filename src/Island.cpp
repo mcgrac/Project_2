@@ -5,6 +5,10 @@ Island::Island() {
 
 }
 
+Island::~Island() {
+
+}
+
 int Island::getNextSize() {
 	return nextIslands.size();
 }

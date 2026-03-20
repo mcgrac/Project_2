@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <SDL3/SDL.h>
 
 using namespace std;
 
@@ -9,7 +10,11 @@ class Faction
 private:
 	string* name;
 	bool isHostile;
+	SDL_Texture* islandTexture = nullptr;
 public:
-	void ChangeReputation();
+	Faction(bool hostile);
+	~Faction();
+	void setTexture(SDL_Texture* txt);
+	void ChangeReputation(bool hostile);
 };
 

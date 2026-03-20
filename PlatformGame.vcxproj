@@ -163,6 +163,7 @@
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Render.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Ship.cpp" />
     <ClCompile Include="src\Textures.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\UIButton.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Render.h" />
     <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\Ship.h" />
     <ClInclude Include="src\Textures.h" />
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\UIButton.h" />
