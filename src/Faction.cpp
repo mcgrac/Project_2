@@ -9,7 +9,7 @@ Faction::~Faction() {
 	}
 }
 void Faction::setTexture(SDL_Texture* txt) {
-
+	islandTexture = txt;
 }
 void Faction::ChangeReputation(bool hostile) {
 	isHostile = hostile;

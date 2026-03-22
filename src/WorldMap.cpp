@@ -32,11 +32,36 @@ void WorldMap::UpdateWorld() {
 	if (!traveling) {
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN) {//when pressing tab change island
 			firstIslandSelected = !firstIslandSelected;
-			traveling = true;
 		}
 
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) {
 			//travel to selected island
+			traveling = true;
+			if (actualIsland->getNextSize() == 2) {
+				if (firstIslandSelected) {
+					//travel to island 0
+					actualIsland = actualIsland->getIslandIndex(0);
+					target = { 150, 450 }; //avall
+				}
+				else {
+					//travel to island 1
+					actualIsland = actualIsland->getIslandIndex(1);
+					target = { 150, 550 };//amunt
+				}
+			}
+			else {//the list has 1 member
+				//travel to islnd 0
+				actualIsland = actualIsland->getIslandIndex(0);
+				target = { 150, 500 };//recte
+			}
+		}
+	}
+	else {
+		//make the ship travel
+		//ckeck if the ship reached its destination, if it reached its destination -> travel = false
+		ship->moveShip(target.getX(), target.getY());
+		
+		if (sqrt(pow((ship->getPosition().getX() - shipTarget.getX()), 2) + pow(ship->getPosition().getY() - shipTarget.getY(), 2)) < 25) {//funció per acabar
 			if (actualIsland->getNextSize() == 2) {
 				if (firstIslandSelected) {
 					//travel to island 0
@@ -52,10 +77,6 @@ void WorldMap::UpdateWorld() {
 				actualIsland = actualIsland->getIslandIndex(0);
 			}
 		}
-	}
-	else {
-		//make the ship travel
-		//ckeck if the ship reached its destination, if it reached its destination -> travel = false
 	}
 	
 }
@@ -76,6 +97,10 @@ void WorldMap::RenderWorld() {
 		pos = { 150, 450, 100, 100 };
 	}
 	//draw rectangle
+	Engine::GetInstance().render->DrawRectangle(pos, 0, 0, 255, 255);
+	//draw ship
+
+	Engine::GetInstance().render->DrawCircle(ship->getPosition().getX(), ship->getPosition().getY(), 255, 0, 0, 255);
 		
 	}
 
