@@ -7,6 +7,7 @@ private:
 
 	int health;
 	Vector2D position;
+	int x, y;
 public:
 	Ship();
 	~Ship();
@@ -15,7 +16,8 @@ public:
 	int dealDamage(int dmg);
 	//void renderShip();
 	void moveShip(int x, int y);
-	Vector2D getPosition();
+	int getPosX();
+	int getPosY();
 	void setPosition(int x, int y);
 
 };

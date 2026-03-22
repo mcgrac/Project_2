@@ -11,11 +11,11 @@ private:
 	//pointer to the first node of the list
 	Island* first;
 	Island* actualIsland;
-	Vector2D target;
+	int targetx, targety;
 	SDL_Texture* background = nullptr;
 	int islandsVisited;
 	bool firstIslandSelected;
-	Vector2D shipTarget;
+	int shipTargetX, shipTargetY;
 	//create a list or node tree of islands
 	bool traveling = false;
 	Ship* ship = nullptr;
@@ -29,4 +29,6 @@ public:
 	void RenderWorld();
 	void RenderDaughter(Island* islnd, SDL_Rect* pos, int level);
 	void UnloadWorld();
+
+	int firstIsldPosX = 50, firstIsldPosY = 300;
 };

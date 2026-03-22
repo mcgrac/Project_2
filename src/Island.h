@@ -13,6 +13,7 @@ private:
 	string* name;
 	//saves the info of the rest of the nodes
 	vector<Island*> nextIslands;
+	bool visited = true;
 public:
 	Island();
 	~Island();
@@ -20,5 +21,7 @@ public:
 	Island* getIslandIndex(int ind);//return the pointer to a island from the vector next given an index (1 or 2)
 	void SetNext(vector<Island*> nxt);
 	void AddNext(Island* island);
+	void setVisited(bool vis);
+	bool getVisited();
 };
 

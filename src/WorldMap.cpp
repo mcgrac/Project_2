@@ -24,44 +24,54 @@ void WorldMap::LoadWorld() {
 	actualIsland = first;
 	Island* islnd = new Island;
 	first->AddNext(islnd);
+	islnd = new Island;
 	first->AddNext(islnd);
-	delete islnd;
+	islnd = new Island;
+	first->getIslandIndex(0)->AddNext(islnd);
+	islnd = new Island;
+	first->getIslandIndex(1)->AddNext(islnd);
+	ship->setPosition(firstIsldPosX, firstIsldPosY);
 }
 void WorldMap::UpdateWorld() {
-	//ckeck for enter key and arrow key
+	//ckeck for enter key and tab key
 	if (!traveling) {
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN) {//when pressing tab change island
 			firstIslandSelected = !firstIslandSelected;
 		}
 
-		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) {
+		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && actualIsland->getVisited()) { //only if the island is visited when pressing enter you will be able to travel to the next
 			//travel to selected island
 			traveling = true;
 			if (actualIsland->getNextSize() == 2) {
 				if (firstIslandSelected) {
 					//travel to island 0
 					actualIsland = actualIsland->getIslandIndex(0);
-					target = { 150, 450 }; //avall
+					targetx = firstIsldPosX + 150; //avall
+					targety = firstIsldPosY - 150;
 				}
 				else {
 					//travel to island 1
 					actualIsland = actualIsland->getIslandIndex(1);
-					target = { 150, 550 };//amunt
+					//target = { firstIsldPosX + 150, firstIsldPosY + 150 };//amunt
+					targetx = firstIsldPosX + 150; 
+					targety = firstIsldPosY + 150;
 				}
 			}
 			else {//the list has 1 member
 				//travel to islnd 0
 				actualIsland = actualIsland->getIslandIndex(0);
-				target = { 150, 500 };//recte
+				//target = { firstIsldPosX + 150, firstIsldPosY };//recte
+				targetx = firstIsldPosX + 150;
+				targety = firstIsldPosY;
 			}
 		}
 	}
 	else {
 		//make the ship travel
 		//ckeck if the ship reached its destination, if it reached its destination -> travel = false
-		ship->moveShip(target.getX(), target.getY());
+		ship->moveShip(shipTargetX, shipTargetY);
 		
-		if (sqrt(pow((ship->getPosition().getX() - shipTarget.getX()), 2) + pow(ship->getPosition().getY() - shipTarget.getY(), 2)) < 25) {//funció per acabar
+		if (sqrt(pow((ship->getPosX() - shipTargetX), 2) + pow(ship->getPosY() - shipTargetY, 2)) < 25) {//funció per acabar
 			if (actualIsland->getNextSize() == 2) {
 				if (firstIslandSelected) {
 					//travel to island 0
@@ -81,28 +91,28 @@ void WorldMap::UpdateWorld() {
 	
 }
 void WorldMap::RenderWorld() {
-	SDL_Rect pos = { 50, 500, 100, 100 };
+	SDL_Rect pos = { firstIsldPosX, firstIsldPosY, 100, 100 };
 	RenderDaughter(actualIsland, &pos, 0);
 
 	//draw selector
 	if (actualIsland->getNextSize() == 1) {
 		//selector shown on the only island
-		pos = { 150, 500, 100, 100 };
+		pos = { firstIsldPosX + 150, firstIsldPosY, 25, 25 };
 	}
 	else if(firstIslandSelected){
 		//selector shown on the first island
-		pos = { 150, 550, 100, 100 };
+		pos = { firstIsldPosX + 150, firstIsldPosY + 150, 25, 25 };
 	}
 	else {
-		pos = { 150, 450, 100, 100 };
+		pos = { firstIsldPosX + 150, firstIsldPosY - 150, 25, 25 };
 	}
 	//draw rectangle
 	Engine::GetInstance().render->DrawRectangle(pos, 0, 0, 255, 255);
 	//draw ship
-
-	Engine::GetInstance().render->DrawCircle(ship->getPosition().getX(), ship->getPosition().getY(), 255, 0, 0, 255);
-		
-	}
+	pos = { ship->getPosX(), ship->getPosY(), 25, 25};
+	Engine::GetInstance().render->DrawRectangle(pos, 255, 255, 0, 255);
+	
+}
 
 void WorldMap::RenderDaughter(Island* islnd, SDL_Rect* pos, int level) {
 	//draw actual island
@@ -114,15 +124,15 @@ void WorldMap::RenderDaughter(Island* islnd, SDL_Rect* pos, int level) {
 			//no daughters to print
 			break;
 		case 1:
-			act = { pos->x + 100, pos->y,  pos->w, pos->h };
+			act = { pos->x + 150, pos->y,  pos->w, pos->h };
 			RenderDaughter(islnd->getIslandIndex(0), &act, level++);
 			break;
 		case 2:
 			//RenderDaughter(); illa 1
-			act = { pos->x + 100, pos->y + 50,  pos->w, pos->h };
+			act = { pos->x + 150, pos->y + 150,  pos->w, pos->h };
 			RenderDaughter(islnd->getIslandIndex(0), &act, level++);
 			//RenderDaughter(); illa 2
-			act = { pos->x + 100, pos->y - 50,  pos->w, pos->h };
+			act = { pos->x + 150, pos->y - 150,  pos->w, pos->h };
 			RenderDaughter(islnd->getIslandIndex(1), &act, level++);
 			break;
 		default:

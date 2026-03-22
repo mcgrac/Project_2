@@ -6,7 +6,7 @@ Island::Island() {
 }
 
 Island::~Island() {
-
+	//call the delete of daughter islands if they have any, then delete itself
 }
 
 int Island::getNextSize() {
@@ -25,4 +25,12 @@ void Island::AddNext(Island* island) {
 	if (nextIslands.size() < 2) {
 		nextIslands.push_back(island);
 	}
+}
+
+void Island::setVisited(bool vis) {
+	visited = vis;
+}
+
+bool Island::getVisited() {
+	return visited;
 }
