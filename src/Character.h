@@ -12,8 +12,9 @@
 
 class Character {
 protected:
-	Vector2D position;
 
+#pragma region STATS
+	Vector2D position;
 	std::string name;
 	int health;
 	int maxHealth;
@@ -28,32 +29,22 @@ protected:
 	float healingPower;
 	float pisonPower;
 	float firePower;
-
 	bool isPoisoned;
 	bool isBurned;
 	int poisonStatMod;
 	int burnedStatMod;
-
-	int level;
-
-	bool isAlive;
-
-	Inventory* inventory = nullptr;
-
-
-	AnimationSet anims;
-
-	SDL_Texture* texture = nullptr;
-
 	int maxHealthLevelScaling;
 	int speedLevelScaling;
 	int powerLevelScaling;
+	int level;
+	bool isAlive;
+#pragma endregion
 
+	Inventory* inventory = nullptr;
+	AnimationSet anims;
+	SDL_Texture* texture = nullptr;
 	std::vector<Skill> skills;
-
 	Character* killedBy = nullptr; //to know which was the character that killed
-
-
 	UpgradeTree* upgradeTree = nullptr;
 
 public:
@@ -89,42 +80,41 @@ public:
 	void ClearStatusEffects();
 
 	inline void AddUpgradeTier(UpgradeTier tier) { upgradeTree->AddTier(tier); }
+	inline void TakePoisonDamage() { ReceiveMagicalDamage(poisonStatMod, nullptr); }
+	inline void TakeBurnDamage() { ReceiveMagicalDamage(burnedStatMod, nullptr); }
+
+	// Initiative (combat)
+	inline void AddInitiative(int amount) { initiative += amount; }
+	inline void ResetCurrentInitiative() { initiative = 0; }
+
+	// Position in the screen (start combat)
+	inline void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
 
 #pragma region GETTERS
-	int GetPower() { return power; }
-	int GetLifesteal() { return lifesteal; }
-	int GetLevel() { return level; }
-	bool GetIsAlive() { return isAlive; }
-	Character* GetKilledBy() const { return killedBy; }
+	inline int GetPower() { return power; }
+	inline int GetLifesteal() { return lifesteal; }
+	inline int GetLevel() { return level; }
+	inline bool GetIsAlive() { return isAlive; }
+	inline Character* GetKilledBy() const { return killedBy; }
+	inline int GetSpeed() { return speed; }
+	inline int GetCurrentHP() { return health; }
+	inline int GetCurrentInitiative() { return initiative; }
+	inline bool IsPoisoned() { return isPoisoned; }
+	inline bool IsBurning() { return isBurned; }
+	inline int GetPoisonDamage() { return poisonStatMod; }
+	inline int GetBurnDamage() { return burnedStatMod; }
+	inline std::string GetName() { return name; }
+	inline std::vector<Skill>& GetSkills() { return skills; }
+	inline float GetFirePower() { return firePower; }
+	inline float GetPoisonPower() { return pisonPower; }
+	inline float GetHealingPower() { return healingPower; }
+#pragma endregion
 
-	void ModifyPower(int amount) { power += amount; }
-	void ModifySpeed(int amount) { speed += amount; }
-	void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
-	void ModifyHealingPower(int amount) { healingPower += amount; }
-
-	// Requeridos por Combat
-	int GetSpeed() { return speed; }
-	int GetCurrentHP() { return health; }
-	int GetCurrentInitiative() { return initiative; }
-	bool IsPoisoned() { return isPoisoned; }
-	bool IsBurning() { return isBurned; }
-	int GetPoisonDamage() { return poisonStatMod; }
-	int GetBurnDamage() { return burnedStatMod; }
-	std::string GetName() { return name; }
-	std::vector<Skill>& GetSkills() { return skills; }
-	void TakePoisonDamage() { ReceiveMagicalDamage(poisonStatMod, nullptr); }
-	void TakeBurnDamage() { ReceiveMagicalDamage(burnedStatMod, nullptr); }
-
-	float GetFirePower() { return firePower; }
-	float GetPoisonPower() { return pisonPower; }
-	float GetHealingPower() { return healingPower; }
-
-	// Manipulación de iniciativa
-	void AddInitiative(int amount) { initiative += amount; }
-	void ResetCurrentInitiative() { initiative = 0; }
-
-	// Posición en pantalla (para StartCombat)
-	void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
+#pragma region MODIFIERS
+	inline void ModifyPower(int amount) { power += amount; }
+	inline void ModifySpeed(int amount) { speed += amount; }
+	inline void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
+	inline void ModifyHealingPower(int amount) { healingPower += amount; }
 #pragma endregion
 
 #pragma region TEST

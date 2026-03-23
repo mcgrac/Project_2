@@ -151,6 +151,7 @@
     <ClCompile Include="src\CharacterFactory.cpp" />
     <ClCompile Include="src\CharacterSelectScene.cpp" />
     <ClCompile Include="src\Combat.cpp" />
+    <ClCompile Include="src\CombatScene.cpp" />
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
     <ClCompile Include="src\Gerbera.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="src\CharacterFactory.h" />
     <ClInclude Include="src\CharacterSelectScene.h" />
     <ClInclude Include="src\Combat.h" />
+    <ClInclude Include="src\CombatScene.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EntityManager.h" />
@@ -231,8 +233,11 @@
     <ClInclude Include="src\WorldMap.h" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="Assets\Characters\Chaman.xml" />
     <Xml Include="Assets\Characters\Gerbera.xml" />
     <Xml Include="Assets\Characters\Markus.xml" />
+    <Xml Include="Assets\Characters\Raptor.xml" />
+    <Xml Include="Assets\Characters\Rex.xml" />
     <Xml Include="Assets\Characters\Theresia.xml" />
     <Xml Include="Assets\Maps\world.xml" />
     <Xml Include="config.xml" />

@@ -49,8 +49,11 @@ void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
-	if (health == 0 && attacker != nullptr) {
-		killedBy = attacker;
+	if (health <= 0) {
+		isAlive = false;
+		if (attacker != nullptr) {
+			killedBy = attacker;
+		}
 	}
 }
 
@@ -61,8 +64,11 @@ void Character::ReceiveMagicalDamage(int damageReceived, Character* attacker)
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
-	if (health == 0 && attacker != nullptr) {
-		killedBy = attacker;
+	if (health <= 0) {
+		isAlive = false;
+		if (attacker != nullptr) {
+			killedBy = attacker;
+		}
 	}
 }
 

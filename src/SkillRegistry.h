@@ -4,19 +4,15 @@
 #include <functional>
 #include <string>
 
-// SkillRegistry — mapa de id -> función que construye la Skill completa.
-// Para añadir una skill nueva: registrarla en SkillRegistry.cpp con su id y sus efectos.
-// El id debe coincidir exactamente con el atributo id del XML.
 class SkillRegistry
 {
 public:
     static SkillRegistry& GetInstance();
 
-    // Devuelve una Skill construida a partir de su id y el coste leído del XML.
-    // Devuelve una Skill vacía si el id no está registrado.
+    // Returns a skill created with the id given
     Skill Create(const std::string& id, int initiativeCost) const;
 
-    // Registra una skill: id -> función constructora
+    // Register a skill: id -> contructor
     void Register(const std::string& id, std::function<Skill(int initiativeCost)> builder);
 
 private:

@@ -71,7 +71,31 @@ void Combat::Run()
 //  START_COMBAT
 void Combat::StartCombat()
 {
-    std::cout << "=== COMBATE INICIADO ===\n";
+    std::cout << "\n╔══════════════════════════════════════╗\n";
+    std::cout << "║          COMBATE INICIADO            ║\n";
+    std::cout << "╚══════════════════════════════════════╝\n";
+
+
+    //----------------debug--------------
+    std::cout << "\n[ALIADOS]\n";
+    for (Character* c : alliedParty->GetMembers())
+    {
+        std::cout << "  " << c->GetName()
+            << " | HP: " << c->GetCurrentHP()
+            << " | Power: " << c->GetPower()
+            << " | Speed: " << c->GetSpeed() << "\n";
+    }
+
+    std::cout << "\n[ENEMIGOS]\n";
+    for (Character* c : enemyParty->GetMembers())
+    {
+        std::cout << "  " << c->GetName()
+            << " | HP: " << c->GetCurrentHP()
+            << " | Power: " << c->GetPower()
+            << " | Speed: " << c->GetSpeed() << "\n";
+    }
+    std::cout << "\n";
+    //---------------------------------------
 
     auto allCombatants = GetAllCombatants();
 
@@ -93,11 +117,35 @@ bool Combat::CalculateInitiative()
     {
         if (c->GetIsAlive())
         {
-            c->AddInitiative(50 + c->GetSpeed());
+            int before = c->GetCurrentInitiative();
+
+            int bonus = 50 + c->GetSpeed();
+            c->AddInitiative(bonus);
+
+            int after = c->GetCurrentInitiative();
+
+            std::cout << "  " << c->GetName()
+                << " | antes: " << before
+                << " + " << bonus
+                << " = " << after;
+
+            if (after >= 100)
+            {
+                std::cout << "  [PUEDE ACTUAR]";
+            }
+
+            std::cout << "\n";
         }
     }
 
     currentActor = GetHighestInitiativeActor();
+
+    if (currentActor != nullptr)
+    {
+        std::cout << "  >> Turno para: " << currentActor->GetName()
+            << " (iniciativa: " << currentActor->GetCurrentInitiative() << ")\n";
+    }
+
     return currentActor != nullptr;
 }
 
@@ -106,7 +154,12 @@ void Combat::Attack()
 {
     if (currentActor == nullptr) return;
 
-    std::cout << "\n>> Turno de: " << currentActor->GetName() << "\n";
+    std::cout << "\n┌──────────────────────────────────────┐\n";
+    std::cout << "│ TURNO DE: " << currentActor->GetName() << "\n";
+    std::cout << "│ HP: " << currentActor->GetCurrentHP()
+        << " | Iniciativa: " << currentActor->GetCurrentInitiative()
+        << " | Power: " << currentActor->GetPower() << "\n";
+    std::cout << "└──────────────────────────────────────┘\n";
 
     if (IsAllied(currentActor))
     {
@@ -121,25 +174,64 @@ void Combat::Attack()
 //  MODIFIERS — veneno y quemadura
 void Combat::ApplyModifiers()
 {
+    bool anyModifier = false;
+
     for (Character* c : GetAllCombatants())
     {
         if (!c->GetIsAlive()) continue;
 
         if (c->IsPoisoned())
         {
+            //int poisonDmg = c->GetPoisonDamage();
+            //c->TakePoisonDamage();
+            //std::cout << c->GetName() << " sufre " << poisonDmg << " de daño por veneno.\n";
+
+            anyModifier = true;
             int poisonDmg = c->GetPoisonDamage();
+            int hpBefore = c->GetCurrentHP();
             c->TakePoisonDamage();
-            std::cout << c->GetName() << " sufre " << poisonDmg << " de daño por veneno.\n";
+            int hpAfter = c->GetCurrentHP();
+
+            std::cout << "  [VENENO] " << c->GetName()
+                << " sufre " << poisonDmg << " de daño por veneno."
+                << " HP: " << hpBefore << " -> " << hpAfter;
+
+            if (!c->GetIsAlive())
+            {
+                std::cout << "  [MUERTO]";
+            }
+
+            std::cout << "\n";
         }
 
         if (c->IsBurning())
         {
-            int burnDmg = c->GetBurnDamage();
-            c->TakeBurnDamage();
-            std::cout << c->GetName() << " sufre " << burnDmg << " de daño por quemadura.\n";
-        }
+            //int burnDmg = c->GetBurnDamage();
+            //c->TakeBurnDamage();
+            //std::cout << c->GetName() << " sufre " << burnDmg << " de daño por quemadura.\n";
 
-        // Reducir duración de los estados (si usas turnos como contador)
+            anyModifier = true;
+            int burnDmg = c->GetBurnDamage();
+            int hpBefore = c->GetCurrentHP();
+            c->TakeBurnDamage();
+            int hpAfter = c->GetCurrentHP();
+
+            std::cout << "  [QUEMADURA] " << c->GetName()
+                << " sufre " << burnDmg << " de daño por quemadura."
+                << " HP: " << hpBefore << " -> " << hpAfter;
+
+            if (!c->GetIsAlive())
+            {
+                std::cout << "  [MUERTO]";
+            }
+
+            std::cout << "\n";
+        }
+        
+        if (!anyModifier)
+        {
+            std::cout << "  [MODIFICADORES] Ningun efecto activo.\n";
+        }
         //c->TickStatusEffects();
     }
 }
@@ -169,7 +261,9 @@ void Combat::EndCombat()
 {
     if (result == CombatResult::VICTORY)
     {
-        std::cout << "\n=== VICTORIA ===\n";
+        std::cout << "\n╔══════════════════════════════════════╗\n";
+        std::cout << "║              VICTORIA                ║\n";
+        std::cout << "╚══════════════════════════════════════╝\n";
 
         // Distribuir XP a los aliados vivos
         int totalXP = enemyParty->GetTotalXPReward();
@@ -193,7 +287,9 @@ void Combat::EndCombat()
     }
     else // DEFEAT
     {
-        std::cout << "\n=== GAME OVER ===\n";
+        std::cout << "\n╔══════════════════════════════════════╗\n";
+        std::cout << "║              GAME OVER               ║\n";
+        std::cout << "╚══════════════════════════════════════╝\n";
         // go to the main map scene
         // p.ej: GameManager::GetInstance().LoadScene(SceneID::MAIN_MAP);
     }
@@ -279,9 +375,14 @@ void Combat::EnemyTurn()
 //  EXECUTE SKILL
 void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 {
+    int targetHpBefore = target->GetCurrentHP();
+
     // Aplica el efecto de la habilidad (daño, heal, status…)
-    // La lógica concreta vive en Skill::Apply() o similar
+    // La lógica concreta esta en Skill::Apply() o similar
     skill.Use(user, target);
+
+    int targetHpAfter = target->GetCurrentHP();
+    int damageDone = targetHpBefore - targetHpAfter;
 
     // Restar el coste de iniciativa al usuario
     user->AddInitiative(-(skill.GetInitiativeCost()));
@@ -289,6 +390,44 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
     std::cout << user->GetName() << " usa " << skill.GetName()
         << " -> " << target->GetName()
         << "  | Iniciativa restante: " << user->GetCurrentInitiative() << "\n";
+
+    //-----------------debug-----------------
+    if (damageDone > 0)
+    {
+        std::cout << "    Daño: " << damageDone
+            << " | HP " << target->GetName() << ": "
+            << targetHpBefore << " -> " << targetHpAfter;
+
+        if (!target->GetIsAlive())
+        {
+            std::cout << "  [MUERTO]";
+        }
+
+        std::cout << "\n";
+    }
+    else if (damageDone < 0)
+    {
+        std::cout << "    Curación: " << (-damageDone)
+            << " | HP " << target->GetName() << ": "
+            << targetHpBefore << " -> " << targetHpAfter << "\n";
+    }
+
+    // Estado de efectos del target tras el ataque
+    if (target->IsBurning())
+    {
+        std::cout << "    " << target->GetName()
+            << " esta QUEMADO: " << target->GetBurnDamage() << " de daño/turno\n";
+    }
+
+    if (target->IsPoisoned())
+    {
+        std::cout << "    " << target->GetName()
+            << " esta ENVENENADO: " << target->GetPoisonDamage() << " de daño/turno\n";
+    }
+
+    std::cout << "    Iniciativa restante de " << user->GetName()
+        << ": " << user->GetCurrentInitiative() << "\n";
+    //------------------------------
 }
 
 //  HELPERS
@@ -331,7 +470,9 @@ std::vector<Character*> Combat::GetAliveMembers(Party* party)
     for (Character* c : party->GetMembers())
     {
         if (c->GetIsAlive())
+        {
             alive.push_back(c);
+        }
     }
     return alive;
 }

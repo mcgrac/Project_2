@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<character name="Raptor">
+
+    <stats
+        health="120"
+        maxHealth="120"
+        power="25"
+        durability="5"
+        maxDurability="5"
+        speed="25"
+        lifesteal="0"
+        healingPower="10"
+        poisonPower="0"
+        firePower="0"
+        maxInitiative="300"
+    />
+
+    <levelScaling
+        maxHealth="2"
+        power="7"
+        speed="5"
+    />
+
+    <skills>
+        <skill id="raptor_slam"   initiativeCost="100" />
+        <skill id="raptor_charge" initiativeCost="100" />
+    </skills>
+
+</character>

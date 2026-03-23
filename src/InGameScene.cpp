@@ -1,4 +1,5 @@
 #include "InGameScene.h"
+#include "CombatScene.h"
 #include "CharacterFactory.h"
 #include "Character.h"
 #include "Scene.h"
@@ -52,6 +53,14 @@ void InGameScene::Load()
         c->PrintDebugInfo();
     }
 
+    //buttons creation
+    // Botón de iniciar combate
+    SDL_Rect combatBtnBounds = { 20, 20, 160, 40 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
+    );
+
     //load world
     worldMap.LoadWorld("Assets/Maps/world.xml");
 
@@ -61,15 +70,15 @@ void InGameScene::Load()
 
 void InGameScene::Update(float dt)
 {
+    //render textures
+    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+
     worldMap.Update(dt);
+    worldMap.PostUpdate(dt);
 }
 
 void InGameScene::PostUpdate(float dt)
 {
-    //render textures
-    Engine::GetInstance().render->DrawTexture(background, 0, 0);
-
-    worldMap.PostUpdate(dt);
 
 }
 
@@ -94,6 +103,11 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
     switch (uiElement->id)
     {
     // Add buttons in game
+    case 1:
+        LOG("InGameScene: iniciando combate...");
+        // PushScene — InGameScene queda suspendida con todo su estado
+        Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty));
+        break;
     default:
         break;
     }
