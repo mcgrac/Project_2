@@ -29,28 +29,35 @@ void MainMenuScene::Load()
     // SDL_Rect btPos = { 520, 350, 120, 20 };
     // Engine::GetInstance().uiManager->CreateUIElement(...);
 
-    // La lambda captura 'this' (MainMenuScene) y llama a OnUIMouseClickEvent.
-    // UIElement no sabe nada de Module ni de BaseScene — solo guarda la función.
-    SDL_Rect btPos1 = { 520, 350, 120, 20 };
-    Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 1, "Nueva Partida", btPos1,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
-    );
-
-    SDL_Rect btPos2 = { 520, 300, 120, 20 };
-    Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 2, "Options", btPos2,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
-    );
-
-    SDL_Rect btPos3 = { 520, 400, 120, 20 };
-    Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 3, "Change fullscreen", btPos3,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
-    );
-
     //textures
     LoadTextures();
+
+    //Play button
+    SDL_Rect btPos1 = { 520, 200, 308, 119 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 1, "", btPos1,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+        {}, spritesheet, 0
+    );
+
+    //continue
+    SDL_Rect btPos2 = { 520, 350, 308, 119 };
+    auto continueBtn = Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 2, "", btPos2,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+        {}, spritesheet, 1
+    );
+    continueBtn->state = UIElementState::DISABLED;
+
+    //options (change fullscreen por ahora)
+    SDL_Rect btPos3 = { 520, 500, 308, 119 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 3, "", btPos3,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+        {}, spritesheet, 2
+    );
+
+
 }
 
 void MainMenuScene::Update(float dt)
@@ -74,12 +81,21 @@ void MainMenuScene::Unload()
 void MainMenuScene::LoadTextures()
 {
     background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/StartScreenBackground.png");
+    if (background) {
+        LOG("Background buttons loaded succesfully");
+    }
+
+    spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/UI/buttons.png");
+    if (spritesheet) {
+        LOG("Spritehseet buttons loaded succesfully");
+    }
 
 }
 
 void MainMenuScene::UnloadTextures()
 {
     Engine::GetInstance().textures->UnLoad(background);
+    Engine::GetInstance().textures->UnLoad(spritesheet);
 }
 
 void MainMenuScene::Draw(float dt)
