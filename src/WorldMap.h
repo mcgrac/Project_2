@@ -15,8 +15,6 @@ private:
 	SDL_Texture* background = nullptr;
 	int islandsVisited;
 	bool firstIslandSelected;
-	int shipTargetX, shipTargetY;
-	//create a list or node tree of islands
 	bool traveling = false;
 	Ship* ship = nullptr;
 public:

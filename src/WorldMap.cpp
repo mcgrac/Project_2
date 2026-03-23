@@ -36,45 +36,51 @@ void WorldMap::UpdateWorld() {
 	//ckeck for enter key and tab key
 	if (!traveling) {
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN) {//when pressing tab change island
+			cout << "Changed selected island" << endl;
 			firstIslandSelected = !firstIslandSelected;
 		}
 
 		if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN && actualIsland->getVisited()) { //only if the island is visited when pressing enter you will be able to travel to the next
 			//travel to selected island
 			traveling = true;
+			cout << "traveling true" << endl;
 			if (actualIsland->getNextSize() == 2) {
 				if (firstIslandSelected) {
 					//travel to island 0
-					actualIsland = actualIsland->getIslandIndex(0);
-					targetx = firstIsldPosX + 150; //avall
+					//actualIsland = actualIsland->getIslandIndex(0);
+					targetx = firstIsldPosX + 150; //amunt
 					targety = firstIsldPosY - 150;
+					cout << "selected botom island" << endl;
 				}
 				else {
 					//travel to island 1
-					actualIsland = actualIsland->getIslandIndex(1);
-					//target = { firstIsldPosX + 150, firstIsldPosY + 150 };//amunt
+					//actualIsland = actualIsland->getIslandIndex(1);
+					//avall
 					targetx = firstIsldPosX + 150; 
 					targety = firstIsldPosY + 150;
+					cout << "selected botom island" << endl;
 				}
 			}
 			else {//the list has 1 member
 				//travel to islnd 0
-				actualIsland = actualIsland->getIslandIndex(0);
-				//target = { firstIsldPosX + 150, firstIsldPosY };//recte
+				//actualIsland = actualIsland->getIslandIndex(0);
 				targetx = firstIsldPosX + 150;
 				targety = firstIsldPosY;
+				cout << "selected fornt island" << endl;
 			}
 		}
 	}
 	else {
 		//make the ship travel
 		//ckeck if the ship reached its destination, if it reached its destination -> travel = false
-		ship->moveShip(shipTargetX, shipTargetY);
+		//cout << "target position: " << targetx << ", " << targety << endl;
+		//cout << "ship position: " << ship->getPosX() << ", " << ship->getPosY() << endl;
+		ship->moveShip(targetx, targety);
 		
-		if (sqrt(pow((ship->getPosX() - shipTargetX), 2) + pow(ship->getPosY() - shipTargetY, 2)) < 25) {//funció per acabar
+		if (sqrt(pow((ship->getPosX() - targetx), 2) + pow(ship->getPosY() - targety, 2)) < 1) {//if distance to target is smaller than 1 it has reached its destination
 			if (actualIsland->getNextSize() == 2) {
 				if (firstIslandSelected) {
-					//travel to island 0
+					//travel to island 0 (focus in it)
 					actualIsland = actualIsland->getIslandIndex(0);
 				}
 				else {
@@ -86,6 +92,8 @@ void WorldMap::UpdateWorld() {
 				//travel to islnd 0
 				actualIsland = actualIsland->getIslandIndex(0);
 			}
+			ship->setPosition(50, 300);
+			traveling = false;
 		}
 	}
 	
@@ -143,11 +151,7 @@ void WorldMap::RenderDaughter(Island* islnd, SDL_Rect* pos, int level) {
 	
 
 	return;
-		
-
 }
-	
-	//draw squares for other islands
 
 void WorldMap::UnloadWorld() {
 	//to do
