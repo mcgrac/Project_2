@@ -8,6 +8,15 @@ Faction::~Faction() {
 		//unload texture
 	}
 }
+
+void Faction::LoadFaction() {
+	switch (name*) {
+	case: "lizard"
+		//load the lizards island texture to faction islandTexture
+		break;
+	}
+}
+
 void Faction::setTexture(SDL_Texture* txt) {
 	islandTexture = txt;
 }

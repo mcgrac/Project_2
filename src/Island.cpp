@@ -9,6 +9,18 @@ Island::~Island() {
 	//call the delete of daughter islands if they have any, then delete itself
 }
 
+void Island::loadIsland() {
+	faction->LoadFaction();
+}
+
+void Island::unloadIsland() {
+	for (int i = 0; i < getNextSize(); i++) {
+		getIslandIndex(i)->unloadIsland();
+	}
+	faction->LoadFaction();
+	delete this;
+}
+
 int Island::getNextSize() {
 	return nextIslands.size();
 }

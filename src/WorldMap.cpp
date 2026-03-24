@@ -160,6 +160,9 @@ void WorldMap::RenderDaughter(Island* islnd, SDL_Rect* pos, int level) {
 
 void WorldMap::UnloadWorld() {
 	//to do
+	//unload textures
+	Engine::GetInstance().textures->UnLoad(background);
+	first->unloadIsland();
 }
 bool WorldMap::Update(float dt) {
 	UpdateWorld();
