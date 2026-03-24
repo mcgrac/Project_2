@@ -14,3 +14,7 @@ void Faction::setTexture(SDL_Texture* txt) {
 void Faction::ChangeReputation(bool hostile) {
 	isHostile = hostile;
 }
+
+SDL_Texture* Faction::getTexture{
+	return islandTexture;
+}

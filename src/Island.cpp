@@ -34,3 +34,11 @@ void Island::setVisited(bool vis) {
 bool Island::getVisited() {
 	return visited;
 }
+
+Faction* Island::getFaction() {
+	return faction;
+}
+
+void Island::setFaction(Faction* fact) {
+	faction = fact;
+}

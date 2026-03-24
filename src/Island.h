@@ -23,5 +23,7 @@ public:
 	void AddNext(Island* island);
 	void setVisited(bool vis);
 	bool getVisited();
+	Faction* getFaction();
+	void setFaction(Faction* fact);
 };
 

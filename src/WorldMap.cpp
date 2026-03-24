@@ -19,7 +19,7 @@ WorldMap::~WorldMap() {
 
 void WorldMap::LoadWorld() {
 	//Load background texture
-	background = Engine::GetInstance().textures->Load("Assets/Textures/waterPlaceholder.jpg");
+	background = Engine::GetInstance().textures->Load("Assets/Textures/FinalBackgroundMap.png");
 	first = new Island;
 	actualIsland = first;
 	Island* islnd = new Island;
@@ -99,6 +99,10 @@ void WorldMap::UpdateWorld() {
 	
 }
 void WorldMap::RenderWorld() {
+	//render background
+	//Engine::GetInstance().render->DrawTexture(tileSet->texture, (int)mapCoord.getX(), (int)mapCoord.getY(), &tileRect);
+	Engine::GetInstance().render->DrawTexture(background, 0, 0);
+	//render islands
 	SDL_Rect pos = { firstIsldPosX, firstIsldPosY, 100, 100 };
 	RenderDaughter(actualIsland, &pos, 0);
 
@@ -125,6 +129,7 @@ void WorldMap::RenderWorld() {
 void WorldMap::RenderDaughter(Island* islnd, SDL_Rect* pos, int level) {
 	//draw actual island
 	Engine::GetInstance().render->DrawRectangle(*pos, 0, 255, 0, 255);
+	Engine::GetInstance().render->DrawTexture(islnd->getFaction()->getTexture(), pos->x, pos->y);
 	if (level < 2) {
 		SDL_Rect act;
 		switch (islnd->getNextSize()) {

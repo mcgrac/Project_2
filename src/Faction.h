@@ -15,6 +15,7 @@ public:
 	Faction(bool hostile);
 	~Faction();
 	void setTexture(SDL_Texture* txt);
+	SDL_Texture* getTexture();
 	void ChangeReputation(bool hostile);
 };
 
