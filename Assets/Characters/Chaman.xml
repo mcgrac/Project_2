@@ -6,7 +6,7 @@
         maxHealth="60"
         power="75"
         durability="0"
-        maxDurability="0"
+        maxDurability="40"
         speed="30"
         lifesteal="0"
         healingPower="0"

@@ -73,7 +73,6 @@ public:
 	void AddSkill(Skill skill);
 	void UseSkill(int index, Character* target);
 
-	void ModifyDurability(int amount);
 	void SetBurned(bool state, int damage, Character* attacker);
 	void SetPoisoned(bool state, int damage, Character* attacker);
 
@@ -86,7 +85,6 @@ public:
 	inline void TakeBurnDamage() { ReceiveMagicalDamage(burnedStatMod, nullptr); }
 
 	// Initiative (combat)
-	inline void AddInitiative(int amount) { initiative += amount; }
 	inline void ResetCurrentInitiative() { initiative = 0; }
 
 	// Position in the screen (start combat)
@@ -117,6 +115,8 @@ public:
 	inline void ModifySpeed(int amount) { speed += amount; }
 	inline void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
 	inline void ModifyHealingPower(int amount) { healingPower += amount; }
+	void ModifyDurability(int amount);
+	inline void AddInitiative(int amount) { initiative += amount; }
 #pragma endregion
 
 #pragma region TEST

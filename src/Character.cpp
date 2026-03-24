@@ -137,9 +137,9 @@ void Character::UseSkill(int index, Character* target)
 	{
 		Skill& skill = skills[index];
 
-		if (initiative >= skill.initiativeCost)
+		if (initiative >= skill.GetInitiativeCost())
 		{
-			initiative -= skill.initiativeCost;
+			initiative -= skill.GetInitiativeCost();
 			skill.Use(this, target);
 		}
 	}
@@ -153,30 +153,50 @@ void Character::ModifyDurability(int amount)
 void Character::SetBurned(bool state, int damage, Character* attacker)
 {
 	isBurned = state;
-	if (burnedStatMod > 0) { //if already burned
-		burnedStatMod += damage;
-	}
-	else {
-		burnedStatMod = damage;
-	}
 
-	if (burnedBy == nullptr) { //only save the pointer to the first character that burn
-		burnedBy == attacker;
+	if(isBurned) //if character burns
+	{
+		if (burnedStatMod > 0) { //if already burned
+			burnedStatMod += damage;
+		}
+		else {
+			burnedStatMod = damage;
+		}
+
+		burnedBy = attacker; //the one that takes the kill by burning is the last character that burn
+
+		//if (burnedBy == nullptr) { //only save the pointer to the first character that burn
+		//	burnedBy = attacker;
+		//}
+	}
+	else {//burning = false (clean burning effect)
+		burnedStatMod = 0;
+		burnedBy = nullptr;
 	}
 }
 
 void Character::SetPoisoned(bool state, int damage, Character* attacker)
 {
 	isPoisoned = state;
-	if (poisonStatMod > 0) { //if already poisoned
-		poisonStatMod += damage;
+
+	if(isPoisoned)
+	{
+		if (poisonStatMod > 0) { //if already poisoned
+			poisonStatMod += damage;
+		}
+		else {
+			poisonStatMod = damage;
+		}
+
+		poisonedBy = attacker; //the one that takes the kill by poisoning is the last character that poison
+
+		//if (poisonedBy == nullptr) { //only save the pointer to the first character that poison
+		//	poisonedBy = attacker;
+		//}
 	}
 	else {
-		poisonStatMod = damage;
-	}
-
-	if (poisonedBy == nullptr) { //only save the pointer to the first character that poison
-		poisonedBy == attacker;
+		poisonStatMod = 0;
+		poisonedBy = nullptr;
 	}
 }
 

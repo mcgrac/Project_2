@@ -393,57 +393,139 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 {
     int targetHpBefore = target->GetCurrentHP();
 
-    // Aplica el efecto de la habilidad (daño, heal, status…)
-    // La lógica concreta esta en Skill::Apply() o similar
-    skill.Use(user, target);
+    // Check if the ability need access to the whole party
+    if (skill. GetHasAreaEffect()) {
+        //if the effect is for all the party, choose between enemy or allied party
+        Party* targetParty = nullptr;
 
-    int targetHpAfter = target->GetCurrentHP();
-    int damageDone = targetHpBefore - targetHpAfter;
-
-    // Restar el coste de iniciativa al usuario
-    user->AddInitiative(-(skill.GetInitiativeCost()));
-
-    std::cout << user->GetName() << " usa " << skill.GetName()
-        << " -> " << target->GetName()
-        << "  | Iniciativa restante: " << user->GetCurrentInitiative() << "\n";
-
-    //-----------------debug-----------------
-    if (damageDone > 0)
-    {
-        std::cout << "    Daño: " << damageDone
-            << " | HP " << target->GetName() << ": "
-            << targetHpBefore << " -> " << targetHpAfter;
-
-        if (!target->GetIsAlive())
-        {
-            std::cout << "  [MUERTO]";
+        if (IsAllied(user)) { //caster is ally
+            if (skill.GetAreaEffectTargetAllies()) {
+                targetParty = alliedParty; //buffs to allied party
+            }
+            else {
+                targetParty = enemyParty; // attack to all enemy party
+            }
+        }
+        else { //caster is enemy
+            if (!skill.GetAreaEffectTargetAllies()) { //effect dont go to allies
+                targetParty = enemyParty; //buffs to the whole enemy party
+            }
+            else {
+                targetParty = alliedParty; //attack to the whole allied party
+            }
         }
 
-        std::cout << "\n";
-    }
-    else if (damageDone < 0)
-    {
-        std::cout << "    Curación: " << (-damageDone)
-            << " | HP " << target->GetName() << ": "
-            << targetHpBefore << " -> " << targetHpAfter << "\n";
-    }
+        std::cout << "  [AOE] " << user->GetName()
+            << " usa [" << skill.GetName()
+            << "] sobre todos los enemigos!\n";
 
-    // Estado de efectos del target tras el ataque
-    if (target->IsBurning())
-    {
-        std::cout << "    " << target->GetName()
-            << " esta QUEMADO: " << target->GetBurnDamage() << " de daño/turno\n";
-    }
+        for (Character* c : GetAliveMembers(targetParty)) {
 
-    if (target->IsPoisoned())
-    {
-        std::cout << "    " << target->GetName()
-            << " esta ENVENENADO: " << target->GetPoisonDamage() << " de daño/turno\n";
-    }
+            skill.Use(user, c);
 
-    std::cout << "    Iniciativa restante de " << user->GetName()
-        << ": " << user->GetCurrentInitiative() << "\n";
-    //------------------------------
+            int targetHpAfter = target->GetCurrentHP();
+            int damageDone = targetHpBefore - targetHpAfter;
+
+            std::cout << user->GetName() << " usa " << skill.GetName()
+                << " -> " << target->GetName() << "\n";
+
+            //-----------------debug-----------------
+            if (damageDone > 0)
+            {
+                std::cout << "    Daño: " << damageDone
+                    << " | HP " << target->GetName() << ": "
+                    << targetHpBefore << " -> " << targetHpAfter;
+
+                if (!target->GetIsAlive())
+                {
+                    std::cout << "  [MUERTO]";
+                }
+
+                std::cout << "\n";
+            }
+            else if (damageDone < 0)
+            {
+                std::cout << "    Curación: " << (-damageDone)
+                    << " | HP " << target->GetName() << ": "
+                    << targetHpBefore << " -> " << targetHpAfter << "\n";
+            }
+
+            // Estado de efectos del target tras el ataque
+            if (target->IsBurning())
+            {
+                std::cout << "    " << target->GetName()
+                    << " esta QUEMADO: " << target->GetBurnDamage() << " de daño/turno\n";
+            }
+
+            if (target->IsPoisoned())
+            {
+                std::cout << "    " << target->GetName()
+                    << " esta ENVENENADO: " << target->GetPoisonDamage() << " de daño/turno\n";
+            }
+
+            std::cout << "    Iniciativa restante de " << user->GetName()
+                << ": " << user->GetCurrentInitiative() << "\n";
+            //------------------------------
+        }
+
+        // Restar el coste de iniciativa al usuario
+        user->AddInitiative(-(skill.GetInitiativeCost()));
+        std::cout << "  | Iniciativa restante: " << user->GetCurrentInitiative() << "\n";
+    }
+    else {
+
+        //NO AREA EFFECT
+        skill.Use(user, target);
+
+        int targetHpAfter = target->GetCurrentHP();
+        int damageDone = targetHpBefore - targetHpAfter;
+
+        // Restar el coste de iniciativa al usuario
+        user->AddInitiative(-(skill.GetInitiativeCost()));
+
+        std::cout << user->GetName() << " usa " << skill.GetName()
+            << " -> " << target->GetName()
+            << "  | Iniciativa restante: " << user->GetCurrentInitiative() << "\n";
+
+        //-----------------debug-----------------
+        if (damageDone > 0)
+        {
+            std::cout << "    Daño: " << damageDone
+                << " | HP " << target->GetName() << ": "
+                << targetHpBefore << " -> " << targetHpAfter;
+
+            if (!target->GetIsAlive())
+            {
+                std::cout << "  [MUERTO]";
+            }
+
+            std::cout << "\n";
+        }
+        else if (damageDone < 0)
+        {
+            std::cout << "    Curación: " << (-damageDone)
+                << " | HP " << target->GetName() << ": "
+                << targetHpBefore << " -> " << targetHpAfter << "\n";
+        }
+
+        // Estado de efectos del target tras el ataque
+        if (target->IsBurning())
+        {
+            std::cout << "    " << target->GetName()
+                << " esta QUEMADO: " << target->GetBurnDamage() << " de daño/turno\n";
+        }
+
+        if (target->IsPoisoned())
+        {
+            std::cout << "    " << target->GetName()
+                << " esta ENVENENADO: " << target->GetPoisonDamage() << " de daño/turno\n";
+        }
+
+        std::cout << "    Iniciativa restante de " << user->GetName()
+            << ": " << user->GetCurrentInitiative() << "\n";
+        //------------------------------
+    }
+    
 }
 
 //  HELPERS

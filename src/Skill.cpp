@@ -2,7 +2,9 @@
 #include "Character.h"
 
 Skill::Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost)
-    : name(_name), damageType(_type), baseDamage(_baseDamage), powerMultiplier(_multiplier), initiativeCost(_initiativeCost)
+    : name(_name), damageType(_type), baseDamage(_baseDamage), 
+    powerMultiplier(_multiplier), initiativeCost(_initiativeCost),
+    hasAreaEffect(false), areaEffectTargetAllies(false)
 {}
 
 Skill::~Skill()

@@ -34,7 +34,7 @@ SkillRegistry::SkillRegistry()
 #pragma region MARKUS
     Register("red_dance", [](int cost)
         {
-            Skill s("Red Dance", DamageType::Magical, 10, 0.25f, cost);
+            Skill s("Red Dance", DamageType::Magical, 10, 0.15f, cost);
             s.AddEffect({
                 "Inflict 10 Fire",
                 [](Character* caster, Character* target) {
@@ -44,28 +44,39 @@ SkillRegistry::SkillRegistry()
             return s;
         });
 
+    //incomplete
     Register("divine_light", [](int cost) {
-        Skill s("Divine Light", DamageType::Magical, 0, 0.5f, cost);
+        Skill s("Divine Light", DamageType::Magical, 15, 0.2f, cost);
         s.AddEffect({
             "Heal ally or damage enemy",
             [](Character* caster, Character* target) {
-                target->Heal((int)(caster->GetPower() * 0.5f));
+                //target->Heal((int)(caster->GetPower() * 0.3f));
             }
             });
         return s;
         });
 
     Register("laser_upward", [](int cost) {
-        Skill s("Laser Upward", DamageType::Magical, 15, 0.2f, cost);
+        Skill s("Laser Upward", DamageType::Magical, 0, 0.0f, cost);
+        s.SetHasAreaEffect(true);
+        s.SetAreaEffectTargetAllies(true);
+        s.AddEffect({
+            "Increate base team power by 20",
+            [](Character* caster, Character* attacker) {
+                caster->ModifyPower(20);
+            }
+            });
         return s;
         });
 
     Register("ascend", [](int cost) {
         Skill s("Ascend", DamageType::None, 0, 0.0f, cost);
+        s.SetHasAreaEffect(true);
+        s.SetAreaEffectTargetAllies(false);
         s.AddEffect({
-            "Buff team PhysDmg",
+            "Burn all enemies for 5 and reduce durability by 5 (+50% FireMod)",
             [](Character* caster, Character* target) {
-                // aplicar cuando la logica de equipo este lista
+                target->SetBurned(true, 5, caster);
             }
             });
         return s;
@@ -74,9 +85,11 @@ SkillRegistry::SkillRegistry()
     Register("healing_halo", [](int cost) {
         Skill s("Healing Halo", DamageType::None, 0, 0.0f, cost);
         s.AddEffect({
-            "Heal all allies over time",
+            "Heal and clean poison effect and burn effect to an ally",
             [](Character* caster, Character* target) {
-                target->Heal((int)(caster->GetPower() * 0.3f));
+                target->Heal((int)(caster->GetPower() * 0.15f));
+                target->SetBurned(false, 0, caster);
+                target->SetPoisoned(false, 0, caster);
             }
             });
         return s;
@@ -87,10 +100,13 @@ SkillRegistry::SkillRegistry()
 
     Register("encourage", [](int cost) {
         Skill s("Encourage", DamageType::None, 0, 0.0f, cost);
+        s.SetHasAreaEffect(true);
+        s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
             "Grant your team 5 Durability and 10 Initiative",
             [](Character* caster, Character* target) {
-                // aplicar cuando la logica de equipo este lista
+                target->ModifyDurability(5);
+                target->AddInitiative(10);
             }
             });
         return s;
@@ -98,10 +114,13 @@ SkillRegistry::SkillRegistry()
 
     Register("battle_fury", [](int cost) {
         Skill s("Battle Fury", DamageType::Magical, 0, 0.5f, cost);
+        s.SetHasAreaEffect(true);
+        s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
-            "Grant your team 5% Power and Speed",
+            "Grant your team 5% more Power and Speed",
             [](Character* caster, Character* target) {
-                // aplicar cuando la logica de equipo este lista
+                target->ModifyPower(target->GetPower() * 0.05f);
+                target->ModifySpeed(target->GetSpeed() * 0.05f);
             }
             });
         return s;
@@ -119,6 +138,7 @@ SkillRegistry::SkillRegistry()
         return s;
         });
 
+    //probolema deal x + durability
     Register("shield_bash", [](int cost) {
         Skill s("Shield Bash", DamageType::Physical, 5, 0.0f, cost);
         s.AddEffect({
@@ -133,11 +153,11 @@ SkillRegistry::SkillRegistry()
     Register("double_blade", [](int cost) {
         Skill s("Double Blade", DamageType::Physical, 10, 0.25f, cost);
         s.AddEffect({
-            "Inflict 0(+FireMod) Fire",
+            "Inflict 10 fire",
             [](Character* caster, Character* target) {
                 if ((int)caster->GetFirePower() > 0)
                 {
-                    target->SetBurned(true, (int)caster->GetFirePower(), caster);
+                    target->SetBurned(true, 10, caster);
                 }
             }
             });
@@ -152,7 +172,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Inflict 5 Fire",
             [](Character* caster, Character* target) {
-                target->SetBurned(true, 5, caster);
+                target->SetBurned(true, 3, caster);
             }
             });
         return s;
@@ -175,7 +195,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Inflict 10 poison",
             [](Character* caster, Character* target) {
-                target->SetPoisoned(true, 10, caster);
+                target->SetPoisoned(true, 8, caster);
             }
             });
         return s;
@@ -187,6 +207,7 @@ SkillRegistry::SkillRegistry()
             "Waste all Initiative and gain 50% of it as Power",
             [](Character* caster, Character* target) {
                 caster->ModifyPower((int)(caster->GetCurrentInitiative() * 0.5f));
+                caster->ResetCurrentInitiative();
             }
             });
         return s;
@@ -212,7 +233,7 @@ SkillRegistry::SkillRegistry()
 
 #pragma region RAPTOR
 
-// Slam: Deal 30(+10%Power) physical damage and heal 10(+20%Power)
+    // Slam: Deal 30(+10%Power) physical damage and heal 10(+20%Power)
     Register("raptor_slam", [](int cost) {
         Skill s("Slam", DamageType::Physical, 30, 0.1f, cost);
         s.AddEffect({
