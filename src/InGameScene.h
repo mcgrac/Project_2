@@ -39,4 +39,5 @@ private:
 
     //textures
     SDL_Texture* background;
+    SDL_Texture* spritesheet;
 };

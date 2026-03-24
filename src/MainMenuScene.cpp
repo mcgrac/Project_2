@@ -11,7 +11,7 @@
 #include "Textures.h"
 
 
-MainMenuScene::MainMenuScene() : background(nullptr)
+MainMenuScene::MainMenuScene() : background(nullptr), spritesheet(nullptr)
 {
     state = State::DEFAULT;
 }
@@ -33,7 +33,7 @@ void MainMenuScene::Load()
     LoadTextures();
 
     //Play button
-    SDL_Rect btPos1 = { 520, 200, 308, 119 };
+    SDL_Rect btPos1 = { 520, 200, 154, 60 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "", btPos1,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
@@ -41,7 +41,7 @@ void MainMenuScene::Load()
     );
 
     //continue
-    SDL_Rect btPos2 = { 520, 350, 308, 119 };
+    SDL_Rect btPos2 = { 520, 350, 154, 60 };
     auto continueBtn = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 2, "", btPos2,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
@@ -50,7 +50,7 @@ void MainMenuScene::Load()
     continueBtn->state = UIElementState::DISABLED;
 
     //options (change fullscreen por ahora)
-    SDL_Rect btPos3 = { 520, 500, 308, 119 };
+    SDL_Rect btPos3 = { 520, 500, 154, 60 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 3, "", btPos3,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
@@ -85,7 +85,7 @@ void MainMenuScene::LoadTextures()
         LOG("Background buttons loaded succesfully");
     }
 
-    spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/UI/buttons.png");
+    spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/UI/buttons2.png");
     if (spritesheet) {
         LOG("Spritehseet buttons loaded succesfully");
     }

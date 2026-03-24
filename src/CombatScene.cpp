@@ -4,12 +4,15 @@
 #include "Scene.h"
 #include "Engine.h"
 #include "Log.h"
+#include "Textures.h"
+#include "Render.h"
 
 CombatScene::CombatScene(Party* _allied)
     : alliedParty(_allied)
     , enemyParty(nullptr)
     , combat(nullptr)
     , combatFinished(false)
+    , background(nullptr)
 {
 }
 
@@ -23,6 +26,8 @@ void CombatScene::Load()
     LOG("CombatScene: cargando...");
     CreateEnemyParty();
 
+    LoadTextures();
+
     // ---------Testing------------
     for (Character* c : enemyParty->GetMembers())
     {
@@ -35,15 +40,18 @@ void CombatScene::Load()
 
 void CombatScene::Update(float dt)
 {
-    if (combatFinished) return;
+    //if (combatFinished) return;
 
     // Por ahora Combat::Run() gestiona su propio bucle completo.
-    // Cuando integres render frame a frame, aquí llamarás a Combat::Tick(dt).
-    combat->Run();
-    combatFinished = true;
+    combat->Run(background);
+    //combatFinished = true;
+    LOG("Update combat scene");
 
     // Al acabar el combate volvemos a InGameScene (que quedó suspendida)
-    Engine::GetInstance().scene->PopScene();
+    if(!combat->GetRunningCombat())
+    {
+        Engine::GetInstance().scene->PopScene();
+    }
 }
 
 void CombatScene::PostUpdate(float dt) 
@@ -54,6 +62,8 @@ void CombatScene::PostUpdate(float dt)
 void CombatScene::Unload()
 {
     LOG("CombatScene: descargando...");
+    //textures
+    Engine::GetInstance().textures->UnLoad(background);
 
     delete combat;
     combat = nullptr;
@@ -63,6 +73,7 @@ void CombatScene::Unload()
 
 void CombatScene::LoadTextures()
 {
+    background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/BattleBackground.png");
 }
 
 bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)

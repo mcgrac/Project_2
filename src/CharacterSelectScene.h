@@ -10,12 +10,14 @@ struct SelectableCharacter
 {
     std::string name;       // identificador — el mismo que usa CharacterFactory
     std::string label;      // nombre visible en pantalla
-    SDL_Rect    bounds;     // área clickable
-    bool        selected;
+    SDL_Rect bounds;     // área clickable
+    bool selected;
 
     SelectableCharacter(const std::string& _name, const std::string& _label, SDL_Rect _bounds)
         : name(_name), label(_label), bounds(_bounds), selected(false) {}
 };
+
+struct SDL_Texture;
 
 class CharacterSelectScene : public BaseScene
 {
@@ -52,6 +54,5 @@ private:
     // Lanza InGameScene con los 3 seleccionados
     void ConfirmSelection();
 
-    // ID del botón de confirmar
-    static constexpr int CONFIRM_BUTTON_ID = 1;
+    SDL_Texture* spritesheet;
 };

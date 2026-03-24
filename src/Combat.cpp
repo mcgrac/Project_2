@@ -9,6 +9,12 @@
 #include <limits>
 #include <random>
 
+#include "Engine.h"
+#include "Render.h"
+#include "Textures.h"
+
+#include "Log.h"
+
 //  Posiciones predefinidas en pantalla
 //  0-2: aliados (izquierda)  |  3-5: enemigos (derecha)
 const Vector2D Combat::defaultPositions[6] = {
@@ -26,14 +32,20 @@ Combat::Combat(Party* allied, Party* enemy)
     , state(CombatState::START_COMBAT)
     , result(CombatResult::NONE)
     , currentActor(nullptr)
+    , runningCombat(true)
 {
 }
 
 //  Run() — bucle principal del combate
-void Combat::Run()
+void Combat::Run(SDL_Texture* background)
 {
-    while (state != CombatState::END_COMBAT)
+    //render combat texture
+    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+
+    while (runningCombat)
     {
+
+
         switch (state)
         {
         case CombatState::START_COMBAT:
@@ -71,9 +83,9 @@ void Combat::Run()
 //  START_COMBAT
 void Combat::StartCombat()
 {
-    std::cout << "\n╔══════════════════════════════════════╗\n";
-    std::cout << "║          COMBATE INICIADO            ║\n";
-    std::cout << "╚══════════════════════════════════════╝\n";
+    std::cout << "\n════════════════════=═════════════════\n";
+    std::cout << "          COMBATE INICIADO            \n";
+    std::cout << "══════════════════════════════════════\n";
 
 
     //----------------debug--------------
@@ -154,12 +166,12 @@ void Combat::Attack()
 {
     if (currentActor == nullptr) return;
 
-    std::cout << "\n┌──────────────────────────────────────┐\n";
+    std::cout << "\n──────────────────────────────────────\n";
     std::cout << "│ TURNO DE: " << currentActor->GetName() << "\n";
     std::cout << "│ HP: " << currentActor->GetCurrentHP()
         << " | Iniciativa: " << currentActor->GetCurrentInitiative()
         << " | Power: " << currentActor->GetPower() << "\n";
-    std::cout << "└──────────────────────────────────────┘\n";
+    std::cout << "──────────────────────────────────────\n";
 
     if (IsAllied(currentActor))
     {
@@ -243,11 +255,13 @@ void Combat::CheckDefeat()
     {
         result = CombatResult::VICTORY;
         state = CombatState::END_COMBAT;
+        LOG("|Victory|");
     }
     else if (IsPartyDefeated(alliedParty))
     {
         result = CombatResult::DEFEAT;
         state = CombatState::END_COMBAT;
+        LOG("|Defeat|");
     }
     else
     {
@@ -261,9 +275,9 @@ void Combat::EndCombat()
 {
     if (result == CombatResult::VICTORY)
     {
-        std::cout << "\n╔══════════════════════════════════════╗\n";
-        std::cout << "║              VICTORIA                ║\n";
-        std::cout << "╚══════════════════════════════════════╝\n";
+        std::cout << "\n══════════════════════════════════════\n";
+        std::cout << "              VICTORIA                \n";
+        std::cout << "══════════════════════════════════════\n";
 
         // Distribuir XP a los aliados vivos
         int totalXP = enemyParty->GetTotalXPReward();
@@ -287,12 +301,14 @@ void Combat::EndCombat()
     }
     else // DEFEAT
     {
-        std::cout << "\n╔══════════════════════════════════════╗\n";
-        std::cout << "║              GAME OVER               ║\n";
-        std::cout << "╚══════════════════════════════════════╝\n";
+        std::cout << "\n══════════════════════════════════════\n";
+        std::cout << "              GAME OVER               \n";
+        std::cout << "══════════════════════════════════════\n";
         // go to the main map scene
         // p.ej: GameManager::GetInstance().LoadScene(SceneID::MAIN_MAP);
     }
+
+    runningCombat = false;
 }
 
 //  PLAYER TURN

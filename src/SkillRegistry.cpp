@@ -38,7 +38,7 @@ SkillRegistry::SkillRegistry()
             s.AddEffect({
                 "Inflict 10 Fire",
                 [](Character* caster, Character* target) {
-                    target->SetBurned(true, 10);
+                    target->SetBurned(true, 10, caster);
                 }
                 });
             return s;
@@ -137,7 +137,7 @@ SkillRegistry::SkillRegistry()
             [](Character* caster, Character* target) {
                 if ((int)caster->GetFirePower() > 0)
                 {
-                    target->SetBurned(true, (int)caster->GetFirePower());
+                    target->SetBurned(true, (int)caster->GetFirePower(), caster);
                 }
             }
             });
@@ -152,7 +152,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Inflict 5 Fire",
             [](Character* caster, Character* target) {
-                target->SetBurned(true, 5);
+                target->SetBurned(true, 5, caster);
             }
             });
         return s;
@@ -175,7 +175,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Inflict 10 poison",
             [](Character* caster, Character* target) {
-                target->SetPoisoned(true, 10);
+                target->SetPoisoned(true, 10, caster);
             }
             });
         return s;
@@ -199,7 +199,7 @@ SkillRegistry::SkillRegistry()
             [](Character* caster, Character* target) {
                 int bonusDmg = (int)((1 + caster->GetPower() * 0.1f) * target->GetBurnDamage());
                 target->ReceivePhysicalDamage(bonusDmg, caster);
-                target->SetBurned(false, 0);
+                target->SetBurned(false, 0, caster);
             }
             });
         return s;
@@ -267,8 +267,8 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Inflict 15 Fire and 15 Poison",
             [](Character* caster, Character* target) {
-                target->SetBurned(true, 15);
-                target->SetPoisoned(true, 15);
+                target->SetBurned(true, 15, caster);
+                target->SetPoisoned(true, 15, caster);
             }
             });
         return s;

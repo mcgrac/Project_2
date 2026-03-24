@@ -8,6 +8,5 @@ public:
     ~Gerbera();
 
 private:
-    void InitSkills();
     void InitUpgradeTree();
 };

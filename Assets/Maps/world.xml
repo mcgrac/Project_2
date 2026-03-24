@@ -2,7 +2,7 @@
 <world>
     <island id="0" name="Puerto Inicio" type="friendly" x="100" y="300"/>
     <island id="1" name="Isla Coral"    type="hostile" x="300" y="300"/>
-    <island id="2" name="Isla Calavera" type="friendly"  x="500" y="300"/>
+    <island id="2" name="Isla Calavera" type="friendly" x="500" y="300"/>
     <island id="3" name="Isla Pirata"   type="hostile" x="700" y="400"/>
 	<island id="4" name="Isla Rayo"     type="friendly" x="700" y="600"/>
 	<island id="5" name="Isla Final"    type="hostile" x="900" y="500"/>

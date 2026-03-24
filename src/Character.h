@@ -45,6 +45,8 @@ protected:
 	SDL_Texture* texture = nullptr;
 	std::vector<Skill> skills;
 	Character* killedBy = nullptr; //to know which was the character that killed
+	Character* poisonedBy = nullptr; //to knwo if the character was dead by poisoning which was the character that posion
+	Character* burnedBy = nullptr; //to knwo if the character was dead by poisoning which was the character that posion
 	UpgradeTree* upgradeTree = nullptr;
 
 public:
@@ -72,8 +74,8 @@ public:
 	void UseSkill(int index, Character* target);
 
 	void ModifyDurability(int amount);
-	void SetBurned(bool state, int damage);
-	void SetPoisoned(bool state, int damage);
+	void SetBurned(bool state, int damage, Character* attacker);
+	void SetPoisoned(bool state, int damage, Character* attacker);
 
 	inline void SetKilledBy(Character* killer) { killedBy = killer; }
 

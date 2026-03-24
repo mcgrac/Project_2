@@ -29,5 +29,5 @@ private:
     State state;
 
     SDL_Texture* background;
-    SDL_Texture* spritesheet = nullptr;
+    SDL_Texture* spritesheet;
 };

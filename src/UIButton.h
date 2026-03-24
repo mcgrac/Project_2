@@ -46,8 +46,8 @@ private:
 
 	void DrawButton() const;
 
-	int buttonWidth = 308;
-	int buttonHeight = 119;
+	int buttonWidth = 154;
+	int buttonHeight = 60;
 
 	int buttonRowFocused = 0;
 	int buttonRowNormal = 1;

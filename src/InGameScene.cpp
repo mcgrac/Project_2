@@ -53,19 +53,20 @@ void InGameScene::Load()
         c->PrintDebugInfo();
     }
 
+    //load textures
+    LoadTextures();
+
     //buttons creation
-    // Botón de iniciar combate
-    SDL_Rect combatBtnBounds = { 20, 20, 160, 40 };
+    //Botón de iniciar combate
+    SDL_Rect combatBtnBounds = { 20, 20, 154, 60 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0
     );
 
     //load world
     worldMap.LoadWorld("Assets/Maps/world.xml");
 
-    //load textures
-    LoadTextures();
 }
 
 void InGameScene::Update(float dt)
@@ -96,6 +97,7 @@ void InGameScene::Unload()
 void InGameScene::LoadTextures(){
     //load background
     background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/IslandsScreen.png");
+    spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/UI/buttons2.png");
 }
 
 bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)

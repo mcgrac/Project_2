@@ -8,6 +8,5 @@ public:
     ~Theresia();
 
 private:
-    void InitSkills();
     void InitUpgradeTree();
 };

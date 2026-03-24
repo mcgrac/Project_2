@@ -6,6 +6,8 @@
 #include "Input.h"
 #include "UIManager.h"
 #include "Log.h"
+#include "Render.h"
+#include "Textures.h"
 
 
 CharacterSelectScene::CharacterSelectScene()
@@ -27,10 +29,12 @@ void CharacterSelectScene::Load()
         c.selected = false;
     }
 
-    SDL_Rect confirmBounds = { 460, 540, 160, 40 };
+    LoadTextures();
+
+    SDL_Rect confirmBounds = { 460, 540, 154, 60 };
     Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, CONFIRM_BUTTON_ID, "Confirmar", confirmBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
+        UIElementType::BUTTON, 1, "Confirmar", confirmBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0
     );
 
 }
@@ -55,12 +59,16 @@ void CharacterSelectScene::PostUpdate(float dt) {
 
 void CharacterSelectScene::Unload()
 {
+    //textures
+    Engine::GetInstance().textures->UnLoad(spritesheet);
+
     Engine::GetInstance().uiManager->CleanUp();
     selectedNames.clear();
 }
 
 void CharacterSelectScene::LoadTextures(){
 
+    spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/UI/buttons2.png");
 }
 
 
@@ -68,7 +76,7 @@ bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
     switch (uiElement->id)
     {
-    case CONFIRM_BUTTON_ID:
+    case 1:
         if (HasFullTeam())
             ConfirmSelection();
         else

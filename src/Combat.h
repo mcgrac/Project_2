@@ -8,6 +8,7 @@ class Character;
 class Party;
 class Skill;
 
+struct SDL_Texture;
 
 enum class CombatState
 {
@@ -33,7 +34,9 @@ public:
     Combat(Party* allied, Party* enemy);
 
     // Whole combat cycle
-    void Run();
+    void Run(SDL_Texture* background);
+
+    inline bool GetRunningCombat() { return runningCombat; }
 
 private:
 
@@ -50,6 +53,8 @@ private:
     // Puedes cambiar el tipo a sf::Vector2f si usas SFML, etc.
     Vector2D position; 
     static const Vector2D defaultPositions[6];
+
+    bool runningCombat; //control
 
     // ─────────────────────────────────────────
     //  Fases del combate

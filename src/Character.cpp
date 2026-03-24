@@ -150,16 +150,34 @@ void Character::ModifyDurability(int amount)
 	durability = std::max(0, std::min(maxDurability, durability + amount));
 }
 
-void Character::SetBurned(bool state, int damage)
+void Character::SetBurned(bool state, int damage, Character* attacker)
 {
 	isBurned = state;
-	burnedStatMod = damage;
+	if (burnedStatMod > 0) { //if already burned
+		burnedStatMod += damage;
+	}
+	else {
+		burnedStatMod = damage;
+	}
+
+	if (burnedBy == nullptr) { //only save the pointer to the first character that burn
+		burnedBy == attacker;
+	}
 }
 
-void Character::SetPoisoned(bool state, int damage)
+void Character::SetPoisoned(bool state, int damage, Character* attacker)
 {
 	isPoisoned = state;
-	poisonStatMod = damage;
+	if (poisonStatMod > 0) { //if already poisoned
+		poisonStatMod += damage;
+	}
+	else {
+		poisonStatMod = damage;
+	}
+
+	if (poisonedBy == nullptr) { //only save the pointer to the first character that poison
+		poisonedBy == attacker;
+	}
 }
 
 void Character::ClearStatusEffects()

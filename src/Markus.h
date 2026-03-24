@@ -8,6 +8,5 @@ public:
     ~Markus();
 
 private:
-    void InitSkills();
     void InitUpgradeTree();
 };

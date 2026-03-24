@@ -3,6 +3,8 @@
 #include "Combat.h"
 #include "Party.h"
 
+struct SDL_Texture;
+
 class CombatScene : public BaseScene
 {
 public:
@@ -27,4 +29,6 @@ private:
 
     void CreateEnemyParty();
     void DestroyEnemyParty();
+
+    SDL_Texture* background;
 };
