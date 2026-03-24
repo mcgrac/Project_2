@@ -17,7 +17,7 @@ void Island::unloadIsland() {
 	for (int i = 0; i < getNextSize(); i++) {
 		getIslandIndex(i)->unloadIsland();
 	}
-	faction->LoadFaction();
+	//faction->LoadFaction();
 	delete this;
 }
 
