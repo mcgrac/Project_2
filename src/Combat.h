@@ -1,7 +1,9 @@
 ﻿#pragma once
 #include <vector>
 #include <string>
-#include"Vector2D.h"
+#include "Vector2D.h"
+#include "Character.h"
+#include <unordered_map>
 
 // Forward declarations
 class Character;
@@ -32,11 +34,14 @@ class Combat
 public:
 
     Combat(Party* allied, Party* enemy);
+    ~Combat();
 
     // Whole combat cycle
-    void Run(SDL_Texture* background);
+    void Run();
 
-    inline bool GetRunningCombat() { return runningCombat; }
+    bool CombatIsFinished() const;
+
+    std::unordered_map<Character*, Character::PreCombatValues> preCombatValues;
 
 private:
 

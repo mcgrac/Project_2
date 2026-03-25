@@ -208,6 +208,7 @@ void Character::ClearStatusEffects()
 	burnedStatMod = 0;
 }
 
+
 void Character::PrintDebugInfo(){
 	LOG("========================================");
 	LOG("CHARACTER: %s | Level %d", name.c_str(), level);

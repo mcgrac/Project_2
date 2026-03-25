@@ -50,6 +50,27 @@ protected:
 	UpgradeTree* upgradeTree = nullptr;
 
 public:
+	//PreCombatValues
+	struct PreCombatValues {
+		int _health;
+		bool _isAlive;
+	};
+
+	PreCombatValues TakePreCombatValues() const {
+
+		PreCombatValues snap;
+		snap._health = health;
+		snap._isAlive = isAlive;
+		return snap;
+	}
+
+	void RestorePreCombatValues(const PreCombatValues& snap) {
+		health = snap._health;
+		isAlive = snap._isAlive;
+		ClearStatusEffects();
+		ResetCurrentInitiative();
+
+	}
 
 	Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 		      int _maxInitiative, int _power, int _durability, int _maxDurability, 
@@ -86,6 +107,8 @@ public:
 
 	// Initiative (combat)
 	inline void ResetCurrentInitiative() { initiative = 0; }
+
+
 
 	// Position in the screen (start combat)
 	inline void SetPosition(float x, float y) { position.setX(x); position.setY(y); }

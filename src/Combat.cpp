@@ -1,6 +1,6 @@
 ﻿#include "Combat.h"
 
-#include "Character.h"
+//#include "Character.h"
 #include "Party.h"
 #include "Skill.h"
 
@@ -36,48 +36,60 @@ Combat::Combat(Party* allied, Party* enemy)
 {
 }
 
-//  Run() — bucle principal del combate
-void Combat::Run(SDL_Texture* background)
+Combat::~Combat()
 {
-    //render combat texture
-    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+}
 
-    while (runningCombat)
+
+void Combat::Run()
+{
+    if (!runningCombat) return;
+
+    switch (state)
     {
+    case CombatState::START_COMBAT:
+        StartCombat();
+        state = CombatState::CALCULATE_INITIATIVE;
+        break;
 
-
-        switch (state)
+    case CombatState::CALCULATE_INITIATIVE:
+        if (!CalculateInitiative())
         {
-        case CombatState::START_COMBAT:
-            StartCombat();
-            state = CombatState::CALCULATE_INITIATIVE;
-            break;
-
-        case CombatState::CALCULATE_INITIATIVE:
-            // Acumula ticks hasta que alguien supere 100
-            while (!CalculateInitiative()) { /* tick */ }
-            state = CombatState::ATTACK;
-            break;
-
-        case CombatState::ATTACK:
-            Attack();
-            state = CombatState::MODIFIERS;
-            break;
-
-        case CombatState::MODIFIERS:
-            ApplyModifiers();
-            state = CombatState::CHECK_DEFEAT;
-            break;
-
-        case CombatState::CHECK_DEFEAT:
-            CheckDefeat();
-            break;
-
-        case CombatState::END_COMBAT:
-            EndCombat();
-            break;
+            //dont do anything -> go to next frame
         }
+        else
+        {
+            state = CombatState::ATTACK;
+        }
+        break;
+
+    case CombatState::ATTACK:
+        Attack();
+        state = CombatState::MODIFIERS;
+        break;
+
+    case CombatState::MODIFIERS:
+        ApplyModifiers();
+        state = CombatState::CHECK_DEFEAT;
+        break;
+
+    case CombatState::CHECK_DEFEAT:
+        CheckDefeat();
+        break;
+
+    case CombatState::END_COMBAT:
+        EndCombat();
+        runningCombat = false;
+        break;
     }
+}
+
+bool Combat::CombatIsFinished() const
+{
+    bool b;
+    if (state == CombatState::END_COMBAT && !runningCombat) { b = true; }
+    else { b = false; }
+    return b;
 }
 
 //  START_COMBAT
@@ -108,6 +120,11 @@ void Combat::StartCombat()
     }
     std::cout << "\n";
     //---------------------------------------
+
+    //save previous states in combat
+    for (Character* c : alliedParty->GetMembers()) {
+        preCombatValues[c] = c->TakePreCombatValues();
+    }
 
     auto allCombatants = GetAllCombatants();
 
@@ -304,10 +321,18 @@ void Combat::EndCombat()
         std::cout << "\n══════════════════════════════════════\n";
         std::cout << "              GAME OVER               \n";
         std::cout << "══════════════════════════════════════\n";
-        // go to the main map scene
-        // p.ej: GameManager::GetInstance().LoadScene(SceneID::MAIN_MAP);
+
+        //reset allied party values
+        for (Character* c : alliedParty->GetMembers()) {
+            auto it = preCombatValues.find(c);
+            if (it != preCombatValues.end()) {
+                c->RestorePreCombatValues(it->second);
+            }
+        }
+        //add damage to the ship
     }
 
+    preCombatValues.clear();
     runningCombat = false;
 }
 
@@ -379,6 +404,7 @@ void Combat::EnemyTurn()
 
     // Target aliado vivo aleatorio
     auto aliveAllies = GetAliveMembers(alliedParty);
+    if (aliveAllies.empty()) return; //avoid crash if aliveAllies is empty
     std::uniform_int_distribution<int> targetDist(0, static_cast<int>(aliveAllies.size()) - 1);
     Character* target = aliveAllies[targetDist(rng)];
 
@@ -528,7 +554,7 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
     
 }
 
-//  HELPERS
+// HELPERS
 Character* Combat::GetHighestInitiativeActor()
 {
     Character* best = nullptr;
