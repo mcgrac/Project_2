@@ -17,6 +17,27 @@
     <Filter Include="Source Files\Game">
       <UniqueIdentifier>{eaf9226b-488a-4c6a-9d1a-2222fdb48e0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Characters">
+      <UniqueIdentifier>{1275508a-b4f4-4f67-b623-996b3943e913}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Scenes">
+      <UniqueIdentifier>{72913daf-c918-41e5-8ee1-26a6750e6ab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Characters\PlayableCharacters">
+      <UniqueIdentifier>{5cc8e41e-9690-4d06-96e0-06606a93a466}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Inventory">
+      <UniqueIdentifier>{a1c8e7a4-9711-4cb9-a64b-c9edf4345fbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Inventory\Items">
+      <UniqueIdentifier>{03cbf74f-7a00-4e64-8980-1e77789cf763}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Characters\Skills">
+      <UniqueIdentifier>{9ed3c9a5-e24e-44ba-9161-5f62f00e3ef3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Combat">
+      <UniqueIdentifier>{62364f96-e687-462e-8d9e-37ee74fbd537}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -57,9 +78,6 @@
     <ClCompile Include="src\Vector2D.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\Timer.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
@@ -77,9 +95,6 @@
     </ClCompile>
     <ClCompile Include="src\Physics.cpp">
       <Filter>Source Files\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Item.cpp">
-      <Filter>Source Files\Game</Filter>
     </ClCompile>
     <ClCompile Include="src\Pathfinding.cpp">
       <Filter>Source Files\Engine</Filter>
@@ -107,6 +122,56 @@
     </ClCompile>
     <ClCompile Include="src\Ship.cpp">
       <Filter>Source Files\Game</Filter>
+    <ClCompile Include="src\Character.cpp">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CharacterFactory.cpp">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CharacterSelectScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gerbera.cpp">
+      <Filter>Source Files\Game\Characters\PlayableCharacters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InGameScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MainMenuScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Markus.cpp">
+      <Filter>Source Files\Game\Characters\PlayableCharacters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Theresia.cpp">
+      <Filter>Source Files\Game\Characters\PlayableCharacters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Item.cpp">
+      <Filter>Source Files\Game\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Inventory.cpp">
+      <Filter>Source Files\Game\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Skill.cpp">
+      <Filter>Source Files\Game\Characters\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Upgrade.cpp">
+      <Filter>Source Files\Game\Characters\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UpgradeTier.cpp">
+      <Filter>Source Files\Game\Characters\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UpgradeTree.cpp">
+      <Filter>Source Files\Game\Characters\Skills</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Party.cpp">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Combat.cpp">
+      <Filter>Source Files\Game\Combat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,9 +202,6 @@
     <ClInclude Include="src\Vector2D.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\Timer.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
@@ -160,9 +222,6 @@
     </ClInclude>
     <ClInclude Include="src\Physics.h">
       <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Item.h">
-      <Filter>Source Files\Game</Filter>
     </ClInclude>
     <ClInclude Include="src\Pathfinding.h">
       <Filter>Source Files\Engine</Filter>
@@ -193,6 +252,62 @@
     </ClInclude>
     <ClInclude Include="src\Ship.h">
       <Filter>Source Files\Game</Filter>
+    <ClInclude Include="src\IUIObserver.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Character.h">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CharacterFactory.h">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BaseScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CharacterSelectScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gerbera.h">
+      <Filter>Source Files\Game\Characters\PlayableCharacters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InGameScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MainMenuScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Markus.h">
+      <Filter>Source Files\Game\Characters\PlayableCharacters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Theresia.h">
+      <Filter>Source Files\Game\Characters\PlayableCharacters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Item.h">
+      <Filter>Source Files\Game\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Inventory.h">
+      <Filter>Source Files\Game\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Skill.h">
+      <Filter>Source Files\Game\Characters\Skills</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Upgrade.h">
+      <Filter>Source Files\Game\Characters\Skills</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UpgradeTier.h">
+      <Filter>Source Files\Game\Characters\Skills</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UpgradeTree.h">
+      <Filter>Source Files\Game\Characters\Skills</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Party.h">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Combat.h">
+      <Filter>Source Files\Game\Combat</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
