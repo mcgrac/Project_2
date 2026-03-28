@@ -177,10 +177,10 @@ bool Audio::PlayMusic(const char* path, float fadeTime) {
     }
 
     // Queue once (simple play). For looping, requeue when drained (TODO).
-    if (!SDL_PutAudioStreamData(music_stream_, music_data_.buf, music_data_.len)) {
+    /*if (!SDL_PutAudioStreamData(music_stream_, music_data_.buf, music_data_.len)) {
         LOG("Audio: SDL_PutAudioStreamData(music) failed: %s", SDL_GetError());
         return false;
-    }
+    }*/
 
     LOG("Audio: playing music %s", path);
     return true;

@@ -9,6 +9,7 @@
 #include "Entity.h"
 #include "EntityManager.h"
 #include "Player.h"
+#include "WorldMap.h"
 #include "Map.h"
 #include "Item.h"
 #include "Enemy.h"
@@ -39,7 +40,7 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-	// Arranca en el menú principal
+	// Arranca en el menÃº principal
 	PushScene(new MainMenuScene());
 	return true;
 }

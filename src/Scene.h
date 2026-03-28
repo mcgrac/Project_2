@@ -45,6 +45,16 @@ public:
 	void ReplaceScene(BaseScene* scene);
 #pragma endregion
 
+	//defien functions for the worldmap scene
+	void LoadWorldMap();
+	void UpdateWorldMap(float dt);
+	void UnloadWorldMap();
+
+	//defien functions for the worldmap scene
+	void LoadCombat();
+	void UpdateCombat(float dt);
+	void UnloadCombat();
+
 private:
 
 	SDL_Texture* mouseTileTex = nullptr;

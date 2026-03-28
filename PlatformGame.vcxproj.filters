@@ -111,6 +111,17 @@
     <ClCompile Include="src\UIButton.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\WorldMap.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Island.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Faction.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ship.cpp">
+      <Filter>Source Files\Game</Filter>
     <ClCompile Include="src\Character.cpp">
       <Filter>Source Files\Game\Characters</Filter>
     </ClCompile>
@@ -230,6 +241,17 @@
     <ClInclude Include="src\UIElement.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\WorldMap.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Island.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Faction.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ship.h">
+      <Filter>Source Files\Game</Filter>
     <ClInclude Include="src\IUIObserver.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
