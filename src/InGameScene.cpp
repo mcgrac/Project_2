@@ -1,5 +1,6 @@
 #include "InGameScene.h"
 #include "CombatScene.h"
+#include "islandScene.h"
 #include "CharacterFactory.h"
 #include "Character.h"
 #include "Scene.h"
@@ -67,6 +68,11 @@ void InGameScene::Load()
     //load world
     worldMap.LoadWorld("Assets/Maps/world.xml");
 
+    //callback when the player arrives to an island->world map notify ingameScene
+    worldMap.arrivalIsland = [this](const Island& island) {
+        Engine::GetInstance().scene->PushScene(new IslandScene(island, &worldMap, alliedParty));
+    };
+
 }
 
 void InGameScene::Update(float dt)
@@ -85,6 +91,8 @@ void InGameScene::PostUpdate(float dt)
 
 void InGameScene::Unload()
 {
+    LOG("InGameScene::Unload LLAMADO — alliedParty: %p", alliedParty);
+
     //unload worldMap
     worldMap.UnloadWorld();
 

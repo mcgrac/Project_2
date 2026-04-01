@@ -126,13 +126,15 @@ Character* CharacterFactory::Create(const std::string& name)
         Upgrade optionA(
             nodeA.attribute("name").as_string(),
             nodeA.attribute("description").as_string(),
-            ParseUpgradeEffect(nodeA.attribute("effect").as_string())
+            ParseUpgradeEffects(nodeA.attribute("effect").as_string(),
+                                nodeA.attribute("effect2").as_string())
         );
 
         Upgrade optionB(
             nodeB.attribute("name").as_string(),
             nodeB.attribute("description").as_string(),
-            ParseUpgradeEffect(nodeB.attribute("effect").as_string())
+            ParseUpgradeEffects(nodeB.attribute("effect").as_string(),
+                                nodeB.attribute("effect2").as_string())
         );
 
         character->AddUpgradeTier(UpgradeTier(requiredLevel, optionA, optionB));
@@ -164,4 +166,16 @@ std::function<void(Character&)> CharacterFactory::ParseUpgradeEffect(const std::
 
     LOG("CharacterFactory: stat de upgrade no reconocida: '%s'", stat.c_str());
     return [](Character&) {};
+}
+
+std::function<void(Character&)> CharacterFactory::ParseUpgradeEffects(const std::string& effect1, const std::string& effect2)
+{
+    std::function<void(Character&)> fn1 = ParseUpgradeEffect(effect1);
+    std::function<void(Character&)> fn2 = ParseUpgradeEffect(effect2);
+
+    return [fn1, fn2](Character& c)
+    {
+            fn1(c);
+            fn2(c);
+    };
 }

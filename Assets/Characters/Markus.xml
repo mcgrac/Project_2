@@ -31,8 +31,8 @@
 
 	<upgradeTree>
 		<tier requiredLevel="5">
-			<optionA name="Deadlier Rays"  description="Power +15"       effect="power+15"      />
-			<optionB name="Vital Surge"   description="Max Health +20"  effect="maxHealth+20"  />
+			<optionA name="Deadlier Rays"  description="Power +20, Speed + 10"  effect1="power+20"  effect2="speed+10"    />
+			<optionB name="Morning Light"   description="Max Health +20"  effect="maxHealth+20"  />
 		</tier>
 		<tier requiredLevel="10">
 			<optionA name="Swift Cast"    description="Speed +8"        effect="speed+8"       />

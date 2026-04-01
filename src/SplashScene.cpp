@@ -78,7 +78,7 @@ void SplashScene::LoadTextures(){
 }
 
 void SplashScene::CheckTimer(){
-    if (timer >= 3000.0f) {
+    if (timer >= 1000.0f) {
         LOG("Chagne to main menu scene");
         Engine::GetInstance().scene->ReplaceScene(new MainMenuScene());
     }

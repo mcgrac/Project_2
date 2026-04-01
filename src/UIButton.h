@@ -10,7 +10,7 @@ class UIButton : public UIElement
 
 public:
 
-	UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _texture, int _spriteCol);
+	UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _texture, int _spriteCol, int _btnWidth, int _btnHeight);
 	virtual ~UIButton();
 
 	// Called each loop iteration
@@ -46,8 +46,8 @@ private:
 
 	void DrawButton() const;
 
-	int buttonWidth = 154;
-	int buttonHeight = 60;
+	int buttonWidth;
+	int buttonHeight;
 
 	int buttonRowFocused = 0;
 	int buttonRowNormal = 1;

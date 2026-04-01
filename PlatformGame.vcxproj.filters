@@ -17,6 +17,36 @@
     <Filter Include="Source Files\Game">
       <UniqueIdentifier>{eaf9226b-488a-4c6a-9d1a-2222fdb48e0d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Scenes">
+      <UniqueIdentifier>{e4a0dbd7-e85f-46a0-850a-b78b47d81df5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Characters">
+      <UniqueIdentifier>{62c91ac1-06e7-4274-972e-37ae84c0ce44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Characters\UpgradeTree">
+      <UniqueIdentifier>{e620868a-baab-432d-a5f7-7a13bc0a802d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Characters\SkillRegistry">
+      <UniqueIdentifier>{3b06b60b-5397-413b-8b61-45ad72e4c93f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\WorldMap">
+      <UniqueIdentifier>{b50415d6-2e20-4661-9feb-271c7e4e29fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\WorldMap\Islands">
+      <UniqueIdentifier>{21a6bf21-3352-4a64-b9e3-06147d6c8ee9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Characters\Inventory">
+      <UniqueIdentifier>{4896a01c-3850-4168-897b-9ea558863436}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\WorldMap\Islands\Buildings">
+      <UniqueIdentifier>{718a6068-72ac-4240-b10e-69d21455e546}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Characters\SpecificCharacters">
+      <UniqueIdentifier>{213ba31a-d60f-412d-86c3-8fd30cbd8628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\Combat">
+      <UniqueIdentifier>{75c83670-4032-427d-8839-3e069bf414fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -57,9 +87,6 @@
     <ClCompile Include="src\Vector2D.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\Timer.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
@@ -78,9 +105,6 @@
     <ClCompile Include="src\Physics.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\Item.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\Animation.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
@@ -90,65 +114,86 @@
     <ClCompile Include="src\UIButton.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\Character.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Inventory.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Skill.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UpgradeTree.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\UpgradeTier.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Upgrade.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Markus.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Combat.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Party.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\MainMenuScene.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
     <ClCompile Include="src\CharacterSelectScene.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\InGameScene.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Gerbera.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Theresia.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CharacterFactory.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SplashScene.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\WorldMap.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Island.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SkillRegistry.cpp">
-      <Filter>Source Files\Game</Filter>
+      <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="src\CombatScene.cpp">
-      <Filter>Source Files\Game</Filter>
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DockyardScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HostelScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InGameScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IslandInteriorScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IslandScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MainMenuScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShopScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SplashScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Upgrade.cpp">
+      <Filter>Source Files\Game\Characters\UpgradeTree</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UpgradeTier.cpp">
+      <Filter>Source Files\Game\Characters\UpgradeTree</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UpgradeTree.cpp">
+      <Filter>Source Files\Game\Characters\UpgradeTree</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Skill.cpp">
+      <Filter>Source Files\Game\Characters\SkillRegistry</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SkillRegistry.cpp">
+      <Filter>Source Files\Game\Characters\SkillRegistry</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WorldMap.cpp">
+      <Filter>Source Files\Game\WorldMap</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Island.cpp">
+      <Filter>Source Files\Game\WorldMap\Islands</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Inventory.cpp">
+      <Filter>Source Files\Game\Characters\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Item.cpp">
+      <Filter>Source Files\Game\Characters\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Party.cpp">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Character.cpp">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CharacterFactory.cpp">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gerbera.cpp">
+      <Filter>Source Files\Game\Characters\SpecificCharacters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Markus.cpp">
+      <Filter>Source Files\Game\Characters\SpecificCharacters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Theresia.cpp">
+      <Filter>Source Files\Game\Characters\SpecificCharacters</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Combat.cpp">
+      <Filter>Source Files\Game\Combat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,9 +224,6 @@
     <ClInclude Include="src\Vector2D.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\Timer.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
@@ -203,9 +245,6 @@
     <ClInclude Include="src\Physics.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Item.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\Animation.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
@@ -218,71 +257,101 @@
     <ClInclude Include="src\UIElement.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Character.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Inventory.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Skill.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UpgradeTree.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\UpgradeTier.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Upgrade.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Markus.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Combat.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Party.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\BaseScene.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\MainMenuScene.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="src\IUIObserver.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\BaseScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
     <ClInclude Include="src\CharacterSelectScene.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\InGameScene.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Gerbera.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Theresia.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CharacterFactory.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SplashScene.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\WorldMap.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Island.h">
-      <Filter>Source Files\Game</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SkillRegistry.h">
-      <Filter>Source Files\Game</Filter>
+      <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="src\CombatScene.h">
-      <Filter>Source Files\Game</Filter>
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DockyardScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HostelScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InGameScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IslandInteriorScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IslandScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MainMenuScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ShopScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SplashScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Upgrade.h">
+      <Filter>Source Files\Game\Characters\UpgradeTree</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UpgradeTier.h">
+      <Filter>Source Files\Game\Characters\UpgradeTree</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UpgradeTree.h">
+      <Filter>Source Files\Game\Characters\UpgradeTree</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Skill.h">
+      <Filter>Source Files\Game\Characters\SkillRegistry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SkillRegistry.h">
+      <Filter>Source Files\Game\Characters\SkillRegistry</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WorldMap.h">
+      <Filter>Source Files\Game\WorldMap</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Island.h">
+      <Filter>Source Files\Game\WorldMap\Islands</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Inventory.h">
+      <Filter>Source Files\Game\Characters\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Item.h">
+      <Filter>Source Files\Game\Characters\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hostel.h">
+      <Filter>Source Files\Game\WorldMap\Islands\Buildings</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dockyard.h">
+      <Filter>Source Files\Game\WorldMap\Islands\Buildings</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shop.h">
+      <Filter>Source Files\Game\WorldMap\Islands\Buildings</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Party.h">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Character.h">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CharacterFactory.h">
+      <Filter>Source Files\Game\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gerbera.h">
+      <Filter>Source Files\Game\Characters\SpecificCharacters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Markus.h">
+      <Filter>Source Files\Game\Characters\SpecificCharacters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Theresia.h">
+      <Filter>Source Files\Game\Characters\SpecificCharacters</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Combat.h">
+      <Filter>Source Files\Game\Combat</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

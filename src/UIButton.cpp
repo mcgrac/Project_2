@@ -4,9 +4,9 @@
 #include "Audio.h"
 #include "Log.h"
 
-UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _texture, int _spriteCol) :
+UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _texture, int _spriteCol, int _btnWidth, int _btnHeight) :
 	UIElement(UIElementType::BUTTON, id), spritesheet(_texture), spriteCol(_spriteCol), playingAnim(false),
-	animFrame(0), animTimer(0.0f), animFrameDuration(0.1f)
+	animFrame(0), animTimer(0.0f), animFrameDuration(0.1f), buttonHeight(_btnHeight), buttonWidth(_btnWidth)
 {
 	this->bounds = bounds;
 	this->text = text;
@@ -39,7 +39,10 @@ bool UIButton::Update(float dt)
 		//If the position of the mouse if inside the bounds of the button 
 		if (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w && mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) {
 
-			state = UIElementState::FOCUSED;
+			if(state != UIElementState::SELECTED)
+			{
+				state = UIElementState::FOCUSED;
+			}
 
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
 				state = UIElementState::PRESSED;
@@ -50,28 +53,11 @@ bool UIButton::Update(float dt)
 			}
 		}
 		else {
-			state = UIElementState::NORMAL;
+			if(state != UIElementState::SELECTED)
+			{
+				state = UIElementState::NORMAL;
+			}
 		}
-
-		//L16: TODO 4: Draw the button according the GuiControl State
-		//switch (state)
-		//{
-		//case UIElementState::DISABLED:
-		//	Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 255, true, false);
-		//	break;
-		//case UIElementState::NORMAL:
-		//	Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 255, 255, true, false);
-		//	break;
-		//case UIElementState::FOCUSED:
-		//	Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 20, 255, true, false);
-		//	break;
-		//case UIElementState::PRESSED:
-		//	Engine::GetInstance().render->DrawRectangle(bounds, 0, 255, 0, 255, true, false);
-		//	break;
-		//}
-
-		//Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h, {255,255,255,255});
-
 	}
 
 	DrawButton();
@@ -109,7 +95,10 @@ void UIButton::ResetTint() const
 
 void UIButton::DrawButton() const
 {
-	if (spritesheet == nullptr) return;
+	if (spritesheet == nullptr) 
+	{
+		return;
+	}
 
 	SDL_Rect frameRect;
 
@@ -128,6 +117,11 @@ void UIButton::DrawButton() const
 	{
 		frameRect = GetFrameRect(buttonRowFocused);
 		SetTint(200, 230, 255);     // tinte claro para pressed
+	}
+	else if (state == UIElementState::SELECTED) 
+	{
+		frameRect = GetFrameRect(buttonRowFocused);
+		ResetTint();
 	}
 	else if (state == UIElementState::FOCUSED)
 	{

@@ -38,6 +38,21 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
         float x = node.attribute("x").as_float();
         float y = node.attribute("y").as_float();
 
+        std::string faction = node.attribute("faction").as_string();
+        IslandFaction islandFaction;
+        if (faction == "human") {
+
+            islandFaction = IslandFaction::HUMANS;
+        }
+        else if (faction == "reptile") {
+
+            islandFaction = IslandFaction::REPTILES;
+        }
+        else {
+
+            islandFaction = IslandFaction::UNDEFINED;
+        }
+
         std::string typeStr = node.attribute("type").as_string();
         IslandType type;
         if (typeStr == "hostile")
@@ -54,11 +69,11 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
         }
 
         Vector2D position(x, y);
-        islands.emplace(id, Island(id, name, type, position));
+        islands.emplace(id, Island(id, name, type, islandFaction, position));
         tree[id] = {};
 
-        LOG("WorldMap: loaded island — id=%d name='%s' type='%s' x=%.1f y=%.1f",
-            id, name.c_str(), typeStr.c_str(), x, y);
+        LOG("WorldMap: loaded island — id=%d name='%s' type='%s' faction='%s' x=%.1f y=%.1f",
+            id, name.c_str(), typeStr.c_str(), faction.c_str(), x, y);
     }
 
     LOG("WorldMap: total loaded islands: %d", (int)islands.size());
@@ -140,6 +155,13 @@ void WorldMap::UpdateWorld()
         selectedChildIndex = 0;
         LOG("Viajando a isla id=%d (%s)", currentIslandId,
             islands.at(currentIslandId).GetName().c_str());
+
+        const Island& islandArrived = islands.at(currentIslandId);
+
+        //notify In Game scene arrival island
+        if (arrivalIsland) {
+            arrivalIsland(islandArrived);
+        }
     }
 }
 
@@ -187,6 +209,18 @@ void WorldMap::UnloadWorld()
     tree.clear();
     currentIslandId = -1;
     selectedChildIndex = 0;
+}
+
+void WorldMap::MakeAllIslandsHostile(IslandFaction faction)
+{
+
+    for (auto& pair : islands) {
+        Island& island = pair.second;
+        if (island.GetIslandFaction() == faction && island.GetType() == IslandType::FRIENDLY) {
+            island.SetType(IslandType::HOSTILE);
+            LOG("WorldMap: island '%s' is now Hostile", island.GetName().c_str());
+        }
+    }
 }
 
 bool WorldMap::Update(float dt)

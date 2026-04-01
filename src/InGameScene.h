@@ -9,6 +9,7 @@
 // también pueda incluir este header sin circularidad
 
 struct SDL_Texture;
+class IslandScene;
 
 class InGameScene : public BaseScene
 {

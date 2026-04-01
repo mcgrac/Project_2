@@ -37,7 +37,7 @@ void MainMenuScene::Load()
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "", btPos1,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
-        {}, spritesheet, 0
+        {}, spritesheet, 0, btPos1.w, btPos1.h
     );
 
     //continue
@@ -45,7 +45,7 @@ void MainMenuScene::Load()
     auto continueBtn = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 2, "", btPos2,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
-        {}, spritesheet, 1
+        {}, spritesheet, 1, btPos2.w, btPos2.h
     );
     continueBtn->state = UIElementState::DISABLED;
 
@@ -54,7 +54,7 @@ void MainMenuScene::Load()
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 3, "", btPos3,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
-        {}, spritesheet, 2
+        {}, spritesheet, 2, btPos3.w, btPos3.h
     );
 
 

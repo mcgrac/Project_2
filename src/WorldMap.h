@@ -3,6 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <functional>
 //#include <SDL3/SDL.h>
 
 struct SDL_Texture;
@@ -12,10 +13,17 @@ class WorldMap
 public:
     WorldMap();
 
-    bool LoadWorld(const std::string& xmlPath);
-    bool Update(float dt);
-    bool PostUpdate(float dt);
-    void UnloadWorld();
+    bool LoadWorld (const std::string& xmlPath);
+    bool Update (float dt);
+    bool PostUpdate (float dt);
+    void UnloadWorld ();
+
+    void MakeAllIslandsHostile(IslandFaction faction);
+
+    inline const Island& GetCurrentIsland() const{ return islands.at(currentIslandId); }
+
+    //callback
+    std::function<void(const Island&)> arrivalIsland;
 
 private:
     void UpdateWorld();

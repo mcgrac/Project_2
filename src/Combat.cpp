@@ -1,6 +1,10 @@
 ﻿#include "Combat.h"
 
-//#include "Character.h"
+//test
+#include "Engine.h"
+#include "Input.h"
+//test
+
 #include "Party.h"
 #include "Skill.h"
 
@@ -45,6 +49,19 @@ void Combat::Run()
 {
     if (!runningCombat) return;
 
+    //--------------TEST DEBUGS-----------
+    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
+
+        state = CombatState::END_COMBAT;
+        result = CombatResult::VICTORY;
+        EndCombat();
+    }
+    else if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_L) == KEY_DOWN) {
+        state = CombatState::END_COMBAT;
+        result = CombatResult::DEFEAT;
+        EndCombat();
+    }
+    //------------------------------------
     switch (state)
     {
     case CombatState::START_COMBAT:
@@ -293,7 +310,7 @@ void Combat::EndCombat()
     if (result == CombatResult::VICTORY)
     {
         std::cout << "\n══════════════════════════════════════\n";
-        std::cout << "              VICTORIA                \n";
+        std::cout << "              VICTORY                \n";
         std::cout << "══════════════════════════════════════\n";
 
         // Distribuir XP a los aliados vivos
@@ -355,6 +372,7 @@ void Combat::PlayerTurn()
     {
         std::cout << "Opción: ";
         std::cin >> skillChoice;
+
         if (std::cin.fail())
         {
             std::cin.clear();

@@ -24,15 +24,30 @@ CombatScene::~CombatScene()
 void CombatScene::Load()
 {
     LOG("CombatScene: cargando...");
-    CreateEnemyParty();
+
     LoadTextures();
 
     // ---------Testing------------
-    for (Character* c : enemyParty->GetMembers())
+    for (Character* c : alliedParty->GetMembers())
     {
         c->PrintDebugInfo();
     }
     // -----------------------------
+
+    CreateEnemyParty();
+
+    if (enemyParty == nullptr)
+    {
+        LOG("CombatScene: ERROR — enemyParty es nullptr tras CreateEnemyParty");
+        return;
+    }
+
+    LOG("CombatScene: enemyParty tiene %d miembros:", enemyParty->GetMemberCount());
+    for (Character* c : enemyParty->GetMembers())
+    {
+        LOG("  enemy -> %s", c->GetName().c_str());
+    }
+
 
     combat = new Combat(alliedParty, enemyParty);
 }

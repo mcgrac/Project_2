@@ -11,17 +11,16 @@ class Party
 private:
     std::string name;
 
-    std::vector<Character*> members;    // máximo 3, NO owner (los gestiona quien los crea)
+    std::vector<Character*> members;    
 
     // Resources allies  (aliados)
     int gold;
-    std::vector<Item*> inventory;       // NO owner de los items
+    std::vector<Item*> inventory;       
 
     // Rewards enemies (enemigos)
     int xpReward;
     int goldReward;
-    std::vector<Item*> lootItems;       // NO owner
-
+    std::vector<Item*> lootItems;
 public:
 
     Party(const std::string& name);
