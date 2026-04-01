@@ -112,7 +112,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories> .\vcpkg_installed\x64-windows\x64-windows\lib\manual-link</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\vcpkg_installed\x64-windows\x64-windows\lib\manual-link</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /I /Y "$(ProjectDir)Assets" "$(OutDir)Assets"</Command>
@@ -133,7 +133,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories> .\vcpkg_installed\x64-windows\x64-windows\lib\manual-link</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\vcpkg_installed\x64-windows\x64-windows\lib\manual-link</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /E /I /Y "$(ProjectDir)Assets" "$(OutDir)Assets"</Command>
@@ -159,7 +159,6 @@
     <ClCompile Include="src\Island.cpp" />
     <ClCompile Include="src\Gerbera.cpp" />
     <ClCompile Include="src\InGameScene.cpp" />
-    <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\Inventory.cpp" />
     <ClCompile Include="src\Item.cpp" />
     <ClCompile Include="src\Log.cpp" />
@@ -205,7 +204,6 @@
     <ClInclude Include="src\Island.h" />
     <ClInclude Include="src\Gerbera.h" />
     <ClInclude Include="src\InGameScene.h" />
-    <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\Inventory.h" />
     <ClInclude Include="src\Item.h" />
     <ClInclude Include="src\IUIObserver.h" />
