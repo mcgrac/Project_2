@@ -4,6 +4,7 @@
 #include "WorldMap.h"
 #include <vector>
 #include <string>
+#include "SaveLoad.h"
 
 // IDs de personaje — definidos aquí para que CharacterSelectScene
 // también pueda incluir este header sin circularidad
@@ -15,7 +16,7 @@ class InGameScene : public BaseScene
 {
 public:
     // Recibe los IDs de los 3 personajes seleccionados por el jugador
-    InGameScene(std::vector<std::string> _characterNames);
+    InGameScene(std::vector<std::string> _characterNames, bool _isContinue);
     ~InGameScene();
 
     void Load() override;
@@ -41,4 +42,7 @@ private:
     //textures
     SDL_Texture* background;
     SDL_Texture* spritesheet;
+
+    bool isContinue;
+    void RestoreFromSave(const SaveData& data);
 };

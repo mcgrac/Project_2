@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <character name="Markus">
 
+	<visuals
+		spritesheet="Assets/Textures/Animations/MarkusSpritesheet.png"
+		tsx="Assets/Textures/Animations/MarkusSpritesheet.tsx"
+    >
+
+		<animations>
+			<anim name="idle" tile="1"/>
+			<anim name="run" tile="0"/>
+			<anim name="dead" tile="112"/>
+
+			<anim name="red_dance" tile="10"/>
+			<anim name="laser_upward" tile="5"/>
+			<anim name="healing_halo" tile="9"/>
+			<anim name="flame" tile="8"/>
+			<anim name="blue_dance" tile="6"/>
+		</animations>
+
+	</visuals>
+	
 	<stats
         health="90"
         maxHealth="90"
@@ -23,10 +42,10 @@
 
 	<skills>
 		<skill id="red_dance"    initiativeCost="100" />
-		<skill id="divine_light" initiativeCost="100" />
 		<skill id="laser_upward" initiativeCost="100" />
-		<skill id="ascend"       initiativeCost="100" />
 		<skill id="healing_halo" initiativeCost="100" />
+		<skill id="flame"       initiativeCost="100" />
+		<skill id="blue_dance" initiativeCost="100" />
 	</skills>
 
 	<upgradeTree>

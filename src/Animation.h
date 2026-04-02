@@ -45,6 +45,7 @@ public:
     const std::string& GetCurrentName() const;
 
     bool Has(const std::string& name) const;
+    bool IsCurrentFinished() const;
 
 private:
     int tileW_ = 0, tileH_ = 0, columns_ = 0;

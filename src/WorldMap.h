@@ -22,6 +22,12 @@ public:
 
     inline const Island& GetCurrentIsland() const{ return islands.at(currentIslandId); }
 
+    //getter
+    inline int GetCurrentIslandId() const { return currentIslandId; }
+
+    //setter
+    inline void SetCurrentIsland(int islandId) { currentIslandId = islandId; }
+
     //callback
     std::function<void(const Island&)> arrivalIsland;
 

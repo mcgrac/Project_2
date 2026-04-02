@@ -144,3 +144,12 @@ const std::string& AnimationSet::GetCurrentName() const {
 bool AnimationSet::Has(const std::string& name) const {
     return clips_.find(name) != clips_.end();
 }
+
+bool AnimationSet::IsCurrentFinished() const
+{
+    auto it = clips_.find(currentName_);
+    if (it == clips_.end())
+        return true;
+
+    return it->second.HasFinishedOnce();
+}

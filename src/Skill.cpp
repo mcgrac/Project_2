@@ -1,9 +1,9 @@
 #include "Skill.h"
 #include "Character.h"
 
-Skill::Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost)
+Skill::Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost, std::string _animationId)
     : name(_name), damageType(_type), baseDamage(_baseDamage), 
-    powerMultiplier(_multiplier), initiativeCost(_initiativeCost),
+    powerMultiplier(_multiplier), initiativeCost(_initiativeCost), animationId(_animationId),
     hasAreaEffect(false), areaEffectTargetAllies(false)
 {}
 

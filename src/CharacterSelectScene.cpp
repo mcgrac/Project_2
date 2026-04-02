@@ -197,7 +197,7 @@ void CharacterSelectScene::ConfirmSelection()
     }
 
     // Pasa el vector de nombres a InGameScene
-    Engine::GetInstance().scene->ReplaceScene(new InGameScene(selectedNames));
+    Engine::GetInstance().scene->ReplaceScene(new InGameScene(selectedNames, false));
 }
 
 void CharacterSelectScene::CreateCharactersButtons()

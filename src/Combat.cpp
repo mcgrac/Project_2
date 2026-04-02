@@ -76,12 +76,21 @@ void Combat::Run()
         }
         else
         {
-            state = CombatState::ATTACK;
+            //state = CombatState::ATTACK;
+            state = CombatState::ATTACK_START;
         }
         break;
 
-    case CombatState::ATTACK:
-        Attack();
+    case CombatState::ATTACK_START:
+        AttackStart();
+        break;
+
+    case CombatState::ATTACK_ANIMATION:
+        AttackAnimation();
+        break;
+
+    case CombatState::ATTACK_RESOLVE:
+        AttackResolve();
         state = CombatState::MODIFIERS;
         break;
 
@@ -196,7 +205,7 @@ bool Combat::CalculateInitiative()
 }
 
 //  ATTACK
-void Combat::Attack()
+void Combat::AttackStart()
 {
     if (currentActor == nullptr) return;
 
@@ -215,6 +224,25 @@ void Combat::Attack()
     {
         EnemyTurn();
     }
+
+    //play animation
+    std::string anim = currentSkill->GetAnimationId();
+    currentActor->PlayAnimation(anim);
+
+    state = CombatState::ATTACK_ANIMATION;
+}
+
+void Combat::AttackAnimation()
+{
+    if(currentActor->GetAnimationFinished())
+    {
+        state = CombatState::ATTACK_RESOLVE;
+    }
+}
+
+void Combat::AttackResolve()
+{
+    ExecuteSkill(currentActor, *currentSkill, currentTarget);
 }
 
 //  MODIFIERS — veneno y quemadura
@@ -278,7 +306,6 @@ void Combat::ApplyModifiers()
         {
             std::cout << "  [MODIFICADORES] Ningun efecto activo.\n";
         }
-        //c->TickStatusEffects();
     }
 }
 
@@ -405,7 +432,10 @@ void Combat::PlayerTurn()
         }
     }
 
-    ExecuteSkill(currentActor, chosenSkill, aliveEnemies[targetChoice]);
+    currentSkill = &chosenSkill;
+    currentTarget = aliveEnemies[targetChoice];
+
+    //ExecuteSkill(currentActor, chosenSkill, aliveEnemies[targetChoice]);
 }
 
 //  ENEMY TURN — habilidad y target aleatorios
@@ -429,7 +459,10 @@ void Combat::EnemyTurn()
     std::cout << currentActor->GetName() << " usa " << chosenSkill.GetName()
         << " sobre " << target->GetName() << ".\n";
 
-    ExecuteSkill(currentActor, chosenSkill, target);
+    currentSkill = &chosenSkill;
+    currentTarget = target;
+
+    //ExecuteSkill(currentActor, chosenSkill, target);
 }
 
 //  EXECUTE SKILL

@@ -12,11 +12,11 @@
 #include "Log.h"
 #include "Textures.h"
 #include "Render.h"
+#include "SaveLoad.h"
 
-
-InGameScene::InGameScene(std::vector<std::string> _characterNames)
+InGameScene::InGameScene(std::vector<std::string> _characterNames, bool _isContinue)
     : characterNames(_characterNames)
-    , alliedParty(nullptr), background(nullptr)
+    , alliedParty(nullptr), background(nullptr), isContinue(_isContinue)
 {
 }
 
@@ -73,6 +73,16 @@ void InGameScene::Load()
         Engine::GetInstance().scene->PushScene(new IslandScene(island, &worldMap, alliedParty));
     };
 
+    if (isContinue)
+    {
+        SaveData data = SaveLoad::Load();
+        if (data.exists)
+        {
+            RestoreFromSave(data);
+            worldMap.SetCurrentIsland(data.currentIslandId);
+            LOG("InGameScene: partida restaurada — isla %d.", data.currentIslandId);
+        }
+    }
 }
 
 void InGameScene::Update(float dt)
@@ -135,4 +145,21 @@ void InGameScene::DestroyParty()
 
     delete alliedParty;
     alliedParty = nullptr;
+}
+
+void InGameScene::RestoreFromSave(const SaveData& data)
+{
+    for (const auto& charSave : data.characters)
+    {
+        for (Character* c : alliedParty->GetMembers())
+        {
+            if (c->GetName() == charSave.name)
+            {
+                c->RestorePreCombatValues({ charSave.health, charSave.isAlive });
+                LOG("SaveLoad: restaurado %s — HP:%d isAlive:%d",
+                    charSave.name.c_str(), charSave.health, charSave.isAlive);
+                break;
+            }
+        }
+    }
 }

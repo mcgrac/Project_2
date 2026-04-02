@@ -1,5 +1,7 @@
 #include "Character.h"
 #include "Engine.h"
+#include "Render.h"
+#include "Textures.h"
 #include "Log.h"
 
 Character::Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
@@ -23,17 +25,10 @@ Character::~Character()
 	//add cleanup of the textures and sounds
 }
 
-//void Character::AttackPhysical(Character& target, int damage)
-//{
-//	target.ReceivePhysicalDamage(damage);
-//	Heal(damage * lifesteal);
-//}
-//
-//void Character::AttackMagical(Character& target, int damage)
-//{
-//	target.ReceiveMagicalDamage(damage);
-//	Heal(damage * lifesteal);
-//}
+void Character::Update(float dt)
+{
+	Draw(dt);
+}
 
 void Character::Heal(int amount)
 {
@@ -96,31 +91,18 @@ void Character::LevelUp()
 void Character::Draw(float dt) 
 {
 	anims.Update(dt);
+
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-	// Update render position using your PhysBody helper
-	//int x, y;
-	//pbody->GetPosition(x, y);
-	//position.setX((float)x);
-	//position.setY((float)y);
+	int drawX = (int)position.getX() - animFrame.w / 2;
+	int drawY = (int)position.getY() - animFrame.h / 2;
 
-	//L10: TODO 7: Center the camera on the player
-	//Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
-	//float limitLeft = (float)Engine::GetInstance().render->camera.w / 4;
-	//float limitRight = (float)mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
-	//if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {
-	//	Engine::GetInstance().render->camera.x = (int)-position.getX() + (int)(Engine::GetInstance().render->camera.w / 4);
-	//}
-	//else if (position.getX() <= limitLeft) {
-	//	Engine::GetInstance().render->camera.x = 0;
-	//}
-	//else {
-	//	Engine::GetInstance().render->camera.x = -(float)mapSize.getX() + Engine::GetInstance().render->camera.w;
-	//}
-
-	// L10: TODO 5: Draw the player using the texture and the current animation frame
-	//Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
-
+	Engine::GetInstance().render->DrawTexture(
+		texture,
+		drawX,
+		drawY,
+		&animFrame
+	);
 }
 
 void Character::AddSkill(Skill skill)
@@ -164,10 +146,6 @@ void Character::SetBurned(bool state, int damage, Character* attacker)
 		}
 
 		burnedBy = attacker; //the one that takes the kill by burning is the last character that burn
-
-		//if (burnedBy == nullptr) { //only save the pointer to the first character that burn
-		//	burnedBy = attacker;
-		//}
 	}
 	else {//burning = false (clean burning effect)
 		burnedStatMod = 0;
@@ -189,10 +167,6 @@ void Character::SetPoisoned(bool state, int damage, Character* attacker)
 		}
 
 		poisonedBy = attacker; //the one that takes the kill by poisoning is the last character that poison
-
-		//if (poisonedBy == nullptr) { //only save the pointer to the first character that poison
-		//	poisonedBy = attacker;
-		//}
 	}
 	else {
 		poisonStatMod = 0;
@@ -206,6 +180,28 @@ void Character::ClearStatusEffects()
 	poisonStatMod = 0;
 	isBurned = false;
 	burnedStatMod = 0;
+}
+
+void Character::LoadVisuals(const std::string& spriteSheet, const std::string& tsx, const std::unordered_map<int, std::string>& aliases)
+{
+	anims.LoadFromTSX(tsx.c_str(), aliases);
+	anims.SetCurrent("idle");
+
+	texture = Engine::GetInstance().textures->Load(spriteSheet.c_str());
+	if (texture == nullptr) { LOG("Fail texture loading"); }
+}
+
+void Character::PlayAnimation(const std::string& name)
+{
+	if (anims.Has(name))
+	{
+		anims.SetCurrent(name);
+	}
+	else
+	{
+		LOG("Animation '%s' not found for character %s", name.c_str(), GetName().c_str());
+		anims.SetCurrent("idle");
+	}
 }
 
 

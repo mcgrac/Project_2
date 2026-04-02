@@ -13,9 +13,10 @@
 class Character {
 protected:
 
-#pragma region STATS
 	Vector2D position;
 	std::string name;
+
+#pragma region STATS
 	int health;
 	int maxHealth;
 	int experience;
@@ -41,8 +42,11 @@ protected:
 #pragma endregion
 
 	Inventory* inventory = nullptr;
+
+	//animations
 	AnimationSet anims;
 	SDL_Texture* texture = nullptr;
+
 	std::vector<Skill> skills;
 	Character* killedBy = nullptr; //to know which was the character that killed
 	Character* poisonedBy = nullptr; //to knwo if the character was dead by poisoning which was the character that posion
@@ -50,6 +54,7 @@ protected:
 	UpgradeTree* upgradeTree = nullptr;
 
 public:
+
 	//PreCombatValues
 	struct PreCombatValues {
 		int _health;
@@ -80,16 +85,15 @@ public:
 
 	~Character();
 
-	//void AttackPhysical(Character& target, int damage);
-	//void AttackMagical(Character& target, int damage);
+
+	void Update(float dt);
+	void Draw(float dt);
 
 	void Heal(int amunt);
 	void ReceivePhysicalDamage(int damageReceived, Character* attacker);
 	void ReceiveMagicalDamage(int damageReceived, Character* attacker);
 	void GainExperience(int amount);
 	void LevelUp();
-
-	void Draw(float dt);
 
 	void AddSkill(Skill skill);
 	void UseSkill(int index, Character* target);
@@ -108,29 +112,32 @@ public:
 	// Initiative (combat)
 	inline void ResetCurrentInitiative() { initiative = 0; }
 
-
-
 	// Position in the screen (start combat)
 	inline void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
 
+	void LoadVisuals(const std::string& spriteSheet, const std::string& tsx, const std::unordered_map<int, std::string>& aliases);
+	void PlayAnimation(const std::string& name);
+
 #pragma region GETTERS
-	inline int GetPower() { return power; }
-	inline int GetLifesteal() { return lifesteal; }
-	inline int GetLevel() { return level; }
-	inline bool GetIsAlive() { return isAlive; }
+	inline int GetPower() const { return power; }
+	inline int GetLifesteal() const { return lifesteal; }
+	inline int GetLevel() const { return level; }
+	inline bool GetIsAlive() const { return isAlive; }
 	inline Character* GetKilledBy() const { return killedBy; }
-	inline int GetSpeed() { return speed; }
-	inline int GetCurrentHP() { return health; }
-	inline int GetCurrentInitiative() { return initiative; }
-	inline bool IsPoisoned() { return isPoisoned; }
-	inline bool IsBurning() { return isBurned; }
-	inline int GetPoisonDamage() { return poisonStatMod; }
-	inline int GetBurnDamage() { return burnedStatMod; }
-	inline std::string GetName() { return name; }
+	inline int GetSpeed() const { return speed; }
+	inline int GetCurrentHP() const { return health; }
+	inline int GetCurrentInitiative() const { return initiative; }
+	inline bool IsPoisoned() const { return isPoisoned; }
+	inline bool IsBurning() const { return isBurned; }
+	inline int GetPoisonDamage() const { return poisonStatMod; }
+	inline int GetBurnDamage() const { return burnedStatMod; }
+	inline std::string GetName() const { return name; }
 	inline std::vector<Skill>& GetSkills() { return skills; }
-	inline float GetFirePower() { return firePower; }
-	inline float GetPoisonPower() { return pisonPower; }
-	inline float GetHealingPower() { return healingPower; }
+	inline float GetFirePower() const { return firePower; }
+	inline float GetPoisonPower() const { return pisonPower; }
+	inline float GetHealingPower() const { return healingPower; }
+	inline bool GetAnimationFinished() const { return anims.IsCurrentFinished(); }
+	inline std::string GetCurrentAnimation() const { return anims.GetCurrentName(); }
 #pragma endregion
 
 #pragma region MODIFIERS
@@ -140,6 +147,8 @@ public:
 	inline void ModifyHealingPower(int amount) { healingPower += amount; }
 	void ModifyDurability(int amount);
 	inline void AddInitiative(int amount) { initiative += amount; }
+	inline void ModifyFirePower(float amount) { firePower += amount; }
+	inline void ModifyPoisonPower(float amount) { pisonPower += amount; }
 #pragma endregion
 
 #pragma region TEST

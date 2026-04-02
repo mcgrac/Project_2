@@ -7,6 +7,7 @@
 #include "UIManager.h"
 #include "Render.h"
 #include "Log.h"
+#include "SaveLoad.h"
 
 IslandScene::IslandScene(const Island& island, WorldMap* worldMap, Party* allied)
     : island(island)
@@ -107,6 +108,9 @@ void IslandScene::EnterIsland()
 {
     LOG("IslandScene: entrando en '%s'.", island.GetName().c_str());
 
+    //save data
+    SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId());
+
     Engine::GetInstance().scene->PushScene(new IslandInteriorScene(&island, alliedParty));
 }
 
@@ -115,6 +119,9 @@ void IslandScene::AttackIsland()
     LOG("AttackIsland: alliedParty tiene %d miembros",
         alliedParty ? alliedParty->GetMemberCount() : -1);
 
+    //save data
+    SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId());
+
     if (island.GetType() == IslandType::FRIENDLY)
     {
 
@@ -122,7 +129,6 @@ void IslandScene::AttackIsland()
         worldMap->MakeAllIslandsHostile(island.GetIslandFaction());
     }
 
-    // Guardar el puntero en local ANTES de que this se destruya
     Party* allied = alliedParty;
 
     //eliminate island scene from stack 

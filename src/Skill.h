@@ -24,10 +24,10 @@ private:
     int initiativeCost;
     bool hasAreaEffect;
     bool areaEffectTargetAllies;
-
+    std::string animationId;
 
 public:
-    Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost);
+    Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost, std::string _animationId = "none");
     ~Skill();
 
     void AddEffect(SkillEffect effect) {
@@ -37,10 +37,11 @@ public:
     void Use(Character* caster, Character* target);
 
 #pragma region GETTERS
-    inline std::string GetName() { return name; }
-    inline int GetInitiativeCost() { return initiativeCost; }
-    inline bool GetHasAreaEffect() { return hasAreaEffect; }
-    inline bool GetAreaEffectTargetAllies() { return areaEffectTargetAllies; }
+    inline std::string GetName() const { return name; }
+    inline int GetInitiativeCost() const  { return initiativeCost; }
+    inline bool GetHasAreaEffect() const { return hasAreaEffect; }
+    inline bool GetAreaEffectTargetAllies() const { return areaEffectTargetAllies; }
+    inline std::string GetAnimationId() const { return animationId; }
 
     inline void SetHasAreaEffect(bool b) { hasAreaEffect = b; }
     inline void SetAreaEffectTargetAllies(bool b) { areaEffectTargetAllies = b; }

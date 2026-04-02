@@ -55,11 +55,15 @@ void CombatScene::Load()
 void CombatScene::Update(float dt)
 {
     // Dibujar background cada frame
-
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
-    // Por ahora Combat::Run() gestiona su propio bucle completo.
-    //combat->Run(background);
-    //combatFinished = true;
+
+    for (Character* c : combat->GetAllCombatants()) {
+        //call update of every character (animations)
+        if (c->GetIsAlive()) {
+            c->Update(dt);
+        }
+    }
+
     combat->Run();
     LOG("Update combat scene");
 

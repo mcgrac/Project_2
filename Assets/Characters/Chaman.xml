@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <character name="Chaman">
 
+	<visuals
+        spritesheet="Assets/Textures/Animations/markus.png"
+        tsx="Assets/Textures/Animations/markus.tsx"
+    >
+
+		<animations>
+			<anim name="idle" tile="0"/>
+			<anim name="dead" tile="66"/>
+
+			<anim name="chaman_bonk_fire" tile="5"/>
+			<anim name="chaman_charge" tile="70"/>
+		</animations>
+
+	</visuals>
+	
     <stats
         health="60"
         maxHealth="60"

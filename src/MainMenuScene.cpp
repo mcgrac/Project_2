@@ -9,7 +9,7 @@
 #include "Window.h"
 #include "Render.h"
 #include "Textures.h"
-
+#include "SaveLoad.h"
 
 MainMenuScene::MainMenuScene() : background(nullptr), spritesheet(nullptr)
 {
@@ -47,7 +47,10 @@ void MainMenuScene::Load()
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
         {}, spritesheet, 1, btPos2.w, btPos2.h
     );
-    continueBtn->state = UIElementState::DISABLED;
+    if (!SaveLoad::HasSaveFile())
+    {
+        continueBtn->state = UIElementState::DISABLED;
+    }
 
     //options (change fullscreen por ahora)
     SDL_Rect btPos3 = { 520, 500, 154, 60 };
@@ -109,11 +112,24 @@ bool MainMenuScene::OnUIMouseClickEvent(UIElement* uiElement)
     {
     case 1: // new game button
         LOG("MainMenu: Nueva Partida clicked!");
+        SaveLoad::ClearSave(); //clear any data saved
         Engine::GetInstance().scene->ReplaceScene(new CharacterSelectScene());
         break;
-    case 2: //options button
-        state = State::OPTIONS;
+        {
+    case 2: //continue button
+        SaveData data = SaveLoad::Load();
+        if (data.exists)
+        {
+            // Reconstruir los nombres de personajes del save
+            std::vector<std::string> names;
+            for (const auto& charSave : data.characters)
+            {
+                names.push_back(charSave.name);
+            }
+            Engine::GetInstance().scene->ReplaceScene(new InGameScene(names, true));
+        }
         break;
+        }
     case 3: //fullscreen button
         Engine::GetInstance().window->ToggleFullscreen();
         LOG("ToggleFullscreen llamado, ahora llamando UpdateCamera");

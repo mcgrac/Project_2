@@ -58,7 +58,7 @@ Character* CharacterFactory::Create(const std::string& name)
 
     pugi::xml_node root = doc.child("character");
 
-    // ── Stats ─────────────────────────────────────────────────────────────
+    //  Stats 
     pugi::xml_node stats = root.child("stats");
 
     int health = stats.attribute("health").as_int();
@@ -73,14 +73,14 @@ Character* CharacterFactory::Create(const std::string& name)
     float firePower = stats.attribute("firePower").as_float();
     int maxInitiative = stats.attribute("maxInitiative").as_int();
 
-    // ── Level scaling ──────────────────────────────────────────────────────
+    //  Level scaling 
     pugi::xml_node scaling = root.child("levelScaling");
 
     int hpScaling = scaling.attribute("maxHealth").as_int();
     int pwrScaling = scaling.attribute("power").as_int();
     int spdScaling = scaling.attribute("speed").as_int();
 
-    // ── Build character ────────────────────────────────────────────────
+    //  Build character
     Character* character = new Character(
         Vector2D(0.0f, 0.0f),
         name,
@@ -103,7 +103,27 @@ Character* CharacterFactory::Create(const std::string& name)
         pwrScaling
     );
 
-    // ── Skills ─────────────────────────────────────────────────────────────
+    //  Visuals (animations)
+    pugi::xml_node visuals = root.child("visuals");
+
+    std::string spritesheet = visuals.attribute("spritesheet").as_string();
+    std::string tsx = visuals.attribute("tsx").as_string();
+
+    std::unordered_map<int, std::string> aliases;
+
+    pugi::xml_node animations = visuals.child("animations");
+
+    for (pugi::xml_node anim : animations.children("anim"))
+    {
+        std::string name = anim.attribute("name").as_string();
+        int tile = anim.attribute("tile").as_int();
+
+        aliases[tile] = name;
+    }
+
+    character->LoadVisuals(spritesheet, tsx, aliases);
+
+    //  Skills 
     SkillRegistry& skillRegistry = SkillRegistry::GetInstance();
 
     for (pugi::xml_node skillNode : root.child("skills").children("skill"))
@@ -115,7 +135,7 @@ Character* CharacterFactory::Create(const std::string& name)
         character->AddSkill(skill);
     }
 
-    // ── Upgrade tree ───────────────────────────────────────────────────────
+    //  Upgrade tree 
     for (pugi::xml_node tierNode : root.child("upgradeTree").children("tier"))
     {
         int requiredLevel = tierNode.attribute("requiredLevel").as_int();
