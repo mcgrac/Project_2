@@ -170,6 +170,7 @@
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\Markus.cpp" />
     <ClCompile Include="src\Party.cpp" />
+    <ClCompile Include="src\PauseScene.cpp" />
     <ClCompile Include="src\PerfTimer.cpp" />
     <ClCompile Include="src\Physics.cpp" />
     <ClCompile Include="src\PlatformGame.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="src\Markus.h" />
     <ClInclude Include="src\Module.h" />
     <ClInclude Include="src\Party.h" />
+    <ClInclude Include="src\PauseScene.h" />
     <ClInclude Include="src\PerfTimer.h" />
     <ClInclude Include="src\Physics.h" />
     <ClInclude Include="src\Player.h" />

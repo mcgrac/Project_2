@@ -2,6 +2,7 @@
 #include "CharacterFactory.h"
 #include "Character.h"
 #include "Scene.h"
+#include "UIManager.h"
 #include "Engine.h"
 #include "Log.h"
 #include "Textures.h"
@@ -14,6 +15,7 @@ CombatScene::CombatScene(Party* _allied)
     , combatFinished(false)
     , background(nullptr)
 {
+    sceneName = "CombatScene";
 }
 
 CombatScene::~CombatScene()
@@ -65,7 +67,6 @@ void CombatScene::Update(float dt)
     }
 
     combat->Run();
-    LOG("Update combat scene");
 
     // Al acabar el combate volvemos a InGameScene (que quedó suspendida)
     if(combat->CombatIsFinished())

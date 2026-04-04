@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "Audio.h"
 #include "Log.h"
+#include "Scene.h"
 
 UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _texture, int _spriteCol, int _btnWidth, int _btnHeight) :
 	UIElement(UIElementType::BUTTON, id), spritesheet(_texture), spriteCol(_spriteCol), playingAnim(false),
@@ -30,6 +31,7 @@ UIButton::~UIButton()
 bool UIButton::Update(float dt)
 {
 
+	if (Engine::GetInstance().scene->GetIgnoreInputThisFrame()) { return false; } //ignore frame
 
 	if (state != UIElementState::DISABLED)
 	{

@@ -2,19 +2,16 @@
 <character name="Rex">
 
 	<visuals
-        spritesheet="Assets/Textures/Animations/markus.png"
-        tsx="Assets/Textures/Animations/markus.tsx"
+        spritesheet="Assets/Textures/Animations/RexSpritesheet.png"
+        tsx="Assets/Textures/Animations/RexSpritesheet.tsx"
     >
 
 		<animations>
-			<anim name="idle" tile="1"/>
-			<anim name="run" tile="0"/>
-			<anim name="dead" tile="112"/>
+			<anim name="idle" tile="0" loop="true"/>
+			<anim name="dead" tile="137" loop="false"/>
 
-			<anim name="red_dance" tile="6"/>
-			<anim name="laser_upward" tile="5"/>
-			<anim name="heal" tile="9"/>
-			<anim name="burn" tile="10"/>
+			<anim name="rex_charge" tile="8" loop="false"/>
+			<anim name="rex_bite" tile="141" loop="false"/>
 		</animations>
 
 	</visuals>

@@ -17,8 +17,6 @@ enum class CombatState
     START_COMBAT,
     CALCULATE_INITIATIVE,
 
-    ATTACK,
-
     ATTACK_START,
     ATTACK_ANIMATION,
     ATTACK_RESOLVE,

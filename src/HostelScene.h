@@ -3,6 +3,8 @@
 #include "Hostel.h"
 #include "Party.h"
 
+struct SDL_Texture;
+
 class HostelScene : public BaseScene
 {
 public:
@@ -17,10 +19,17 @@ public:
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
+    //helpers
+    void OnResume() override;
+    void OnPause() override;
+    void CreateUI();
+
 private:
     Hostel hostel;         
     Party* alliedParty;   
 
     static constexpr int BACK_BUTTON_ID = 1;
 
+    SDL_Texture* exitButton;
+    SDL_Texture* background;
 };

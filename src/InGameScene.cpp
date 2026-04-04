@@ -2,6 +2,7 @@
 #include "CombatScene.h"
 #include "islandScene.h"
 #include "CharacterFactory.h"
+#include "PauseScene.h"
 #include "Character.h"
 #include "Scene.h"
 #include "Engine.h"
@@ -18,6 +19,7 @@ InGameScene::InGameScene(std::vector<std::string> _characterNames, bool _isConti
     : characterNames(_characterNames)
     , alliedParty(nullptr), background(nullptr), isContinue(_isContinue)
 {
+    sceneName = "InGameScene";
 }
 
 InGameScene::~InGameScene()
@@ -27,8 +29,8 @@ InGameScene::~InGameScene()
 
 void InGameScene::Load()
 {
+
     Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
-    //Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 
     // Construir la party aliada con los 3 personajes seleccionados
     alliedParty = new Party("Aliados");
@@ -56,14 +58,7 @@ void InGameScene::Load()
 
     //load textures
     LoadTextures();
-
-    //buttons creation
-    //Botón de iniciar combate
-    SDL_Rect combatBtnBounds = { 20, 20, 154, 60 };
-    Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0
-    );
+    CreateUI();
 
     //load world
     worldMap.LoadWorld("Assets/Maps/world.xml");
@@ -89,6 +84,14 @@ void InGameScene::Update(float dt)
 {
     //render textures
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
+
+    //detect pause menu
+    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
+    {
+        Engine::GetInstance().scene->PushScene(
+            new PauseScene(alliedParty, worldMap.GetCurrentIslandId())
+        );
+    }
 
     worldMap.Update(dt);
     worldMap.PostUpdate(dt);
@@ -162,4 +165,24 @@ void InGameScene::RestoreFromSave(const SaveData& data)
             }
         }
     }
+}
+
+void InGameScene::OnResume()
+{
+    CreateUI();
+}
+
+void InGameScene::OnPause()
+{
+    Engine::GetInstance().uiManager->CleanUp();
+}
+
+void InGameScene::CreateUI()
+{
+    //Botón de iniciar combate
+    SDL_Rect combatBtnBounds = { 20, 20, 154, 60 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0
+    );
 }

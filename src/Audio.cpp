@@ -186,6 +186,14 @@ bool Audio::PlayMusic(const char* path, float fadeTime) {
     return true;
 }
 
+bool Audio::IsMusicPlaying() const
+{
+    if (!music_stream_) return false;
+
+    Sint64 queued = SDL_GetAudioStreamQueued(music_stream_);
+    return queued > 0;
+}
+
 int Audio::LoadFx(const char* path) {
     if (!active) return 0;
     if (!EnsureStreams()) return 0;

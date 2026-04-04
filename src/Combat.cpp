@@ -22,12 +22,12 @@
 //  Posiciones predefinidas en pantalla
 //  0-2: aliados (izquierda)  |  3-5: enemigos (derecha)
 const Vector2D Combat::defaultPositions[6] = {
-    Vector2D(200.f, 300.f),   // aliado 0
-    Vector2D(200.f, 450.f),   // aliado 1
-    Vector2D(200.f, 150.f),   // aliado 2
-    Vector2D(800.f, 300.f),   // enemigo 0
-    Vector2D(800.f, 450.f),   // enemigo 1
-    Vector2D(800.f, 150.f)    // enemigo 2
+    Vector2D(153.0f, 273.0f),   // aliado 0
+    Vector2D(278.0f, 184.0f),   // aliado 1
+    Vector2D(419.0f, 273.0f),   // aliado 2
+    Vector2D(756.0f, 273.0f),   // enemigo 0
+    Vector2D(897.0f, 184.0f),   // enemigo 1
+    Vector2D(1022.0f, 273.0f)    // enemigo 2
 };
 
 Combat::Combat(Party* allied, Party* enemy)
@@ -234,8 +234,11 @@ void Combat::AttackStart()
 
 void Combat::AttackAnimation()
 {
+    //LOG("waiting animation...");
+
     if(currentActor->GetAnimationFinished())
     {
+        LOG("AnimationFinished!");
         state = CombatState::ATTACK_RESOLVE;
     }
 }
@@ -469,6 +472,8 @@ void Combat::EnemyTurn()
 void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 {
     int targetHpBefore = target->GetCurrentHP();
+
+    LOG("EXECUTE SKILL");
 
     // Check if the ability need access to the whole party
     if (skill. GetHasAreaEffect()) {

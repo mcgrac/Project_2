@@ -2,16 +2,16 @@
 <character name="Chaman">
 
 	<visuals
-        spritesheet="Assets/Textures/Animations/markus.png"
-        tsx="Assets/Textures/Animations/markus.tsx"
+        spritesheet="Assets/Textures/Animations/ChamanSpritesheet.png"
+        tsx="Assets/Textures/Animations/ChamanSpritesheet.tsx"
     >
 
 		<animations>
-			<anim name="idle" tile="0"/>
-			<anim name="dead" tile="66"/>
+			<anim name="idle" tile="0" loop="true"/>
+			<anim name="dead" tile="107" loop="false"/>
 
-			<anim name="chaman_bonk_fire" tile="5"/>
-			<anim name="chaman_charge" tile="70"/>
+			<anim name="chaman_bonk_fire" tile="5" loop="false"/>
+			<anim name="chaman_charge" tile="112" loop="false"/>
 		</animations>
 
 	</visuals>

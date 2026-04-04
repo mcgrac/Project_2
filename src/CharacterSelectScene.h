@@ -30,6 +30,7 @@ struct SDL_Texture;
 class CharacterSelectScene : public BaseScene
 {
 public:
+
     CharacterSelectScene();
 
     void Load() override;
@@ -40,6 +41,11 @@ public:
 
     void UnloadTextures();
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
+
+    //helpers
+    void OnResume() override;
+    void OnPause() override;
+    void CreateUI();
 
 private:
     // all available characters

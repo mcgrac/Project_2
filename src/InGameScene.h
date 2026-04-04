@@ -6,8 +6,6 @@
 #include <string>
 #include "SaveLoad.h"
 
-// IDs de personaje — definidos aquí para que CharacterSelectScene
-// también pueda incluir este header sin circularidad
 
 struct SDL_Texture;
 class IslandScene;
@@ -15,7 +13,6 @@ class IslandScene;
 class InGameScene : public BaseScene
 {
 public:
-    // Recibe los IDs de los 3 personajes seleccionados por el jugador
     InGameScene(std::vector<std::string> _characterNames, bool _isContinue);
     ~InGameScene();
 
@@ -27,7 +24,11 @@ public:
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
-    // Acceso a la party aliada para otros sistemas (CombatScene, TeamScene...)
+    //helpers
+    void OnResume() override;
+    void OnPause() override;
+    void CreateUI();
+
     Party* GetAlliedParty() { return alliedParty; }
 
 private:

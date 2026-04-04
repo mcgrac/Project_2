@@ -20,14 +20,23 @@ public:
     void PostUpdate(float dt) override;
     void Unload() override;
     void LoadTextures() override;
+    void LoadSounds();
 
     void UnloadTextures();
     void Draw(float dt);
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
+
+    //helpers
+    void OnResume() override;
+    void OnPause() override;
+    void CreateUI();
+
 private:
     State state;
 
     SDL_Texture* background;
     SDL_Texture* spritesheet;
+
+    int buttonSelectionFx;
 };

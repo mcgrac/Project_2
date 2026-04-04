@@ -4,10 +4,12 @@
 #include "UIManager.h"
 #include "Render.h"
 #include "Log.h"
+#include "Textures.h"
 
 HostelScene::HostelScene(Hostel hostel, Party* allied)
     : hostel(hostel), alliedParty(allied)
 {
+    sceneName = "HostelScene";
 }
 
 HostelScene::~HostelScene() {}
@@ -15,17 +17,14 @@ HostelScene::~HostelScene() {}
 void HostelScene::Load()
 {
     LOG("HostelScene: cargando hostel.");
-
-    SDL_Rect backBounds = { 20, 20, 160, 40 };
-    Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, BACK_BUTTON_ID, "Volver", backBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
-    );
+    LoadTextures();
+    CreateUI();
 }
 
 void HostelScene::Update(float dt)
 {
-    // TODO: lógica de descanso y compra de experiencia
+    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    // lógica de descanso y compra de experiencia
 }
 
 void HostelScene::PostUpdate(float dt)
@@ -33,12 +32,6 @@ void HostelScene::PostUpdate(float dt)
     Engine::GetInstance().render->DrawText(
         "HOSTEL", 540, 50, 200, 40, { 255, 255, 255, 255 }
     );
-
-    //Engine::GetInstance().render->DrawText(
-    //    "Oro: " + std::to_string(alliedParty->GetGold()),
-    //    20, 80, 200, 30,
-    //    { 255, 215, 0, 255 }
-    //);
 }
 
 void HostelScene::Unload()
@@ -48,6 +41,8 @@ void HostelScene::Unload()
 
 void HostelScene::LoadTextures()
 {
+    exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
+    background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/HostelBackground.png");
 }
 
 bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -61,4 +56,22 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     }
     return true;
+}
+void HostelScene::OnResume()
+{
+    CreateUI();
+}
+
+void HostelScene::OnPause()
+{
+    Engine::GetInstance().uiManager->CleanUp();
+}
+
+void HostelScene::CreateUI()
+{
+    SDL_Rect backBounds = { 20, 20, 72, 72 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
+    );
 }

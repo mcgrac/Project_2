@@ -10,6 +10,12 @@
 #include "Skill.h"
 #include "UpgradeTree.h"
 
+struct AnimAlias
+{
+	int tile;
+	bool loop;
+};
+
 class Character {
 protected:
 
@@ -115,7 +121,10 @@ public:
 	// Position in the screen (start combat)
 	inline void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
 
-	void LoadVisuals(const std::string& spriteSheet, const std::string& tsx, const std::unordered_map<int, std::string>& aliases);
+	void LoadVisuals(const std::string& spriteSheet, const std::string& tsx,
+					 const std::unordered_map<int, std::string>& aliases,
+		             const std::unordered_map<std::string, AnimAlias>& animData);
+
 	void PlayAnimation(const std::string& name);
 
 #pragma region GETTERS

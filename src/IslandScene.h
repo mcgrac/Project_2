@@ -18,10 +18,15 @@ public:
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
+    //helpers
+    void OnResume() override;
+    void OnPause() override;
+    void CreateUI();
+
 private:
-    Island island;       // copia de la isla (datos de solo lectura)
-    WorldMap* worldMap;     // NO owner
-    Party* alliedParty;  // NO owner
+    Island island;       
+    WorldMap* worldMap;     
+    Party* alliedParty;  
 
     bool combatLaunched;
 
@@ -31,5 +36,8 @@ private:
     // Ataca la isla: hace hostil la facción y lanza combate
     void AttackIsland();
 
-    SDL_Texture* spritesheetButtons;
+    SDL_Texture* enterButton;
+    SDL_Texture* pillageButon;
+    SDL_Texture* background;
+    SDL_Texture* exitButton;
 };

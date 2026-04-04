@@ -13,6 +13,7 @@
 SplashScene::SplashScene(){
     timer = 0.0f;
     logo = nullptr;
+    sceneName = "SplashScene";
 }
 
 SplashScene::~SplashScene(){
@@ -23,6 +24,10 @@ void SplashScene::Load()
 {
     StartTimer();
     LoadTextures();
+    LoadSounds();
+
+    //play audio once
+    Engine::GetInstance().audio->PlayFx(mewCatFx);
 }
 
 void SplashScene::Update(float dt)
@@ -46,9 +51,6 @@ void SplashScene::Unload()
 
     //textures
     Engine::GetInstance().textures->UnLoad(logo);
-
-    //audio effect
-    //---missing---//
 }
 
 bool SplashScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -77,8 +79,13 @@ void SplashScene::LoadTextures(){
     }
 }
 
+void SplashScene::LoadSounds()
+{
+    mewCatFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/MewCat.wav");
+}
+
 void SplashScene::CheckTimer(){
-    if (timer >= 1000.0f) {
+    if (timer >= 1500.0f) {
         LOG("Chagne to main menu scene");
         Engine::GetInstance().scene->ReplaceScene(new MainMenuScene());
     }

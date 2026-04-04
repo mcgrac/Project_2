@@ -26,10 +26,13 @@ CharacterSelectScene::CharacterSelectScene() :
         { "Markus", "Markus", 2, 2, Vector2D(800, 100),Vector2D(800, 200)},
         { "Theresia", "Theresia", 3, 3, Vector2D(800, 100), Vector2D(800, 200)},
     };
+
+    sceneName = "CharacterSelection";
 }
 
 void CharacterSelectScene::Load()
 {
+
     selectedNames.clear();
     for (auto& c : availableCharacters)
     {
@@ -37,8 +40,7 @@ void CharacterSelectScene::Load()
     }
 
     LoadTextures();
-    CreateCharactersButtons();
-    CreateInterfaceButtons();
+    CreateUI();
 }
 
 void CharacterSelectScene::Update(float dt)
@@ -302,4 +304,20 @@ bool CharacterSelectScene::IsPortraitHoveredOrSelected(int index) const
         }
     }
     return false;
+}
+
+void CharacterSelectScene::OnResume()
+{
+    CreateUI();
+}
+
+void CharacterSelectScene::OnPause()
+{
+    Engine::GetInstance().uiManager->CleanUp();
+}
+
+void CharacterSelectScene::CreateUI()
+{
+    CreateCharactersButtons();
+    CreateInterfaceButtons();
 }

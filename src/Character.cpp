@@ -182,9 +182,21 @@ void Character::ClearStatusEffects()
 	burnedStatMod = 0;
 }
 
-void Character::LoadVisuals(const std::string& spriteSheet, const std::string& tsx, const std::unordered_map<int, std::string>& aliases)
+void Character::LoadVisuals(const std::string& spriteSheet, const std::string& tsx,
+							const std::unordered_map<int, std::string>& aliases,
+							const std::unordered_map<std::string, AnimAlias>& animData)
 {
 	anims.LoadFromTSX(tsx.c_str(), aliases);
+
+	// aplicar loop a cada animación
+	for (auto it = animData.begin(); it != animData.end(); ++it)
+	{
+		const std::string& name = it->first;
+		const AnimAlias& data = it->second;
+
+		anims.SetLoop(name, data.loop);
+	}
+
 	anims.SetCurrent("idle");
 
 	texture = Engine::GetInstance().textures->Load(spriteSheet.c_str());

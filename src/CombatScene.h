@@ -8,7 +8,7 @@ struct SDL_Texture;
 class CombatScene : public BaseScene
 {
 public:
-    // Recibe la party aliada de InGameScene y crea una enemiga de prueba internamente
+
     CombatScene(Party* allied);
     ~CombatScene();
 

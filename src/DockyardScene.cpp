@@ -3,11 +3,13 @@
 #include "Scene.h"
 #include "UIManager.h"
 #include "Render.h"
+#include "Textures.h"
 #include "Log.h"
 
 DockyardScene::DockyardScene(Dockyard dockyard, Party* allied)
-    : dockyard(dockyard), alliedParty(allied)
+    : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr)
 {
+    sceneName = "DockyardScene";
 }
 
 DockyardScene::~DockyardScene() {}
@@ -15,17 +17,15 @@ DockyardScene::~DockyardScene() {}
 void DockyardScene::Load()
 {
     LOG("DockyardScene: cargando astillero.");
-
-    SDL_Rect backBounds = { 20, 20, 160, 40 };
-    Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, BACK_BUTTON_ID, "Volver", backBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
-    );
+    LoadTextures();
+    CreateUI();
 }
 
 void DockyardScene::Update(float dt)
 {
-    // TODO: lógica de mejora y reparación del barco
+    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+
+    // lógica de mejora y reparación del barco
 }
 
 void DockyardScene::PostUpdate(float dt)
@@ -43,12 +43,16 @@ void DockyardScene::PostUpdate(float dt)
 
 void DockyardScene::Unload()
 {
+    Engine::GetInstance().textures->UnLoad(exitButton);
+    Engine::GetInstance().textures->UnLoad(background);
+
     Engine::GetInstance().uiManager->CleanUp();
 }
 
 void DockyardScene::LoadTextures()
 {
-
+    exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
+    background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/DocksMennu.png");
 }
 
 bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -62,4 +66,23 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     }
     return true;
+}
+
+void DockyardScene::OnResume()
+{
+    CreateUI();
+}
+
+void DockyardScene::OnPause()
+{
+    Engine::GetInstance().uiManager->CleanUp();
+}
+
+void DockyardScene::CreateUI()
+{
+    SDL_Rect backBounds = { 20, 20, 72, 72 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
+    );
 }

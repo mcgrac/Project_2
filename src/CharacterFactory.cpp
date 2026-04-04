@@ -10,6 +10,7 @@
 #include "pugixml.hpp"
 #include "Log.h"
 #include <string>
+#include <unordered_map>
 
 CharacterFactory::CharacterFactory()
 {
@@ -18,28 +19,6 @@ CharacterFactory::CharacterFactory()
 CharacterFactory::~CharacterFactory()
 {
 }
-
-
-//static std::function<void(Character&)> ParseUpgradeEffect(const std::string& effect)
-//{
-//    size_t plusPos = effect.find('+');
-//    if (plusPos == std::string::npos)
-//    {
-//        LOG("CharacterFactory: efecto de upgrade no reconocido: '%s'", effect.c_str());
-//        return [](Character&) {};
-//    }
-//
-//    std::string stat = effect.substr(0, plusPos);
-//    int value = std::stoi(effect.substr(plusPos + 1));
-//
-//    if (stat == "power") return [value](Character& c) { c.ModifyPower(value); };
-//    if (stat == "maxHealth") return [value](Character& c) { c.ModifyMaxHealth(value); };
-//    if (stat == "speed") return [value](Character& c) { c.ModifySpeed(value); };
-//    if (stat == "healingPower") return [value](Character& c) { c.ModifyHealingPower(value); };
-//
-//    LOG("CharacterFactory: stat de upgrade no reconocida: '%s'", stat.c_str());
-//    return [](Character&) {};
-//}
 
 Character* CharacterFactory::Create(const std::string& name)
 {
@@ -109,6 +88,7 @@ Character* CharacterFactory::Create(const std::string& name)
     std::string spritesheet = visuals.attribute("spritesheet").as_string();
     std::string tsx = visuals.attribute("tsx").as_string();
 
+    std::unordered_map<std::string, AnimAlias> animData;
     std::unordered_map<int, std::string> aliases;
 
     pugi::xml_node animations = visuals.child("animations");
@@ -117,11 +97,13 @@ Character* CharacterFactory::Create(const std::string& name)
     {
         std::string name = anim.attribute("name").as_string();
         int tile = anim.attribute("tile").as_int();
+        bool loop = anim.attribute("loop").as_bool(true); // true por defecto
 
-        aliases[tile] = name;
+        animData[name] = { tile, loop }; //anim data -> tile + loop (false or true)
+        aliases[tile] = name; //aliases, id -> tile
     }
 
-    character->LoadVisuals(spritesheet, tsx, aliases);
+    character->LoadVisuals(spritesheet, tsx, aliases, animData);
 
     //  Skills 
     SkillRegistry& skillRegistry = SkillRegistry::GetInstance();

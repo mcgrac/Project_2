@@ -2,19 +2,20 @@
 <character name="Theresia">
 
 	<visuals
-	spritesheet="Assets/Textures/Animations/MarkusSpritesheet.png"
-	tsx="Assets/Textures/Animations/MarkusSpritesheet.tsx"
+	spritesheet="Assets/Textures/Animations/TheresiaSpritesheet.png"
+	tsx="Assets/Textures/Animations/TheresiaSpritesheet.tsx"
     >
 
 		<animations>
-			<anim name="idle" tile="1"/>
-			<anim name="run" tile="0"/>
-			<anim name="dead" tile="112"/>
+			<anim name="idle" tile="0" loop="true"/>
+			<anim name="dead" tile="112" loop="false"/>
 
-			<anim name="red_dance" tile="6"/>
-			<anim name="laser_upward" tile="5"/>
-			<anim name="heal" tile="9"/>
-			<anim name="burn" tile="10"/>
+			<anim name="encourage" tile="9" loop="false"/>
+			<anim name="battle_fury" tile="11" loop="false"/>
+			<anim name="slash" tile="5" loop="false"/>
+			<anim name="shield_bash" tile="3" loop="false"/>
+			<anim name="double_blade" tile="7" loop="false"/>
+
 		</animations>
 
 	</visuals>

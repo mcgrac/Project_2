@@ -7,12 +7,12 @@
     >
 
 		<animations>
-			<anim name="idle" tile="1"/>
-			<anim name="run" tile="0"/>
-			<anim name="dead" tile="57"/>
+			<anim name="idle" tile="1" loop="true"/>
+			<anim name="run" tile="0" loop="true"/>
+			<anim name="dead" tile="93" loop="false"/>
 
-			<anim name="raptor_slam" tile="6"/>
-			<anim name="raptor_charge" tile="5"/>
+			<anim name="raptor_slam" tile="4" loop="false"/>
+			<anim name="raptor_charge" tile="13" loop="false"/>
 		</animations>
 
 	</visuals>

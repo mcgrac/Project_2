@@ -4,10 +4,12 @@
 #include "UIManager.h"
 #include "Render.h"
 #include "Log.h"
+#include "Textures.h"
 
 ShopScene::ShopScene(Shop shop, Party* allied)
     : shop(shop), alliedParty(allied)
 {
+    sceneName = "ShopScene";
 }
 
 ShopScene::~ShopScene() {}
@@ -15,17 +17,14 @@ ShopScene::~ShopScene() {}
 void ShopScene::Load()
 {
     LOG("ShopScene: cargando tienda.");
-
-    SDL_Rect backBounds = { 20, 20, 160, 40 };
-    Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, BACK_BUTTON_ID, "Volver", backBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
-    );
+    LoadTextures();
+    CreateUI();
 }
 
 void ShopScene::Update(float dt)
 {
-    // TODO: lógica de compra de items
+    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    //lógica de compra de items
 }
 
 void ShopScene::PostUpdate(float dt)
@@ -43,11 +42,16 @@ void ShopScene::PostUpdate(float dt)
 
 void ShopScene::Unload()
 {
+    Engine::GetInstance().textures->UnLoad(exitButton);
+    Engine::GetInstance().textures->UnLoad(background);
+
     Engine::GetInstance().uiManager->CleanUp();
 }
 
 void ShopScene::LoadTextures()
 {
+    exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
+    background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/ShopBackground.png");
 }
 
 bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -61,4 +65,22 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     }
     return true;
+}
+void ShopScene::OnResume()
+{
+    CreateUI();
+}
+
+void ShopScene::OnPause()
+{
+    Engine::GetInstance().uiManager->CleanUp();
+}
+
+void ShopScene::CreateUI()
+{
+    SDL_Rect backBounds = { 20, 20, 72, 72 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
+    );
 }
