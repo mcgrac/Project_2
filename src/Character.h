@@ -34,7 +34,7 @@ protected:
 	int speed;
 	int lifesteal;
 	float healingPower;
-	float pisonPower;
+	float poisonPower;
 	float firePower;
 	bool isPoisoned;
 	bool isBurned;
@@ -143,7 +143,7 @@ public:
 	inline std::string GetName() const { return name; }
 	inline std::vector<Skill>& GetSkills() { return skills; }
 	inline float GetFirePower() const { return firePower; }
-	inline float GetPoisonPower() const { return pisonPower; }
+	inline float GetPoisonPower() const { return poisonPower; }
 	inline float GetHealingPower() const { return healingPower; }
 	inline bool GetAnimationFinished() const { return anims.IsCurrentFinished(); }
 	inline std::string GetCurrentAnimation() const { return anims.GetCurrentName(); }
@@ -157,7 +157,7 @@ public:
 	void ModifyDurability(int amount);
 	inline void AddInitiative(int amount) { initiative += amount; }
 	inline void ModifyFirePower(float amount) { firePower += amount; }
-	inline void ModifyPoisonPower(float amount) { pisonPower += amount; }
+	inline void ModifyPoisonPower(float amount) { poisonPower += amount; }
 #pragma endregion
 
 #pragma region TEST
