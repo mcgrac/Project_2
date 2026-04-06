@@ -4,6 +4,7 @@
 #include <functional>
 
 class Character; // forward declaration
+class Party;
 
 enum class DamageType { Physical, Magical, None };
 
@@ -14,15 +15,19 @@ struct SkillEffect {
 };
 
 class Skill {
-public:
+private:
     std::string name;
     DamageType damageType;
     int baseDamage;          //base skill's damage (can be 0)
     float powerMultiplier;   // 1.0 = 100% power, 1.25 = +25%, 0 = sin daño base
     std::vector<SkillEffect> effects;
     int initiativeCost;
+    bool hasAreaEffect;
+    bool areaEffectTargetAllies;
+    std::string animationId;
 
-    Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost);
+public:
+    Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost, std::string _animationId = "none");
     ~Skill();
 
     void AddEffect(SkillEffect effect) {
@@ -32,8 +37,14 @@ public:
     void Use(Character* caster, Character* target);
 
 #pragma region GETTERS
-    std::string GetName() { return name; }
-    int GetInitiativeCost() { return initiativeCost; }
+    inline std::string GetName() const { return name; }
+    inline int GetInitiativeCost() const  { return initiativeCost; }
+    inline bool GetHasAreaEffect() const { return hasAreaEffect; }
+    inline bool GetAreaEffectTargetAllies() const { return areaEffectTargetAllies; }
+    inline std::string GetAnimationId() const { return animationId; }
+
+    inline void SetHasAreaEffect(bool b) { hasAreaEffect = b; }
+    inline void SetAreaEffectTargetAllies(bool b) { areaEffectTargetAllies = b; }
 
     //---------Test debug-------
     const std::vector<SkillEffect>& GetEffects() const { return effects; }

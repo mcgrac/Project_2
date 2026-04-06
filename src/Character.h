@@ -10,11 +10,19 @@
 #include "Skill.h"
 #include "UpgradeTree.h"
 
+struct AnimAlias
+{
+	int tile;
+	bool loop;
+};
+
 class Character {
 protected:
-	Vector2D position;
 
+	Vector2D position;
 	std::string name;
+
+#pragma region STATS
 	int health;
 	int maxHealth;
 	int experience;
@@ -28,35 +36,52 @@ protected:
 	float healingPower;
 	float poisonPower;
 	float firePower;
-
 	bool isPoisoned;
 	bool isBurned;
 	int poisonStatMod;
 	int burnedStatMod;
-
-	int level;
-
-	bool isAlive;
-
-	Inventory* inventory = nullptr;
-
-
-	AnimationSet anims;
-
-	SDL_Texture* texture = nullptr;
-
 	int maxHealthLevelScaling;
 	int speedLevelScaling;
 	int powerLevelScaling;
+	int level;
+	bool isAlive;
+#pragma endregion
+
+	Inventory* inventory = nullptr;
+
+	//animations
+	AnimationSet anims;
+	SDL_Texture* texture = nullptr;
 
 	std::vector<Skill> skills;
-
 	Character* killedBy = nullptr; //to know which was the character that killed
-
-
+	Character* poisonedBy = nullptr; //to knwo if the character was dead by poisoning which was the character that posion
+	Character* burnedBy = nullptr; //to knwo if the character was dead by poisoning which was the character that posion
 	UpgradeTree* upgradeTree = nullptr;
 
 public:
+
+	//PreCombatValues
+	struct PreCombatValues {
+		int _health;
+		bool _isAlive;
+	};
+
+	PreCombatValues TakePreCombatValues() const {
+
+		PreCombatValues snap;
+		snap._health = health;
+		snap._isAlive = isAlive;
+		return snap;
+	}
+
+	void RestorePreCombatValues(const PreCombatValues& snap) {
+		health = snap._health;
+		isAlive = snap._isAlive;
+		ClearStatusEffects();
+		ResetCurrentInitiative();
+
+	}
 
 	Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 		      int _maxInitiative, int _power, int _durability, int _maxDurability, 
@@ -66,8 +91,9 @@ public:
 
 	~Character();
 
-	//void AttackPhysical(Character& target, int damage);
-	//void AttackMagical(Character& target, int damage);
+
+	void Update(float dt);
+	void Draw(float dt);
 
 	void Heal(int amunt);
 	void ReceivePhysicalDamage(int damageReceived, Character* attacker);
@@ -75,50 +101,63 @@ public:
 	void GainExperience(int amount);
 	void LevelUp();
 
-	void Draw(float dt);
-
 	void AddSkill(Skill skill);
 	void UseSkill(int index, Character* target);
 
-	void ModifyDurability(int amount);
-	void SetBurned(bool state, int damage);
-	void SetPoisoned(bool state, int damage);
+	void SetBurned(bool state, int damage, Character* attacker);
+	void SetPoisoned(bool state, int damage, Character* attacker);
 
-	void SetKilledBy(Character* killer) { killedBy = killer; }
+	inline void SetKilledBy(Character* killer) { killedBy = killer; }
 
 	void ClearStatusEffects();
 
+	inline void AddUpgradeTier(UpgradeTier tier) { upgradeTree->AddTier(tier); }
+	inline void TakePoisonDamage() { ReceiveMagicalDamage(poisonStatMod, nullptr); }
+	inline void TakeBurnDamage() { ReceiveMagicalDamage(burnedStatMod, nullptr); }
+
+	// Initiative (combat)
+	inline void ResetCurrentInitiative() { initiative = 0; }
+
+	// Position in the screen (start combat)
+	inline void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
+
+	void LoadVisuals(const std::string& spriteSheet, const std::string& tsx,
+					 const std::unordered_map<int, std::string>& aliases,
+		             const std::unordered_map<std::string, AnimAlias>& animData);
+
+	void PlayAnimation(const std::string& name);
+
 #pragma region GETTERS
-	int GetPower() { return power; }
-	int GetLifesteal() { return lifesteal; }
-	int GetLevel() { return level; }
-	bool GetIsAlive() { return isAlive; }
-	Character* GetKilledBy() const { return killedBy; }
+	inline int GetPower() const { return power; }
+	inline int GetLifesteal() const { return lifesteal; }
+	inline int GetLevel() const { return level; }
+	inline bool GetIsAlive() const { return isAlive; }
+	inline Character* GetKilledBy() const { return killedBy; }
+	inline int GetSpeed() const { return speed; }
+	inline int GetCurrentHP() const { return health; }
+	inline int GetCurrentInitiative() const { return initiative; }
+	inline bool IsPoisoned() const { return isPoisoned; }
+	inline bool IsBurning() const { return isBurned; }
+	inline int GetPoisonDamage() const { return poisonStatMod; }
+	inline int GetBurnDamage() const { return burnedStatMod; }
+	inline std::string GetName() const { return name; }
+	inline std::vector<Skill>& GetSkills() { return skills; }
+	inline float GetFirePower() const { return firePower; }
+	inline float GetPoisonPower() const { return pisonPower; }
+	inline float GetHealingPower() const { return healingPower; }
+	inline bool GetAnimationFinished() const { return anims.IsCurrentFinished(); }
+	inline std::string GetCurrentAnimation() const { return anims.GetCurrentName(); }
+#pragma endregion
 
-	void ModifyPower(int amount) { power += amount; }
-	void ModifySpeed(int amount) { speed += amount; }
-	void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
-	void ModifyHealingPower(int amount) { healingPower += amount; }
-
-	// Requeridos por Combat
-	int GetSpeed() { return speed; }
-	int GetCurrentHP() { return health; }
-	int GetCurrentInitiative() { return initiative; }
-	bool IsPoisoned() { return isPoisoned; }
-	bool IsBurning() { return isBurned; }
-	int GetPoisonDamage() { return poisonStatMod; }
-	int GetBurnDamage() { return burnedStatMod; }
-	std::string GetName() { return name; }
-	std::vector<Skill>& GetSkills() { return skills; }
-	void TakePoisonDamage() { ReceiveMagicalDamage(poisonStatMod, nullptr); }
-	void TakeBurnDamage() { ReceiveMagicalDamage(burnedStatMod, nullptr); }
-
-	// Manipulación de iniciativa
-	void AddInitiative(int amount) { initiative += amount; }
-	void ResetCurrentInitiative() { initiative = 0; }
-
-	// Posición en pantalla (para StartCombat)
-	void SetPosition(float x, float y) { position.setX(x); position.setY(y); }
+#pragma region MODIFIERS
+	inline void ModifyPower(int amount) { power += amount; }
+	inline void ModifySpeed(int amount) { speed += amount; }
+	inline void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
+	inline void ModifyHealingPower(int amount) { healingPower += amount; }
+	void ModifyDurability(int amount);
+	inline void AddInitiative(int amount) { initiative += amount; }
+	inline void ModifyFirePower(float amount) { firePower += amount; }
+	inline void ModifyPoisonPower(float amount) { pisonPower += amount; }
 #pragma endregion
 
 #pragma region TEST

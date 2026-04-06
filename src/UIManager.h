@@ -25,7 +25,11 @@ public:
 	bool CleanUp();
 
 	// Additional methods
-	std::shared_ptr<UIElement> CreateUIElement(UIElementType type, int id, const char* text, SDL_Rect bounds, std::function<bool(UIElement*)> callback, SDL_Rect sliderBounds = { 0,0,0,0 });
+	std::shared_ptr<UIElement> CreateUIElement(
+		UIElementType type, int id, const char* text, 
+		SDL_Rect bounds, std::function<bool(UIElement*)> callback, 
+		SDL_Rect sliderBounds = { 0,0,0,0 }, 
+		SDL_Texture* spritesheet = nullptr, int spriteCol = 0, int _btnWidth = 0, int _btnHeight = 0);
 
 public:
 

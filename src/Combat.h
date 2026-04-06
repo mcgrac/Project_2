@@ -1,19 +1,29 @@
 ﻿#pragma once
 #include <vector>
 #include <string>
-#include"Vector2D.h"
+#include "Vector2D.h"
+#include "Character.h"
+#include <unordered_map>
 
 // Forward declarations
 class Character;
 class Party;
 class Skill;
 
+struct SDL_Texture;
 
 enum class CombatState
 {
     START_COMBAT,
     CALCULATE_INITIATIVE,
-    ATTACK,
+
+    ATTACK_START,
+
+    WAITING_FOR_PLAYER_INPUT,
+
+    ATTACK_ANIMATION,
+    ATTACK_RESOLVE,
+
     MODIFIERS,
     CHECK_DEFEAT,
     END_COMBAT
@@ -31,9 +41,27 @@ class Combat
 public:
 
     Combat(Party* allied, Party* enemy);
+    ~Combat();
 
     // Whole combat cycle
     void Run();
+    bool CombatIsFinished() const;
+    std::vector<Character*> GetAllCombatants();
+
+    std::unordered_map<Character*, Character::PreCombatValues> preCombatValues;
+
+    //getter
+    inline bool GetWaitingForInput() const { return state == CombatState::WAITING_FOR_PLAYER_INPUT; }
+    inline Character* GetCurrentActor() const { return currentActor; }
+    inline std::vector<Character*> GetAliveEnemies() { return GetAliveMembers(enemyParty); }
+    inline std::vector<Character*> GetAliveAllies() { return GetAliveMembers(alliedParty); }
+
+    void SubmitPlayerChoice(int skillIndex, int targetIndex);
+
+    //testing
+    void ForceVictory();
+    void ForceDefeat();
+
 
 private:
 
@@ -45,58 +73,44 @@ private:
 
     Character* currentActor;    //one with most iniciative (attacking)
 
+    Skill* currentSkill = nullptr;
+    Character* currentTarget = nullptr;
+
     // ── Posiciones predefinidas ───────────────
     // Índice 0-2: aliados  |  Índice 3-5: enemigos
     // Puedes cambiar el tipo a sf::Vector2f si usas SFML, etc.
     Vector2D position; 
     static const Vector2D defaultPositions[6];
 
-    // ─────────────────────────────────────────
-    //  Fases del combate
-    // ─────────────────────────────────────────
+    bool runningCombat; //control
 
-    // Inicializa posiciones y stats temporales
     void StartCombat();
 
-    // Acumula iniciativa y decide quién actúa
-    // Devuelve false si nadie llega aún a 100 (hace otro tick)
     bool CalculateInitiative();
 
-    // Fase de ataque: jugador o IA según el actor
-    void Attack();
+    //void Attack();
+    void AttackStart();
+    void AttackAnimation();
+    void AttackResolve();
 
-    // Aplica daño de veneno/quemadura a todos los afectados
+
     void ApplyModifiers();
 
-    // Comprueba si una party entera está derrotada
     void CheckDefeat();
 
-    // Distribuye XP y recompensas (victoria) o lanza Game Over (derrota)
     void EndCombat();
 
-
-    // Jugador elige habilidad (0-4) y target entre enemigos vivos
     void PlayerTurn();
 
-    // Enemigo elige habilidad aleatoria (0-1) y target aliado vivo aleatorio
     void EnemyTurn();
 
-    // Ejecuta la habilidad sobre el target y resta su coste de iniciativa
     void ExecuteSkill(Character* user, Skill& skill, Character* target);
 
-
-    // Devuelve puntero al personaje con más iniciativa >= 100, o nullptr
     Character* GetHighestInitiativeActor();
 
-    // Todos los personajes de combate (aliados + enemigos)
-    std::vector<Character*> GetAllCombatants();
-
-    // Personajes vivos de una party
     std::vector<Character*> GetAliveMembers(Party* party);
 
-    // True si todos los miembros de la party están muertos
     bool IsPartyDefeated(Party* party);
 
-    // Devuelve true si el personaje pertenece al equipo aliado
     bool IsAllied(Character* character);
 };

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<character name="Raptor">
+
+	<visuals
+        spritesheet="Assets/Textures/Animations/RaptorSpritesheet.png"
+        tsx="Assets/Textures/Animations/RaptorSpritesheet.tsx"
+    >
+
+		<animations>
+			<anim name="idle" tile="1" loop="true"/>
+			<anim name="run" tile="0" loop="true"/>
+			<anim name="dead" tile="93" loop="false"/>
+
+			<anim name="raptor_slam" tile="4" loop="false"/>
+			<anim name="raptor_charge" tile="13" loop="false"/>
+		</animations>
+
+	</visuals>
+	
+    <stats
+        health="120"
+        maxHealth="120"
+        power="25"
+        durability="5"
+        maxDurability="40"
+        speed="25"
+        lifesteal="0"
+        healingPower="10"
+        poisonPower="0"
+        firePower="0"
+        maxInitiative="300"
+    />
+
+    <levelScaling
+        maxHealth="2"
+        power="7"
+        speed="5"
+    />
+
+    <skills>
+        <skill id="raptor_slam"   initiativeCost="100" />
+        <skill id="raptor_charge" initiativeCost="100" />
+    </skills>
+
+</character>

@@ -1,5 +1,7 @@
 #include "Character.h"
 #include "Engine.h"
+#include "Render.h"
+#include "Textures.h"
 #include "Log.h"
 
 Character::Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
@@ -23,17 +25,10 @@ Character::~Character()
 	//add cleanup of the textures and sounds
 }
 
-//void Character::AttackPhysical(Character& target, int damage)
-//{
-//	target.ReceivePhysicalDamage(damage);
-//	Heal(damage * lifesteal);
-//}
-//
-//void Character::AttackMagical(Character& target, int damage)
-//{
-//	target.ReceiveMagicalDamage(damage);
-//	Heal(damage * lifesteal);
-//}
+void Character::Update(float dt)
+{
+	Draw(dt);
+}
 
 void Character::Heal(int amount)
 {
@@ -49,8 +44,11 @@ void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
-	if (health == 0 && attacker != nullptr) {
-		killedBy = attacker;
+	if (health <= 0) {
+		isAlive = false;
+		if (attacker != nullptr) {
+			killedBy = attacker;
+		}
 	}
 }
 
@@ -61,8 +59,11 @@ void Character::ReceiveMagicalDamage(int damageReceived, Character* attacker)
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
-	if (health == 0 && attacker != nullptr) {
-		killedBy = attacker;
+	if (health <= 0) {
+		isAlive = false;
+		if (attacker != nullptr) {
+			killedBy = attacker;
+		}
 	}
 }
 
@@ -90,31 +91,18 @@ void Character::LevelUp()
 void Character::Draw(float dt) 
 {
 	anims.Update(dt);
+
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-	// Update render position using your PhysBody helper
-	//int x, y;
-	//pbody->GetPosition(x, y);
-	//position.setX((float)x);
-	//position.setY((float)y);
+	int drawX = (int)position.getX() - animFrame.w / 2;
+	int drawY = (int)position.getY() - animFrame.h / 2;
 
-	//L10: TODO 7: Center the camera on the player
-	//Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
-	//float limitLeft = (float)Engine::GetInstance().render->camera.w / 4;
-	//float limitRight = (float)mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
-	//if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {
-	//	Engine::GetInstance().render->camera.x = (int)-position.getX() + (int)(Engine::GetInstance().render->camera.w / 4);
-	//}
-	//else if (position.getX() <= limitLeft) {
-	//	Engine::GetInstance().render->camera.x = 0;
-	//}
-	//else {
-	//	Engine::GetInstance().render->camera.x = -(float)mapSize.getX() + Engine::GetInstance().render->camera.w;
-	//}
-
-	// L10: TODO 5: Draw the player using the texture and the current animation frame
-	//Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
-
+	Engine::GetInstance().render->DrawTexture(
+		texture,
+		drawX,
+		drawY,
+		&animFrame
+	);
 }
 
 void Character::AddSkill(Skill skill)
@@ -131,9 +119,9 @@ void Character::UseSkill(int index, Character* target)
 	{
 		Skill& skill = skills[index];
 
-		if (initiative >= skill.initiativeCost)
+		if (initiative >= skill.GetInitiativeCost())
 		{
-			initiative -= skill.initiativeCost;
+			initiative -= skill.GetInitiativeCost();
 			skill.Use(this, target);
 		}
 	}
@@ -144,16 +132,46 @@ void Character::ModifyDurability(int amount)
 	durability = std::max(0, std::min(maxDurability, durability + amount));
 }
 
-void Character::SetBurned(bool state, int damage)
+void Character::SetBurned(bool state, int damage, Character* attacker)
 {
 	isBurned = state;
-	burnedStatMod = damage;
+
+	if(isBurned) //if character burns
+	{
+		if (burnedStatMod > 0) { //if already burned
+			burnedStatMod += damage;
+		}
+		else {
+			burnedStatMod = damage;
+		}
+
+		burnedBy = attacker; //the one that takes the kill by burning is the last character that burn
+	}
+	else {//burning = false (clean burning effect)
+		burnedStatMod = 0;
+		burnedBy = nullptr;
+	}
 }
 
-void Character::SetPoisoned(bool state, int damage)
+void Character::SetPoisoned(bool state, int damage, Character* attacker)
 {
 	isPoisoned = state;
-	poisonStatMod = damage;
+
+	if(isPoisoned)
+	{
+		if (poisonStatMod > 0) { //if already poisoned
+			poisonStatMod += damage;
+		}
+		else {
+			poisonStatMod = damage;
+		}
+
+		poisonedBy = attacker; //the one that takes the kill by poisoning is the last character that poison
+	}
+	else {
+		poisonStatMod = 0;
+		poisonedBy = nullptr;
+	}
 }
 
 void Character::ClearStatusEffects()
@@ -163,6 +181,41 @@ void Character::ClearStatusEffects()
 	isBurned = false;
 	burnedStatMod = 0;
 }
+
+void Character::LoadVisuals(const std::string& spriteSheet, const std::string& tsx,
+							const std::unordered_map<int, std::string>& aliases,
+							const std::unordered_map<std::string, AnimAlias>& animData)
+{
+	anims.LoadFromTSX(tsx.c_str(), aliases);
+
+	// aplicar loop a cada animación
+	for (auto it = animData.begin(); it != animData.end(); ++it)
+	{
+		const std::string& name = it->first;
+		const AnimAlias& data = it->second;
+
+		anims.SetLoop(name, data.loop);
+	}
+
+	anims.SetCurrent("idle");
+
+	texture = Engine::GetInstance().textures->Load(spriteSheet.c_str());
+	if (texture == nullptr) { LOG("Fail texture loading"); }
+}
+
+void Character::PlayAnimation(const std::string& name)
+{
+	if (anims.Has(name))
+	{
+		anims.SetCurrent(name);
+	}
+	else
+	{
+		LOG("Animation '%s' not found for character %s", name.c_str(), GetName().c_str());
+		anims.SetCurrent("idle");
+	}
+}
+
 
 void Character::PrintDebugInfo(){
 	LOG("========================================");

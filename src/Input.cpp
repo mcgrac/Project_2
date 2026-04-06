@@ -2,6 +2,7 @@
 #include "Input.h"
 #include "Window.h"
 #include "Log.h"
+#include "Render.h"
 
 #define MAX_KEYS 300
 
@@ -112,11 +113,25 @@ bool Input::PreUpdate()
 
 		case SDL_EVENT_MOUSE_MOTION:
 		{
+			float logicalX = 0.0f;
+			float logicalY = 0.0f;
+
+			SDL_RenderCoordinatesFromWindow(
+				Engine::GetInstance().render->renderer,
+				event.motion.x, event.motion.y,
+				&logicalX, &logicalY
+			);
+
 			int scale = Engine::GetInstance().window->GetScale();
+			mouseX = (int)(logicalX / scale);
+			mouseY = (int)(logicalY / scale);
 			mouseMotionX = (int)(event.motion.xrel / scale);
 			mouseMotionY = (int)(event.motion.yrel / scale);
-			mouseX = (int)(event.motion.x / scale);
-			mouseY = (int)(event.motion.y / scale);
+			//int scale = Engine::GetInstance().window->GetScale();
+			//mouseMotionX = (int)(event.motion.xrel / scale);
+			//mouseMotionY = (int)(event.motion.yrel / scale);
+			//mouseX = (int)(event.motion.x / scale);
+			//mouseY = (int)(event.motion.y / scale);
 		}
 		break;
 		}

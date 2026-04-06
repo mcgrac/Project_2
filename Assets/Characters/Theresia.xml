@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<character name="Theresia">
+
+	<visuals
+	spritesheet="Assets/Textures/Animations/TheresiaSpritesheet.png"
+	tsx="Assets/Textures/Animations/TheresiaSpritesheet.tsx"
+    >
+
+		<animations>
+			<anim name="idle" tile="0" loop="true"/>
+			<anim name="dead" tile="112" loop="false"/>
+
+			<anim name="encourage" tile="9" loop="false"/>
+			<anim name="battle_fury" tile="11" loop="false"/>
+			<anim name="slash" tile="5" loop="false"/>
+			<anim name="shield_bash" tile="3" loop="false"/>
+			<anim name="double_blade" tile="7" loop="false"/>
+
+		</animations>
+
+	</visuals>
+	
+	<stats
+        health="110"
+        maxHealth="110"
+        power="62"
+        durability="10"
+        maxDurability="40"
+        speed="30"
+        lifesteal="0"
+        healingPower="0"
+        poisonPower="0"
+        firePower="0"
+        maxInitiative="300"
+    />
+
+	<levelScaling
+        maxHealth="6"
+        power="2"
+        speed="2"
+    />
+
+	<skills>
+		<skill id="encourage" initiativeCost="100" />
+		<skill id="battle_fury" initiativeCost="100" />
+		<skill id="slash" initiativeCost="100" />
+		<skill id="shield_bash" initiativeCost="100" />
+		<skill id="double_blade" initiativeCost="100" />
+	</skills>
+
+	<upgradeTree>
+		<tier requiredLevel="5">
+			<optionA name="Arcane Focus"  description="Power +15"       effect="power+15"      />
+			<optionB name="Vital Surge"   description="Max Health +20"  effect="maxHealth+20"  />
+		</tier>
+		<tier requiredLevel="10">
+			<optionA name="Swift Cast"    description="Speed +8"        effect="speed+8"       />
+			<optionB name="Mending Light" description="Healing Power +1" effect="healingPower+1" />
+		</tier>
+		<tier requiredLevel="15">
+			<optionA name="Overload"      description="Power +25"       effect="power+25"      />
+			<optionB name="Inner Shield"  description="Max Health +40"  effect="maxHealth+40"  />
+		</tier>
+	</upgradeTree>
+
+</character>

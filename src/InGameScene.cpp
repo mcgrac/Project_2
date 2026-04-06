@@ -1,5 +1,8 @@
 #include "InGameScene.h"
+#include "CombatScene.h"
+#include "islandScene.h"
 #include "CharacterFactory.h"
+#include "PauseScene.h"
 #include "Character.h"
 #include "Scene.h"
 #include "Engine.h"
@@ -8,12 +11,15 @@
 #include "EntityManager.h"
 #include "UIManager.h"
 #include "Log.h"
+#include "Textures.h"
+#include "Render.h"
+#include "SaveLoad.h"
 
-
-InGameScene::InGameScene(std::vector<std::string> _characterNames)
+InGameScene::InGameScene(std::vector<std::string> _characterNames, bool _isContinue)
     : characterNames(_characterNames)
-    , alliedParty(nullptr)
+    , alliedParty(nullptr), background(nullptr), isContinue(_isContinue)
 {
+    sceneName = "InGameScene";
 }
 
 InGameScene::~InGameScene()
@@ -23,8 +29,8 @@ InGameScene::~InGameScene()
 
 void InGameScene::Load()
 {
-    Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
-    Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
+
+    //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
 
     // Construir la party aliada con los 3 personajes seleccionados
     alliedParty = new Party("Aliados");
@@ -49,11 +55,46 @@ void InGameScene::Load()
     {
         c->PrintDebugInfo();
     }
+
+    //load textures
+    LoadTextures();
+    CreateUI();
+
+    //load world
+    worldMap.LoadWorld("Assets/Maps/world.xml");
+
+    //callback when the player arrives to an island->world map notify ingameScene
+    worldMap.arrivalIsland = [this](const Island& island) {
+        Engine::GetInstance().scene->PushScene(new IslandScene(island, &worldMap, alliedParty));
+    };
+
+    if (isContinue)
+    {
+        SaveData data = SaveLoad::Load();
+        if (data.exists)
+        {
+            RestoreFromSave(data);
+            worldMap.SetCurrentIsland(data.currentIslandId);
+            LOG("InGameScene: partida restaurada — isla %d.", data.currentIslandId);
+        }
+    }
 }
 
 void InGameScene::Update(float dt)
 {
+    //render textures
+    Engine::GetInstance().render->DrawTexture(background, 0, 0);
 
+    //detect pause menu
+    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
+    {
+        Engine::GetInstance().scene->PushScene(
+            new PauseScene(alliedParty, worldMap.GetCurrentIslandId())
+        );
+    }
+
+    worldMap.Update(dt);
+    worldMap.PostUpdate(dt);
 }
 
 void InGameScene::PostUpdate(float dt)
@@ -63,10 +104,21 @@ void InGameScene::PostUpdate(float dt)
 
 void InGameScene::Unload()
 {
+    LOG("InGameScene::Unload LLAMADO — alliedParty: %p", alliedParty);
+
+    //unload worldMap
+    worldMap.UnloadWorld();
+
     DestroyParty();
     Engine::GetInstance().uiManager->CleanUp();
-    Engine::GetInstance().map->CleanUp();
+    //Engine::GetInstance().map->CleanUp();
     Engine::GetInstance().entityManager->CleanUp();
+}
+
+void InGameScene::LoadTextures(){
+    //load background
+    background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/IslandsScreen.png");
+    spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/UI/buttons2.png");
 }
 
 bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -74,6 +126,11 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
     switch (uiElement->id)
     {
     // Add buttons in game
+    case 1:
+        LOG("InGameScene: iniciando combate...");
+        // PushScene — InGameScene queda suspendida con todo su estado
+        Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty));
+        break;
     default:
         break;
     }
@@ -91,4 +148,41 @@ void InGameScene::DestroyParty()
 
     delete alliedParty;
     alliedParty = nullptr;
+}
+
+void InGameScene::RestoreFromSave(const SaveData& data)
+{
+    for (const auto& charSave : data.characters)
+    {
+        for (Character* c : alliedParty->GetMembers())
+        {
+            if (c->GetName() == charSave.name)
+            {
+                c->RestorePreCombatValues({ charSave.health, charSave.isAlive });
+                LOG("SaveLoad: restaurado %s — HP:%d isAlive:%d",
+                    charSave.name.c_str(), charSave.health, charSave.isAlive);
+                break;
+            }
+        }
+    }
+}
+
+void InGameScene::OnResume()
+{
+    CreateUI();
+}
+
+void InGameScene::OnPause()
+{
+    Engine::GetInstance().uiManager->CleanUp();
+}
+
+void InGameScene::CreateUI()
+{
+    //Botón de iniciar combate
+    SDL_Rect combatBtnBounds = { 20, 20, 154, 60 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0
+    );
 }

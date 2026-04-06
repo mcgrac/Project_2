@@ -58,7 +58,7 @@ bool Player::Update(float dt)
 	Jump();
 	Teleport();
 	ApplyPhysics();
-	Draw(dt);
+	//Draw(dt);
 
 	return true;
 }
@@ -108,34 +108,34 @@ void Player::ApplyPhysics() {
 	Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
 }
 
-void Player::Draw(float dt) {
-
-	anims.Update(dt);
-	const SDL_Rect& animFrame = anims.GetCurrentFrame();
-
-	// Update render position using your PhysBody helper
-	int x, y;
-	pbody->GetPosition(x, y);
-	position.setX((float)x);
-	position.setY((float)y);
-
-	//L10: TODO 7: Center the camera on the player
-	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
-	float limitLeft = (float)Engine::GetInstance().render->camera.w / 4;
-	float limitRight = (float)mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
-	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {
-		Engine::GetInstance().render->camera.x = (int) - position.getX() + (int)(Engine::GetInstance().render->camera.w / 4);
-	}
-	else if( position.getX() <= limitLeft) {
-		Engine::GetInstance().render->camera.x = 0;
-	}
-	else {
-		Engine::GetInstance().render->camera.x = -(float)mapSize.getX() + Engine::GetInstance().render->camera.w;
-	}
-
-	// L10: TODO 5: Draw the player using the texture and the current animation frame
-	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
-}
+//void Player::Draw(float dt) {
+//
+//	anims.Update(dt);
+//	const SDL_Rect& animFrame = anims.GetCurrentFrame();
+//
+//	// Update render position using your PhysBody helper
+//	int x, y;
+//	pbody->GetPosition(x, y);
+//	position.setX((float)x);
+//	position.setY((float)y);
+//
+//	//L10: TODO 7: Center the camera on the player
+//	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
+//	float limitLeft = (float)Engine::GetInstance().render->camera.w / 4;
+//	float limitRight = (float)mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
+//	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {
+//		Engine::GetInstance().render->camera.x = (int) - position.getX() + (int)(Engine::GetInstance().render->camera.w / 4);
+//	}
+//	else if( position.getX() <= limitLeft) {
+//		Engine::GetInstance().render->camera.x = 0;
+//	}
+//	else {
+//		Engine::GetInstance().render->camera.x = -(float)mapSize.getX() + Engine::GetInstance().render->camera.w;
+//	}
+//
+//	// L10: TODO 5: Draw the player using the texture and the current animation frame
+//	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
+//}
 
 bool Player::CleanUp()
 {

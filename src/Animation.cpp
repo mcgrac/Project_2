@@ -1,6 +1,7 @@
 #include "Animation.h"
 #include <pugixml.hpp>
 #include <cstdio>
+#include "Log.h"
 
 // ---------- Animation ----------
 
@@ -35,6 +36,9 @@ void Animation::Update(float dt) {
         }
         else {
             if (loop_) {
+
+                //LOG("Animation Loop");
+
                 currentIndex_ = 0;
             }
             else {
@@ -143,4 +147,23 @@ const std::string& AnimationSet::GetCurrentName() const {
 
 bool AnimationSet::Has(const std::string& name) const {
     return clips_.find(name) != clips_.end();
+}
+
+bool AnimationSet::IsCurrentFinished() const
+{
+    auto it = clips_.find(currentName_);
+    if (it == clips_.end())
+        return true;
+
+    return it->second.HasFinishedOnce();
+}
+
+void AnimationSet::SetLoop(const std::string& name, bool v)
+{
+    auto it = clips_.find(name);
+
+    if (it != clips_.end())
+    {
+        it->second.SetLoop(v);
+    }
 }

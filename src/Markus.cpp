@@ -27,63 +27,13 @@ Markus::Markus() : Character(
     2           // powerLevelScaling      (+2 per level)
 )
 {
-    InitSkills();
-    InitUpgradeTree();
+    //InitSkills();
+    //InitUpgradeTree();
 }
 
 Markus::~Markus()
 {}
 
-void Markus::InitSkills()
-{
-    // Skill 1 - Baile Rojo: Deal 10(+25%Power) Magic Damage and Inflict 10 Fire
-    Skill baileRojo("Red dance", DamageType::Magical, 10, 0.25f, 100);
-    baileRojo.AddEffect(
-        {
-        "Inflict 10 Fire",
-        [](Character* caster, Character* target) {
-            target->SetBurned(true, 10);
-        }
-        });
-    AddSkill(baileRojo);
-
-    // Skill 2 - Divine Light: Heal or deal magic damage depending on target
-    Skill divineLight("Divine Light", DamageType::Magical, 0, 0.5f, 100);
-    divineLight.AddEffect(
-        {
-        "Heal ally or damage enemy",
-        [](Character* caster, Character* target) {
-            target->Heal((int)(caster->GetPower() * 0.5f));
-        }
-        });
-    AddSkill(divineLight);
-
-    // Skill 2 - Laser Upward: Pure magic damage //stiull include "or Heal 10(+30%Power+HealingMod) to an ally"
-    Skill laserUpward("Laser Upward", DamageType::Magical, 15, 0.2f, 100);
-    AddSkill(laserUpward);
-
-    // Skill 4 - Ascend: Team buff (Physical Damage buff)
-    Skill ascend("Ascend", DamageType::None, 0, 0.0f, 100);
-    ascend.AddEffect(
-        {
-        "Buff team PhysDmg",
-        [](Character* caster, Character* target) {
-            // apply buff when team logic is created
-        }
-        });
-    AddSkill(ascend);
-
-    // Skill 5 - Healing Halo: Ally healing aura
-    Skill healingHalo("Healing Halo", DamageType::None, 0, 0.0f, 100);
-    healingHalo.AddEffect(
-        {
-        "Heal all allies over time",
-        [](Character* caster, Character* target) {
-            target->Heal((int)(caster->GetPower() * 0.3f));
-        }
-        });
-    AddSkill(healingHalo);
-}
 
 void Markus::InitUpgradeTree()
 {

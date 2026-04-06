@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<character name="Rex">
+
+	<visuals
+        spritesheet="Assets/Textures/Animations/RexSpritesheet.png"
+        tsx="Assets/Textures/Animations/RexSpritesheet.tsx"
+    >
+
+		<animations>
+			<anim name="idle" tile="0" loop="true"/>
+			<anim name="dead" tile="137" loop="false"/>
+
+			<anim name="rex_charge" tile="8" loop="false"/>
+			<anim name="rex_bite" tile="141" loop="false"/>
+		</animations>
+
+	</visuals>
+	
+    <stats
+        health="40"
+        maxHealth="40"
+        power="70"
+        durability="0"
+        maxDurability="40"
+        speed="45"
+        lifesteal="0"
+        healingPower="0"
+        poisonPower="5"
+        firePower="0"
+        maxInitiative="300"
+    />
+
+    <levelScaling
+        maxHealth="6"
+        power="7"
+        speed="4"
+    />
+
+    <skills>
+        <skill id="rex_bite"   initiativeCost="100" />
+        <skill id="rex_charge" initiativeCost="100" />
+    </skills>
+
+</character>
