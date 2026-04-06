@@ -2,6 +2,8 @@
 #include "BaseScene.h"
 #include "Party.h"
 
+struct SDL_Texture;
+
 class PauseScene : public BaseScene
 {
 public:
@@ -25,7 +27,6 @@ private:
     Party* alliedParty;  
     int currentIslandId;
 
-    static constexpr int CONTINUE_BUTTON_ID = 1;
-    static constexpr int OPTIONS_BUTTON_ID = 2;
-    static constexpr int MAIN_MENU_BUTTON_ID = 3;
+    SDL_Texture* buttons;
+    SDL_Texture* background;
 };

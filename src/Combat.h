@@ -18,6 +18,9 @@ enum class CombatState
     CALCULATE_INITIATIVE,
 
     ATTACK_START,
+
+    WAITING_FOR_PLAYER_INPUT,
+
     ATTACK_ANIMATION,
     ATTACK_RESOLVE,
 
@@ -47,6 +50,19 @@ public:
 
     std::unordered_map<Character*, Character::PreCombatValues> preCombatValues;
 
+    //getter
+    inline bool GetWaitingForInput() const { return state == CombatState::WAITING_FOR_PLAYER_INPUT; }
+    inline Character* GetCurrentActor() const { return currentActor; }
+    inline std::vector<Character*> GetAliveEnemies() { return GetAliveMembers(enemyParty); }
+    inline std::vector<Character*> GetAliveAllies() { return GetAliveMembers(alliedParty); }
+
+    void SubmitPlayerChoice(int skillIndex, int targetIndex);
+
+    //testing
+    void ForceVictory();
+    void ForceDefeat();
+
+
 private:
 
     Party* alliedParty;
@@ -72,7 +88,7 @@ private:
 
     bool CalculateInitiative();
 
-    void Attack();
+    //void Attack();
     void AttackStart();
     void AttackAnimation();
     void AttackResolve();

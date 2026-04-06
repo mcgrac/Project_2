@@ -30,7 +30,7 @@ InGameScene::~InGameScene()
 void InGameScene::Load()
 {
 
-    Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
+    //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
 
     // Construir la party aliada con los 3 personajes seleccionados
     alliedParty = new Party("Aliados");

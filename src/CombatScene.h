@@ -31,4 +31,23 @@ private:
     void DestroyEnemyParty();
 
     SDL_Texture* background;
+
+    //combat UI
+    enum class CombatUIState
+    {
+        HIDDEN,
+        SELECTING_SKILL,
+        SELECTING_TARGET
+    };
+
+    CombatUIState uiState = CombatUIState::HIDDEN;
+    int selectedSkillIdx = -1;
+
+    void UpdateCombatUI();
+    void ShowSkillButtons();
+    void ShowTargetPanel();
+    void HideCombatUI();
+
+    SDL_Texture* abilityIcons;
+
 };

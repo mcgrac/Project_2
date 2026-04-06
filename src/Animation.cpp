@@ -37,7 +37,7 @@ void Animation::Update(float dt) {
         else {
             if (loop_) {
 
-                LOG("Animation Loop");
+                //LOG("Animation Loop");
 
                 currentIndex_ = 0;
             }

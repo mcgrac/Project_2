@@ -41,25 +41,25 @@
     />
 
 	<skills>
-		<skill id="red_dance"    initiativeCost="100" />
+		<skill id="red_dance" initiativeCost="100" />
 		<skill id="laser_upward" initiativeCost="100" />
 		<skill id="healing_halo" initiativeCost="100" />
-		<skill id="flame"       initiativeCost="100" />
+		<skill id="flame" initiativeCost="100" />
 		<skill id="blue_dance" initiativeCost="100" />
 	</skills>
 
 	<upgradeTree>
 		<tier requiredLevel="5">
-			<optionA name="Deadlier Rays"  description="Power +20, Speed + 10"  effect1="power+20"  effect2="speed+10"    />
-			<optionB name="Morning Light"   description="Max Health +20"  effect="maxHealth+20"  />
+			<optionA name="Deadlier Rays"  description="Power +20, Speed + 10"  effect1="power+20"  effect2="speed+10"/>
+			<optionB name="Morning Light"   description="Max Health +20"  effect="maxHealth+20"/>
 		</tier>
 		<tier requiredLevel="10">
-			<optionA name="Swift Cast"    description="Speed +8"        effect="speed+8"       />
-			<optionB name="Mending Light" description="Healing Power +1" effect="healingPower+1" />
+			<optionA name="Swift Cast"  description="Speed +8"  effect="speed+8"/>
+			<optionB name="Mending Light" description="Healing Power +1" effect="healingPower+1"/>
 		</tier>
 		<tier requiredLevel="15">
-			<optionA name="Overload"      description="Power +25"       effect="power+25"      />
-			<optionB name="Inner Shield"  description="Max Health +40"  effect="maxHealth+40"  />
+			<optionA name="Overload"  description="Power +25"  effect="power+25"/>
+			<optionB name="Inner Shield" description="Max Health +40" effect="maxHealth+40"/>
 		</tier>
 	</upgradeTree>
 

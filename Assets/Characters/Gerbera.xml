@@ -41,11 +41,11 @@
     />
 
 	<skills>
-		<skill id="fire_charge"   initiativeCost="100" />
-		<skill id="charge_arrow"  initiativeCost="100" />
-		<skill id="green_arrow"   initiativeCost="100" />
+		<skill id="fire_charge" initiativeCost="100" />
+		<skill id="charge_arrow" initiativeCost="100" />
+		<skill id="green_arrow" initiativeCost="100" />
 		<skill id="charged_arrow" initiativeCost="100" />
-		<skill id="fire_arrow_2"  initiativeCost="100" />
+		<skill id="fire_arrow_2" initiativeCost="100" />
 	</skills>
 
 	<upgradeTree>
