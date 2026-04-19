@@ -14,8 +14,6 @@ Character::Character(Vector2D _position, std::string _name, int _health, int _ma
 	isPoisoned(false), isBurned(false), poisonStatMod(_poisonedStatMod), burnedStatMod(_burnedStatMod), level(_level), 
 	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true)
 {
-	//add loading of the spritesheet
-
 	//initialize upgrade tree
 	upgradeTree = new UpgradeTree();
 }

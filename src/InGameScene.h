@@ -46,4 +46,6 @@ private:
 
     bool isContinue;
     void RestoreFromSave(const SaveData& data);
+
+    void CreateIslandButtons();   // builds one button per island using screen-space layout
 };

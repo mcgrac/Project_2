@@ -186,6 +186,7 @@
     <ClCompile Include="src\SaveLoad.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\SettingsScene.cpp" />
+    <ClCompile Include="src\Ship.cpp" />
     <ClCompile Include="src\Shop.cpp" />
     <ClCompile Include="src\ShopScene.cpp" />
     <ClCompile Include="src\Skill.cpp" />
@@ -248,6 +249,7 @@
     <ClInclude Include="src\SaveLoad.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\SettingsScene.h" />
+    <ClInclude Include="src\Ship.h" />
     <ClInclude Include="src\Shop.h" />
     <ClInclude Include="src\ShopScene.h" />
     <ClInclude Include="src\Skill.h" />

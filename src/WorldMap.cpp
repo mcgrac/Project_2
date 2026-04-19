@@ -115,6 +115,19 @@ const std::vector<int>& WorldMap::GetNextIds(int islandId) const
     return EMPTY;
 }
 
+bool WorldMap::IsReachable(int islandId) const
+{
+    const std::vector<int>& nexts = GetNextIds(currentIslandId);
+    for (int id : nexts)
+    {
+        if (id == islandId)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void WorldMap::UpdateWorld()
 {
     const std::vector<int>& nexts = GetNextIds(currentIslandId);
@@ -202,6 +215,12 @@ void WorldMap::RenderWorld(float dt)
             Engine::GetInstance().render->DrawRectangle(marker, 255, 255, 0, 255);
         }
     }
+    
+    // Placeholder rendering — islands are rendered via UIManager buttons created by InGameScene.
+    // Only draw a marker on the current island position for debug purposes.
+    //Island* current = islands.at(currentIslandId);
+    //SDL_Rect currentRect = { (int)current->GetX(), (int)current->GetY(), 20, 20 };
+    //Engine::GetInstance().render->DrawRectangle(currentRect, 255, 255, 0, 255);
 }
 
 void WorldMap::UnloadWorld()
@@ -227,6 +246,24 @@ void WorldMap::MakeAllIslandsHostile(IslandFaction faction)
             island->SetType(IslandType::HOSTILE);
             LOG("WorldMap: island '%s' is now Hostile", island->GetName().c_str());
         }
+    }
+}
+
+void WorldMap::TravelTo(int islandId)
+{
+    if (!IsReachable(islandId))
+    {
+        LOG("WorldMap::TravelTo — island %d is not reachable from current island %d", islandId, currentIslandId);
+        return;
+    }
+
+    currentIslandId = islandId;
+
+    LOG("WorldMap: travelled to island id=%d (%s)", currentIslandId, islands.at(currentIslandId)->GetName().c_str());
+
+    if (arrivalIsland)
+    {
+        arrivalIsland(islands.at(currentIslandId));
     }
 }
 

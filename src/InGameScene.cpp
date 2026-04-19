@@ -186,6 +186,11 @@ void InGameScene::RestoreFromSave(const SaveData& data)
     }
 }
 
+void InGameScene::CreateIslandButtons()
+{
+
+}
+
 void InGameScene::OnResume()
 {
     CreateUI();
