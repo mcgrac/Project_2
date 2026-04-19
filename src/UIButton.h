@@ -26,6 +26,10 @@ private:
 	//textures
 	SDL_Texture* spritesheet;
 
+	//font 
+	TTF_Font* font = nullptr;
+	SDL_Color textColor = { 255, 255, 255, 255 };
+
 	int spriteCol;
 
 	int widthtexture;

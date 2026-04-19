@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialogues>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  INTRO CUTSCENE — Big Guy (boss final)              -->
+    <!-- ═══════════════════════════════════════════════════ -->
+
+    <dialogue id="intro_boss">
+        <node id="0" speaker="Big Guy" portrait="Assets/Textures/Portraits/big_guy.png"
+              text="So... you've finally arrived. I've been watching your little voyage with great interest.">
+            <option text="Who are you?" nextNode="1" />
+            <option text="What do you want?" nextNode="2" />
+        </node>
+        <node id="1" speaker="Big Guy" portrait="Assets/Textures/Portraits/big_guy.png"
+              text="I am the one who controls these seas. Every island, every faction — they all answer to me.">
+            <option text="Not for long." nextNode="3" />
+        </node>
+        <node id="2" speaker="Big Guy" portrait="Assets/Textures/Portraits/big_guy.png"
+              text="What I want? I want you to turn back. But I suspect you won't. So let this be a warning.">
+            <option text="We're not afraid of you." nextNode="3" />
+        </node>
+        <node id="3" speaker="Big Guy" portrait="Assets/Textures/Portraits/big_guy.png"
+              text="Bold words. We shall meet again — when you are broken and alone."
+              end="true" />
+    </dialogue>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  NPC — Hostel keeper (isla reptil)                  -->
+    <!-- ═══════════════════════════════════════════════════ -->
+
+    <dialogue id="npc_hostel_reptile">
+        <node id="0" speaker="Innkeeper" portrait=""
+              text="Welcome, traveler. You look weary. Can I help you?">
+            <option text="I need to rest." nextNode="1" />
+            <option text="Tell me about this island." nextNode="2" />
+            <option text="Goodbye." nextNode="3" />
+        </node>
+        <node id="1" speaker="Innkeeper" portrait=""
+              text="A bed and a warm meal will cost you, but your wounds will heal by morning.">
+            <option text="Sounds good." nextNode="3" action="rest" />
+            <option text="Too expensive. Goodbye." nextNode="3" />
+        </node>
+        <node id="2" speaker="Innkeeper" portrait=""
+              text="This is Coral Isle. Mostly reptile folk here. We keep to ourselves... mostly.">
+            <option text="Interesting. Thanks." nextNode="3" />
+        </node>
+        <node id="3" speaker="Innkeeper" portrait=""
+              text="Safe travels." end="true" />
+    </dialogue>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  NPC — Shopkeeper                                   -->
+    <!-- ═══════════════════════════════════════════════════ -->
+
+    <dialogue id="npc_shop">
+        <node id="0" speaker="Shopkeeper" portrait=""
+              text="Ah, a customer! Take a look around — finest goods this side of the sea.">
+            <option text="What do you sell?" nextNode="1" />
+            <option text="Just browsing." nextNode="2" />
+        </node>
+        <node id="1" speaker="Shopkeeper" portrait=""
+              text="Weapons, potions, supplies. Everything an adventurer needs. Gold talks.">
+            <option text="Show me what you have." nextNode="2" />
+        </node>
+        <node id="2" speaker="Shopkeeper" portrait=""
+              text="Come back anytime!" end="true" />
+    </dialogue>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!--  NPC — Dockyard master                              -->
+    <!-- ═══════════════════════════════════════════════════ -->
+
+    <dialogue id="npc_dockyard">
+        <node id="0" speaker="Dockmaster" portrait=""
+              text="Your ship's seen better days. I can fix her up — for the right price.">
+            <option text="What can you do?" nextNode="1" />
+            <option text="Not now." nextNode="2" />
+        </node>
+        <node id="1" speaker="Dockmaster" portrait=""
+              text="Repairs, upgrades, reinforcements. Name it and I'll quote you a price.">
+            <option text="Let's talk details." nextNode="2" />
+        </node>
+        <node id="2" speaker="Dockmaster" portrait=""
+              text="Come back when you're ready." end="true" />
+    </dialogue>
+
+</dialogues>

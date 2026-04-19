@@ -37,6 +37,13 @@ void Character::Heal(int amount)
 	health = std::min(maxHealth, currentHealth);
 }
 
+void Character::FullyHeal()
+{
+	int currentHealth;
+	currentHealth = maxHealth;
+	health = currentHealth;
+}
+
 void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 {
 	int currentHealth = health;

@@ -8,7 +8,7 @@ struct SDL_Texture;
 class ShopScene : public BaseScene
 {
 public:
-    ShopScene(Shop shop, Party* allied);
+    ShopScene(Shop* shop, Party* allied);
     ~ShopScene();
 
     void Load() override;
@@ -25,7 +25,7 @@ public:
     void CreateUI();
 
 private:
-    Shop shop; 
+    Shop* shop; 
     Party* alliedParty;
 
     static constexpr int BACK_BUTTON_ID = 1;

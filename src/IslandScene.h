@@ -7,7 +7,7 @@
 class IslandScene : public BaseScene
 {
 public:
-    IslandScene(const Island& island, WorldMap* worldMap, Party* allied);
+    IslandScene(Island* island, WorldMap* worldMap, Party* allied);
     ~IslandScene();
 
     void Load() override;
@@ -24,7 +24,7 @@ public:
     void CreateUI();
 
 private:
-    Island island;       
+    Island* island;       
     WorldMap* worldMap;     
     Party* alliedParty;  
 

@@ -301,3 +301,78 @@ void CombatScene::HideCombatUI()
 
     uiState = CombatUIState::HIDDEN;
 }
+
+void CombatScene::OnResume()
+{
+    CreateUI();
+}
+
+void CombatScene::OnPause()
+{
+    Engine::GetInstance().uiManager->CleanUp();
+}
+
+void CombatScene::CreateUI()
+{
+    if (uiState == CombatUIState::SELECTING_TARGET) {
+        HideCombatUI();
+
+        auto enemies = combat->GetAliveEnemies();
+
+        for (int i = 0; i < enemies.size(); i++)
+        {
+            SDL_Rect bounds;
+            bounds.x = 260;
+            bounds.y = 200 + i * 70;
+            bounds.w = 64;
+            bounds.h = 64;
+
+            std::string label = enemies[i]->GetName();
+
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON,
+                10 + i, // IDs 10..12
+                label.c_str(),
+                bounds,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
+            );
+        }
+
+        SDL_Rect backBounds = { 260, 450, 64, 64 };
+
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON,
+            20,
+            "< Back",
+            backBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0, backBounds.w, backBounds.h
+        );
+    }
+    else if (uiState == CombatUIState::SELECTING_SKILL) {
+        HideCombatUI();
+
+        Character* actor = combat->GetCurrentActor();
+        if (!actor) return;
+
+        auto& skills = actor->GetSkills();
+
+        for (int i = 0; i < (int)skills.size(); ++i)
+        {
+            SDL_Rect bounds;
+            bounds.x = 20;
+            bounds.y = 200 + i * 70;
+            bounds.w = 64;
+            bounds.h = 64;
+
+            std::string label = skills[i].GetName();
+
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON,
+                i + 1, // IDs 1..5
+                label.c_str(),
+                bounds,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
+            );
+        }
+    }
+}

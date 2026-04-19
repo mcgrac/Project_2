@@ -96,6 +96,7 @@ public:
 	void Draw(float dt);
 
 	void Heal(int amunt);
+	void FullyHeal();
 	void ReceivePhysicalDamage(int damageReceived, Character* attacker);
 	void ReceiveMagicalDamage(int damageReceived, Character* attacker);
 	void GainExperience(int amount);
@@ -130,6 +131,7 @@ public:
 #pragma region GETTERS
 	inline int GetPower() const { return power; }
 	inline int GetLifesteal() const { return lifesteal; }
+	inline int GetXP() const { return experience; }
 	inline int GetLevel() const { return level; }
 	inline bool GetIsAlive() const { return isAlive; }
 	inline Character* GetKilledBy() const { return killedBy; }
@@ -158,6 +160,7 @@ public:
 	inline void AddInitiative(int amount) { initiative += amount; }
 	inline void ModifyFirePower(float amount) { firePower += amount; }
 	inline void ModifyPoisonPower(float amount) { poisonPower += amount; }
+	inline void AddXP(int amount) { experience += amount; }
 #pragma endregion
 
 #pragma region TEST

@@ -5,22 +5,22 @@ Island::Island(int _id, const std::string& _name, IslandType _type, IslandFactio
       name(_name), 
       type(_type), 
       islandFaction(_islandFaction), 
-      position(_position)
-      //dockyard(nullptr),
-      //shop(nullptr),
-      //hostel(nullptr)
+      position(_position),
+      dockyard(nullptr),
+      shop(nullptr),
+      hostel(nullptr)
 {
-    //if (type == IslandType::FRIENDLY) {
-    //    if (!dockyard && !shop && !hostel)
-    //    {
-    //        CreateBuildings();
-    //    }
-    //}
+    if (type == IslandType::FRIENDLY) {
+        if (!dockyard && !shop && !hostel)
+        {
+            CreateBuildings();
+        }
+    }
 }
 
 Island::~Island()
 {
-    //DestroyBuildings();
+    DestroyBuildings();
 }
 
 void Island::SetType(IslandType _type)
@@ -38,26 +38,25 @@ void Island::SetType(IslandType _type)
     type = _type;
 }
 
-//void Island::CreateBuildings()
-//{
-//    //shop = new Shop();
-//    //hostel = new Hostel();
-//    //dockyard = new Dockyard();
-//}
-//
-//void Island::DestroyBuildings()
-//{
-//    //error delete
-//    //if (dockyard) { 
-//    //    delete dockyard;
-//    //    dockyard = nullptr; 
-//    //}
-//    //if (shop) { 
-//    //    delete shop;
-//    //    shop = nullptr; 
-//    //}
-//    //if (hostel) { 
-//    //    delete hostel;
-//    //    hostel = nullptr; 
-//    //}
-//}
+void Island::CreateBuildings()
+{
+    shop = new Shop();
+    hostel = new Hostel();
+    dockyard = new Dockyard();
+}
+
+void Island::DestroyBuildings()
+{
+    if (dockyard) { 
+        delete dockyard;
+        dockyard = nullptr; 
+    }
+    if (shop) { 
+        delete shop;
+        shop = nullptr; 
+    }
+    if (hostel) { 
+        delete hostel;
+        hostel = nullptr; 
+    }
+}

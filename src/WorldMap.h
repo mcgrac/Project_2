@@ -20,7 +20,7 @@ public:
 
     void MakeAllIslandsHostile(IslandFaction faction);
 
-    inline const Island& GetCurrentIsland() const{ return islands.at(currentIslandId); }
+    inline const Island* GetCurrentIsland() const{ return islands.at(currentIslandId); }
 
     //getter
     inline int GetCurrentIslandId() const { return currentIslandId; }
@@ -29,7 +29,7 @@ public:
     inline void SetCurrentIsland(int islandId) { currentIslandId = islandId; }
 
     //callback
-    std::function<void(const Island&)> arrivalIsland;
+    std::function<void(Island*)> arrivalIsland;
 
 private:
     void UpdateWorld();
@@ -43,7 +43,7 @@ private:
     int selectedChildIndex = 0;   // 0 or 1
 
     // All nodes of the three
-    std::unordered_map<int, Island> islands;
+    std::unordered_map<int, Island*> islands;
     std::unordered_map<int, std::vector<int>> tree;    // id -> [hijoId, ...]
 
     static const std::vector<int> EMPTY;

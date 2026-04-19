@@ -14,6 +14,7 @@
 #include "Physics.h"
 #include "Log.h"
 #include "UIManager.h"
+#include "Fonts.h"
 
 // Constructor
 Engine::Engine() {
@@ -41,6 +42,7 @@ Engine::Engine() {
     //map = std::make_shared<Map>();
     entityManager = std::make_shared<EntityManager>();
 	uiManager = std::make_shared<UIManager>(); 
+    fonts = std::make_shared<Fonts>();
 
     // Ordered for awake / Start / Update
     // Reverse order of CleanUp
@@ -53,6 +55,9 @@ Engine::Engine() {
     //AddModule(std::static_pointer_cast<Module>(map));
     AddModule(std::static_pointer_cast<Module>(scene));
     AddModule(std::static_pointer_cast<Module>(entityManager));
+    //module fonts
+    AddModule(std::static_pointer_cast<Module>(fonts));
+
 	// UI Manager on top of the other modules
 	AddModule(std::static_pointer_cast<Module>(uiManager)); 
 

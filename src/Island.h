@@ -34,9 +34,9 @@ public:
     inline int GetY() const { return position.getY(); }
     inline IslandFaction GetIslandFaction() const { return islandFaction; }
 
-    inline Shop GetShop() const { return shop; }
-    inline Dockyard GetDockyard() const { return dockyard; }
-    inline Hostel GetHostel() const { return hostel; }
+    inline Shop* GetShop() const { return shop; }
+    inline Dockyard* GetDockyard() const { return dockyard; }
+    inline Hostel* GetHostel() const { return hostel; }
 
 #pragma endregion
 
@@ -49,10 +49,10 @@ private:
     Vector2D position;
     IslandFaction islandFaction = IslandFaction::UNDEFINED;
 
-    Shop shop;
-    Dockyard dockyard;
-    Hostel hostel;
+    Shop* shop;
+    Dockyard* dockyard;
+    Hostel* hostel;
 
-    //void CreateBuildings();
-    //void DestroyBuildings();
+    void CreateBuildings();
+    void DestroyBuildings();
 };

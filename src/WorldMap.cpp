@@ -69,7 +69,8 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
         }
 
         Vector2D position(x, y);
-        islands.emplace(id, Island(id, name, type, islandFaction, position));
+        //islands.emplace(id, Island(id, name, type, islandFaction, position));
+        islands[id] = new Island(id, name, type, islandFaction, position);
         tree[id] = {};
 
         LOG("WorldMap: loaded island — id=%d name='%s' type='%s' faction='%s' x=%.1f y=%.1f",
@@ -99,7 +100,7 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
     selectedChildIndex = 0;
 
     LOG("WorldMap: initial island established: id=%d name='%s'",
-        currentIslandId, islands.at(currentIslandId).GetName().c_str());
+        currentIslandId, islands.at(currentIslandId)->GetName().c_str());
 
     return true;
 }
@@ -154,9 +155,9 @@ void WorldMap::UpdateWorld()
         currentIslandId = nexts[indexToTravel];
         selectedChildIndex = 0;
         LOG("Viajando a isla id=%d (%s)", currentIslandId,
-            islands.at(currentIslandId).GetName().c_str());
+            islands.at(currentIslandId)->GetName().c_str());
 
-        const Island& islandArrived = islands.at(currentIslandId);
+        Island* islandArrived = islands.at(currentIslandId);
 
         //notify In Game scene arrival island
         if (arrivalIsland) {
@@ -167,22 +168,22 @@ void WorldMap::UpdateWorld()
 
 void WorldMap::RenderWorld(float dt)
 {
-    const Island& current = islands.at(currentIslandId);
+    Island* current = islands.at(currentIslandId);
     const std::vector<int>& nexts = GetNextIds(currentIslandId);
 
     // render current island
-    SDL_Rect act = { (int)current.GetX(), (int)current.GetY(), 100, 100 };
+    SDL_Rect act = { (int)current->GetX(), (int)current->GetY(), 100, 100 };
     Engine::GetInstance().render->DrawRectangle(act, 0, 0, 255, 255);
 
     // render next islands
     for (int i = 0; i < (int)nexts.size(); i++)
     {
-        const Island& next = islands.at(nexts[i]);
-        SDL_Rect r = { (int)next.GetX(), (int)next.GetY(), 100, 100 };
+        Island* next = islands.at(nexts[i]);
+        SDL_Rect r = { (int)next->GetX(), (int)next->GetY(), 100, 100 };
 
         Uint8 r_col;
         Uint8 g_col;
-        if (next.GetType() == IslandType::HOSTILE)
+        if (next->GetType() == IslandType::HOSTILE)
         {
             r_col = 255;
             g_col = 0;
@@ -197,7 +198,7 @@ void WorldMap::RenderWorld(float dt)
         // Marker
         if (i == selectedChildIndex)
         {
-            SDL_Rect marker = { (int)next.GetX(), (int)next.GetY(), 25, 25 };
+            SDL_Rect marker = { (int)next->GetX(), (int)next->GetY(), 25, 25 };
             Engine::GetInstance().render->DrawRectangle(marker, 255, 255, 0, 255);
         }
     }
@@ -205,6 +206,12 @@ void WorldMap::RenderWorld(float dt)
 
 void WorldMap::UnloadWorld()
 {
+    for (auto& pair : islands)
+    {
+        delete pair.second;
+        pair.second = nullptr;
+    }
+
     islands.clear();
     tree.clear();
     currentIslandId = -1;
@@ -215,10 +222,10 @@ void WorldMap::MakeAllIslandsHostile(IslandFaction faction)
 {
 
     for (auto& pair : islands) {
-        Island& island = pair.second;
-        if (island.GetIslandFaction() == faction && island.GetType() == IslandType::FRIENDLY) {
-            island.SetType(IslandType::HOSTILE);
-            LOG("WorldMap: island '%s' is now Hostile", island.GetName().c_str());
+        Island* island = pair.second;
+        if (island->GetIslandFaction() == faction && island->GetType() == IslandType::FRIENDLY) {
+            island->SetType(IslandType::HOSTILE);
+            LOG("WorldMap: island '%s' is now Hostile", island->GetName().c_str());
         }
     }
 }

@@ -9,7 +9,7 @@
 #include "Log.h"
 #include "SaveLoad.h"
 
-IslandScene::IslandScene(const Island& island, WorldMap* worldMap, Party* allied)
+IslandScene::IslandScene(Island* island, WorldMap* worldMap, Party* allied)
     : island(island)
     , worldMap(worldMap)
     , alliedParty(allied)
@@ -31,13 +31,13 @@ void IslandScene::Load()
 
 void IslandScene::Update(float dt)
 {
-    if (island.GetType() == IslandType::HOSTILE && !combatLaunched)
+    if (island->GetType() == IslandType::HOSTILE && !combatLaunched)
     {
         combatLaunched = true;
         AttackIsland();
     }
 
-    if (island.GetType() == IslandType::FRIENDLY)
+    if (island->GetType() == IslandType::FRIENDLY)
     {
         Engine::GetInstance().render->DrawTexture(background, 0, 0);
 
@@ -45,7 +45,7 @@ void IslandScene::Update(float dt)
         Engine::GetInstance().render->DrawRectangle(panel, 20, 20, 20, 200, true, false);
 
         Engine::GetInstance().render->DrawText(
-            island.GetName().c_str(),
+            island->GetName().c_str(),
             486, 310, 308, 50,
             { 255, 255, 255, 255 }
         );
@@ -96,12 +96,12 @@ bool IslandScene::OnUIMouseClickEvent(UIElement* uiElement)
 
 void IslandScene::EnterIsland()
 {
-    LOG("IslandScene: entrando en '%s'.", island.GetName().c_str());
+    LOG("IslandScene: entrando en '%s'.", island->GetName().c_str());
 
     //save data
     SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId());
 
-    Engine::GetInstance().scene->PushScene(new IslandInteriorScene(&island, alliedParty));
+    Engine::GetInstance().scene->PushScene(new IslandInteriorScene(island, alliedParty));
 }
 
 void IslandScene::AttackIsland()
@@ -112,11 +112,11 @@ void IslandScene::AttackIsland()
     //save data
     SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId());
 
-    if (island.GetType() == IslandType::FRIENDLY)
+    if (island->GetType() == IslandType::FRIENDLY)
     {
 
         // Hacer hostil toda la facción en el WorldMap
-        worldMap->MakeAllIslandsHostile(island.GetIslandFaction());
+        worldMap->MakeAllIslandsHostile(island->GetIslandFaction());
     }
 
     Party* allied = alliedParty;
@@ -140,7 +140,7 @@ void IslandScene::OnPause()
 
 void IslandScene::CreateUI()
 {
-    if (island.GetType() == IslandType::HOSTILE)
+    if (island->GetType() == IslandType::HOSTILE)
     {
         //update:: pop scene combat
     }
@@ -150,14 +150,14 @@ void IslandScene::CreateUI()
         //enter
         SDL_Rect enterBtnBounds = { 580, 400, 125, 72 };
         Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, 1, "Enter", enterBtnBounds,
+            UIElementType::BUTTON, 1, "", enterBtnBounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, enterButton, 0, enterBtnBounds.w, enterBtnBounds.h
         );
 
         //attack
         SDL_Rect attackBtnBounds = { 580, 540, 125, 72 };
         Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, 2, "Attack", attackBtnBounds,
+            UIElementType::BUTTON, 2, "", attackBtnBounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, pillageButon, 0, attackBtnBounds.w, attackBtnBounds.h
         );
 

@@ -62,6 +62,7 @@ void Combat::Run()
         EndCombat();
     }
     //------------------------------------
+
     switch (state)
     {
     case CombatState::START_COMBAT:
@@ -252,6 +253,8 @@ void Combat::AttackAnimation()
 void Combat::AttackResolve()
 {
     ExecuteSkill(currentActor, *currentSkill, currentTarget);
+    //reset animation idle current actor
+    currentActor->PlayAnimation("idle");
 }
 
 //  MODIFIERS — veneno y quemadura
@@ -668,7 +671,7 @@ void Combat::SubmitPlayerChoice(int skillIndex, int targetIndex)
     if (currentActor == nullptr) return;
 
     auto& skills = currentActor->GetSkills();
-    auto  aliveEnemies = GetAliveMembers(enemyParty);
+    auto aliveEnemies = GetAliveMembers(enemyParty);
 
     std::cout << "SkillIndex received: " << skillIndex << std::endl;
     std::cout << "TargetIndex received: " << targetIndex << std::endl;

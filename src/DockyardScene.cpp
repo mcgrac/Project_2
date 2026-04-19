@@ -6,7 +6,7 @@
 #include "Textures.h"
 #include "Log.h"
 
-DockyardScene::DockyardScene(Dockyard dockyard, Party* allied)
+DockyardScene::DockyardScene(Dockyard* dockyard, Party* allied)
     : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr)
 {
     sceneName = "DockyardScene";

@@ -20,9 +20,14 @@ public:
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
+    //helpers
+    void OnResume() override;
+    void OnPause() override;
+    void CreateUI();
+
 private:
-    Party* alliedParty;   // NO owner — pertenece a InGameScene
-    Party* enemyParty;    // owner — creada y destruida por CombatScene
+    Party* alliedParty;
+    Party* enemyParty;
     Combat* combat;
 
     bool combatFinished;

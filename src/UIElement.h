@@ -94,6 +94,9 @@ public:
 	UIElementState state;
 
 	std::string text;       // UIElement text (if required)
+	SDL_Texture* textTexture = nullptr; //fondo
+	SDL_Rect textRect = { 0, 0, 0, 0 }; //posicion texto
+
 	SDL_Rect bounds;        // Position and size
 	SDL_Color color;        // Tint color
 

@@ -14,6 +14,8 @@
 #include "Textures.h"
 #include "Render.h"
 #include "SaveLoad.h"
+#include "DialogueManager.h"
+#include "DialogueScene.h"
 
 InGameScene::InGameScene(std::vector<std::string> _characterNames, bool _isContinue)
     : characterNames(_characterNames)
@@ -31,6 +33,8 @@ void InGameScene::Load()
 {
 
     //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
+    //load dialogues 
+    DialogueManager::LoadDialogues("dialogues.xml");
 
     // Construir la party aliada con los 3 personajes seleccionados
     alliedParty = new Party("Aliados");
@@ -64,7 +68,7 @@ void InGameScene::Load()
     worldMap.LoadWorld("Assets/Maps/world.xml");
 
     //callback when the player arrives to an island->world map notify ingameScene
-    worldMap.arrivalIsland = [this](const Island& island) {
+    worldMap.arrivalIsland = [this](Island* island) {
         Engine::GetInstance().scene->PushScene(new IslandScene(island, &worldMap, alliedParty));
     };
 
@@ -82,6 +86,21 @@ void InGameScene::Load()
 
 void InGameScene::Update(float dt)
 {
+    // in first frame launch initial dialogue
+    static bool firstFrame = true;
+
+    if (firstFrame && !isContinue)
+    {
+        firstFrame = false;
+
+        Engine::GetInstance().scene->PushScene(
+            new DialogueScene("intro_boss", [this]() {
+                LOG("Intro terminada");
+                //can de anything here
+            })
+        );
+    }
+
     //render textures
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
 

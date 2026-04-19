@@ -6,7 +6,7 @@
 #include "Log.h"
 #include "Textures.h"
 
-ShopScene::ShopScene(Shop shop, Party* allied)
+ShopScene::ShopScene(Shop* shop, Party* allied)
     : shop(shop), alliedParty(allied)
 {
     sceneName = "ShopScene";
