@@ -1,5 +1,6 @@
 #include "Dockyard.h"
 #include "NPC.h"
+#include "Ship.h"
 
 Dockyard::Dockyard() : owner(nullptr), ship(nullptr)
 {
@@ -14,7 +15,7 @@ Dockyard::~Dockyard()
 
 void Dockyard::ImproveShip()
 {
-
+	ship->LevelUp();
 }
 
 void Dockyard::AssignShip(Ship* _ship)
