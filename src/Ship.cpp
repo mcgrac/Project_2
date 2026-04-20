@@ -38,6 +38,29 @@ Ship::~Ship()
     Engine::GetInstance().textures->UnLoad(spritesheet);
 }
 
+void Ship::Update(float dt) {
+
+    Draw(dt);
+
+}
+
+void Ship::Draw(float dt) {
+
+    anims.Update(dt);
+
+    const SDL_Rect& animFrame = anims.GetCurrentFrame();
+
+    int drawX = (int)position.getX() - animFrame.w / 2;
+    int drawY = (int)position.getY() - animFrame.h / 2;
+
+    Engine::GetInstance().render->DrawTexture(
+        spritesheet,
+        drawX,
+        drawY,
+        &animFrame
+    );
+
+}
 
 bool Ship::IsAlive() const
 {

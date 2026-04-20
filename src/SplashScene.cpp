@@ -65,18 +65,22 @@ void SplashScene::StartTimer(){
 
 void SplashScene::RunTimer(float dt){
     timer += dt;
+#if DEBUG
     LOG("Timer: %f", timer);
+#endif
 }
 
 void SplashScene::LoadTextures(){
 
     logo = Engine::GetInstance().textures->Load("Assets/Textures/UI/Logo.png");
+#if DEBUG
     if (logo != nullptr) {
         LOG("Logo texture loaded succesfully");
     }
     else {
         LOG("Error loading logo texture");
     }
+#endif
 }
 
 void SplashScene::LoadSounds()
@@ -86,7 +90,6 @@ void SplashScene::LoadSounds()
 
 void SplashScene::CheckTimer(){
     if (timer >= 1500.0f) {
-        LOG("Chagne to main menu scene");
         Engine::GetInstance().scene->ReplaceScene(new MainMenuScene());
     }
 }

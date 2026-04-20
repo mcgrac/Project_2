@@ -177,8 +177,6 @@ bool SettingsScene::OnUIMouseClickEvent(UIElement* uiElement)
     return true;
 }
 
-// --- Helpers ---
-
 SDL_Rect SettingsScene::GetMusicHandle() const
 {
     return GetHandleFromVolume(musicTrack, musicVolume);

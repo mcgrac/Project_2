@@ -7,8 +7,10 @@
 #include "SaveLoad.h"
 
 
+
 struct SDL_Texture;
 class IslandScene;
+class Ship;
 
 class InGameScene : public BaseScene
 {
@@ -48,4 +50,7 @@ private:
     void RestoreFromSave(const SaveData& data);
 
     void CreateIslandButtons();   // builds one button per island using screen-space layout
+
+    //ship
+    Ship* ship;
 };

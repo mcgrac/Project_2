@@ -49,6 +49,7 @@ void Combat::Run()
 {
     if (!runningCombat) return;
 
+#if DEBUG
     //--------------TEST DEBUGS-----------
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
 
@@ -62,7 +63,7 @@ void Combat::Run()
         EndCombat();
     }
     //------------------------------------
-
+#endif
     switch (state)
     {
     case CombatState::START_COMBAT:
@@ -129,7 +130,7 @@ void Combat::StartCombat()
     std::cout << "          COMBATE INICIADO            \n";
     std::cout << "══════════════════════════════════════\n";
 
-
+#if DEBUG
     //----------------debug--------------
     std::cout << "\n[ALIADOS]\n";
     for (Character* c : alliedParty->GetMembers())
@@ -150,6 +151,7 @@ void Combat::StartCombat()
     }
     std::cout << "\n";
     //---------------------------------------
+#endif
 
     //save previous states in combat
     for (Character* c : alliedParty->GetMembers()) {
@@ -182,11 +184,12 @@ bool Combat::CalculateInitiative()
 
             int after = c->GetCurrentInitiative();
 
+#if DEBUG
             std::cout << "  " << c->GetName()
                 << " | antes: " << before
                 << " + " << bonus
                 << " = " << after;
-
+#endif
             if (after >= 100)
             {
                 std::cout << "  [PUEDE ACTUAR]";
@@ -198,12 +201,13 @@ bool Combat::CalculateInitiative()
 
     currentActor = GetHighestInitiativeActor();
 
+#if DEBUG
     if (currentActor != nullptr)
     {
         std::cout << "  >> Turno para: " << currentActor->GetName()
             << " (iniciativa: " << currentActor->GetCurrentInitiative() << ")\n";
     }
-
+#endif
     return currentActor != nullptr;
 }
 
@@ -212,13 +216,14 @@ void Combat::AttackStart()
 {
     if (currentActor == nullptr) return;
 
+#if DEBUG
     std::cout << "\n──────────────────────────────────────\n";
     std::cout << "│ TURNO DE: " << currentActor->GetName() << "\n";
     std::cout << "│ HP: " << currentActor->GetCurrentHP()
         << " | Iniciativa: " << currentActor->GetCurrentInitiative()
         << " | Power: " << currentActor->GetPower() << "\n";
     std::cout << "──────────────────────────────────────\n";
-
+#endif
     if (IsAllied(currentActor))
     {
         //Esperar a que CombatScene entregue la eleccion via SubmitPlayerChoice
@@ -278,6 +283,7 @@ void Combat::ApplyModifiers()
             c->TakePoisonDamage();
             int hpAfter = c->GetCurrentHP();
 
+#if DEBUG
             std::cout << "  [VENENO] " << c->GetName()
                 << " sufre " << poisonDmg << " de daño por veneno."
                 << " HP: " << hpBefore << " -> " << hpAfter;
@@ -288,13 +294,11 @@ void Combat::ApplyModifiers()
             }
 
             std::cout << "\n";
+#endif
         }
 
         if (c->IsBurning())
         {
-            //int burnDmg = c->GetBurnDamage();
-            //c->TakeBurnDamage();
-            //std::cout << c->GetName() << " sufre " << burnDmg << " de daño por quemadura.\n";
 
             anyModifier = true;
             int burnDmg = c->GetBurnDamage();
@@ -302,6 +306,7 @@ void Combat::ApplyModifiers()
             c->TakeBurnDamage();
             int hpAfter = c->GetCurrentHP();
 
+#if DEBUG
             std::cout << "  [QUEMADURA] " << c->GetName()
                 << " sufre " << burnDmg << " de daño por quemadura."
                 << " HP: " << hpBefore << " -> " << hpAfter;
@@ -312,12 +317,14 @@ void Combat::ApplyModifiers()
             }
 
             std::cout << "\n";
+#endif
         }
-        
+#if DEBUG
         if (!anyModifier)
         {
             std::cout << "  [MODIFICADORES] Ningun efecto activo.\n";
         }
+#endif
     }
 }
 
@@ -516,13 +523,15 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 
             int targetHpAfter = target->GetCurrentHP();
             int damageDone = targetHpBefore - targetHpAfter;
-
+#if DEBUG
             std::cout << user->GetName() << " usa " << skill.GetName()
                 << " -> " << target->GetName() << "\n";
+#endif
 
             //-----------------debug-----------------
             if (damageDone > 0)
             {
+#if DEBUG
                 std::cout << "    Daño: " << damageDone
                     << " | HP " << target->GetName() << ": "
                     << targetHpBefore << " -> " << targetHpAfter;
@@ -533,30 +542,39 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
                 }
 
                 std::cout << "\n";
+#endif
             }
             else if (damageDone < 0)
             {
+#if DEBUG
                 std::cout << "    Curación: " << (-damageDone)
                     << " | HP " << target->GetName() << ": "
                     << targetHpBefore << " -> " << targetHpAfter << "\n";
+#endif
             }
 
             // Estado de efectos del target tras el ataque
             if (target->IsBurning())
             {
+#if DEBUG
                 std::cout << "    " << target->GetName()
                     << " esta QUEMADO: " << target->GetBurnDamage() << " de daño/turno\n";
+#endif
             }
 
             if (target->IsPoisoned())
             {
+#if DEBUG
                 std::cout << "    " << target->GetName()
                     << " esta ENVENENADO: " << target->GetPoisonDamage() << " de daño/turno\n";
+#endif
             }
+#if DEBUG
 
             std::cout << "    Iniciativa restante de " << user->GetName()
                 << ": " << user->GetCurrentInitiative() << "\n";
             //------------------------------
+#endif
         }
 
         // Restar el coste de iniciativa al usuario
@@ -577,7 +595,7 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
         std::cout << user->GetName() << " usa " << skill.GetName()
             << " -> " << target->GetName()
             << "  | Iniciativa restante: " << user->GetCurrentInitiative() << "\n";
-
+#if DEBUG
         //-----------------debug-----------------
         if (damageDone > 0)
         {
@@ -615,6 +633,7 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
         std::cout << "    Iniciativa restante de " << user->GetName()
             << ": " << user->GetCurrentInitiative() << "\n";
         //------------------------------
+#endif
     }
     
 }

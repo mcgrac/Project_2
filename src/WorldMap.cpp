@@ -69,7 +69,6 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
         }
 
         Vector2D position(x, y);
-        //islands.emplace(id, Island(id, name, type, islandFaction, position));
         islands[id] = new Island(id, name, type, islandFaction, position);
         tree[id] = {};
 
@@ -181,46 +180,46 @@ void WorldMap::UpdateWorld()
 
 void WorldMap::RenderWorld(float dt)
 {
-    Island* current = islands.at(currentIslandId);
-    const std::vector<int>& nexts = GetNextIds(currentIslandId);
+    //Island* current = islands.at(currentIslandId);
+    //const std::vector<int>& nexts = GetNextIds(currentIslandId);
 
-    // render current island
-    SDL_Rect act = { (int)current->GetX(), (int)current->GetY(), 100, 100 };
-    Engine::GetInstance().render->DrawRectangle(act, 0, 0, 255, 255);
+    //// render current island
+    //SDL_Rect act = { (int)current->GetX(), (int)current->GetY(), 100, 100 };
+    //Engine::GetInstance().render->DrawRectangle(act, 0, 0, 255, 255);
 
-    // render next islands
-    for (int i = 0; i < (int)nexts.size(); i++)
-    {
-        Island* next = islands.at(nexts[i]);
-        SDL_Rect r = { (int)next->GetX(), (int)next->GetY(), 100, 100 };
+    //// render next islands
+    //for (int i = 0; i < (int)nexts.size(); i++)
+    //{
+    //    Island* next = islands.at(nexts[i]);
+    //    SDL_Rect r = { (int)next->GetX(), (int)next->GetY(), 100, 100 };
 
-        Uint8 r_col;
-        Uint8 g_col;
-        if (next->GetType() == IslandType::HOSTILE)
-        {
-            r_col = 255;
-            g_col = 0;
-        }
-        else
-        {
-            r_col = 0;
-            g_col = 255;
-        }
-        Engine::GetInstance().render->DrawRectangle(r, r_col, g_col, 0, 255);
+    //    Uint8 r_col;
+    //    Uint8 g_col;
+    //    if (next->GetType() == IslandType::HOSTILE)
+    //    {
+    //        r_col = 255;
+    //        g_col = 0;
+    //    }
+    //    else
+    //    {
+    //        r_col = 0;
+    //        g_col = 255;
+    //    }
+    //    Engine::GetInstance().render->DrawRectangle(r, r_col, g_col, 0, 255);
 
-        // Marker
-        if (i == selectedChildIndex)
-        {
-            SDL_Rect marker = { (int)next->GetX(), (int)next->GetY(), 25, 25 };
-            Engine::GetInstance().render->DrawRectangle(marker, 255, 255, 0, 255);
-        }
-    }
+    //    // Marker
+    //    if (i == selectedChildIndex)
+    //    {
+    //        SDL_Rect marker = { (int)next->GetX(), (int)next->GetY(), 25, 25 };
+    //        Engine::GetInstance().render->DrawRectangle(marker, 255, 255, 0, 255);
+    //    }
+    //}
     
     // Placeholder rendering — islands are rendered via UIManager buttons created by InGameScene.
     // Only draw a marker on the current island position for debug purposes.
-    //Island* current = islands.at(currentIslandId);
-    //SDL_Rect currentRect = { (int)current->GetX(), (int)current->GetY(), 20, 20 };
-    //Engine::GetInstance().render->DrawRectangle(currentRect, 255, 255, 0, 255);
+    Island* current = islands.at(currentIslandId);
+    SDL_Rect currentRect = { (int)current->GetX(), (int)current->GetY(), 50, 50 };
+    Engine::GetInstance().render->DrawRectangle(currentRect, 255, 255, 0, 255);
 }
 
 void WorldMap::UnloadWorld()

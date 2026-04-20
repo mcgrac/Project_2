@@ -16,10 +16,11 @@
 #include "SaveLoad.h"
 #include "DialogueManager.h"
 #include "DialogueScene.h"
+#include "Ship.h"
 
 InGameScene::InGameScene(std::vector<std::string> _characterNames, bool _isContinue)
     : characterNames(_characterNames)
-    , alliedParty(nullptr), background(nullptr), isContinue(_isContinue)
+    , alliedParty(nullptr), background(nullptr), isContinue(_isContinue), ship(nullptr)
 {
     sceneName = "InGameScene";
 }
@@ -54,11 +55,12 @@ void InGameScene::Load()
 
     LOG("InGameScene cargada, %d miembros en party.", alliedParty->GetMemberCount());
 
-    // test debug characters info
+#if DEBUG
     for (Character* c : alliedParty->GetMembers())
     {
         c->PrintDebugInfo();
     }
+#endif
 
     //load textures
     LoadTextures();
@@ -82,6 +84,9 @@ void InGameScene::Load()
             LOG("InGameScene: partida restaurada — isla %d.", data.currentIslandId);
         }
     }
+
+    //ship
+    ship = new Ship();
 }
 
 void InGameScene::Update(float dt)
@@ -101,7 +106,7 @@ void InGameScene::Update(float dt)
         );
     }
 
-    //render textures
+    //render background
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
 
     //detect pause menu
@@ -114,6 +119,10 @@ void InGameScene::Update(float dt)
 
     worldMap.Update(dt);
     worldMap.PostUpdate(dt);
+
+    //render ship
+    ship->Update(dt);
+    
 }
 
 void InGameScene::PostUpdate(float dt)

@@ -28,7 +28,7 @@
     <!--  NPC — Hostel keeper (isla reptil)                  -->
     <!-- ═══════════════════════════════════════════════════ -->
 
-    <dialogue id="npc_hostel_reptile">
+    <dialogue id="npc_hostel">
         <node id="0" speaker="Innkeeper" portrait=""
               text="Welcome, traveler. You look weary. Can I help you?">
             <option text="I need to rest." nextNode="1" />

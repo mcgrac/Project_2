@@ -6,7 +6,7 @@
 
 Hostel::Hostel() : costRest(50)
 {
-	owner = new NPC("Inkeeper", "npc_hostel_reptile");
+	owner = new NPC("Hostel owner", "npc_hostel");
 
 }
 

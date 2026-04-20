@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Vector2D.h"
 #include "Animation.h"
 
@@ -11,6 +10,9 @@ public:
     Ship();
     Ship(Vector2D position, int maxHp, int level);
     ~Ship();
+
+    void Update(float dt);
+    void Draw(float dt);
 
     // Getters
     Vector2D GetPosition() const { return position; }

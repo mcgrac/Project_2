@@ -7,6 +7,7 @@
 #include "Render.h"
 #include "Textures.h"
 #include "Log.h"
+#include "SettingsScene.h"
 
 PauseScene::PauseScene(Party* allied, int currentIslandId)
     : alliedParty(allied)
@@ -70,7 +71,8 @@ bool PauseScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
 
     case 2:
-        LOG("PauseScene: opciones — pendiente de implementar.");
+        LOG("PauseScene: opciones.");
+        Engine::GetInstance().scene->PushScene(new SettingsScene());
         break;
 
     case 3:

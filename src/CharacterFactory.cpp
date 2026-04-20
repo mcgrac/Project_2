@@ -1,8 +1,6 @@
 ﻿#include "CharacterFactory.h"
 #include "Character.h"
 #include "Markus.h"
-#include "CharacterFactory.h"
-#include "Character.h"
 #include "SkillRegistry.h"
 #include "UpgradeTree.h"
 #include "UpgradeTier.h"
