@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <string>
 #include <functional>
-//#include <SDL3/SDL.h>
 
 struct SDL_Texture;
 
@@ -41,7 +40,7 @@ public:
 
 private:
     //
-    void UpdateWorld();
+    //void UpdateWorld();
     //
 
 
@@ -51,7 +50,7 @@ private:
     int currentIslandId = -1;
 
     //
-    int selectedChildIndex = 0;   // 0 or 1
+    //int selectedChildIndex = 0;   // 0 or 1
     //
     
     // All nodes of the three

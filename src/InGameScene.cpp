@@ -17,6 +17,11 @@
 #include "DialogueManager.h"
 #include "DialogueScene.h"
 #include "Ship.h"
+#include <queue>
+#include "Window.h"
+
+// First button id reserved for combat button; island buttons start from this offset
+static const int ISLAND_BUTTON_ID_OFFSET = 100;
 
 InGameScene::InGameScene(std::vector<std::string> _characterNames, bool _isContinue)
     : characterNames(_characterNames)
@@ -32,8 +37,6 @@ InGameScene::~InGameScene()
 
 void InGameScene::Load()
 {
-
-    //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
     //load dialogues 
     DialogueManager::LoadDialogues("dialogues.xml");
 
@@ -64,7 +67,6 @@ void InGameScene::Load()
 
     //load textures
     LoadTextures();
-    CreateUI();
 
     //load world
     worldMap.LoadWorld("Assets/Maps/world.xml");
@@ -87,6 +89,8 @@ void InGameScene::Load()
 
     //ship
     ship = new Ship();
+
+    CreateUI();
 }
 
 void InGameScene::Update(float dt)
@@ -141,12 +145,19 @@ void InGameScene::Unload()
     Engine::GetInstance().uiManager->CleanUp();
     //Engine::GetInstance().map->CleanUp();
     Engine::GetInstance().entityManager->CleanUp();
+
+    //ship->CleanUp();
+    delete ship;
+    ship = nullptr;
 }
 
 void InGameScene::LoadTextures(){
     //load background
     background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/IslandsScreen.png");
-    spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/UI/buttons2.png");
+    spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/UI/StartButtons.png");
+    if (spritesheet) {
+        LOG("Spritehseet buttons loaded succesfully");
+    }
 }
 
 bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -160,6 +171,12 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty));
         break;
     default:
+        //islands
+        //if id is 100+
+        if (uiElement->id >= ISLAND_BUTTON_ID_OFFSET) {
+            int islandId = uiElement->id - ISLAND_BUTTON_ID_OFFSET;
+            worldMap.TravelTo(islandId);
+        }
         break;
     }
     return true;
@@ -197,6 +214,112 @@ void InGameScene::RestoreFromSave(const SaveData& data)
 
 void InGameScene::CreateIslandButtons()
 {
+    static const int COL_SPACING = 200;
+    //static const int ISLAND_BUTTON_ID_OFFSET = 100;
+    static const int BUTTON_W = 221;
+    static const int BUTTON_H = 85;
+
+    int screenW = 0;
+    int screenH = 0;
+    Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+
+    const auto& islands = worldMap.GetAllIslands();
+    const auto& tree = worldMap.GetTree();
+
+    // --- BFS to assign a column index to every island ---
+    // Column 0 = starting island, column N = N hops from the root
+    std::unordered_map<int, int> islandColumn; // islandId -> column
+    std::unordered_map<int, int> islandRow;    // islandId -> row within its column
+
+    // Count how many islands fall in each column so we can distribute rows
+    std::unordered_map<int, int> colCount;     // column -> number of islands so far
+
+    std::queue<int> bfsQueue;
+    bfsQueue.push(0);
+    islandColumn[0] = 0;
+
+    while (!bfsQueue.empty())
+    {
+        int currentId = bfsQueue.front();
+        bfsQueue.pop();
+
+        int col = islandColumn[currentId];
+
+        // Assign row within this column
+        int row = colCount[col];
+        islandRow[currentId] = row;
+        colCount[col]++;
+
+        auto it = tree.find(currentId);
+        if (it != tree.end())
+        {
+            for (int childId : it->second)
+            {
+                if (islandColumn.find(childId) == islandColumn.end())
+                {
+                    islandColumn[childId] = col + 1;
+                    bfsQueue.push(childId);
+                }
+            }
+        }
+    }
+
+    if (islandColumn.empty())
+    {
+        return;
+    }
+
+    // --- Create one button per island ---
+    for (auto& pair : islands)
+    {
+        int     islandId = pair.first;
+        Island* island = pair.second;
+
+        int col = islandColumn[islandId];
+        int row = islandRow[islandId];
+        int islandsInCol = colCount[col];
+
+        // Horizontal center of this column
+        int centerX = col * COL_SPACING + COL_SPACING / 2;
+
+        // Distribute vertically: divide the screen height into (islandsInCol + 1) slots
+        int slotH = screenH / (islandsInCol + 1);
+        int centerY = (row + 1) * slotH;
+
+        int btnX = centerX - BUTTON_W / 2;
+        int btnY = centerY - BUTTON_H / 2;
+
+        //set position islands
+        island->SetRenderPos((float)btnX, (float)btnY, (float)BUTTON_W, (float)BUTTON_H);
+
+        SDL_Rect bounds = { btnX, btnY, BUTTON_W, BUTTON_H };
+
+        // Label: faction name
+        std::string label;
+        IslandFaction faction = island->GetIslandFaction();
+        if (faction == IslandFaction::HUMANS)
+        {
+            label = "Humans";
+        }
+        else if (faction == IslandFaction::REPTILES)
+        {
+            label = "Reptiles";
+        }
+        else
+        {
+            label = island->GetName();
+        }
+
+        int buttonId = ISLAND_BUTTON_ID_OFFSET + islandId;
+
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, buttonId, label.c_str(), bounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0
+        );
+
+        LOG("InGameScene: island button created |id=%d label='%s' col=%d row=%d x=%d y=%d|",
+            islandId, label.c_str(), col, row, btnX, btnY);
+    }
 
 }
 
@@ -218,4 +341,7 @@ void InGameScene::CreateUI()
         UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0
     );
+
+    //island buttons
+    CreateIslandButtons();
 }

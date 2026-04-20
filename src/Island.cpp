@@ -1,11 +1,10 @@
 #include "Island.h"
 
-Island::Island(int _id, const std::string& _name, IslandType _type, IslandFaction _islandFaction, Vector2D _position)
+Island::Island(int _id, const std::string& _name, IslandType _type, IslandFaction _islandFaction)
     : id(_id), 
       name(_name), 
       type(_type), 
       islandFaction(_islandFaction), 
-      position(_position),
       dockyard(nullptr),
       shop(nullptr),
       hostel(nullptr)
@@ -21,6 +20,14 @@ Island::Island(int _id, const std::string& _name, IslandType _type, IslandFactio
 Island::~Island()
 {
     DestroyBuildings();
+}
+
+void Island::SetRenderPos(float x, float y, float w, float h)
+{
+    position.setX(x);
+    position.setY(y);
+    size.setX(w);
+    size.setY(h);
 }
 
 void Island::SetType(IslandType _type)

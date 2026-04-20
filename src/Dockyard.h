@@ -5,8 +5,8 @@ class Ship;
 class Dockyard
 {
 public:
-    Dockyard() {}
-    ~Dockyard() {}
+    Dockyard();
+    ~Dockyard();
 
     void ImproveShip();
     void AssignShip(Ship* _ship);

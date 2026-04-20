@@ -7,6 +7,9 @@
 #include "pugixml.hpp"
 #include <SDL3/SDL.h>
 
+#include "Window.h" //temporal
+#include <queue> // AÑADE ESTO para el BFS temporal
+
 const std::vector<int> WorldMap::EMPTY = {};
 
 WorldMap::WorldMap(){}
@@ -35,8 +38,6 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
     {
         int id = node.attribute("id").as_int();
         std::string name = node.attribute("name").as_string();
-        float x = node.attribute("x").as_float();
-        float y = node.attribute("y").as_float();
 
         std::string faction = node.attribute("faction").as_string();
         IslandFaction islandFaction;
@@ -68,12 +69,11 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
             type = IslandType::UNDEFINED;
         }
 
-        Vector2D position(x, y);
-        islands[id] = new Island(id, name, type, islandFaction, position);
+        islands[id] = new Island(id, name, type, islandFaction);
         tree[id] = {};
 
-        LOG("WorldMap: loaded island — id=%d name='%s' type='%s' faction='%s' x=%.1f y=%.1f",
-            id, name.c_str(), typeStr.c_str(), faction.c_str(), x, y);
+        LOG("WorldMap: loaded island — id=%d name='%s' type='%s' faction='%s'",
+            id, name.c_str(), typeStr.c_str(), faction.c_str());
     }
 
     LOG("WorldMap: total loaded islands: %d", (int)islands.size());
@@ -96,7 +96,6 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
 
     // 3. Initial island is the one with id = 0
     currentIslandId = 0;
-    selectedChildIndex = 0;
 
     LOG("WorldMap: initial island established: id=%d name='%s'",
         currentIslandId, islands.at(currentIslandId)->GetName().c_str());
@@ -127,99 +126,263 @@ bool WorldMap::IsReachable(int islandId) const
     return false;
 }
 
-void WorldMap::UpdateWorld()
-{
-    const std::vector<int>& nexts = GetNextIds(currentIslandId);
-
-    if (nexts.empty())
-    {
-        return;  // if final island, there is no navigation
-    }
-
-    // Change selection with TAB
-    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
-    {
-        if (nexts.size() > 1)
-        {
-            if (selectedChildIndex == 0)
-            {
-                selectedChildIndex = 1;
-            }
-            else
-            {
-                selectedChildIndex = 0;
-            }
-        }
-    }
-
-    // Travel with ENTER
-    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
-    {
-        int indexToTravel;
-        if (nexts.size() > 1)
-        {
-            indexToTravel = selectedChildIndex;
-        }
-        else
-        {
-            indexToTravel = 0;
-        }
-        currentIslandId = nexts[indexToTravel];
-        selectedChildIndex = 0;
-        LOG("Viajando a isla id=%d (%s)", currentIslandId,
-            islands.at(currentIslandId)->GetName().c_str());
-
-        Island* islandArrived = islands.at(currentIslandId);
-
-        //notify In Game scene arrival island
-        if (arrivalIsland) {
-            arrivalIsland(islandArrived);
-        }
-    }
-}
+//void WorldMap::UpdateWorld()
+//{
+//    const std::vector<int>& nexts = GetNextIds(currentIslandId);
+//
+//    if (nexts.empty())
+//    {
+//        return;  // if final island, there is no navigation
+//    }
+//
+//    // Change selection with TAB
+//    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
+//    {
+//        if (nexts.size() > 1)
+//        {
+//            if (selectedChildIndex == 0)
+//            {
+//                selectedChildIndex = 1;
+//            }
+//            else
+//            {
+//                selectedChildIndex = 0;
+//            }
+//        }
+//    }
+//
+//    // Travel with ENTER
+//    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
+//    {
+//        int indexToTravel;
+//        if (nexts.size() > 1)
+//        {
+//            indexToTravel = selectedChildIndex;
+//        }
+//        else
+//        {
+//            indexToTravel = 0;
+//        }
+//        currentIslandId = nexts[indexToTravel];
+//        selectedChildIndex = 0;
+//        LOG("Viajando a isla id=%d (%s)", currentIslandId,
+//            islands.at(currentIslandId)->GetName().c_str());
+//
+//        Island* islandArrived = islands.at(currentIslandId);
+//
+//        //notify In Game scene arrival island
+//        if (arrivalIsland) {
+//            arrivalIsland(islandArrived);
+//        }
+//    }
+//}
 
 void WorldMap::RenderWorld(float dt)
 {
-    //Island* current = islands.at(currentIslandId);
-    //const std::vector<int>& nexts = GetNextIds(currentIslandId);
+#pragma region FINAL
+    // 1. Dibujar las conexiones (Líneas) PRIMERO para que queden debajo
+    for (auto const& pair : islands)
+    {
+        Island* island = pair.second;
+        const std::vector<int>& nextIds = GetNextIds(pair.first);
 
-    //// render current island
-    //SDL_Rect act = { (int)current->GetX(), (int)current->GetY(), 100, 100 };
-    //Engine::GetInstance().render->DrawRectangle(act, 0, 0, 255, 255);
+        for (int nextId : nextIds)
+        {
+            if (islands.find(nextId) != islands.end())
+            {
+                Island* nextIsland = islands.at(nextId);
 
-    //// render next islands
-    //for (int i = 0; i < (int)nexts.size(); i++)
+                // Calculamos centros dinámicamente
+                int startX = (int)(island->GetX() + (island->GetWidth() / 2.0f));
+                int startY = (int)(island->GetY() + (island->GetHeight() / 2.0f));
+
+                int endX = (int)(nextIsland->GetX() + (nextIsland->GetWidth() / 2.0f));
+                int endY = (int)(nextIsland->GetY() + (nextIsland->GetHeight() / 2.0f));
+
+                // Dibujamos la línea desde el centro del botón actual al siguiente
+                Engine::GetInstance().render->DrawLine(startX, startY, endX, endY, 200, 200, 200, 255);
+            }
+        }
+    }
+
+    // 2. Dibujar un indicador de "Jugador Actual" (Opcional)
+    // Ya que los botones ya se dibujan por el UIManager, aquí solo dibujamos 
+    // efectos visuales extra, como un recuadro de selección.
+    if (islands.count(currentIslandId))
+    {
+        Island* current = islands.at(currentIslandId);
+        SDL_Rect highlight = {
+            current->GetX() - 5,
+            current->GetY() - 5,
+            current->GetWidth() + 10,
+            current->GetHeight() + 10
+        };
+        // Un recuadro amarillo brillante para saber dónde estamos
+        Engine::GetInstance().render->DrawRectangle(highlight, 255, 255, 0, 100);
+    }
+#pragma endregion
+
+#pragma region RENDER
+    //// --- CONSTANTES TEMPORALES DE DISEÑO ---
+    //// (Ajusta estos valores para ver cómo cambia el mapa)
+    //static const int COL_SPACING = 200; // Distancia horizontal entre columnas
+    //static const int ISLAND_W = 100;     // Ancho del rectángulo de la isla
+    //static const int ISLAND_H = 60;      // Alto del rectángulo de la isla
+
+    //// Obtenemos el tamaño de la ventana para centrar verticalmente
+    //int screenW = 0;
+    //int screenH = 0;
+    //Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+
+    //// --- 1. Mapas para guardar las posiciones calculadas (solo para este frame) ---
+    //std::unordered_map<int, SDL_Rect> islandPositions; // islandId -> Rectángulo visual
+
+    //// Mapas auxiliares para el BFS (copia de InGameScene)
+    //std::unordered_map<int, int> islandColumn; // islandId -> columna
+    //std::unordered_map<int, int> islandRow;    // islandId -> fila en columna
+    //std::unordered_map<int, int> colCount;     // column -> número total de islas
+
+    //// --- 2. BFS para asignar columna y fila (Copia exacta de tu lógica) ---
+    //std::queue<int> bfsQueue;
+
+    //// Asumimos que la isla 0 es la raíz. Si no tienes isla 0, esto fallará.
+    //if (islands.count(0)) {
+    //    bfsQueue.push(0);
+    //    islandColumn[0] = 0;
+    //}
+    //else {
+    //    // Fallback: si no hay isla 0, coge la primera que encuentres
+    //    if (!islands.empty()) {
+    //        int firstId = islands.begin()->first;
+    //        bfsQueue.push(firstId);
+    //        islandColumn[firstId] = 0;
+    //    }
+    //    else {
+    //        return; // No hay islas, nada que dibujar
+    //    }
+    //}
+
+    //while (!bfsQueue.empty())
     //{
-    //    Island* next = islands.at(nexts[i]);
-    //    SDL_Rect r = { (int)next->GetX(), (int)next->GetY(), 100, 100 };
+    //    int currentId = bfsQueue.front();
+    //    bfsQueue.pop();
 
-    //    Uint8 r_col;
-    //    Uint8 g_col;
-    //    if (next->GetType() == IslandType::HOSTILE)
+    //    int col = islandColumn[currentId];
+
+    //    // Asignar fila y actualizar contador
+    //    islandRow[currentId] = colCount[col];
+    //    colCount[col]++;
+
+    //    // Procesar hijos
+    //    auto it = tree.find(currentId);
+    //    if (it != tree.end())
     //    {
-    //        r_col = 255;
-    //        g_col = 0;
+    //        for (int childId : it->second)
+    //        {
+    //            if (islandColumn.find(childId) == islandColumn.end())
+    //            {
+    //                islandColumn[childId] = col + 1;
+    //                bfsQueue.push(childId);
+    //            }
+    //        }
+    //    }
+    //}
+
+    //// --- 3. Calcular rectángulos finales ---
+    //for (auto& pair : islands)
+    //{
+    //    int islandId = pair.first;
+
+    //    // Si la isla no fue alcanzada por el BFS (está desconectada), no la dibujamos
+    //    if (islandColumn.find(islandId) == islandColumn.end()) continue;
+
+    //    int col = islandColumn[islandId];
+    //    int row = islandRow[islandId];
+    //    int islandsInCol = colCount[col];
+
+    //    // Cálculo de posición (Copia exacta de tu lógica)
+    //    int centerX = col * COL_SPACING + COL_SPACING / 2;
+    //    int slotH = screenH / (islandsInCol + 1);
+    //    int centerY = (row + 1) * slotH;
+
+    //    int rectX = centerX - ISLAND_W / 2;
+    //    int rectY = centerY - ISLAND_H / 2;
+
+    //    islandPositions[islandId] = { rectX, rectY, ISLAND_W, ISLAND_H };
+    //}
+
+    //// --- 4. DIBUJAR ---
+
+    //// A. Dibujar Líneas PRIMERO (usando el mapa temporal)
+    //for (auto const& pair : islands)
+    //{
+    //    int islandId = pair.first;
+
+    //    // Asegurarnos que tenemos posición para esta isla
+    //    if (islandPositions.find(islandId) == islandPositions.end()) continue;
+
+    //    const SDL_Rect& startRect = islandPositions.at(islandId);
+    //    const std::vector<int>& nextIds = GetNextIds(islandId);
+
+    //    for (int nextId : nextIds)
+    //    {
+    //        if (islandPositions.count(nextId))
+    //        {
+    //            const SDL_Rect& endRect = islandPositions.at(nextId);
+
+    //            // Centro de inicio y fin
+    //            int startX = startRect.x + startRect.w / 2;
+    //            int startY = startRect.y + startRect.h / 2;
+    //            int endX = endRect.x + endRect.w / 2;
+    //            int endY = endRect.y + endRect.h / 2;
+
+    //            // Línea gris claro
+    //            Engine::GetInstance().render->DrawLine(startX, startY, endX, endY, 180, 180, 180, 255);
+    //        }
+    //    }
+    //}
+
+    //// B. Dibujar Rectángulos de Isla
+    //for (auto& pair : islands)
+    //{
+    //    int islandId = pair.first;
+    //    Island* island = pair.second;
+
+    //    // Asegurarnos que tenemos posición para esta isla
+    //    if (islandPositions.find(islandId) == islandPositions.end()) continue;
+
+    //    const SDL_Rect& rect = islandPositions.at(islandId);
+
+    //    // Color según tipo
+    //    Uint8 r = 0, g = 0, b = 0;
+    //    if (island->GetType() == IslandType::HOSTILE)
+    //    {
+    //        r = 220; g = 50; b = 50; // Rojo
+    //    }
+    //    else if (island->GetType() == IslandType::FRIENDLY)
+    //    {
+    //        r = 50; g = 220; b = 50; // Verde
     //    }
     //    else
     //    {
-    //        r_col = 0;
-    //        g_col = 255;
+    //        r = 100; g = 100; b = 100; // Gris
     //    }
-    //    Engine::GetInstance().render->DrawRectangle(r, r_col, g_col, 0, 255);
 
-    //    // Marker
-    //    if (i == selectedChildIndex)
+    //    // Rellenar el rectángulo
+    //    Engine::GetInstance().render->DrawRectangle(rect, r, g, b, 255);
+
+    //    // Dibujar un borde negro para que se vea mejor
+    //    Engine::GetInstance().render->DrawRectangle({ rect.x, rect.y, rect.w, rect.h }, 0, 0, 0, 255, false); // false = solo borde (si DrawRectangle lo soporta)
+    //    // Si DrawRectangle no soporta borde, simplemente dibuja el rectángulo y ya está.
+
+    //    // C. Marcador para la isla actual (Amarillo)
+    //    if (islandId == currentIslandId)
     //    {
-    //        SDL_Rect marker = { (int)next->GetX(), (int)next->GetY(), 25, 25 };
-    //        Engine::GetInstance().render->DrawRectangle(marker, 255, 255, 0, 255);
+    //        SDL_Rect marker = { rect.x - 5, rect.y - 5, rect.w + 10, rect.h + 10 };
+    //        Engine::GetInstance().render->DrawRectangle(marker, 255, 255, 0, 150);
     //    }
     //}
-    
-    // Placeholder rendering — islands are rendered via UIManager buttons created by InGameScene.
-    // Only draw a marker on the current island position for debug purposes.
-    Island* current = islands.at(currentIslandId);
-    SDL_Rect currentRect = { (int)current->GetX(), (int)current->GetY(), 50, 50 };
-    Engine::GetInstance().render->DrawRectangle(currentRect, 255, 255, 0, 255);
+#pragma endregion
 }
 
 void WorldMap::UnloadWorld()
@@ -233,7 +396,6 @@ void WorldMap::UnloadWorld()
     islands.clear();
     tree.clear();
     currentIslandId = -1;
-    selectedChildIndex = 0;
 }
 
 void WorldMap::MakeAllIslandsHostile(IslandFaction faction)
@@ -268,7 +430,7 @@ void WorldMap::TravelTo(int islandId)
 
 bool WorldMap::Update(float dt)
 {
-    UpdateWorld();
+    //UpdateWorld();
     return true;
 }
 
