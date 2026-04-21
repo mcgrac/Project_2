@@ -28,10 +28,16 @@ protected:
 	int experience;
 	int initiative;
 	int maxInitiative;
-	int power;
-	int durability;
+	int totalPower;
+	int basePower;
+	int bonusPower;
+	int totalDurability;
+	int baseDurability;
+	int bonusDurability;
 	int maxDurability;
-	int speed;
+	int totalSpeed;
+	int baseSpeed;
+	int bonusSpeed;
 	int lifesteal;
 	float healingPower;
 	float poisonPower;
@@ -84,8 +90,8 @@ public:
 	}
 
 	Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
-		      int _maxInitiative, int _power, int _durability, int _maxDurability, 
-		      int _speed, int _lifesteal, float _healingPower, float _poisonPower, float _firePower, int _poisonedStatMod, 
+		      int _maxInitiative, int _basePower, int _bonusPower, int _totalPower, int _totalDurability,int _baseDurability, int _bonusDurability, int _maxDurability,
+		      int _baseSpeed, int _bonusSpeed, int _totalSpeed, int _lifesteal, float _healingPower, float _poisonPower, float _firePower, int _poisonedStatMod,
 		      int _burnedStatMod, int _level, int _maxHealthLevelScaling,
 		      int _speedLevelScaling, int _powerLevelScaling);
 
@@ -128,14 +134,18 @@ public:
 
 	void PlayAnimation(const std::string& name);
 
+	void ClearBonusStats();
+
 #pragma region GETTERS
-	inline int GetPower() const { return power; }
+	inline int GetTotalPower() const { return totalPower; }
+	inline int GetBasePower() const { return basePower; }
 	inline int GetLifesteal() const { return lifesteal; }
 	inline int GetXP() const { return experience; }
 	inline int GetLevel() const { return level; }
 	inline bool GetIsAlive() const { return isAlive; }
 	inline Character* GetKilledBy() const { return killedBy; }
-	inline int GetSpeed() const { return speed; }
+	inline int GetTotalSpeed() const { return totalSpeed; }
+	inline int GetBaseSpeed() const { return baseSpeed; }
 	inline int GetCurrentHP() const { return health; }
 	inline int GetCurrentInitiative() const { return initiative; }
 	inline bool IsPoisoned() const { return isPoisoned; }
@@ -149,18 +159,26 @@ public:
 	inline float GetHealingPower() const { return healingPower; }
 	inline bool GetAnimationFinished() const { return anims.IsCurrentFinished(); }
 	inline std::string GetCurrentAnimation() const { return anims.GetCurrentName(); }
+	inline int GetTotalDurability() const { return totalDurability; }
 #pragma endregion
 
 #pragma region MODIFIERS
-	inline void ModifyPower(int amount) { power += amount; }
-	inline void ModifySpeed(int amount) { speed += amount; }
+	inline void ModifyBasePower(int amount) { basePower += amount; }
+	inline void ModifyBaseSpeed(int amount) { baseSpeed += amount; }
+	inline void ModifyBonusPower(int amount) { bonusPower += amount; }
+	inline void ModifyBonusSpeed(int amount) { bonusSpeed += amount; }
 	inline void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
 	inline void ModifyHealingPower(int amount) { healingPower += amount; }
 	void ModifyDurability(int amount);
+	inline void ModifyBonusDurability(int amount) { bonusDurability += amount; }
 	inline void AddInitiative(int amount) { initiative += amount; }
 	inline void ModifyFirePower(float amount) { firePower += amount; }
 	inline void ModifyPoisonPower(float amount) { poisonPower += amount; }
 	inline void AddXP(int amount) { experience += amount; }
+
+	inline void SetTotalPower() { totalPower = basePower + bonusPower; }
+	inline void SetTotalDurability() { totalDurability = baseDurability + bonusDurability; }
+	inline void SetTotalSpeed() { totalSpeed = baseSpeed + bonusSpeed; }
 #pragma endregion
 
 #pragma region TEST

@@ -13,7 +13,7 @@ Skill::~Skill()
 
 void Skill::Use(Character* caster, Character* target)
 {
-    int totalDamage = baseDamage + (int)(caster->GetPower() * powerMultiplier);
+    int totalDamage = baseDamage + (int)(caster->GetTotalPower() * powerMultiplier);
 
     if (damageType == DamageType::Physical)
     {

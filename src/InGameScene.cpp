@@ -215,7 +215,6 @@ void InGameScene::RestoreFromSave(const SaveData& data)
 void InGameScene::CreateIslandButtons()
 {
     static const int COL_SPACING = 200;
-    //static const int ISLAND_BUTTON_ID_OFFSET = 100;
     static const int BUTTON_W = 221;
     static const int BUTTON_H = 85;
 
@@ -226,7 +225,7 @@ void InGameScene::CreateIslandButtons()
     const auto& islands = worldMap.GetAllIslands();
     const auto& tree = worldMap.GetTree();
 
-    // --- BFS to assign a column index to every island ---
+    // BFS to assign a column index to every island
     // Column 0 = starting island, column N = N hops from the root
     std::unordered_map<int, int> islandColumn; // islandId -> column
     std::unordered_map<int, int> islandRow;    // islandId -> row within its column
@@ -314,7 +313,7 @@ void InGameScene::CreateIslandButtons()
 
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, buttonId, label.c_str(), bounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0, bounds.w, bounds.h
         );
 
         LOG("InGameScene: island button created |id=%d label='%s' col=%d row=%d x=%d y=%d|",

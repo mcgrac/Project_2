@@ -64,7 +64,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Increate base team power by 20",
             [](Character* caster, Character* attacker) {
-                caster->ModifyPower(20);
+                caster->ModifyBonusPower(20);
             }
             });
         return s;
@@ -90,7 +90,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Heal and clean poison effect and burn effect to an ally",
             [](Character* caster, Character* target) {
-                target->Heal((int)(caster->GetPower() * 0.15f));
+                target->Heal((int)(caster->GetTotalPower() * 0.15f));
                 target->SetBurned(false, 0, caster);
                 target->SetPoisoned(false, 0, caster);
             }
@@ -122,8 +122,8 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Grant your team 5% more Power and Speed",
             [](Character* caster, Character* target) {
-                target->ModifyPower(target->GetPower() * 0.05f);
-                target->ModifySpeed(target->GetSpeed() * 0.05f);
+                target->ModifyBonusPower(target->GetTotalPower() * 0.05f);
+                target->ModifyBonusSpeed(target->GetTotalPower() * 0.05f);
             }
             });
         return s;
@@ -189,7 +189,7 @@ SkillRegistry::SkillRegistry()
             "Gain 20 power and 30 initiative",
             [](Character* caster, Character* target) {
                 caster->AddInitiative(30);
-                caster->ModifyPower(20);
+                caster->ModifyBonusPower(20);
             }
             });
         return s;
@@ -212,7 +212,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Waste all Initiative and gain 50% of it as Power",
             [](Character* caster, Character* target) {
-                caster->ModifyPower((int)(caster->GetCurrentInitiative() * 0.5f));
+                caster->ModifyBonusPower((int)(caster->GetCurrentInitiative() * 0.5f));
                 caster->ResetCurrentInitiative();
             }
             });
@@ -224,7 +224,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Deal bonus damage per fire stack and reset fire to 0",
             [](Character* caster, Character* target) {
-                int bonusDmg = (int)((1 + caster->GetPower() * 0.1f) * target->GetBurnDamage());
+                int bonusDmg = (int)((1 + caster->GetTotalPower() * 0.1f) * target->GetBurnDamage());
                 target->ReceivePhysicalDamage(bonusDmg, caster);
                 target->SetBurned(false, 0, caster);
             }
@@ -245,7 +245,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Heal 10(+20%Power)",
             [](Character* caster, Character* target) {
-                caster->Heal(10 + (int)(caster->GetPower() * 0.2f));
+                caster->Heal(10 + (int)(caster->GetTotalPower() * 0.2f));
             }
             });
         return s;
@@ -257,8 +257,8 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Gain 25 Durability and 20 Power",
             [](Character* caster, Character* target) {
-                caster->ModifyDurability(25);
-                caster->ModifyPower(20);
+                caster->ModifyBonusDurability(25);
+                caster->ModifyBonusPower(20);
             }
             });
         return s;
@@ -279,8 +279,8 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Gain 25 Speed and 20 Power",
             [](Character* caster, Character* target) {
-                caster->ModifySpeed(25);
-                caster->ModifyPower(20);
+                caster->ModifyBonusSpeed(25);
+                caster->ModifyBonusPower(20);
             }
             });
         return s;
@@ -309,7 +309,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Gain 10 fire mod and 20 power",
             [](Character* caster, Character* target) {
-                caster->ModifyPower(20);
+                caster->ModifyBonusPower(20);
                 caster->ModifyPoisonPower(20.0f);
                 caster->ModifyFirePower(20.0f);
             }

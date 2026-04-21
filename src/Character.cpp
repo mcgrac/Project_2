@@ -5,15 +5,19 @@
 #include "Log.h"
 
 Character::Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
-	int _maxInitiative, int _power, int _durability, int _maxDurability, int _speed,
-	int _lifesteal, float _healingPower, float _poisonPower, float _firePower, int _poisonedStatMod, int _burnedStatMod,
+	int _maxInitiative, int _basePower, int _bonusPower, int _totalPower, int _totalDurability, int _baseDurability, int _bonusDurability, int _maxDurability, int _baseSpeed,
+	int _bonusSpeed, int _totalSpeed, int _lifesteal, float _healingPower, float _poisonPower, float _firePower, int _poisonedStatMod, int _burnedStatMod,
 	int _level, int _maxHealthLevelScaling, int _speedLevelScaling, int _powerLevelScaling) :
 	position(_position), name(_name), health(_health), maxHealth(_maxHealth), experience(_experience), initiative(_initiative), maxInitiative(_maxInitiative),
-	power(_power), durability(_durability), maxDurability(_maxDurability), speed(_speed), lifesteal(_lifesteal), healingPower(_healingPower),
-	poisonPower(_poisonPower), firePower(_firePower),
+	basePower(_basePower), bonusPower(_bonusPower), totalPower(_totalPower),totalDurability(_totalDurability), baseDurability(_baseDurability), bonusDurability(_bonusDurability), 
+	maxDurability(_maxDurability), baseSpeed(_baseSpeed), bonusSpeed(_bonusSpeed), totalSpeed(_totalSpeed), lifesteal(_lifesteal), healingPower(_healingPower), poisonPower(_poisonPower), firePower(_firePower),
 	isPoisoned(false), isBurned(false), poisonStatMod(_poisonedStatMod), burnedStatMod(_burnedStatMod), level(_level), 
 	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true)
 {
+	SetTotalPower();
+	SetTotalSpeed();
+	SetTotalDurability();
+
 	//initialize upgrade tree
 	upgradeTree = new UpgradeTree();
 }
@@ -45,7 +49,7 @@ void Character::FullyHeal()
 void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 {
 	int currentHealth = health;
-	currentHealth -= std::max(0, damageReceived - durability); //avoids that damage < 0
+	currentHealth -= std::max(0, damageReceived - totalDurability); //avoids that damage < 0
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
@@ -89,8 +93,8 @@ void Character::LevelUp()
 	//update stats
 	maxHealth += maxHealthLevelScaling;
 	health += maxHealthLevelScaling;
-	power += powerLevelScaling;
-	speed += speedLevelScaling;
+	basePower += powerLevelScaling;
+	baseSpeed += speedLevelScaling;
 }
 
 void Character::Draw(float dt) 
@@ -134,7 +138,7 @@ void Character::UseSkill(int index, Character* target)
 
 void Character::ModifyDurability(int amount)
 {
-	durability = std::max(0, std::min(maxDurability, durability + amount));
+	totalDurability = std::max(0, std::min(maxDurability, totalDurability + amount));
 }
 
 void Character::SetBurned(bool state, int damage, Character* attacker)
@@ -221,11 +225,18 @@ void Character::PlayAnimation(const std::string& name)
 	}
 }
 
+void Character::ClearBonusStats()
+{
+	bonusDurability = 0;
+	bonusPower = 0;
+	bonusSpeed = 0;
+}
+
 
 void Character::PrintDebugInfo(){
 	LOG("========================================");
 	LOG("CHARACTER: %s | Level %d", name.c_str(), level);
-	LOG("  HP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, power, speed, durability);
+	LOG("  HP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, basePower, baseSpeed, totalDurability);
 	LOG("  Initiative: %d/%d  Lifesteal: %d", initiative, maxInitiative, lifesteal);
 	LOG("  HealingPower: %.2f  PoisonPower: %.2f  FirePower: %.2f", healingPower, poisonPower, firePower);
 

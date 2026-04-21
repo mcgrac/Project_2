@@ -1,12 +1,12 @@
-#pragma once
-#include "Character.h"
-#include "Party.h"
-
-class Theresia : public Character {
-public:
-    Theresia();
-    ~Theresia();
-
-private:
-    void InitUpgradeTree();
-};
+//#pragma once
+//#include "Character.h"
+//#include "Party.h"
+//
+//class Theresia : public Character {
+//public:
+//    Theresia();
+//    ~Theresia();
+//
+//private:
+//    void InitUpgradeTree();
+//};

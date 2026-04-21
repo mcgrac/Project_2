@@ -13,7 +13,6 @@
 #include <limits>
 #include <random>
 
-#include "Engine.h"
 #include "Render.h"
 #include "Textures.h"
 
@@ -153,9 +152,15 @@ void Combat::StartCombat()
     //---------------------------------------
 #endif
 
-    //save previous states in combat
+
     for (Character* c : alliedParty->GetMembers()) {
+        //save previous states in combat
         preCombatValues[c] = c->TakePreCombatValues();
+
+        //calculate total stats
+        c->SetTotalPower();
+        c->SetTotalDurability();
+        c->SetTotalSpeed();
     }
 
     auto allCombatants = GetAllCombatants();
@@ -179,7 +184,7 @@ bool Combat::CalculateInitiative()
         {
             int before = c->GetCurrentInitiative();
 
-            int bonus = 50 + c->GetSpeed();
+            int bonus = 50 + c->GetTotalSpeed();
             c->AddInitiative(bonus);
 
             int after = c->GetCurrentInitiative();
@@ -353,6 +358,22 @@ void Combat::CheckDefeat()
 //  END_COMBAT
 void Combat::EndCombat()
 {
+    //clear bonus stats ans effects
+    for (Character* c : alliedParty->GetMembers()) {
+        c->ClearBonusStats();
+        c->ClearStatusEffects();
+
+        LOG("BEFORE CLEAR |%s| totalPower: %d, totalSpeed: %d, totalDurability:%d", c->GetName().c_str(), c->GetTotalPower(), c->GetTotalSpeed(), c->GetTotalDurability());
+
+        //calculate again total stats
+        c->SetTotalPower();
+        c->SetTotalDurability();
+        c->SetTotalSpeed();
+
+        LOG("AFTER CLEAR |%s| totalPower: %d, totalSpeed: %d, totalDurability:%d", c->GetName().c_str(), c->GetTotalPower(), c->GetTotalSpeed(), c->GetTotalDurability());
+
+    }
+
     if (result == CombatResult::VICTORY)
     {
         std::cout << "\n══════════════════════════════════════\n";
