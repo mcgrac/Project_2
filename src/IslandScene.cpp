@@ -31,24 +31,28 @@ void IslandScene::Load()
 
 void IslandScene::Update(float dt)
 {
-    if (island->GetType() == IslandType::HOSTILE && !combatLaunched)
-    {
-        combatLaunched = true;
-        AttackIsland();
-    }
+    if (island == nullptr) { LOG("island es nullptr"); }
 
-    if (island->GetType() == IslandType::FRIENDLY)
-    {
-        Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    if (island != nullptr) {
+        if (island->GetType() == IslandType::HOSTILE && !combatLaunched)
+        {
+            combatLaunched = true;
+            AttackIsland();
+        }
 
-        SDL_Rect panel = { 426, 300, 428, 360 };
-        Engine::GetInstance().render->DrawRectangle(panel, 20, 20, 20, 200, true, false);
+        if (island->GetType() == IslandType::FRIENDLY)
+        {
+            Engine::GetInstance().render->DrawTexture(background, 0, 0);
 
-        Engine::GetInstance().render->DrawText(
-            island->GetName().c_str(),
-            486, 310, 308, 50,
-            { 255, 255, 255, 255 }
-        );
+            SDL_Rect panel = { 426, 300, 428, 360 };
+            Engine::GetInstance().render->DrawRectangle(panel, 20, 20, 20, 200, true, false);
+
+            Engine::GetInstance().render->DrawText(
+                island->GetName().c_str(),
+                486, 310, 308, 50,
+                { 255, 255, 255, 255 }
+            );
+        }
     }
 }
 
@@ -64,6 +68,9 @@ void IslandScene::Unload()
     Engine::GetInstance().textures->UnLoad(background);
     Engine::GetInstance().textures->UnLoad(exitButton);
     Engine::GetInstance().uiManager->CleanUp();
+
+    //delete island;
+    //island = nullptr;
 
 }
 

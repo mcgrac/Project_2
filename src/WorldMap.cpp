@@ -100,6 +100,8 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
     LOG("WorldMap: initial island established: id=%d name='%s'",
         currentIslandId, islands.at(currentIslandId)->GetName().c_str());
 
+    doc.reset();
+
     return true;
 }
 
