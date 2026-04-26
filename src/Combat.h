@@ -84,8 +84,8 @@ private:
 
     bool runningCombat; //control
 
+    void ResetBonusStats(Character* c);
     void StartCombat();
-
     bool CalculateInitiative();
 
     //void Attack();
@@ -93,21 +93,15 @@ private:
     void AttackAnimation();
     void AttackResolve();
 
-
     void ApplyModifiers();
-
     void CheckDefeat();
-
     void EndCombat();
-
     void PlayerTurn();
-
     void EnemyTurn();
 
     void ExecuteSkill(Character* user, Skill& skill, Character* target);
 
     Character* GetHighestInitiativeActor();
-
     std::vector<Character*> GetAliveMembers(Party* party);
 
     bool IsPartyDefeated(Party* party);

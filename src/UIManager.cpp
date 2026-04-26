@@ -42,6 +42,17 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(
 	return uiElement;
 }
 
+void UIManager::RemoveElementsByRange(int minID, int maxID)
+{
+	for (auto& ui : UIElementsList)
+	{
+		if (ui->id >= minID && ui->id <= maxID)
+		{
+			ui->pendingToDelete = true;
+		}
+	}
+}
+
 bool UIManager::Update(float dt)
 {	
 	//List to store entities pending deletion

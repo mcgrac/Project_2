@@ -159,7 +159,6 @@
     <ClCompile Include="src\Dockyard.cpp" />
     <ClCompile Include="src\DockyardScene.cpp" />
     <ClCompile Include="src\Engine.cpp" />
-    <ClCompile Include="src\EntityManager.cpp" />
     <ClCompile Include="src\Fonts.cpp" />
     <ClCompile Include="src\Gerbera.cpp" />
     <ClCompile Include="src\Hostel.cpp" />
@@ -171,12 +170,14 @@
     <ClCompile Include="src\IslandInteriorScene.cpp" />
     <ClCompile Include="src\IslandScene.cpp" />
     <ClCompile Include="src\Item.cpp" />
+    <ClCompile Include="src\ItemManager.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\MainMenuScene.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\Markus.cpp" />
     <ClCompile Include="src\NPC.cpp" />
     <ClCompile Include="src\Party.cpp" />
+    <ClCompile Include="src\PartyScene.cpp" />
     <ClCompile Include="src\PauseScene.cpp" />
     <ClCompile Include="src\PerfTimer.cpp" />
     <ClCompile Include="src\Physics.cpp" />
@@ -221,7 +222,6 @@
     <ClInclude Include="src\DockyardScene.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
-    <ClInclude Include="src\EntityManager.h" />
     <ClInclude Include="src\Fonts.h" />
     <ClInclude Include="src\Gerbera.h" />
     <ClInclude Include="src\Hostel.h" />
@@ -233,6 +233,7 @@
     <ClInclude Include="src\IslandInteriorScene.h" />
     <ClInclude Include="src\IslandScene.h" />
     <ClInclude Include="src\Item.h" />
+    <ClInclude Include="src\ItemManager.h" />
     <ClInclude Include="src\IUIObserver.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\MainMenuScene.h" />
@@ -241,6 +242,7 @@
     <ClInclude Include="src\Module.h" />
     <ClInclude Include="src\NPC.h" />
     <ClInclude Include="src\Party.h" />
+    <ClInclude Include="src\PartyScene.h" />
     <ClInclude Include="src\PauseScene.h" />
     <ClInclude Include="src\PerfTimer.h" />
     <ClInclude Include="src\Physics.h" />
@@ -275,6 +277,7 @@
     <Xml Include="Assets\Characters\Raptor.xml" />
     <Xml Include="Assets\Characters\Rex.xml" />
     <Xml Include="Assets\Characters\Theresia.xml" />
+    <Xml Include="Assets\Items\Items.xml" />
     <Xml Include="Assets\Maps\world.xml" />
     <Xml Include="Assets\SaveData.xml" />
     <Xml Include="config.xml" />

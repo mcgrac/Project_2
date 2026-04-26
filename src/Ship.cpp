@@ -5,9 +5,10 @@
 
 Ship::Ship()
     : position(Vector2D(0.0f, 0.0f)),
-      currentHp(100),
-      maxHp(100),
-      level(1)
+    currentHp(100),
+    maxHp(100),
+    level(1),
+    sinked(false)
 {
     //load animations
     std::unordered_map<int, std::string> aliases = { {21,"up"},{22,"idle"},{23,"down"} };
@@ -20,9 +21,10 @@ Ship::Ship()
 
 Ship::Ship(Vector2D position, int maxHp, int level)
     : position(position),
-      currentHp(maxHp),
-      maxHp(maxHp),
-      level(level)
+    currentHp(maxHp),
+    maxHp(maxHp),
+    level(level),
+    sinked(false)
 {
     //load animations
     std::unordered_map<int, std::string> aliases = { {21,"up"},{22,"idle"},{23,"down"} };
@@ -76,9 +78,10 @@ void Ship::TakeDamage(int amount)
 
     currentHp -= amount;
 
-    if (currentHp < 0)
+    if (currentHp <= 0)
     {
         currentHp = 0;
+        sinked = true;
     }
 }
 
@@ -102,8 +105,11 @@ void Ship::LevelUp()
     level += 1;
     maxHp += HP_PER_LEVEL;
     currentHp += HP_PER_LEVEL;
+
+    //level up modificators also
 }
 
-void Ship::Draw()
+void Ship::LoseBattle()
 {
+    TakeDamage(HP_LOST_FOR_BATTLE);
 }

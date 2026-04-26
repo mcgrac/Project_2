@@ -1,9 +1,17 @@
 #pragma once
 #include "BaseScene.h"
 #include "Shop.h"
-#include "Party.h"
 
 struct SDL_Texture;
+
+class Party;
+
+enum class ShopState
+{
+    CLOSED,
+    SHOW_ITEMS,
+    SELECT_CHARACTER
+};
 
 class ShopScene : public BaseScene
 {
@@ -25,11 +33,23 @@ public:
     void CreateUI();
 
 private:
+
+    void CreateItemButtons();
+    void CreateCharacterSelectionUI();
+
     Shop* shop; 
     Party* alliedParty;
 
     static constexpr int BACK_BUTTON_ID = 1;
+    static constexpr int OPEN_SHOP_BUTTON = 2;
+    static constexpr int ITEMS_AVAILABLE_BASE = 100;
+    static constexpr int CHARACTERS_AVAILABLE_BASE = 200;
 
     SDL_Texture* exitButton;
     SDL_Texture* background;
+
+    ShopState state = ShopState::CLOSED;
+    Item* selectedItem = nullptr;
+
+
 };

@@ -23,6 +23,11 @@ UpgradeTier* UpgradeTree::GetAvailableTier(int currentLevel)
     return nullptr;
 }
 
+std::vector<UpgradeTier>& UpgradeTree::GetTiers()
+{
+    return tiers;
+}
+
 const std::vector<UpgradeTier>& UpgradeTree::GetTiers() const
 {
     return tiers;

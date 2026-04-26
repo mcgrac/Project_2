@@ -5,6 +5,10 @@
 #include "Render.h"
 #include "Textures.h"
 #include "Log.h"
+#include "DialogueScene.h"
+#include "DialogueManager.h"
+#include "Log.h"
+#include "NPC.h"
 
 DockyardScene::DockyardScene(Dockyard* dockyard, Party* allied)
     : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr)
@@ -62,6 +66,31 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
     case BACK_BUTTON_ID:
         Engine::GetInstance().scene->PopScene();
         break;
+    case START_DIALOGUE:
+    {
+        NPC* npc = dockyard->GetOwner();
+        if (npc == nullptr)
+        {
+            LOG("Hostel: NPC es nullptr");
+            break;
+        }
+        else {
+            LOG("Hostel: NPC correcto");
+        }
+
+        LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
+        Engine::GetInstance().scene->PushScene(
+            new DialogueScene(npc->GetDialogueId(),
+                [this]()
+                {
+                }
+            )
+        );
+        break;
+    }
+    case IMPROVE_SHIP:
+        dockyard->ImproveShip();
+        break;
     default:
         break;
     }
@@ -84,5 +113,17 @@ void DockyardScene::CreateUI()
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
+    );
+
+    SDL_Rect improveBounds = { 400, 400, 72, 72 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, IMPROVE_SHIP, "Improve Ship", improveBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, improveBounds.w, improveBounds.h
+    );
+
+    SDL_Rect talkBounds = { 500, 20, 549, 616 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, dockyard->GetOwner()->GetTexture(), 0, talkBounds.w, talkBounds.h
     );
 }

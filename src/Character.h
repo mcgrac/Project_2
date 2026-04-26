@@ -5,10 +5,11 @@
 #include <vector>
 #include "Vector2D.h"
 
-#include "Inventory.h"
 #include "Animation.h"
 #include "Skill.h"
 #include "UpgradeTree.h"
+
+class Item;
 
 struct AnimAlias
 {
@@ -52,8 +53,6 @@ protected:
 	int level;
 	bool isAlive;
 #pragma endregion
-
-	Inventory* inventory = nullptr;
 
 	//animations
 	AnimationSet anims;
@@ -136,17 +135,28 @@ public:
 
 	void ClearBonusStats();
 
+	//inventory management
+	bool EquipItem(Item* item);
+	void DebugInventory();
+
 #pragma region GETTERS
 	inline int GetTotalPower() const { return totalPower; }
 	inline int GetBasePower() const { return basePower; }
+
 	inline int GetLifesteal() const { return lifesteal; }
 	inline int GetXP() const { return experience; }
 	inline int GetLevel() const { return level; }
 	inline bool GetIsAlive() const { return isAlive; }
 	inline Character* GetKilledBy() const { return killedBy; }
+
 	inline int GetTotalSpeed() const { return totalSpeed; }
 	inline int GetBaseSpeed() const { return baseSpeed; }
+
 	inline int GetCurrentHP() const { return health; }
+	inline int GetMaxHP() const { return maxHealth; }
+
+	inline int GetExperience() const { return experience; 
+	}
 	inline int GetCurrentInitiative() const { return initiative; }
 	inline bool IsPoisoned() const { return isPoisoned; }
 	inline bool IsBurning() const { return isBurned; }
@@ -160,6 +170,8 @@ public:
 	inline bool GetAnimationFinished() const { return anims.IsCurrentFinished(); }
 	inline std::string GetCurrentAnimation() const { return anims.GetCurrentName(); }
 	inline int GetTotalDurability() const { return totalDurability; }
+
+	inline UpgradeTree* GetUpgradeTree() const { return upgradeTree; }
 #pragma endregion
 
 #pragma region MODIFIERS
@@ -175,6 +187,7 @@ public:
 	inline void ModifyFirePower(float amount) { firePower += amount; }
 	inline void ModifyPoisonPower(float amount) { poisonPower += amount; }
 	inline void AddXP(int amount) { experience += amount; }
+	inline void ModifyLifesteal(int amount) { lifesteal += amount; }
 
 	inline void SetTotalPower() { totalPower = basePower + bonusPower; }
 	inline void SetTotalDurability() { totalDurability = baseDurability + bonusDurability; }
@@ -184,4 +197,8 @@ public:
 #pragma region TEST
 	void PrintDebugInfo();
 #pragma endregion
+
+private:
+	std::vector<Item*> equippedItems;
+	static const int MAX_EQUIPPED_ITEMS = 3;
 };

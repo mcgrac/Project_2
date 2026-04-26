@@ -3,6 +3,7 @@
 #include "Render.h"
 #include "Textures.h"
 #include "Log.h"
+#include "Item.h"
 
 Character::Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 	int _maxInitiative, int _basePower, int _bonusPower, int _totalPower, int _totalDurability, int _baseDurability, int _bonusDurability, int _maxDurability, int _baseSpeed,
@@ -232,11 +233,36 @@ void Character::ClearBonusStats()
 	bonusSpeed = 0;
 }
 
+bool Character::EquipItem(Item* item)
+{
+	if (equippedItems.size() >= MAX_EQUIPPED_ITEMS) { return false; }
+
+	equippedItems.push_back(item);
+
+	item->ApplyEffect(this);
+
+	DebugInventory();
+
+	return true;
+}
+
+void Character::DebugInventory()
+{
+	LOG("-----------INVENTORY OF %s --------------", name.c_str());
+	for (auto& item : equippedItems) {
+		LOG("Item: %s equipped", item->GetName().c_str());
+		for (auto& stat : item->GetItemStats()) {
+			LOG("Stat: %d Value: %d", stat.type, stat.value);
+		}
+	}
+	LOG("------------------------------------------");
+}
+
 
 void Character::PrintDebugInfo(){
 	LOG("========================================");
 	LOG("CHARACTER: %s | Level %d", name.c_str(), level);
-	LOG("  HP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, basePower, baseSpeed, totalDurability);
+	LOG("  HP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, totalPower, totalSpeed, totalDurability);
 	LOG("  Initiative: %d/%d  Lifesteal: %d", initiative, maxInitiative, lifesteal);
 	LOG("  HealingPower: %.2f  PoisonPower: %.2f  FirePower: %.2f", healingPower, poisonPower, firePower);
 

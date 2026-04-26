@@ -60,7 +60,8 @@
         </node>
         <node id="1" speaker="Shopkeeper" portrait=""
               text="Weapons, potions, supplies. Everything an adventurer needs. Gold talks.">
-            <option text="Show me what you have." nextNode="2" />
+            <option text="Show me what you have." nextNode="2" action="buy"/>
+			<option text="Not interested." nextNode="2"/>
         </node>
         <node id="2" speaker="Shopkeeper" portrait=""
               text="Come back anytime!" end="true" />

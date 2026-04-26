@@ -1,11 +1,12 @@
 #pragma once
 class NPC;
 class Ship;
+class Island;
 
 class Dockyard
 {
 public:
-    Dockyard();
+    Dockyard(Island* _island);
     ~Dockyard();
 
     void ImproveShip();
@@ -17,4 +18,6 @@ public:
 private:
     NPC* owner;
     Ship* ship;
+
+    Island* island;
 };

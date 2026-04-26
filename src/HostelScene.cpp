@@ -84,12 +84,12 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     case BACK_BUTTON_ID:
         Engine::GetInstance().scene->PopScene();
         break;
-    case 10:
+    case START_DIALOGUE:
     {
         //start dialogue
 
         NPC* npc = hostel->GetOwner();
-        if (npc == nullptr)   // <-- añade esto
+        if (npc == nullptr)
         {
             LOG("Hostel: NPC es nullptr");
             break;
@@ -170,10 +170,10 @@ void HostelScene::CreateUI()
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
         );
 
-        SDL_Rect talkBounds = { 500, 300, 72, 72 };
+        SDL_Rect talkBounds = { 500, 300, 168, 211 };
         Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, 10, "", talkBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, talkBounds.w, talkBounds.h
+            UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, hostel->GetOwner()->GetTexture(), 0, talkBounds.w, talkBounds.h
         );
     }
     else if (showRestPanel && !showSelectCharaPanel) {

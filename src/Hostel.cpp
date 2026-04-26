@@ -3,10 +3,11 @@
 #include "Party.h"
 #include "Character.h"
 #include "Log.h"
+#include "Island.h"
 
-Hostel::Hostel() : costRest(50)
+Hostel::Hostel(Island* _island) : costRest(50), island(_island)
 {
-	owner = new NPC("Hostel owner", "npc_hostel");
+	owner = new NPC("Hostel owner", "npc_hostel", island->GetIslandFaction(), "Hostel");
 
 }
 

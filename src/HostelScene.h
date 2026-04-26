@@ -32,6 +32,7 @@ private:
     Party* alliedParty;   
 
     static constexpr int BACK_BUTTON_ID = 1;
+    static constexpr int START_DIALOGUE = 10;
 
     SDL_Texture* exitButton;
     SDL_Texture* background;

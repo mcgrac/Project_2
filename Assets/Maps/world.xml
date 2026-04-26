@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <world>
     <island id="0"  name="Puerto Inicio" type="friendly"  faction="human"  />
-    <island id="1"  name="Isla Coral"    type="friendly"  faction="reptile"/> 
+    <island id="1"  name="Isla Coral"    type="friendly"  faction="human"/> 
     <island id="2"  name="Isla Calavera" type="friendly"  faction="human"  />
     <island id="3"  name="Isla Pirata"   type="hostile"   faction="reptile"/>
 	<island id="4"  name="Isla Rayo"     type="friendly"  faction="human"  />

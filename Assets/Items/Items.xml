@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<items>
+
+	<!-- ═══════════════════════════════════════════════════ -->
+	<!--  BIRDS												 -->
+	<!-- ═════════════════════════════════════════════=═════ -->
+	
+	<item name="Bennu's Feather" faction="BIRD" price="20">
+		<stat type="SPEED" value="50"/>
+	</item>
+
+	<item name="The Panomicon" faction="BIRD" price="55">
+		<stat type="POWER" value="35"/>
+		<stat type="FIRE_POWER" value="20"/>
+		<stat type="SPEED" value="10"/>
+	</item>
+
+	<item name="Bard's Desire" faction="BIRD" price="30">
+		<stat type="HEALING_POWER" value="25"/>
+		<stat type="SPEED" value="25"/>
+	</item>
+
+	<item name="The Fan" faction="BIRD" price="15">
+		<stat type="HEALTH" value="20"/>
+		<stat type="HEALING_POWER" value="15"/>
+	</item>
+	
+	<item name="Rainbow Mage Cap" faction="BIRD" price="80">
+		<stat type="POWER" value="55"/>
+		<stat type="HEALING_POWER" value="55"/>
+		<stat type="FIRE_POWER" value="55"/>
+	</item>
+
+	<item name="Stardust Sword" faction="BIRD" price="75">
+		<stat type="LIFESTEAL" value="25"/>
+		<stat type="SPEED" value="15"/>
+		<stat type="POWER" value="30"/>
+	</item>
+
+	<item name="Heart of the Sky" faction="BIRD" price="99">
+		<stat type="SPEED" value="40"/>
+		<stat type="DURABILITY" value="20"/>
+		<stat type="HEALTH" value="85"/>
+	</item>
+
+	<!-- ═══════════════════════════════════════════════════ -->
+	<!--  SIREN												 -->
+	<!-- ═════════════════════════════════════════════=═════ -->
+
+
+	<!-- ═══════════════════════════════════════════════════ -->
+	<!--  REPTIL										     -->
+	<!-- ═════════════════════════════════════════════=═════ -->
+
+
+	<!-- ═══════════════════════════════════════════════════ -->
+	<!--  HUMAN												 -->
+	<!-- ═════════════════════════════════════════════=═════ -->
+</items>

@@ -7,7 +7,6 @@
 #include "Scene.h"
 #include "Log.h"
 #include "Physics.h"
-#include "EntityManager.h"
 #include "Map.h"
 
 Player::Player() : Entity(EntityType::PLAYER)

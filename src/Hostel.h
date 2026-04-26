@@ -3,11 +3,12 @@
 
 class NPC;
 class Party;
+class Island;
 
 class Hostel
 {
 public:
-    Hostel();
+    Hostel(Island* _island);
     ~Hostel();
 
     inline NPC* GetOwner() const { return owner; }
@@ -20,4 +21,6 @@ private:
     NPC* owner;
     
     int costRest;
+
+    Island* island;
 };

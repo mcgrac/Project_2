@@ -8,7 +8,6 @@
 #include "Engine.h"
 #include "Audio.h"
 #include "Map.h"
-#include "EntityManager.h"
 #include "UIManager.h"
 #include "Log.h"
 #include "Textures.h"
@@ -19,6 +18,7 @@
 #include "Ship.h"
 #include <queue>
 #include "Window.h"
+#include "PartyScene.h"
 
 // First button id reserved for combat button; island buttons start from this offset
 static const int ISLAND_BUTTON_ID_OFFSET = 100;
@@ -126,6 +126,10 @@ void InGameScene::Update(float dt)
 
     //render ship
     ship->Update(dt);
+
+    //draw hp ship
+    std::string text = "HP: " + std::to_string(ship->GetCurrentHp()) + "/" + std::to_string(ship->GetMaxHp());
+    Engine::GetInstance().render->DrawText(text.c_str(), 600, 20, 0, 0, { 255,255,255,255 });
     
 }
 
@@ -143,8 +147,6 @@ void InGameScene::Unload()
 
     DestroyParty();
     Engine::GetInstance().uiManager->CleanUp();
-    //Engine::GetInstance().map->CleanUp();
-    Engine::GetInstance().entityManager->CleanUp();
 
     //ship->CleanUp();
     delete ship;
@@ -155,9 +157,6 @@ void InGameScene::LoadTextures(){
     //load background
     background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/IslandsScreen.png");
     spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/UI/StartButtons.png");
-    if (spritesheet) {
-        LOG("Spritehseet buttons loaded succesfully");
-    }
 }
 
 bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -169,6 +168,9 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
         LOG("InGameScene: iniciando combate...");
         // PushScene — InGameScene queda suspendida con todo su estado
         Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty));
+        break;
+    case 2:
+        Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
         break;
     default:
         //islands
@@ -338,7 +340,14 @@ void InGameScene::CreateUI()
     SDL_Rect combatBtnBounds = { 20, 20, 154, 60 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0, combatBtnBounds.w, combatBtnBounds.h
+    );
+
+    //Botón de party
+    SDL_Rect partyBtnBounds = { 20, 400, 154, 60 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 2, "Party", partyBtnBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0, partyBtnBounds.w, partyBtnBounds.h
     );
 
     //island buttons

@@ -25,17 +25,19 @@ public:
     void TakeDamage(int amount);
     void Heal(int amount);
     void LevelUp();
-    void Draw();
 
+    void LoseBattle();
 private:
     Vector2D position;
     int currentHp;
     int maxHp;
     int level;
+    bool sinked;
 
     //animations
     AnimationSet anims;
     SDL_Texture* spritesheet;
 
     static const int HP_PER_LEVEL = 20;
+    static const int HP_LOST_FOR_BATTLE = 25;
 };

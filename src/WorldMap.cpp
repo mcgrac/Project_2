@@ -69,7 +69,7 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
             type = IslandType::UNDEFINED;
         }
 
-        islands[id] = new Island(id, name, type, islandFaction);
+        islands[id] = new Island(id, name, type, islandFaction); //ISLAND CREATION
         tree[id] = {};
 
         LOG("WorldMap: loaded island — id=%d name='%s' type='%s' faction='%s'",
@@ -127,57 +127,6 @@ bool WorldMap::IsReachable(int islandId) const
     }
     return false;
 }
-
-//void WorldMap::UpdateWorld()
-//{
-//    const std::vector<int>& nexts = GetNextIds(currentIslandId);
-//
-//    if (nexts.empty())
-//    {
-//        return;  // if final island, there is no navigation
-//    }
-//
-//    // Change selection with TAB
-//    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
-//    {
-//        if (nexts.size() > 1)
-//        {
-//            if (selectedChildIndex == 0)
-//            {
-//                selectedChildIndex = 1;
-//            }
-//            else
-//            {
-//                selectedChildIndex = 0;
-//            }
-//        }
-//    }
-//
-//    // Travel with ENTER
-//    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN)
-//    {
-//        int indexToTravel;
-//        if (nexts.size() > 1)
-//        {
-//            indexToTravel = selectedChildIndex;
-//        }
-//        else
-//        {
-//            indexToTravel = 0;
-//        }
-//        currentIslandId = nexts[indexToTravel];
-//        selectedChildIndex = 0;
-//        LOG("Viajando a isla id=%d (%s)", currentIslandId,
-//            islands.at(currentIslandId)->GetName().c_str());
-//
-//        Island* islandArrived = islands.at(currentIslandId);
-//
-//        //notify In Game scene arrival island
-//        if (arrivalIsland) {
-//            arrivalIsland(islandArrived);
-//        }
-//    }
-//}
 
 void WorldMap::RenderWorld(float dt)
 {
@@ -432,7 +381,6 @@ void WorldMap::TravelTo(int islandId)
 
 bool WorldMap::Update(float dt)
 {
-    //UpdateWorld();
     return true;
 }
 

@@ -47,9 +47,9 @@ void Island::SetType(IslandType _type)
 
 void Island::CreateBuildings()
 {
-    shop = new Shop();
-    hostel = new Hostel();
-    dockyard = new Dockyard();
+    shop = new Shop(this);
+    hostel = new Hostel(this);
+    dockyard = new Dockyard(this);
 }
 
 void Island::DestroyBuildings()

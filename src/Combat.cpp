@@ -122,6 +122,25 @@ bool Combat::CombatIsFinished() const
     return b;
 }
 
+void Combat::ResetBonusStats(Character* c)
+{
+    //clear bonus stats ans effects
+    for (Character* c : alliedParty->GetMembers()) {
+        c->ClearBonusStats();
+        c->ClearStatusEffects();
+
+        LOG("BEFORE CLEAR |%s| totalPower: %d, totalSpeed: %d, totalDurability:%d", c->GetName().c_str(), c->GetTotalPower(), c->GetTotalSpeed(), c->GetTotalDurability());
+
+        //calculate again total stats
+        c->SetTotalPower();
+        c->SetTotalDurability();
+        c->SetTotalSpeed();
+
+        LOG("AFTER CLEAR |%s| totalPower: %d, totalSpeed: %d, totalDurability:%d", c->GetName().c_str(), c->GetTotalPower(), c->GetTotalSpeed(), c->GetTotalDurability());
+
+    }
+}
+
 //  START_COMBAT
 void Combat::StartCombat()
 {
@@ -157,10 +176,7 @@ void Combat::StartCombat()
         //save previous states in combat
         preCombatValues[c] = c->TakePreCombatValues();
 
-        //calculate total stats
-        c->SetTotalPower();
-        c->SetTotalDurability();
-        c->SetTotalSpeed();
+        ResetBonusStats(c);
     }
 
     auto allCombatants = GetAllCombatants();
@@ -171,7 +187,6 @@ void Combat::StartCombat()
         Character* c = allCombatants[i];
         c->SetPosition(defaultPositions[i].getX(), defaultPositions[i].getY());
         c->ResetCurrentInitiative();   // currentInitiative = 0
-        c->ClearStatusEffects();       // limpia veneno/quemadura del combate anterior si es necesario
     }
 }
 
@@ -360,18 +375,7 @@ void Combat::EndCombat()
 {
     //clear bonus stats ans effects
     for (Character* c : alliedParty->GetMembers()) {
-        c->ClearBonusStats();
-        c->ClearStatusEffects();
-
-        LOG("BEFORE CLEAR |%s| totalPower: %d, totalSpeed: %d, totalDurability:%d", c->GetName().c_str(), c->GetTotalPower(), c->GetTotalSpeed(), c->GetTotalDurability());
-
-        //calculate again total stats
-        c->SetTotalPower();
-        c->SetTotalDurability();
-        c->SetTotalSpeed();
-
-        LOG("AFTER CLEAR |%s| totalPower: %d, totalSpeed: %d, totalDurability:%d", c->GetName().c_str(), c->GetTotalPower(), c->GetTotalSpeed(), c->GetTotalDurability());
-
+        ResetBonusStats(c);
     }
 
     if (result == CombatResult::VICTORY)

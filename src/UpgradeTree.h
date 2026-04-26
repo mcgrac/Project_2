@@ -12,6 +12,7 @@ public:
 
     void AddTier(UpgradeTier tier);
     UpgradeTier* GetAvailableTier(int currentLevel);
+    std::vector<UpgradeTier>& GetTiers();
     const std::vector<UpgradeTier>& GetTiers() const;
 
     //---------test debug--------

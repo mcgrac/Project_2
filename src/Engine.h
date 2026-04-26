@@ -14,12 +14,12 @@ class Render;
 class Textures;
 class Audio;
 class Scene;
-class EntityManager;
 class Map;
 //L08 TODO 2: Add Physics module
 class Physics;
 class UIManager;
 class Fonts;
+class ItemManager;
 
 class Engine
 {
@@ -97,13 +97,10 @@ public:
 	std::shared_ptr<Textures> textures;
 	std::shared_ptr<Audio> audio;
 	std::shared_ptr<Scene> scene;
-	// L04: TODO 1: Add the EntityManager Module to the Engine
-	std::shared_ptr<EntityManager> entityManager;
-	//std::shared_ptr<Map> map;
-	// L08: TODO 2: Add Physics module
 	std::shared_ptr<Physics> physics;
 	std::shared_ptr<UIManager> uiManager;
 	std::shared_ptr<Fonts> fonts;
+	std::shared_ptr<ItemManager> itemManager;
 
 
 private: 

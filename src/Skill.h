@@ -46,6 +46,8 @@ public:
     inline void SetHasAreaEffect(bool b) { hasAreaEffect = b; }
     inline void SetAreaEffectTargetAllies(bool b) { areaEffectTargetAllies = b; }
 
+    inline DamageType GetDamageType() const { return damageType; }
+
     //---------Test debug-------
     const std::vector<SkillEffect>& GetEffects() const { return effects; }
     //--------------------------

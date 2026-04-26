@@ -63,8 +63,8 @@ SkillRegistry::SkillRegistry()
         s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
             "Increate base team power by 20",
-            [](Character* caster, Character* attacker) {
-                caster->ModifyBonusPower(20);
+            [](Character* caster, Character* target) {
+                target->ModifyBonusPower(20);
             }
             });
         return s;

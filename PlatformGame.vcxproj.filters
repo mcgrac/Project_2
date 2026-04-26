@@ -99,9 +99,6 @@
     <ClCompile Include="src\PerfTimer.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="src\EntityManager.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="src\Player.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
@@ -237,6 +234,12 @@
     <ClCompile Include="src\Ship.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
+    <ClCompile Include="src\ItemManager.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PartyScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Audio.h">
@@ -273,9 +276,6 @@
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Entity.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EntityManager.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Player.h">
@@ -425,6 +425,12 @@
     <ClInclude Include="src\Ship.h">
       <Filter>Source Files\Game</Filter>
     </ClInclude>
+    <ClInclude Include="src\ItemManager.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PartyScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml">
@@ -455,6 +461,9 @@
       <Filter>Configuration FIles</Filter>
     </Xml>
     <Xml Include="dialogues.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
+    <Xml Include="Assets\Items\Items.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
   </ItemGroup>
