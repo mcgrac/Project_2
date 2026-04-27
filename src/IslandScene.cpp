@@ -39,9 +39,9 @@ void IslandScene::Update(float dt)
         {
             combatLaunched = true;
             AttackIsland();
-        }
 
-        if (island->GetType() == IslandType::FRIENDLY)
+        }
+        else if (island->GetType() == IslandType::FRIENDLY)
         {
             Engine::GetInstance().render->DrawTexture(background, 0, 0);
 
