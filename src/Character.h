@@ -139,6 +139,7 @@ public:
 	bool EquipItem(Item* item);
 	void DebugInventory();
 
+
 #pragma region GETTERS
 	inline int GetTotalPower() const { return totalPower; }
 	inline int GetBasePower() const { return basePower; }
@@ -169,6 +170,7 @@ public:
 	inline float GetHealingPower() const { return healingPower; }
 	inline bool GetAnimationFinished() const { return anims.IsCurrentFinished(); }
 	inline std::string GetCurrentAnimation() const { return anims.GetCurrentName(); }
+
 	inline int GetTotalDurability() const { return totalDurability; }
 
 	inline UpgradeTree* GetUpgradeTree() const { return upgradeTree; }
@@ -183,7 +185,7 @@ public:
 	inline void ModifyHealingPower(int amount) { healingPower += amount; }
 	void ModifyDurability(int amount);
 	inline void ModifyBonusDurability(int amount) { bonusDurability += amount; }
-	inline void AddInitiative(int amount) { initiative += amount; }
+	void AddInitiative(int amount);
 	inline void ModifyFirePower(float amount) { firePower += amount; }
 	inline void ModifyPoisonPower(float amount) { poisonPower += amount; }
 	inline void AddXP(int amount) { experience += amount; }
@@ -192,6 +194,8 @@ public:
 	inline void SetTotalPower() { totalPower = basePower + bonusPower; }
 	inline void SetTotalDurability() { totalDurability = baseDurability + bonusDurability; }
 	inline void SetTotalSpeed() { totalSpeed = baseSpeed + bonusSpeed; }
+
+	inline void SetIncomingDamageMultiplier(float f) { incomingDamageMultiplier = f; }
 #pragma endregion
 
 #pragma region TEST
@@ -201,4 +205,6 @@ public:
 private:
 	std::vector<Item*> equippedItems;
 	static const int MAX_EQUIPPED_ITEMS = 3;
+
+	float incomingDamageMultiplier = 0.0f;
 };

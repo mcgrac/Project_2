@@ -63,10 +63,6 @@ UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _text
 			LOG("ERROR: font es nullptr");
 		}
 	}
-	else 
-	{
-		LOG("There is no text in the button");
-	}
 }
 
 UIButton::~UIButton()

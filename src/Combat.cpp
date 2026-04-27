@@ -29,19 +29,133 @@ const Vector2D Combat::defaultPositions[6] = {
     Vector2D(1022.0f, 273.0f)    // enemigo 2
 };
 
-Combat::Combat(Party* allied, Party* enemy)
+Combat::Combat(Party* allied, Party* enemy, int _shipLevel)
     : alliedParty(allied)
     , enemyParty(enemy)
     , state(CombatState::START_COMBAT)
     , result(CombatResult::NONE)
     , currentActor(nullptr)
     , runningCombat(true)
+    , shipLevel (_shipLevel)
 {
+    //assign lanes types
+    backLane.type = LaneType::BACK;
+    sideLane.type = LaneType::SIDE;
+    frontLane.type = LaneType::FRONT;
 }
 
 Combat::~Combat()
 {
 }
+
+#pragma region LANE LOGIC
+//-------------------- Lane bonus calculations -----------------------------------
+int Lane::GetPowerBonus(int shipLevel) const
+{
+    if (type == LaneType::BACK)
+    {
+        return BASE_BACK_POWER * shipLevel;
+    }
+    if (type == LaneType::SIDE)
+    {
+        return BASE_SIDE_POWER * shipLevel;
+    }
+    return 0;
+
+    // FRONT gives no power bonus
+}
+
+int Lane::GetSpeedBonus(int shipLevel) const
+{
+    if (type == LaneType::SIDE)
+    {
+        return BASE_SIDE_SPEED * shipLevel;
+    }
+
+    if (type == LaneType::FRONT)
+    {
+        return BASE_FRONT_SPEED * shipLevel;
+    }
+    return 0;
+
+    // BACK gives no speed bonus
+}
+
+int Lane::GetHealthBonus(int shipLevel) const
+{
+    if (type == LaneType::FRONT)
+    {
+        return BASE_FRONT_HEALTH * shipLevel;
+    }
+    return 0;
+
+    // BACK and SIDE give no health bonus
+}
+
+// ---------- Lane assignment (called by CombatScene) --------------------------------
+void Combat::AssignLane(Character* character, LaneType laneType)
+{
+    if (laneType == LaneType::BACK)
+    {
+        backLane.occupant = character;
+        LOG("Combat: %s assigned to BACK lane", character->GetName().c_str());
+    }
+    else if (laneType == LaneType::SIDE)
+    {
+        sideLane.occupant = character;
+        LOG("Combat: %s assigned to SIDE lane", character->GetName().c_str());
+    }
+    else
+    {
+        frontLane.occupant = character;
+        LOG("Combat: %s assigned to FRONT lane", character->GetName().c_str());
+    }
+}
+
+// ------ Apply lane bonuses to each occupant ------------------------------
+void Combat::ApplyLaneBonuses()
+{
+    Lane* lanes[3] = { &backLane, &sideLane, &frontLane };
+
+    for (int i = 0; i < 3; i++)
+    {
+        Lane* lane = lanes[i];
+
+        if (lane->occupant == nullptr)
+        {
+            continue;
+        }
+
+        Character* c = lane->occupant;
+
+        int powerBonus = lane->GetPowerBonus(shipLevel);
+        int speedBonus = lane->GetSpeedBonus(shipLevel);
+        int healthBonus = lane->GetHealthBonus(shipLevel);
+
+        if (powerBonus != 0)
+        {
+            c->ModifyBonusPower(powerBonus);
+            LOG("Combat: %s lane bonus +%d power", c->GetName().c_str(), powerBonus);
+        }
+
+        if (speedBonus != 0)
+        {
+            c->ModifyBonusSpeed(speedBonus);
+            LOG("Combat: %s lane bonus +%d speed", c->GetName().c_str(), speedBonus);
+        }
+
+        if (healthBonus != 0)
+        {
+            c->ModifyMaxHealth(healthBonus);
+            LOG("Combat: %s lane bonus +%d max health", c->GetName().c_str(), healthBonus);
+        }
+
+        // Recalculate totals after applying bonuses
+        c->SetTotalPower();
+        c->SetTotalSpeed();
+    }
+}
+#pragma endregion
 
 
 void Combat::Run()
@@ -179,15 +293,60 @@ void Combat::StartCombat()
         ResetBonusStats(c);
     }
 
+    // Apply lane bonuses after resetting so they are the only bonuses active
+    ApplyLaneBonuses();
+
     auto allCombatants = GetAllCombatants();
 
-    // Asignar posiciones y resetear iniciativa acumulada
-    for (int i = 0; i < static_cast<int>(allCombatants.size()); ++i)
+    // Allies: position determined by lane assignment
+    // defaultPositions[0] = Front (closest to enemies)
+    // defaultPositions[1] = Side  (middle)
+    // defaultPositions[2] = Back  (furthest from enemies)
+    if (frontLane.occupant != nullptr)
     {
-        Character* c = allCombatants[i];
-        c->SetPosition(defaultPositions[i].getX(), defaultPositions[i].getY());
-        c->ResetCurrentInitiative();   // currentInitiative = 0
+        frontLane.occupant->SetPosition(defaultPositions[0].getX(), defaultPositions[0].getY());
     }
+    if (sideLane.occupant != nullptr)
+    {
+        sideLane.occupant->SetPosition(defaultPositions[1].getX(), defaultPositions[1].getY());
+    }
+    if (backLane.occupant != nullptr)
+    {
+        backLane.occupant->SetPosition(defaultPositions[2].getX(), defaultPositions[2].getY());
+    }
+
+    // Allies: reset initiative
+    for (Character* c : alliedParty->GetMembers())
+    {
+        c->ResetCurrentInitiative();
+    }
+    //// Asignar posiciones y resetear iniciativa acumulada
+    //for (int i = 0; i < static_cast<int>(allCombatants.size()); ++i)
+    //{
+    //    Character* c = allCombatants[i];
+    //    c->SetPosition(defaultPositions[i].getX(), defaultPositions[i].getY());
+    //    c->ResetCurrentInitiative();   // currentInitiative = 0
+    //}
+
+    // Enemies: position by index, starting at slot 3
+    auto& enemies = enemyParty->GetMembers();
+    for (int i = 0; i < static_cast<int>(enemies.size()); ++i)
+    {
+        enemies[i]->SetPosition(defaultPositions[3 + i].getX(), defaultPositions[3 + i].getY());
+        enemies[i]->ResetCurrentInitiative();
+    }
+
+#if DEBUG
+    std::cout << "\n[ALIADOS tras bonificaciones de lane]\n";
+    for (Character* c : alliedParty->GetMembers())
+    {
+        std::cout << "  " << c->GetName()
+            << " | HP: " << c->GetCurrentHP()
+            << " | Power: " << c->GetTotalPower()
+            << " | Speed: " << c->GetTotalSpeed() << "\n";
+    }
+    std::cout << "\n";
+#endif
 }
 
 //  CALCULATE_INITIATIVE
@@ -544,7 +703,14 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 
         for (Character* c : GetAliveMembers(targetParty)) {
 
+            // Aplicar multiplicador específico de este objetivo según su Lane
+            float multiplier = GetLaneDamageMultiplier(c);
+            c->SetIncomingDamageMultiplier(multiplier);
+
             skill.Use(user, c);
+
+            // Limpiar multiplicador (volver a 1.0) tras el golpe
+            c->SetIncomingDamageMultiplier(1.0f);
 
             int targetHpAfter = target->GetCurrentHP();
             int damageDone = targetHpBefore - targetHpAfter;
@@ -608,8 +774,14 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
     }
     else {
 
+        // Aplicar multiplicador específico de este objetivo según su Lane
+        float multiplier = GetLaneDamageMultiplier(target);
+        target->SetIncomingDamageMultiplier(multiplier);
+
         //NO AREA EFFECT
         skill.Use(user, target);
+
+        target->SetIncomingDamageMultiplier(1.0f);
 
         int targetHpAfter = target->GetCurrentHP();
         int damageDone = targetHpBefore - targetHpAfter;
@@ -773,6 +945,81 @@ void Combat::ForceDefeat()
     result = CombatResult::DEFEAT;
     state = CombatState::END_COMBAT;
     runningCombat = false;
+}
+
+float Combat:: GetLaneDamageMultiplier(Character* c)
+{
+    // Si el objetivo es un enemigo, no aplicamos bonos de lane (o puedes definir otros)
+    if (!IsAllied(c)) return 1.0f;
+    float reduction = 0.0f;
+
+    //----test----
+    int coversActive = 0;
+    std::string targetLane = "";
+    //------------
+
+    if (frontLane.occupant == c)
+    {
+        //----test-----
+        targetLane = "FRONT";
+        LOG("LANE LOGIC: %s is in FRONT. No cover available. Multiplier: 1.0", c->GetName().c_str());
+        //------------
+
+        return 1.0f;
+    }
+
+    if (sideLane.occupant == c)
+    {
+        //// El SIDE solo tiene reducción si el FRONT está vivo
+        //if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+        //{
+        //    reduction = 0.15f; // 15% de reducción
+        //}
+
+        targetLane = "SIDE";
+        if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+        {
+            reduction = 0.15f;
+            coversActive = 1;
+        }
+    }
+    else if (backLane.occupant == c)
+    {
+        //// El BACK comprueba cuántos tiene delante vivos
+        //if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+        //{
+        //    reduction += 0.15f;
+        //}
+        //if (sideLane.occupant != nullptr && sideLane.occupant->GetIsAlive())
+        //{
+        //    reduction += 0.15f;
+        //}
+
+        targetLane = "BACK";
+        if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+        {
+            reduction += 0.15f;
+            coversActive++;
+        }
+        if (sideLane.occupant != nullptr && sideLane.occupant->GetIsAlive())
+        {
+            reduction += 0.15f;
+            coversActive++;
+        }
+    }
+
+    float finalMultiplier = 1.0f - reduction;
+
+    //------test------
+    LOG("LANE LOGIC: Target %s [%s] | Coberturas activas: %d | Reduccion: %.2f | Multiplicador Final: %.2f",
+        c->GetName().c_str(),
+        targetLane.c_str(),
+        coversActive,
+        reduction,
+        finalMultiplier);
+    //----------------
+
+    return finalMultiplier;
 }
 
 std::vector<Character*> Combat::GetAliveMembers(Party* party)

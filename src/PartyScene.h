@@ -75,4 +75,42 @@ private:
     static constexpr int MEMBER_TAB_BASE = 1;
     static constexpr int BACK_BTN = 9;
     static constexpr int UPGRADE_BTN_BASE = 100;   // 100 + tier*10 + 0/1 para A/B
+
+    //Layout constants
+    static constexpr int PORTRAIT_X = 20;
+    static constexpr int PORTRAIT_Y = 80;
+    static constexpr int PORTRAIT_W = 220;
+    static constexpr int PORTRAIT_H = 300;
+
+    static constexpr int STATS_PANEL_X = 20;
+    static constexpr int STATS_PANEL_Y = 420;
+    static constexpr int STATS_PANEL_W = 220;
+    static constexpr int STATS_PANEL_H = 250;
+
+    static constexpr int BAR_X = 20;
+    static constexpr int HP_BAR_Y = 390;
+    static constexpr int EXP_BAR_Y = 405;
+    static constexpr int BAR_W = 220;
+    static constexpr int BAR_H = 12;
+
+    static constexpr int INV_SLOT_X = 250;
+    static constexpr int INV_SLOT_Y = 80;
+    static constexpr int INV_SLOT_SIZE = 64;
+    static constexpr int INV_SLOT_GAP = 10;
+
+    static constexpr int SKILL_ICON_X = 640;
+    static constexpr int SKILL_ICON_Y = 80;
+    static constexpr int SKILL_ICON_SIZE = 60;
+    static constexpr int SKILL_ICON_GAP = 10;
+
+    static constexpr int UPGRADE_X = 640;
+    static constexpr int UPGRADE_Y = 380;
+    static constexpr int UPGRADE_BTN_W = 280;
+    static constexpr int UPGRADE_BTN_H = 50;
+    static constexpr int UPGRADE_BTN_GAP = 10;
+
+    static constexpr int TAB_X = 1050;
+    static constexpr int TAB_Y = 20;
+    static constexpr int TAB_SIZE = 60;
+    static constexpr int TAB_GAP = 10;
 };

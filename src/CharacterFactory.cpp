@@ -61,16 +61,17 @@ Character* CharacterFactory::Create(const std::string& name)
     Character* character = new Character(
         Vector2D(0.0f, 0.0f),
         name,
-        health, maxHealth,
+        health, 
+        maxHealth,
         0,              // experience
         0,              // initiative
         maxInitiative,
         power,          //base power
         0,              //bonus power
         0,              //total power
-        durability,     //base durabilty
+        0,              //total durabilty
+        durability,     //base durability
         0,              //bonus durability
-        0,              //total durability
         maxDurability,
         speed,          //base speed
         0,              //bonus speed

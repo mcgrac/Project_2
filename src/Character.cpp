@@ -49,8 +49,16 @@ void Character::FullyHeal()
 
 void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 {
+	int scaledDamage = (int)(damageReceived * incomingDamageMultiplier);
+
+	// LOG DE COMPROBACIÓN
+	if (incomingDamageMultiplier != 1.0f) {
+		LOG("DAMAGE CALC [%s]: Base: %d | Multiplier: %.2f | Final: %d (Reduced: %d)",
+			name.c_str(), damageReceived, incomingDamageMultiplier, scaledDamage, (damageReceived - scaledDamage));
+	}
+
 	int currentHealth = health;
-	currentHealth -= std::max(0, damageReceived - totalDurability); //avoids that damage < 0
+	currentHealth -= std::max(0, scaledDamage - totalDurability); //avoids that damage < 0
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
@@ -64,8 +72,16 @@ void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 
 void Character::ReceiveMagicalDamage(int damageReceived, Character* attacker)
 {
+	int scaledDamage = (int)(damageReceived * incomingDamageMultiplier);
+
+	// LOG DE COMPROBACIÓN
+	if (incomingDamageMultiplier != 1.0f) {
+		LOG("DAMAGE CALC [%s]: Base: %d | Multiplier: %.2f | Final: %d (Reduced: %d)",
+			name.c_str(), damageReceived, incomingDamageMultiplier, scaledDamage, (damageReceived - scaledDamage));
+	}
+
 	int currentHealth = health;
-	currentHealth -= damageReceived;
+	currentHealth -= scaledDamage;
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
@@ -140,6 +156,12 @@ void Character::UseSkill(int index, Character* target)
 void Character::ModifyDurability(int amount)
 {
 	totalDurability = std::max(0, std::min(maxDurability, totalDurability + amount));
+}
+
+void Character::AddInitiative(int amount)
+{
+	initiative += amount;
+	if (initiative < 0) { initiative = 0; }
 }
 
 void Character::SetBurned(bool state, int damage, Character* attacker)

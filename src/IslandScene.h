@@ -3,11 +3,12 @@
 #include "Island.h"
 #include "WorldMap.h"
 #include "Party.h"
+#include "Ship.h"
 
 class IslandScene : public BaseScene
 {
 public:
-    IslandScene(Island* island, WorldMap* worldMap, Party* allied);
+    IslandScene(Island* island, WorldMap* worldMap, Party* allied, Ship* _ship);
     ~IslandScene();
 
     void Load() override;
@@ -27,6 +28,7 @@ private:
     Island* island;       
     WorldMap* worldMap;     
     Party* alliedParty;  
+    Ship* ship;
 
     bool combatLaunched;
 

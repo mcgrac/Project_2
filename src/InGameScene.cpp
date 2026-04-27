@@ -73,7 +73,7 @@ void InGameScene::Load()
 
     //callback when the player arrives to an island->world map notify ingameScene
     worldMap.arrivalIsland = [this](Island* island) {
-        Engine::GetInstance().scene->PushScene(new IslandScene(island, &worldMap, alliedParty));
+        Engine::GetInstance().scene->PushScene(new IslandScene(island, &worldMap, alliedParty, ship));
     };
 
     if (isContinue)
@@ -167,7 +167,7 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 1:
         LOG("InGameScene: iniciando combate...");
         // PushScene — InGameScene queda suspendida con todo su estado
-        Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty));
+        Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty, ship->GetLevel()));
         break;
     case 2:
         Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));

@@ -9,10 +9,11 @@
 #include "Log.h"
 #include "SaveLoad.h"
 
-IslandScene::IslandScene(Island* island, WorldMap* worldMap, Party* allied)
+IslandScene::IslandScene(Island* island, WorldMap* worldMap, Party* allied, Ship* _ship)
     : island(island)
     , worldMap(worldMap)
     , alliedParty(allied)
+    , ship (_ship)
     , combatLaunched(false)
     , enterButton(nullptr)
     , pillageButon(nullptr)
@@ -127,12 +128,13 @@ void IslandScene::AttackIsland()
     }
 
     Party* allied = alliedParty;
+    int levelShip = ship->GetLevel();
 
     //eliminate island scene from stack 
     Engine::GetInstance().scene->PopScene();
 
     //push adds combat scene at the top of the stack (inGameScene is still alive)
-    Engine::GetInstance().scene->PushScene(new CombatScene(allied));
+    Engine::GetInstance().scene->PushScene(new CombatScene(allied, levelShip));
 }
 
 void IslandScene::OnResume()

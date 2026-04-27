@@ -8,7 +8,7 @@
 #include "Textures.h"
 #include "Render.h"
 
-CombatScene::CombatScene(Party* _allied)
+CombatScene::CombatScene(Party* _allied, int _shipLevel)
     : alliedParty(_allied)
     , enemyParty(nullptr)
     , combat(nullptr)
@@ -16,6 +16,8 @@ CombatScene::CombatScene(Party* _allied)
     , background(nullptr)
     , uiState(CombatUIState::HIDDEN)
     , selectedSkillIdx(-1)
+    , laneInputConsumed (false)
+    , shipLevel (_shipLevel)
 {
     sceneName = "CombatScene";
 }
@@ -52,14 +54,26 @@ void CombatScene::Load()
         LOG("  enemy -> %s", c->GetName().c_str());
     }
 
-
-    combat = new Combat(alliedParty, enemyParty);
+    // Combat is created after lane assignments are confirmed — see FinalizeLaneAssignments()
+    // Start the lane selection phase immediately
+    laneAssignmentCursor = 0;
+    laneAssignments.clear();
+    ShowLaneSelectionFor(laneAssignmentCursor);
 }
 
 void CombatScene::Update(float dt)
 {
     // Dibujar background cada frame
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
+
+    // Reset the click guard every frame so the next real click is accepted
+    laneInputConsumed = false;
+
+    // Lane selection is still ongoing — don't run combat yet
+    if (uiState == CombatUIState::SELECTING_LANE)
+    {
+        return;
+    }
 
     // Testing: F1 = victory, F2 = defeat
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
@@ -82,6 +96,7 @@ void CombatScene::Update(float dt)
 
     // Gestionar UI si es turno del jugador
     UpdateCombatUI();
+    ShowCurrentHP();
 
     if (!combat->GetWaitingForInput())
     {
@@ -161,10 +176,148 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
         ShowSkillButtons();
         break;
     }
+
+    // ---- LANE SELECTION ----------
+    case 30: // Back lane
+    case 31: // Side lane
+    case 32: // Front lane
+    {
+        if (laneInputConsumed)
+        {
+            break;
+        }
+        laneInputConsumed = true;
+
+        LaneType chosen;
+        if (uiElement->id == 30)
+        {
+            chosen = LaneType::BACK;
+        }
+        else if (uiElement->id == 31)
+        {
+            chosen = LaneType::SIDE;
+        }
+        else
+        {
+            chosen = LaneType::FRONT;
+        }
+
+        Character* c = alliedParty->GetMembers()[laneAssignmentCursor];
+        laneAssignments[c] = chosen;
+
+        LOG("CombatScene: %s -> lane %d", c->GetName().c_str(), (int)chosen);
+
+        laneAssignmentCursor++;
+
+        if (laneAssignmentCursor < (int)alliedParty->GetMemberCount())
+        {
+            ShowLaneSelectionFor(laneAssignmentCursor);
+        }
+        else
+        {
+            FinalizeLaneAssignments();
+        }
+        break;
+
+        //Character* c = alliedParty->GetMembers()[laneAssignmentCursor];
+        //laneAssignments[c] = LaneType::BACK;
+        //LOG("CombatScene: %s -> BACK lane", c->GetName().c_str());
+        //laneAssignmentCursor++;
+
+        //if (laneAssignmentCursor < (int)alliedParty->GetMemberCount())
+        //{
+        //    ShowLaneSelectionFor(laneAssignmentCursor);
+        //}
+        //else
+        //{
+        //    FinalizeLaneAssignments();
+        //}
+        //break;
+    }
+    default:
+        break;
     }
 
     return true;
 }
+
+#pragma region LANE SELECTION
+// ------------ Lane selection ---------------------------
+void CombatScene::ShowLaneSelectionFor(int characterIndex)
+{
+    HideCombatUI();
+    uiState = CombatUIState::SELECTING_LANE;
+
+    Character* c = alliedParty->GetMembers()[characterIndex];
+
+    LOG("CombatScene: selecting lane for %s", c->GetName().c_str());
+
+    // Three lane buttons stacked vertically in the center of the screen
+    // Label shows the lane name and its bonus so the player can make an informed choice
+    struct LaneOption
+    {
+        int id;
+        LaneType type;
+        const char* label;
+    };
+
+    LaneOption options[3] = {
+        { 30, LaneType::BACK,  "Back  (+15 Power)" },
+        { 31, LaneType::SIDE,  "Side  (+10 Power +10 Speed)" },
+        { 32, LaneType::FRONT, "Front (+10 Speed +10 HP)"   }
+    };
+
+    for (int i = 0; i < 3; i++)
+    {
+        // Skip lanes already assigned to a previous character
+        if (IsLaneTaken(options[i].type))
+        {
+            continue;
+        }
+
+        SDL_Rect bounds;
+        bounds.x = 540;
+        bounds.y = 220 + i * 80;
+        bounds.w = 200;
+        bounds.h = 60;
+
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON,
+            options[i].id,
+            options[i].label,
+            bounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+            {}, abilityIcons, 0, bounds.w, bounds.h
+        );
+    }
+}
+
+void CombatScene::FinalizeLaneAssignments()
+{
+    HideCombatUI();
+
+    // Now that every character has a lane, create the Combat object
+    combat = new Combat(alliedParty, enemyParty, shipLevel);
+
+    for (auto& pair : laneAssignments)
+    {
+        combat->AssignLane(pair.first, pair.second);
+    }
+
+    LOG("CombatScene: all lanes assigned, starting combat.");
+}
+bool CombatScene::IsLaneTaken(LaneType laneType) const
+{
+    for (const auto& pair : laneAssignments)
+    {
+        if (pair.second == laneType)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+#pragma endregion
 
 //  CreateEnemyParty
 void CombatScene::CreateEnemyParty()
@@ -302,6 +455,33 @@ void CombatScene::HideCombatUI()
     uiState = CombatUIState::HIDDEN;
 }
 
+void CombatScene::ShowCurrentHP()
+{
+    //allies
+    for (int i = 0; i < alliedParty->GetMemberCount(); i++) {
+
+        Character* c = alliedParty->GetMembers()[i];
+
+        std::string name = c->GetName();
+        int currentHp = c->GetCurrentHP();
+        int maxHp = c->GetMaxHP();
+        std::string text = "Character " + name + "|" + " Current hp " + std::to_string(currentHp) + "/" + std::to_string(maxHp);
+        Engine::GetInstance().render->DrawText(text.c_str(), 20, 600 + (50*i), 200, 40, { 255, 255, 255, 255 });
+    }
+
+    //enemies
+    for (int i = 0; i < enemyParty->GetMemberCount(); i++) {
+
+        Character* c = enemyParty->GetMembers()[i];
+
+        std::string name = c->GetName();
+        int currentHp = c->GetCurrentHP();
+        int maxHp = c->GetMaxHP();
+        std::string text = "Character " + name + "|" + " Current hp " + std::to_string(currentHp) + "/" + std::to_string(maxHp);
+        Engine::GetInstance().render->DrawText(text.c_str(), 500, 600 + (50 * i), 200, 40, { 255, 255, 255, 255 });
+    }
+}
+
 void CombatScene::OnResume()
 {
     CreateUI();
@@ -374,5 +554,9 @@ void CombatScene::CreateUI()
                 [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
             );
         }
+    }
+    else if (uiState == CombatUIState::SELECTING_LANE)
+    {
+        ShowLaneSelectionFor(laneAssignmentCursor);
     }
 }
