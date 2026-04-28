@@ -148,6 +148,7 @@ public:
 	inline int GetXP() const { return experience; }
 	inline int GetLevel() const { return level; }
 	inline bool GetIsAlive() const { return isAlive; }
+	inline bool GetPendingToDie() const { return pendingToDie; }
 	inline Character* GetKilledBy() const { return killedBy; }
 
 	inline int GetTotalSpeed() const { return totalSpeed; }
@@ -156,8 +157,7 @@ public:
 	inline int GetCurrentHP() const { return health; }
 	inline int GetMaxHP() const { return maxHealth; }
 
-	inline int GetExperience() const { return experience; 
-	}
+	inline int GetExperience() const { return experience; }
 	inline int GetCurrentInitiative() const { return initiative; }
 	inline bool IsPoisoned() const { return isPoisoned; }
 	inline bool IsBurning() const { return isBurned; }
@@ -207,4 +207,6 @@ private:
 	static const int MAX_EQUIPPED_ITEMS = 3;
 
 	float incomingDamageMultiplier = 0.0f;
+
+	bool pendingToDie = false;
 };

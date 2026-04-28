@@ -137,12 +137,13 @@ private:
     void StartCombat();
     bool CalculateInitiative();
 
-    //void Attack();
+    //Attack
     void AttackStart();
     void AttackAnimation();
     void AttackResolve();
 
     void ApplyModifiers();
+
     void CheckDefeat();
     void EndCombat();
     void PlayerTurn();

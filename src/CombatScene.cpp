@@ -89,9 +89,10 @@ void CombatScene::Update(float dt)
 
     for (Character* c : combat->GetAllCombatants()) {
         //call update of every character (animations)
-        if (c->GetIsAlive()) {
-            c->Update(dt);
-        }
+        c->Update(dt);
+        //if (c->GetIsAlive()) {
+        //    c->Update(dt);
+        //}
     }
 
     // Gestionar UI si es turno del jugador
@@ -218,21 +219,6 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
             FinalizeLaneAssignments();
         }
         break;
-
-        //Character* c = alliedParty->GetMembers()[laneAssignmentCursor];
-        //laneAssignments[c] = LaneType::BACK;
-        //LOG("CombatScene: %s -> BACK lane", c->GetName().c_str());
-        //laneAssignmentCursor++;
-
-        //if (laneAssignmentCursor < (int)alliedParty->GetMemberCount())
-        //{
-        //    ShowLaneSelectionFor(laneAssignmentCursor);
-        //}
-        //else
-        //{
-        //    FinalizeLaneAssignments();
-        //}
-        //break;
     }
     default:
         break;
@@ -306,6 +292,7 @@ void CombatScene::FinalizeLaneAssignments()
 
     LOG("CombatScene: all lanes assigned, starting combat.");
 }
+
 bool CombatScene::IsLaneTaken(LaneType laneType) const
 {
     for (const auto& pair : laneAssignments)

@@ -43,7 +43,6 @@ void HostelScene::Update(float dt)
     }
 
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
-    // lógica de descanso y compra de experiencia
 }
 
 void HostelScene::PostUpdate(float dt)

@@ -58,7 +58,7 @@ void InGameScene::Load()
 
     LOG("InGameScene cargada, %d miembros en party.", alliedParty->GetMemberCount());
 
-#if DEBUG
+#if _DEBUG
     for (Character* c : alliedParty->GetMembers())
     {
         c->PrintDebugInfo();

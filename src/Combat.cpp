@@ -162,7 +162,7 @@ void Combat::Run()
 {
     if (!runningCombat) return;
 
-#if DEBUG
+#if _DEBUG
     //--------------TEST DEBUGS-----------
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
 
@@ -262,15 +262,15 @@ void Combat::StartCombat()
     std::cout << "          COMBATE INICIADO            \n";
     std::cout << "══════════════════════════════════════\n";
 
-#if DEBUG
+#if _DEBUG
     //----------------debug--------------
-    std::cout << "\n[ALIADOS]\n";
+    std::cout << "\033[1;32m\n[ALIADOS]\n\033[0m";
     for (Character* c : alliedParty->GetMembers())
     {
         std::cout << "  " << c->GetName()
             << " | HP: " << c->GetCurrentHP()
-            << " | Power: " << c->GetPower()
-            << " | Speed: " << c->GetSpeed() << "\n";
+            << " | Power: " << c->GetTotalPower()
+            << " | Speed: " << c->GetTotalPower() << "\n";
     }
 
     std::cout << "\n[ENEMIGOS]\n";
@@ -278,8 +278,8 @@ void Combat::StartCombat()
     {
         std::cout << "  " << c->GetName()
             << " | HP: " << c->GetCurrentHP()
-            << " | Power: " << c->GetPower()
-            << " | Speed: " << c->GetSpeed() << "\n";
+            << " | Power: " << c->GetTotalPower()
+            << " | Speed: " << c->GetTotalPower() << "\n";
     }
     std::cout << "\n";
     //---------------------------------------
@@ -363,7 +363,7 @@ bool Combat::CalculateInitiative()
 
             int after = c->GetCurrentInitiative();
 
-#if DEBUG
+#if _DEBUG
             std::cout << "  " << c->GetName()
                 << " | antes: " << before
                 << " + " << bonus
@@ -380,7 +380,7 @@ bool Combat::CalculateInitiative()
 
     currentActor = GetHighestInitiativeActor();
 
-#if DEBUG
+#if _DEBUG
     if (currentActor != nullptr)
     {
         std::cout << "  >> Turno para: " << currentActor->GetName()
@@ -395,21 +395,19 @@ void Combat::AttackStart()
 {
     if (currentActor == nullptr) return;
 
-#if DEBUG
+#if _DEBUG
     std::cout << "\n──────────────────────────────────────\n";
     std::cout << "│ TURNO DE: " << currentActor->GetName() << "\n";
     std::cout << "│ HP: " << currentActor->GetCurrentHP()
         << " | Iniciativa: " << currentActor->GetCurrentInitiative()
-        << " | Power: " << currentActor->GetPower() << "\n";
+        << " | Power: " << currentActor->GetTotalPower() << "\n";
     std::cout << "──────────────────────────────────────\n";
 #endif
     if (IsAllied(currentActor))
     {
         //Esperar a que CombatScene entregue la eleccion via SubmitPlayerChoice
         state = CombatState::WAITING_FOR_PLAYER_INPUT;
-        return;   // ← salir sin avanzar
-
-        //PlayerTurn();
+        return;   // salir sin avanzar
     }
     else
     {
@@ -448,7 +446,9 @@ void Combat::ApplyModifiers()
 
     for (Character* c : GetAllCombatants())
     {
-        if (!c->GetIsAlive()) continue;
+        //if (!c->GetIsAlive()) continue;
+
+        if (!c->GetPendingToDie()) continue;
 
         if (c->IsPoisoned())
         {
@@ -462,7 +462,7 @@ void Combat::ApplyModifiers()
             c->TakePoisonDamage();
             int hpAfter = c->GetCurrentHP();
 
-#if DEBUG
+#if _DEBUG
             std::cout << "  [VENENO] " << c->GetName()
                 << " sufre " << poisonDmg << " de daño por veneno."
                 << " HP: " << hpBefore << " -> " << hpAfter;
@@ -485,7 +485,7 @@ void Combat::ApplyModifiers()
             c->TakeBurnDamage();
             int hpAfter = c->GetCurrentHP();
 
-#if DEBUG
+#if _DEBUG
             std::cout << "  [QUEMADURA] " << c->GetName()
                 << " sufre " << burnDmg << " de daño por quemadura."
                 << " HP: " << hpBefore << " -> " << hpAfter;
@@ -498,7 +498,7 @@ void Combat::ApplyModifiers()
             std::cout << "\n";
 #endif
         }
-#if DEBUG
+#if _DEBUG
         if (!anyModifier)
         {
             std::cout << "  [MODIFICADORES] Ningun efecto activo.\n";

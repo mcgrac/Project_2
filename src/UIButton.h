@@ -53,8 +53,8 @@ private:
 	int buttonWidth;
 	int buttonHeight;
 
-	int buttonRowFocused = 0;
-	int buttonRowNormal = 1;
+	int buttonRowFocused = 1;
+	int buttonRowNormal = 0;
 	int buttonAnimStart = 2;   // primera fila de animacion
 	int butonAnimFrames = 4;   // cuantos frames tiene la animacion
 };

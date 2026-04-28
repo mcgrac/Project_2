@@ -25,12 +25,40 @@ Character::Character(Vector2D _position, std::string _name, int _health, int _ma
 
 Character::~Character()
 {
-	//add cleanup of the textures and sounds
+#if _DEBUG
+	LOG("\033[1;32m|Destructor Character: %s\033[0m", name.c_str());
+#endif // _DEBUG
+
+	Engine::GetInstance().textures->UnLoad(texture);
+
+	killedBy = nullptr;
+	poisonedBy = nullptr;
+	burnedBy = nullptr;
+
+	//upgradeTree
+	delete upgradeTree;
+	upgradeTree = nullptr;
+
+	//inventory
+	for (Item* i : equippedItems) {
+		delete i;
+	}
+	equippedItems.clear();
+
 }
 
 void Character::Update(float dt)
 {
 	Draw(dt);
+
+	//check death animation
+	if (pendingToDie) {
+		anims.SetCurrent("dead");
+		if (anims.IsCurrentFinished()) {
+			isAlive = false;
+			pendingToDie = false;
+		}
+	}
 }
 
 void Character::Heal(int amount)
@@ -49,6 +77,7 @@ void Character::FullyHeal()
 
 void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 {
+	if (!isAlive) { return; } //dont do anything if the character is already dead
 	int scaledDamage = (int)(damageReceived * incomingDamageMultiplier);
 
 	// LOG DE COMPROBACIÓN
@@ -63,7 +92,8 @@ void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 
 	//check if character is dead
 	if (health <= 0) {
-		isAlive = false;
+		pendingToDie = true;
+		//isAlive = false;
 		if (attacker != nullptr) {
 			killedBy = attacker;
 		}
@@ -72,6 +102,7 @@ void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 
 void Character::ReceiveMagicalDamage(int damageReceived, Character* attacker)
 {
+	if (!isAlive) { return; } //dont do anything if the character is already dead
 	int scaledDamage = (int)(damageReceived * incomingDamageMultiplier);
 
 	// LOG DE COMPROBACIÓN
@@ -86,7 +117,8 @@ void Character::ReceiveMagicalDamage(int damageReceived, Character* attacker)
 
 	//check if character is dead
 	if (health <= 0) {
-		isAlive = false;
+		pendingToDie = true;
+		//isAlive = false;
 		if (attacker != nullptr) {
 			killedBy = attacker;
 		}
@@ -262,19 +294,19 @@ bool Character::EquipItem(Item* item)
 	equippedItems.push_back(item);
 
 	item->ApplyEffect(this);
-
+#if _DEBUG
 	DebugInventory();
-
+#endif // _DEBUG
 	return true;
 }
 
 void Character::DebugInventory()
 {
-	LOG("-----------INVENTORY OF %s --------------", name.c_str());
+	LOG("\033[1;32m-----------INVENTORY OF %s --------------\033[0m", name.c_str());
 	for (auto& item : equippedItems) {
-		LOG("Item: %s equipped", item->GetName().c_str());
+		LOG("\033[1;33mItem: %s equipped\033[0m", item->GetName().c_str());
 		for (auto& stat : item->GetItemStats()) {
-			LOG("Stat: %d Value: %d", stat.type, stat.value);
+			LOG("\033[1;33mStat: %d Value: %d\033[0m", stat.type, stat.value);
 		}
 	}
 	LOG("------------------------------------------");
@@ -283,8 +315,8 @@ void Character::DebugInventory()
 
 void Character::PrintDebugInfo(){
 	LOG("========================================");
-	LOG("CHARACTER: %s | Level %d", name.c_str(), level);
-	LOG("  HP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, totalPower, totalSpeed, totalDurability);
+	LOG("\033[1;32mCHARACTER: %s | Level %d\033[0m", name.c_str(), level);
+	LOG("  \033[1;33mHP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, totalPower, totalSpeed, totalDurability);
 	LOG("  Initiative: %d/%d  Lifesteal: %d", initiative, maxInitiative, lifesteal);
 	LOG("  HealingPower: %.2f  PoisonPower: %.2f  FirePower: %.2f", healingPower, poisonPower, firePower);
 
@@ -303,7 +335,7 @@ void Character::PrintDebugInfo(){
 		}
 	}
 
-	LOG("--- UPGRADE TREE ---");
+	LOG("--- UPGRADE TREE ---\033[0m");
 	if (upgradeTree == nullptr)
 	{
 		LOG("  [NULL] No upgrade tree.");

@@ -20,7 +20,6 @@ DialogueScene::DialogueScene(const std::string& dialogueId,
 
 DialogueScene::~DialogueScene() {}
 
-
 void DialogueScene::Load()
 {
     LoadTextures();
@@ -34,7 +33,6 @@ void DialogueScene::Load()
 
     RefreshOptionButtons();
 }
-
 
 void DialogueScene::Update(float dt)
 {
@@ -51,7 +49,6 @@ void DialogueScene::Update(float dt)
         Engine::GetInstance().scene->PopScene();
     }
 }
-
 
 void DialogueScene::PostUpdate(float dt)
 {

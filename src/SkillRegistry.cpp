@@ -39,6 +39,7 @@ SkillRegistry::SkillRegistry()
                 "Inflict 10 Fire",
                 [](Character* caster, Character* target) {
                     int damageFirePower = (int)(10 * (1 + caster->GetFirePower() / 100.0f));
+                    LOG("RedDance: Damage done - %d", damageFirePower);
                     target->SetBurned(true, damageFirePower, caster);
                 }
                 });
@@ -51,7 +52,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Heal ally or damage enemy",
             [](Character* caster, Character* target) {
-                //target->Heal((int)(caster->GetPower() * 0.3f));
+                //target->Heal((int)(caster->GetTotalPower() * 0.3f));
             }
             });
         return s;
