@@ -10,6 +10,7 @@
 #include "Render.h"
 #include "Textures.h"
 #include "SaveLoad.h"
+#include "SettingsScene.h"
 
 MainMenuScene::MainMenuScene() : background(nullptr), spritesheet(nullptr)
 {
@@ -115,12 +116,14 @@ bool MainMenuScene::OnUIMouseClickEvent(UIElement* uiElement)
         }
         break;
         }
-    case 3: //fullscreen button
+    case 3: //options button
         Engine::GetInstance().audio->PlayFx(buttonSelectionFx);
 
-        Engine::GetInstance().window->ToggleFullscreen();
-        LOG("ToggleFullscreen llamado, ahora llamando UpdateCamera");
-        Engine::GetInstance().render->UpdateCamera();
+        Engine::GetInstance().scene->PushScene(new SettingsScene());
+
+        //Engine::GetInstance().window->ToggleFullscreen();
+        //LOG("ToggleFullscreen llamado, ahora llamando UpdateCamera");
+        //Engine::GetInstance().render->UpdateCamera();
         break;
     case 4: //quit button
         Engine::GetInstance().audio->PlayFx(buttonSelectionFx);

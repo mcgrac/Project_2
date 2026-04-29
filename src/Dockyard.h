@@ -1,8 +1,23 @@
 #pragma once
+class NPC;
+class Ship;
+class Island;
+
 class Dockyard
 {
 public:
-    Dockyard() {}
-    ~Dockyard() {}
+    Dockyard(Island* _island);
+    ~Dockyard();
 
+    void ImproveShip();
+    void AssignShip(Ship* _ship);
+    void UnassignShip();
+
+    inline NPC* GetOwner() const { return owner; }
+
+private:
+    NPC* owner;
+    Ship* ship;
+
+    Island* island;
 };

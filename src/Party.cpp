@@ -61,11 +61,6 @@ void Party::SpendGold(int amount)
     gold = std::max(0, gold - amount);
 }
 
-int Party::GetGold() const
-{
-    return gold;
-}
-
 void Party::AddItem(Item* item)
 {
     inventory.push_back(item);

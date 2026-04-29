@@ -4,6 +4,7 @@
 #include "Audio.h"
 #include "Log.h"
 #include "Scene.h"
+#include "Fonts.h"
 
 UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _texture, int _spriteCol, int _btnWidth, int _btnHeight) :
 	UIElement(UIElementType::BUTTON, id), spritesheet(_texture), spriteCol(_spriteCol), playingAnim(false),
@@ -15,11 +16,52 @@ UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _text
 	canClick = true;
 	drawBasic = false;
 
-	if (spritesheet) {
-		LOG("spritesheet in button");
-	}
-	else {
-		LOG("No spritesheet in buttons");
+	//if (spritesheet) {
+	//	LOG("spritesheet in button");
+	//}
+	//else {
+	//	LOG("No spritesheet in buttons");
+	//}
+
+	// Crear texto si existe
+	if (!this->text.empty())
+	{
+		font = Engine::GetInstance().fonts->LoadFont("Assets/Fonts/arial.ttf", 24);
+
+		if (font != nullptr)
+		{
+			textTexture = Engine::GetInstance().fonts->CreateTextTexture(
+				this->text,
+				textColor,
+				font
+			);
+
+			if (textTexture != nullptr)
+			{
+				//SDL_GetTextureSize(textTexture, (float*)&textRect.w, (float*)&textRect.h);
+
+				//textRect.x = bounds.x + (bounds.w - textRect.w) / 2;
+				//textRect.y = bounds.y + (bounds.h - textRect.h) / 2;
+
+				float w, h;
+				SDL_GetTextureSize(textTexture, &w, &h);
+
+				textRect.w = (int)w;
+				textRect.h = (int)h;
+
+				// Centrado
+				textRect.x = bounds.x + (bounds.w - textRect.w) / 2;
+				textRect.y = bounds.y + (bounds.h - textRect.h) / 2;
+			}
+			else
+			{
+				LOG("ERROR: no se pudo crear textTexture");
+			}
+		}
+		else
+		{
+			LOG("ERROR: font es nullptr");
+		}
 	}
 }
 
@@ -69,6 +111,12 @@ bool UIButton::Update(float dt)
 
 bool UIButton::CleanUp()
 {
+	if (textTexture != nullptr)
+	{
+		SDL_DestroyTexture(textTexture);
+		textTexture = nullptr;
+	}
+
 	pendingToDelete = true;
 	return true;
 }
@@ -143,6 +191,18 @@ void UIButton::DrawButton() const
 		&frameRect,
 		1.0f    // sin parallax
 	);
+
+	//Dibujar texto encima
+	if (textTexture != nullptr)
+	{
+		Engine::GetInstance().render->DrawTexture(
+			textTexture,
+			textRect.x,
+			textRect.y,
+			nullptr,
+			1.0f
+		);
+	}
 
 	ResetTint();
 }

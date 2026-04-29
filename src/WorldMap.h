@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <string>
 #include <functional>
-//#include <SDL3/SDL.h>
 
 struct SDL_Texture;
 
@@ -20,30 +19,42 @@ public:
 
     void MakeAllIslandsHostile(IslandFaction faction);
 
-    inline const Island& GetCurrentIsland() const{ return islands.at(currentIslandId); }
+    // Travel to a specific island by id and fire arrivalIsland callback
+    void TravelTo(int islandId);
 
-    //getter
+    inline const Island* GetCurrentIsland() const{ return islands.at(currentIslandId); }
     inline int GetCurrentIslandId() const { return currentIslandId; }
+    inline const std::unordered_map<int, Island*>& GetAllIslands() const { return islands; }
+    inline const std::unordered_map<int, std::vector<int>>& GetTree() const { return tree; }
+    // return id's from the next two childs islands
+    const std::vector<int>& GetNextIds(int islandId) const;
+
+    // Returns whether islandId is reachable from the current island
+    bool IsReachable(int islandId) const;
 
     //setter
     inline void SetCurrentIsland(int islandId) { currentIslandId = islandId; }
 
     //callback
-    std::function<void(const Island&)> arrivalIsland;
+    std::function<void(Island*)> arrivalIsland;
 
 private:
-    void UpdateWorld();
-    void RenderWorld(float dt);
+    //
+    //void UpdateWorld();
+    //
 
-    // return id's from the next two childs islands
-    const std::vector<int>& GetNextIds(int islandId) const;
+
+    void RenderWorld(float dt);
 
     // Current island and selection
     int currentIslandId = -1;
-    int selectedChildIndex = 0;   // 0 or 1
 
+    //
+    //int selectedChildIndex = 0;   // 0 or 1
+    //
+    
     // All nodes of the three
-    std::unordered_map<int, Island> islands;
+    std::unordered_map<int, Island*> islands;
     std::unordered_map<int, std::vector<int>> tree;    // id -> [hijoId, ...]
 
     static const std::vector<int> EMPTY;

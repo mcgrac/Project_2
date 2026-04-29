@@ -36,11 +36,47 @@ enum class CombatResult
     DEFEAT
 };
 
+// ------------------- Lanes -------------------------------------
+// Each lane holds a reference to the character assigned to it and
+// computes bonuses that scale with the ship level.
+//
+// Base bonuses (level 1):
+//   Back  → +15 power
+//   Side  → +10 power, +10 speed
+//   Front → +10 speed, +10 max health
+//
+// Every stat is multiplied by shipLevel, so level 2 doubles them, etc.
+// Maximum ship level is 3.
+
+enum class LaneType
+{
+    BACK,
+    SIDE,
+    FRONT
+};
+
+struct Lane
+{
+    LaneType type;
+    Character* occupant = nullptr;
+
+    // Base bonus values (level 1)
+    static const int BASE_BACK_POWER = 15;
+    static const int BASE_SIDE_POWER = 10;
+    static const int BASE_SIDE_SPEED = 10;
+    static const int BASE_FRONT_SPEED = 10;
+    static const int BASE_FRONT_HEALTH = 10;
+
+    int GetPowerBonus(int shipLevel) const;
+    int GetSpeedBonus(int shipLevel) const;
+    int GetHealthBonus(int shipLevel) const;
+};
+
 class Combat
 {
 public:
 
-    Combat(Party* allied, Party* enemy);
+    Combat(Party* allied, Party* enemy, int _shipLevel);
     ~Combat();
 
     // Whole combat cycle
@@ -56,12 +92,16 @@ public:
     inline std::vector<Character*> GetAliveEnemies() { return GetAliveMembers(enemyParty); }
     inline std::vector<Character*> GetAliveAllies() { return GetAliveMembers(alliedParty); }
 
+    // Lane assignment — called by CombatScene during lane selection phase
+    void AssignLane(Character* character, LaneType laneType);
+
     void SubmitPlayerChoice(int skillIndex, int targetIndex);
 
     //testing
     void ForceVictory();
     void ForceDefeat();
 
+    float GetLaneDamageMultiplier(Character* c);
 
 private:
 
@@ -76,6 +116,15 @@ private:
     Skill* currentSkill = nullptr;
     Character* currentTarget = nullptr;
 
+    int shipLevel;
+
+    // Three fixed lanes for allied characters
+    Lane backLane;
+    Lane sideLane;
+    Lane frontLane;
+
+    void ApplyLaneBonuses();
+
     // ── Posiciones predefinidas ───────────────
     // Índice 0-2: aliados  |  Índice 3-5: enemigos
     // Puedes cambiar el tipo a sf::Vector2f si usas SFML, etc.
@@ -84,30 +133,25 @@ private:
 
     bool runningCombat; //control
 
+    void ResetBonusStats(Character* c);
     void StartCombat();
-
     bool CalculateInitiative();
 
-    //void Attack();
+    //Attack
     void AttackStart();
     void AttackAnimation();
     void AttackResolve();
 
-
     void ApplyModifiers();
 
     void CheckDefeat();
-
     void EndCombat();
-
     void PlayerTurn();
-
     void EnemyTurn();
 
     void ExecuteSkill(Character* user, Skill& skill, Character* target);
 
     Character* GetHighestInitiativeActor();
-
     std::vector<Character*> GetAliveMembers(Party* party);
 
     bool IsPartyDefeated(Party* party);

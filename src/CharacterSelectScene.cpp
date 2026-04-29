@@ -9,7 +9,7 @@
 #include "Log.h"
 #include "Render.h"
 #include "Textures.h"
-
+#include "CharacterFactory.h"
 
 CharacterSelectScene::CharacterSelectScene() : 
     background(nullptr), 
@@ -20,7 +20,7 @@ CharacterSelectScene::CharacterSelectScene() :
     labelSpritesheets(nullptr)
 {
     // Registrar personajes disponibles con su nombre de factory y posición en pantalla
-    // Añade una línea por cada personaje nuevo que crees
+    // Añadir una linea nueva por cada personaje
     availableCharacters = {
         { "Gerbera", "Gerbera", 1, 1, Vector2D(800, 100), Vector2D(800, 200)},
         { "Markus", "Markus", 2, 2, Vector2D(800, 100),Vector2D(800, 200)},
@@ -127,6 +127,17 @@ void CharacterSelectScene::ToggleSelection(int index)
 
         SetPortraitButtonStateNormal(index);
         LOG("CharacterSelect: %s deseleccionado.", c.name.c_str());
+
+        //delete character
+        //for (int i = 0; i < createdCharacters.size(); i++) {
+        //    if (createdCharacters[i] != nullptr) {
+        //        //if selected character name is equal to the name of the character in the vector
+        //        if (createdCharacters[i]->GetName() == c.name) {
+        //            delete createdCharacters[i];
+        //            createdCharacters.erase(createdCharacters.begin() + i);
+        //        }
+        //    }
+        //}
     }
     else
     {
@@ -139,6 +150,20 @@ void CharacterSelectScene::ToggleSelection(int index)
         selectedNames.push_back(c.name);
         SetPortraitButtonStatePressed(index);
         LOG("CharacterSelect: %s seleccionado (%d/3).", c.name.c_str(), (int)selectedNames.size());
+
+        //create character
+        //LOG("Creando personaje: '%s'", c.name.c_str());
+        //Character* chara = CharacterFactory::Create(c.name);
+        //if (chara != nullptr)
+        //{
+        //    //alliedParty->AddMember(c);
+        //    //add character to the vector
+        //    createdCharacters.push_back(chara);
+        //}
+        //else
+        //{
+        //    LOG("InGameScene::Load — no se pudo crear el personaje '%s'.", chara->GetName().c_str());
+        //}
     }
 }
 

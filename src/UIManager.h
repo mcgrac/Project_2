@@ -30,6 +30,8 @@ public:
 		SDL_Rect bounds, std::function<bool(UIElement*)> callback, 
 		SDL_Rect sliderBounds = { 0,0,0,0 }, 
 		SDL_Texture* spritesheet = nullptr, int spriteCol = 0, int _btnWidth = 0, int _btnHeight = 0);
+	
+	void RemoveElementsByRange(int minID, int maxID);
 
 public:
 

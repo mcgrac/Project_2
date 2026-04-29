@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="Assets\Textures\Animations\Boat.tsx" />
     <None Include="Assets\Textures\Animations\MarkusSpritesheet.tsx" />
     <None Include="vcpkg-configuration.json" />
     <None Include="vcpkg.json" />
@@ -153,10 +154,15 @@
     <ClCompile Include="src\CharacterSelectScene.cpp" />
     <ClCompile Include="src\Combat.cpp" />
     <ClCompile Include="src\CombatScene.cpp" />
+    <ClCompile Include="src\DialogueManager.cpp" />
+    <ClCompile Include="src\DialogueScene.cpp" />
+    <ClCompile Include="src\DialogueUI.cpp" />
+    <ClCompile Include="src\Dockyard.cpp" />
     <ClCompile Include="src\DockyardScene.cpp" />
     <ClCompile Include="src\Engine.cpp" />
-    <ClCompile Include="src\EntityManager.cpp" />
+    <ClCompile Include="src\Fonts.cpp" />
     <ClCompile Include="src\Gerbera.cpp" />
+    <ClCompile Include="src\Hostel.cpp" />
     <ClCompile Include="src\HostelScene.cpp" />
     <ClCompile Include="src\InGameScene.cpp" />
     <ClCompile Include="src\Input.cpp" />
@@ -165,11 +171,14 @@
     <ClCompile Include="src\IslandInteriorScene.cpp" />
     <ClCompile Include="src\IslandScene.cpp" />
     <ClCompile Include="src\Item.cpp" />
+    <ClCompile Include="src\ItemManager.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\MainMenuScene.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\Markus.cpp" />
+    <ClCompile Include="src\NPC.cpp" />
     <ClCompile Include="src\Party.cpp" />
+    <ClCompile Include="src\PartyScene.cpp" />
     <ClCompile Include="src\PauseScene.cpp" />
     <ClCompile Include="src\PerfTimer.cpp" />
     <ClCompile Include="src\Physics.cpp" />
@@ -178,6 +187,9 @@
     <ClCompile Include="src\Render.cpp" />
     <ClCompile Include="src\SaveLoad.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\SettingsScene.cpp" />
+    <ClCompile Include="src\Ship.cpp" />
+    <ClCompile Include="src\Shop.cpp" />
     <ClCompile Include="src\ShopScene.cpp" />
     <ClCompile Include="src\Skill.cpp" />
     <ClCompile Include="src\SkillRegistry.cpp" />
@@ -203,11 +215,15 @@
     <ClInclude Include="src\CharacterSelectScene.h" />
     <ClInclude Include="src\Combat.h" />
     <ClInclude Include="src\CombatScene.h" />
+    <ClInclude Include="src\DialogueManager.h" />
+    <ClInclude Include="src\DialogueNode.h" />
+    <ClInclude Include="src\DialogueScene.h" />
+    <ClInclude Include="src\DialogueUI.h" />
     <ClInclude Include="src\Dockyard.h" />
     <ClInclude Include="src\DockyardScene.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
-    <ClInclude Include="src\EntityManager.h" />
+    <ClInclude Include="src\Fonts.h" />
     <ClInclude Include="src\Gerbera.h" />
     <ClInclude Include="src\Hostel.h" />
     <ClInclude Include="src\HostelScene.h" />
@@ -218,13 +234,16 @@
     <ClInclude Include="src\IslandInteriorScene.h" />
     <ClInclude Include="src\IslandScene.h" />
     <ClInclude Include="src\Item.h" />
+    <ClInclude Include="src\ItemManager.h" />
     <ClInclude Include="src\IUIObserver.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\MainMenuScene.h" />
     <ClInclude Include="src\Map.h" />
     <ClInclude Include="src\Markus.h" />
     <ClInclude Include="src\Module.h" />
+    <ClInclude Include="src\NPC.h" />
     <ClInclude Include="src\Party.h" />
+    <ClInclude Include="src\PartyScene.h" />
     <ClInclude Include="src\PauseScene.h" />
     <ClInclude Include="src\PerfTimer.h" />
     <ClInclude Include="src\Physics.h" />
@@ -232,6 +251,8 @@
     <ClInclude Include="src\Render.h" />
     <ClInclude Include="src\SaveLoad.h" />
     <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\SettingsScene.h" />
+    <ClInclude Include="src\Ship.h" />
     <ClInclude Include="src\Shop.h" />
     <ClInclude Include="src\ShopScene.h" />
     <ClInclude Include="src\Skill.h" />
@@ -257,9 +278,11 @@
     <Xml Include="Assets\Characters\Raptor.xml" />
     <Xml Include="Assets\Characters\Rex.xml" />
     <Xml Include="Assets\Characters\Theresia.xml" />
+    <Xml Include="Assets\Items\Items.xml" />
     <Xml Include="Assets\Maps\world.xml" />
     <Xml Include="Assets\SaveData.xml" />
     <Xml Include="config.xml" />
+    <Xml Include="dialogues.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

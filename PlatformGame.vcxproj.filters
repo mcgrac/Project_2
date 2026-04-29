@@ -47,6 +47,9 @@
     <Filter Include="Source Files\Game\Combat">
       <UniqueIdentifier>{75c83670-4032-427d-8839-3e069bf414fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Dialogue">
+      <UniqueIdentifier>{6a06f30b-03e4-4ef9-b055-97e965277c0c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -59,6 +62,9 @@
       <Filter>Configuration FIles</Filter>
     </None>
     <None Include="Assets\Textures\Animations\MarkusSpritesheet.tsx">
+      <Filter>Configuration FIles</Filter>
+    </None>
+    <None Include="Assets\Textures\Animations\Boat.tsx">
       <Filter>Configuration FIles</Filter>
     </None>
   </ItemGroup>
@@ -95,9 +101,6 @@
     </ClCompile>
     <ClCompile Include="src\PerfTimer.cpp">
       <Filter>Source Files\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="src\EntityManager.cpp">
-      <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\Player.cpp">
       <Filter>Source Files\Game</Filter>
@@ -204,6 +207,42 @@
     <ClCompile Include="src\PauseScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\NPC.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DialogueManager.cpp">
+      <Filter>Source Files\Game\Dialogue</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DialogueUI.cpp">
+      <Filter>Source Files\Game\Dialogue</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DialogueScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dockyard.cpp">
+      <Filter>Source Files\Game\WorldMap\Islands\Buildings</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Hostel.cpp">
+      <Filter>Source Files\Game\WorldMap\Islands\Buildings</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shop.cpp">
+      <Filter>Source Files\Game\WorldMap\Islands\Buildings</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SettingsScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Fonts.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ship.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ItemManager.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PartyScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Audio.h">
@@ -240,9 +279,6 @@
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Entity.h">
-      <Filter>Source Files\Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EntityManager.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Player.h">
@@ -368,6 +404,36 @@
     <ClInclude Include="src\PauseScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="src\NPC.h">
+      <Filter>Source Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DialogueManager.h">
+      <Filter>Source Files\Game\Dialogue</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DialogueNode.h">
+      <Filter>Source Files\Game\Dialogue</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DialogueUI.h">
+      <Filter>Source Files\Game\Dialogue</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DialogueScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SettingsScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Fonts.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ship.h">
+      <Filter>Source Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ItemManager.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PartyScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml">
@@ -395,6 +461,12 @@
       <Filter>Configuration FIles</Filter>
     </Xml>
     <Xml Include="Assets\SaveData.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
+    <Xml Include="dialogues.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
+    <Xml Include="Assets\Items\Items.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
   </ItemGroup>

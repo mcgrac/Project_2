@@ -9,10 +9,11 @@
 #include "Log.h"
 #include "SaveLoad.h"
 
-IslandScene::IslandScene(const Island& island, WorldMap* worldMap, Party* allied)
+IslandScene::IslandScene(Island* island, WorldMap* worldMap, Party* allied, Ship* _ship)
     : island(island)
     , worldMap(worldMap)
     , alliedParty(allied)
+    , ship (_ship)
     , combatLaunched(false)
     , enterButton(nullptr)
     , pillageButon(nullptr)
@@ -31,24 +32,28 @@ void IslandScene::Load()
 
 void IslandScene::Update(float dt)
 {
-    if (island.GetType() == IslandType::HOSTILE && !combatLaunched)
-    {
-        combatLaunched = true;
-        AttackIsland();
-    }
+    if (island == nullptr) { LOG("island es nullptr"); }
 
-    if (island.GetType() == IslandType::FRIENDLY)
-    {
-        Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    if (island != nullptr) {
+        if (island->GetType() == IslandType::HOSTILE && !combatLaunched)
+        {
+            combatLaunched = true;
+            AttackIsland();
 
-        SDL_Rect panel = { 426, 300, 428, 360 };
-        Engine::GetInstance().render->DrawRectangle(panel, 20, 20, 20, 200, true, false);
+        }
+        else if (island->GetType() == IslandType::FRIENDLY)
+        {
+            Engine::GetInstance().render->DrawTexture(background, 0, 0);
 
-        Engine::GetInstance().render->DrawText(
-            island.GetName().c_str(),
-            486, 310, 308, 50,
-            { 255, 255, 255, 255 }
-        );
+            SDL_Rect panel = { 426, 300, 428, 360 };
+            Engine::GetInstance().render->DrawRectangle(panel, 20, 20, 20, 200, true, false);
+
+            Engine::GetInstance().render->DrawText(
+                island->GetName().c_str(),
+                486, 310, 308, 50,
+                { 255, 255, 255, 255 }
+            );
+        }
     }
 }
 
@@ -65,13 +70,39 @@ void IslandScene::Unload()
     Engine::GetInstance().textures->UnLoad(exitButton);
     Engine::GetInstance().uiManager->CleanUp();
 
+    //delete island;
+    //island = nullptr;
+
 }
 
 void IslandScene::LoadTextures()
 {
     enterButton = Engine::GetInstance().textures->Load("Assets/Textures/BeforeIslandScene/EnterButton.png");
     pillageButon = Engine::GetInstance().textures->Load("Assets/Textures/BeforeIslandScene/PillageButton.png");
-    background = Engine::GetInstance().textures->Load("Assets/Textures/BeforeIslandScene/HumanBackground.png");
+
+    //-----island background--------
+    std::string islandFaction;
+    switch (island->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:
+        islandFaction = "human";
+        break;
+    case IslandFaction::BIRD:
+        islandFaction = "bird";
+        break;
+    case IslandFaction::SIRENS:
+        islandFaction = "siren";
+        break;
+    case IslandFaction::REPTILES:
+        islandFaction = "reptile";
+        break;
+    default:
+        break;
+    }
+    std::string path = "Assets/Textures/BeforeIslandScene/" + islandFaction + ".png";
+    background = Engine::GetInstance().textures->Load(path.c_str());
+    //-------------------------------
+
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
 }
 
@@ -96,12 +127,12 @@ bool IslandScene::OnUIMouseClickEvent(UIElement* uiElement)
 
 void IslandScene::EnterIsland()
 {
-    LOG("IslandScene: entrando en '%s'.", island.GetName().c_str());
+    LOG("IslandScene: entrando en '%s'.", island->GetName().c_str());
 
     //save data
     SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId());
 
-    Engine::GetInstance().scene->PushScene(new IslandInteriorScene(&island, alliedParty));
+    Engine::GetInstance().scene->PushScene(new IslandInteriorScene(island, alliedParty));
 }
 
 void IslandScene::AttackIsland()
@@ -112,20 +143,21 @@ void IslandScene::AttackIsland()
     //save data
     SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId());
 
-    if (island.GetType() == IslandType::FRIENDLY)
+    if (island->GetType() == IslandType::FRIENDLY)
     {
 
         // Hacer hostil toda la facción en el WorldMap
-        worldMap->MakeAllIslandsHostile(island.GetIslandFaction());
+        worldMap->MakeAllIslandsHostile(island->GetIslandFaction());
     }
 
     Party* allied = alliedParty;
+    int levelShip = ship->GetLevel();
 
     //eliminate island scene from stack 
     Engine::GetInstance().scene->PopScene();
 
     //push adds combat scene at the top of the stack (inGameScene is still alive)
-    Engine::GetInstance().scene->PushScene(new CombatScene(allied));
+    Engine::GetInstance().scene->PushScene(new CombatScene(allied, levelShip));
 }
 
 void IslandScene::OnResume()
@@ -140,7 +172,7 @@ void IslandScene::OnPause()
 
 void IslandScene::CreateUI()
 {
-    if (island.GetType() == IslandType::HOSTILE)
+    if (island->GetType() == IslandType::HOSTILE)
     {
         //update:: pop scene combat
     }
@@ -150,14 +182,14 @@ void IslandScene::CreateUI()
         //enter
         SDL_Rect enterBtnBounds = { 580, 400, 125, 72 };
         Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, 1, "Enter", enterBtnBounds,
+            UIElementType::BUTTON, 1, "", enterBtnBounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, enterButton, 0, enterBtnBounds.w, enterBtnBounds.h
         );
 
         //attack
         SDL_Rect attackBtnBounds = { 580, 540, 125, 72 };
         Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, 2, "Attack", attackBtnBounds,
+            UIElementType::BUTTON, 2, "", attackBtnBounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, pillageButon, 0, attackBtnBounds.w, attackBtnBounds.h
         );
 

@@ -13,7 +13,6 @@
 #include <limits>
 #include <random>
 
-#include "Engine.h"
 #include "Render.h"
 #include "Textures.h"
 
@@ -30,25 +29,140 @@ const Vector2D Combat::defaultPositions[6] = {
     Vector2D(1022.0f, 273.0f)    // enemigo 2
 };
 
-Combat::Combat(Party* allied, Party* enemy)
+Combat::Combat(Party* allied, Party* enemy, int _shipLevel)
     : alliedParty(allied)
     , enemyParty(enemy)
     , state(CombatState::START_COMBAT)
     , result(CombatResult::NONE)
     , currentActor(nullptr)
     , runningCombat(true)
+    , shipLevel (_shipLevel)
 {
+    //assign lanes types
+    backLane.type = LaneType::BACK;
+    sideLane.type = LaneType::SIDE;
+    frontLane.type = LaneType::FRONT;
 }
 
 Combat::~Combat()
 {
 }
 
+#pragma region LANE LOGIC
+//-------------------- Lane bonus calculations -----------------------------------
+int Lane::GetPowerBonus(int shipLevel) const
+{
+    if (type == LaneType::BACK)
+    {
+        return BASE_BACK_POWER * shipLevel;
+    }
+    if (type == LaneType::SIDE)
+    {
+        return BASE_SIDE_POWER * shipLevel;
+    }
+    return 0;
+
+    // FRONT gives no power bonus
+}
+
+int Lane::GetSpeedBonus(int shipLevel) const
+{
+    if (type == LaneType::SIDE)
+    {
+        return BASE_SIDE_SPEED * shipLevel;
+    }
+
+    if (type == LaneType::FRONT)
+    {
+        return BASE_FRONT_SPEED * shipLevel;
+    }
+    return 0;
+
+    // BACK gives no speed bonus
+}
+
+int Lane::GetHealthBonus(int shipLevel) const
+{
+    if (type == LaneType::FRONT)
+    {
+        return BASE_FRONT_HEALTH * shipLevel;
+    }
+    return 0;
+
+    // BACK and SIDE give no health bonus
+}
+
+// ---------- Lane assignment (called by CombatScene) --------------------------------
+void Combat::AssignLane(Character* character, LaneType laneType)
+{
+    if (laneType == LaneType::BACK)
+    {
+        backLane.occupant = character;
+        LOG("Combat: %s assigned to BACK lane", character->GetName().c_str());
+    }
+    else if (laneType == LaneType::SIDE)
+    {
+        sideLane.occupant = character;
+        LOG("Combat: %s assigned to SIDE lane", character->GetName().c_str());
+    }
+    else
+    {
+        frontLane.occupant = character;
+        LOG("Combat: %s assigned to FRONT lane", character->GetName().c_str());
+    }
+}
+
+// ------ Apply lane bonuses to each occupant ------------------------------
+void Combat::ApplyLaneBonuses()
+{
+    Lane* lanes[3] = { &backLane, &sideLane, &frontLane };
+
+    for (int i = 0; i < 3; i++)
+    {
+        Lane* lane = lanes[i];
+
+        if (lane->occupant == nullptr)
+        {
+            continue;
+        }
+
+        Character* c = lane->occupant;
+
+        int powerBonus = lane->GetPowerBonus(shipLevel);
+        int speedBonus = lane->GetSpeedBonus(shipLevel);
+        int healthBonus = lane->GetHealthBonus(shipLevel);
+
+        if (powerBonus != 0)
+        {
+            c->ModifyBonusPower(powerBonus);
+            LOG("Combat: %s lane bonus +%d power", c->GetName().c_str(), powerBonus);
+        }
+
+        if (speedBonus != 0)
+        {
+            c->ModifyBonusSpeed(speedBonus);
+            LOG("Combat: %s lane bonus +%d speed", c->GetName().c_str(), speedBonus);
+        }
+
+        if (healthBonus != 0)
+        {
+            c->ModifyMaxHealth(healthBonus);
+            LOG("Combat: %s lane bonus +%d max health", c->GetName().c_str(), healthBonus);
+        }
+
+        // Recalculate totals after applying bonuses
+        c->SetTotalPower();
+        c->SetTotalSpeed();
+    }
+}
+#pragma endregion
+
 
 void Combat::Run()
 {
     if (!runningCombat) return;
 
+#if _DEBUG
     //--------------TEST DEBUGS-----------
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_W) == KEY_DOWN) {
 
@@ -62,6 +176,7 @@ void Combat::Run()
         EndCombat();
     }
     //------------------------------------
+#endif
     switch (state)
     {
     case CombatState::START_COMBAT:
@@ -121,6 +236,25 @@ bool Combat::CombatIsFinished() const
     return b;
 }
 
+void Combat::ResetBonusStats(Character* c)
+{
+    //clear bonus stats ans effects
+    for (Character* c : alliedParty->GetMembers()) {
+        c->ClearBonusStats();
+        c->ClearStatusEffects();
+
+        LOG("BEFORE CLEAR |%s| totalPower: %d, totalSpeed: %d, totalDurability:%d", c->GetName().c_str(), c->GetTotalPower(), c->GetTotalSpeed(), c->GetTotalDurability());
+
+        //calculate again total stats
+        c->SetTotalPower();
+        c->SetTotalDurability();
+        c->SetTotalSpeed();
+
+        LOG("AFTER CLEAR |%s| totalPower: %d, totalSpeed: %d, totalDurability:%d", c->GetName().c_str(), c->GetTotalPower(), c->GetTotalSpeed(), c->GetTotalDurability());
+
+    }
+}
+
 //  START_COMBAT
 void Combat::StartCombat()
 {
@@ -128,15 +262,15 @@ void Combat::StartCombat()
     std::cout << "          COMBATE INICIADO            \n";
     std::cout << "══════════════════════════════════════\n";
 
-
+#if _DEBUG
     //----------------debug--------------
-    std::cout << "\n[ALIADOS]\n";
+    std::cout << "\033[1;32m\n[ALIADOS]\n\033[0m";
     for (Character* c : alliedParty->GetMembers())
     {
         std::cout << "  " << c->GetName()
             << " | HP: " << c->GetCurrentHP()
-            << " | Power: " << c->GetPower()
-            << " | Speed: " << c->GetSpeed() << "\n";
+            << " | Power: " << c->GetTotalPower()
+            << " | Speed: " << c->GetTotalPower() << "\n";
     }
 
     std::cout << "\n[ENEMIGOS]\n";
@@ -144,27 +278,75 @@ void Combat::StartCombat()
     {
         std::cout << "  " << c->GetName()
             << " | HP: " << c->GetCurrentHP()
-            << " | Power: " << c->GetPower()
-            << " | Speed: " << c->GetSpeed() << "\n";
+            << " | Power: " << c->GetTotalPower()
+            << " | Speed: " << c->GetTotalPower() << "\n";
     }
     std::cout << "\n";
     //---------------------------------------
+#endif
 
-    //save previous states in combat
+
     for (Character* c : alliedParty->GetMembers()) {
+        //save previous states in combat
         preCombatValues[c] = c->TakePreCombatValues();
+
+        ResetBonusStats(c);
     }
+
+    // Apply lane bonuses after resetting so they are the only bonuses active
+    ApplyLaneBonuses();
 
     auto allCombatants = GetAllCombatants();
 
-    // Asignar posiciones y resetear iniciativa acumulada
-    for (int i = 0; i < static_cast<int>(allCombatants.size()); ++i)
+    // Allies: position determined by lane assignment
+    // defaultPositions[0] = Front (closest to enemies)
+    // defaultPositions[1] = Side  (middle)
+    // defaultPositions[2] = Back  (furthest from enemies)
+    if (frontLane.occupant != nullptr)
     {
-        Character* c = allCombatants[i];
-        c->SetPosition(defaultPositions[i].getX(), defaultPositions[i].getY());
-        c->ResetCurrentInitiative();   // currentInitiative = 0
-        c->ClearStatusEffects();       // limpia veneno/quemadura del combate anterior si es necesario
+        frontLane.occupant->SetPosition(defaultPositions[0].getX(), defaultPositions[0].getY());
     }
+    if (sideLane.occupant != nullptr)
+    {
+        sideLane.occupant->SetPosition(defaultPositions[1].getX(), defaultPositions[1].getY());
+    }
+    if (backLane.occupant != nullptr)
+    {
+        backLane.occupant->SetPosition(defaultPositions[2].getX(), defaultPositions[2].getY());
+    }
+
+    // Allies: reset initiative
+    for (Character* c : alliedParty->GetMembers())
+    {
+        c->ResetCurrentInitiative();
+    }
+    //// Asignar posiciones y resetear iniciativa acumulada
+    //for (int i = 0; i < static_cast<int>(allCombatants.size()); ++i)
+    //{
+    //    Character* c = allCombatants[i];
+    //    c->SetPosition(defaultPositions[i].getX(), defaultPositions[i].getY());
+    //    c->ResetCurrentInitiative();   // currentInitiative = 0
+    //}
+
+    // Enemies: position by index, starting at slot 3
+    auto& enemies = enemyParty->GetMembers();
+    for (int i = 0; i < static_cast<int>(enemies.size()); ++i)
+    {
+        enemies[i]->SetPosition(defaultPositions[3 + i].getX(), defaultPositions[3 + i].getY());
+        enemies[i]->ResetCurrentInitiative();
+    }
+
+#if DEBUG
+    std::cout << "\n[ALIADOS tras bonificaciones de lane]\n";
+    for (Character* c : alliedParty->GetMembers())
+    {
+        std::cout << "  " << c->GetName()
+            << " | HP: " << c->GetCurrentHP()
+            << " | Power: " << c->GetTotalPower()
+            << " | Speed: " << c->GetTotalSpeed() << "\n";
+    }
+    std::cout << "\n";
+#endif
 }
 
 //  CALCULATE_INITIATIVE
@@ -176,16 +358,17 @@ bool Combat::CalculateInitiative()
         {
             int before = c->GetCurrentInitiative();
 
-            int bonus = 50 + c->GetSpeed();
+            int bonus = 50 + c->GetTotalSpeed();
             c->AddInitiative(bonus);
 
             int after = c->GetCurrentInitiative();
 
+#if _DEBUG
             std::cout << "  " << c->GetName()
                 << " | antes: " << before
                 << " + " << bonus
                 << " = " << after;
-
+#endif
             if (after >= 100)
             {
                 std::cout << "  [PUEDE ACTUAR]";
@@ -197,12 +380,13 @@ bool Combat::CalculateInitiative()
 
     currentActor = GetHighestInitiativeActor();
 
+#if _DEBUG
     if (currentActor != nullptr)
     {
         std::cout << "  >> Turno para: " << currentActor->GetName()
             << " (iniciativa: " << currentActor->GetCurrentInitiative() << ")\n";
     }
-
+#endif
     return currentActor != nullptr;
 }
 
@@ -211,20 +395,19 @@ void Combat::AttackStart()
 {
     if (currentActor == nullptr) return;
 
+#if _DEBUG
     std::cout << "\n──────────────────────────────────────\n";
     std::cout << "│ TURNO DE: " << currentActor->GetName() << "\n";
     std::cout << "│ HP: " << currentActor->GetCurrentHP()
         << " | Iniciativa: " << currentActor->GetCurrentInitiative()
-        << " | Power: " << currentActor->GetPower() << "\n";
+        << " | Power: " << currentActor->GetTotalPower() << "\n";
     std::cout << "──────────────────────────────────────\n";
-
+#endif
     if (IsAllied(currentActor))
     {
         //Esperar a que CombatScene entregue la eleccion via SubmitPlayerChoice
         state = CombatState::WAITING_FOR_PLAYER_INPUT;
-        return;   // ← salir sin avanzar
-
-        //PlayerTurn();
+        return;   // salir sin avanzar
     }
     else
     {
@@ -252,6 +435,8 @@ void Combat::AttackAnimation()
 void Combat::AttackResolve()
 {
     ExecuteSkill(currentActor, *currentSkill, currentTarget);
+    //reset animation idle current actor
+    currentActor->PlayAnimation("idle");
 }
 
 //  MODIFIERS — veneno y quemadura
@@ -261,7 +446,9 @@ void Combat::ApplyModifiers()
 
     for (Character* c : GetAllCombatants())
     {
-        if (!c->GetIsAlive()) continue;
+        //if (!c->GetIsAlive()) continue;
+
+        if (!c->GetPendingToDie()) continue;
 
         if (c->IsPoisoned())
         {
@@ -275,6 +462,7 @@ void Combat::ApplyModifiers()
             c->TakePoisonDamage();
             int hpAfter = c->GetCurrentHP();
 
+#if _DEBUG
             std::cout << "  [VENENO] " << c->GetName()
                 << " sufre " << poisonDmg << " de daño por veneno."
                 << " HP: " << hpBefore << " -> " << hpAfter;
@@ -285,13 +473,11 @@ void Combat::ApplyModifiers()
             }
 
             std::cout << "\n";
+#endif
         }
 
         if (c->IsBurning())
         {
-            //int burnDmg = c->GetBurnDamage();
-            //c->TakeBurnDamage();
-            //std::cout << c->GetName() << " sufre " << burnDmg << " de daño por quemadura.\n";
 
             anyModifier = true;
             int burnDmg = c->GetBurnDamage();
@@ -299,6 +485,7 @@ void Combat::ApplyModifiers()
             c->TakeBurnDamage();
             int hpAfter = c->GetCurrentHP();
 
+#if _DEBUG
             std::cout << "  [QUEMADURA] " << c->GetName()
                 << " sufre " << burnDmg << " de daño por quemadura."
                 << " HP: " << hpBefore << " -> " << hpAfter;
@@ -309,12 +496,14 @@ void Combat::ApplyModifiers()
             }
 
             std::cout << "\n";
+#endif
         }
-        
+#if _DEBUG
         if (!anyModifier)
         {
             std::cout << "  [MODIFICADORES] Ningun efecto activo.\n";
         }
+#endif
     }
 }
 
@@ -343,6 +532,11 @@ void Combat::CheckDefeat()
 //  END_COMBAT
 void Combat::EndCombat()
 {
+    //clear bonus stats ans effects
+    for (Character* c : alliedParty->GetMembers()) {
+        ResetBonusStats(c);
+    }
+
     if (result == CombatResult::VICTORY)
     {
         std::cout << "\n══════════════════════════════════════\n";
@@ -509,17 +703,26 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 
         for (Character* c : GetAliveMembers(targetParty)) {
 
+            // Aplicar multiplicador específico de este objetivo según su Lane
+            float multiplier = GetLaneDamageMultiplier(c);
+            c->SetIncomingDamageMultiplier(multiplier);
+
             skill.Use(user, c);
+
+            // Limpiar multiplicador (volver a 1.0) tras el golpe
+            c->SetIncomingDamageMultiplier(1.0f);
 
             int targetHpAfter = target->GetCurrentHP();
             int damageDone = targetHpBefore - targetHpAfter;
-
+#if DEBUG
             std::cout << user->GetName() << " usa " << skill.GetName()
                 << " -> " << target->GetName() << "\n";
+#endif
 
             //-----------------debug-----------------
             if (damageDone > 0)
             {
+#if DEBUG
                 std::cout << "    Daño: " << damageDone
                     << " | HP " << target->GetName() << ": "
                     << targetHpBefore << " -> " << targetHpAfter;
@@ -530,30 +733,39 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
                 }
 
                 std::cout << "\n";
+#endif
             }
             else if (damageDone < 0)
             {
+#if DEBUG
                 std::cout << "    Curación: " << (-damageDone)
                     << " | HP " << target->GetName() << ": "
                     << targetHpBefore << " -> " << targetHpAfter << "\n";
+#endif
             }
 
             // Estado de efectos del target tras el ataque
             if (target->IsBurning())
             {
+#if DEBUG
                 std::cout << "    " << target->GetName()
                     << " esta QUEMADO: " << target->GetBurnDamage() << " de daño/turno\n";
+#endif
             }
 
             if (target->IsPoisoned())
             {
+#if DEBUG
                 std::cout << "    " << target->GetName()
                     << " esta ENVENENADO: " << target->GetPoisonDamage() << " de daño/turno\n";
+#endif
             }
+#if DEBUG
 
             std::cout << "    Iniciativa restante de " << user->GetName()
                 << ": " << user->GetCurrentInitiative() << "\n";
             //------------------------------
+#endif
         }
 
         // Restar el coste de iniciativa al usuario
@@ -562,8 +774,14 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
     }
     else {
 
+        // Aplicar multiplicador específico de este objetivo según su Lane
+        float multiplier = GetLaneDamageMultiplier(target);
+        target->SetIncomingDamageMultiplier(multiplier);
+
         //NO AREA EFFECT
         skill.Use(user, target);
+
+        target->SetIncomingDamageMultiplier(1.0f);
 
         int targetHpAfter = target->GetCurrentHP();
         int damageDone = targetHpBefore - targetHpAfter;
@@ -574,7 +792,7 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
         std::cout << user->GetName() << " usa " << skill.GetName()
             << " -> " << target->GetName()
             << "  | Iniciativa restante: " << user->GetCurrentInitiative() << "\n";
-
+#if DEBUG
         //-----------------debug-----------------
         if (damageDone > 0)
         {
@@ -612,6 +830,7 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
         std::cout << "    Iniciativa restante de " << user->GetName()
             << ": " << user->GetCurrentInitiative() << "\n";
         //------------------------------
+#endif
     }
     
 }
@@ -668,7 +887,7 @@ void Combat::SubmitPlayerChoice(int skillIndex, int targetIndex)
     if (currentActor == nullptr) return;
 
     auto& skills = currentActor->GetSkills();
-    auto  aliveEnemies = GetAliveMembers(enemyParty);
+    auto aliveEnemies = GetAliveMembers(enemyParty);
 
     std::cout << "SkillIndex received: " << skillIndex << std::endl;
     std::cout << "TargetIndex received: " << targetIndex << std::endl;
@@ -726,6 +945,81 @@ void Combat::ForceDefeat()
     result = CombatResult::DEFEAT;
     state = CombatState::END_COMBAT;
     runningCombat = false;
+}
+
+float Combat:: GetLaneDamageMultiplier(Character* c)
+{
+    // Si el objetivo es un enemigo, no aplicamos bonos de lane (o puedes definir otros)
+    if (!IsAllied(c)) return 1.0f;
+    float reduction = 0.0f;
+
+    //----test----
+    int coversActive = 0;
+    std::string targetLane = "";
+    //------------
+
+    if (frontLane.occupant == c)
+    {
+        //----test-----
+        targetLane = "FRONT";
+        LOG("LANE LOGIC: %s is in FRONT. No cover available. Multiplier: 1.0", c->GetName().c_str());
+        //------------
+
+        return 1.0f;
+    }
+
+    if (sideLane.occupant == c)
+    {
+        //// El SIDE solo tiene reducción si el FRONT está vivo
+        //if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+        //{
+        //    reduction = 0.15f; // 15% de reducción
+        //}
+
+        targetLane = "SIDE";
+        if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+        {
+            reduction = 0.15f;
+            coversActive = 1;
+        }
+    }
+    else if (backLane.occupant == c)
+    {
+        //// El BACK comprueba cuántos tiene delante vivos
+        //if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+        //{
+        //    reduction += 0.15f;
+        //}
+        //if (sideLane.occupant != nullptr && sideLane.occupant->GetIsAlive())
+        //{
+        //    reduction += 0.15f;
+        //}
+
+        targetLane = "BACK";
+        if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+        {
+            reduction += 0.15f;
+            coversActive++;
+        }
+        if (sideLane.occupant != nullptr && sideLane.occupant->GetIsAlive())
+        {
+            reduction += 0.15f;
+            coversActive++;
+        }
+    }
+
+    float finalMultiplier = 1.0f - reduction;
+
+    //------test------
+    LOG("LANE LOGIC: Target %s [%s] | Coberturas activas: %d | Reduccion: %.2f | Multiplicador Final: %.2f",
+        c->GetName().c_str(),
+        targetLane.c_str(),
+        coversActive,
+        reduction,
+        finalMultiplier);
+    //----------------
+
+    return finalMultiplier;
 }
 
 std::vector<Character*> Combat::GetAliveMembers(Party* party)

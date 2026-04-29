@@ -5,8 +5,14 @@
 #include "Render.h"
 #include "Log.h"
 #include "Textures.h"
+#include "Party.h"
+#include "Character.h"
+#include "DialogueScene.h"
+#include "DialogueManager.h"
+#include "Log.h"
+#include "NPC.h"
 
-ShopScene::ShopScene(Shop shop, Party* allied)
+ShopScene::ShopScene(Shop* shop, Party* allied)
     : shop(shop), alliedParty(allied)
 {
     sceneName = "ShopScene";
@@ -25,6 +31,14 @@ void ShopScene::Update(float dt)
 {
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
     //lógica de compra de items
+
+    //debug->add 1000 gold pressing F12
+    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_0) == KEY_DOWN)
+    {
+        LOG("Adding Gold to party");
+        alliedParty->AddGold(1000);
+        LOG("Party Gold is: %d", alliedParty->GetGold());
+    }
 }
 
 void ShopScene::PostUpdate(float dt)
@@ -61,6 +75,92 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     case BACK_BUTTON_ID:
         Engine::GetInstance().scene->PopScene();
         break;
+    case OPEN_SHOP_BUTTON:
+    {
+        NPC* npc = shop->GetOwner();
+        if (npc == nullptr)
+        {
+            LOG("Hostel: NPC es nullptr");
+            break;
+        }
+        else {
+            LOG("Hostel: NPC correcto");
+        }
+
+        LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
+        Engine::GetInstance().scene->PushScene(
+            new DialogueScene(npc->GetDialogueId(),
+                [this]()
+                {
+                    std::string action = DialogueManager::GetLastChoiceTag();
+
+                    if (action == "buy")
+                    {
+                        LOG("SHOP: buy");
+                        shop->GenerateItems(Faction::BIRD);
+
+                        state = ShopState::SHOW_ITEMS;
+
+                        CreateItemButtons();
+                    }
+                }
+            )
+        );
+        break;
+    }
+    case 100:
+    case 101:
+    case 102:
+    {
+        int index = uiElement->id - ITEMS_AVAILABLE_BASE;
+
+        Item* item = shop->GetCurrentItems()[index];
+
+        if (item->IsPurchased())
+        {
+            LOG("Item ya comprado");
+            return true;
+        }
+
+        if (alliedParty->GetGold() <= item->GetPrice())
+        {
+            LOG("No tienes suficiente oro");
+            return true;
+        }
+
+        selectedItem = item;
+
+        state = ShopState::SELECT_CHARACTER;
+
+        CreateCharacterSelectionUI();
+        break;
+    }
+    case 200:
+    case 201:
+    case 202:
+    {
+        int index = uiElement->id - CHARACTERS_AVAILABLE_BASE;
+        Character* character = alliedParty->GetMembers()[index];
+
+        if (character->EquipItem(selectedItem))
+        {
+            alliedParty->SpendGold(selectedItem->GetPrice());
+
+            selectedItem->SetPurchased(true);
+
+            LOG("Item equipado");
+        }
+        else
+        {
+            LOG("No hay espacio");
+        }
+
+        state = ShopState::SHOW_ITEMS;
+
+        // borrar personajes pero mantener items
+        Engine::GetInstance().uiManager->RemoveElementsByRange(CHARACTERS_AVAILABLE_BASE, CHARACTERS_AVAILABLE_BASE + 99);
+        break;
+    }
     default:
         break;
     }
@@ -83,4 +183,58 @@ void ShopScene::CreateUI()
         UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
     );
+
+    // BOTÓN ABRIR TIENDA
+    SDL_Rect openBtn = { 500, 600, 309, 186 };
+
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, OPEN_SHOP_BUTTON, "OPEN SHOP", openBtn,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, shop->GetOwner()->GetTexture(), 0, openBtn.w, openBtn.h
+    );
+}
+
+void ShopScene::CreateItemButtons()
+{
+    // borrar items y characters anteriores
+    Engine::GetInstance().uiManager->RemoveElementsByRange(ITEMS_AVAILABLE_BASE, CHARACTERS_AVAILABLE_BASE + 99);
+
+    int startX = 400;
+
+    for (int i = 0; i < shop->GetCurrentItems().size(); i++)
+    {
+        SDL_Rect rect = { startX + i * 150, 300, 72, 72 };
+
+        std::string label = shop->GetCurrentItems()[i]->GetName();
+
+        if (shop->GetCurrentItems()[i]->IsPurchased())
+        {
+            label += " (SOLD)";
+        }
+
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON,
+            ITEMS_AVAILABLE_BASE + i,
+            label.c_str(),
+            rect,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, rect.w, rect.h
+        );
+    }
+}
+
+void ShopScene::CreateCharacterSelectionUI()
+{
+    Engine::GetInstance().uiManager->RemoveElementsByRange(CHARACTERS_AVAILABLE_BASE, CHARACTERS_AVAILABLE_BASE + 99);
+
+    for (int i = 0; i < alliedParty->GetMemberCount(); i++)
+    {
+        SDL_Rect rect = { 400, 400 + i * 80, 72, 72 };
+
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON,
+            CHARACTERS_AVAILABLE_BASE + i,
+            alliedParty->GetMembers()[i]->GetName().c_str(),
+            rect,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, rect.w, rect.h
+        );
+    }
 }

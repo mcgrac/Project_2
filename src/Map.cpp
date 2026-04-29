@@ -5,7 +5,6 @@
 #include "Map.h"
 #include "Log.h"
 #include "Physics.h"
-#include "EntityManager.h"
 
 #include <math.h>
 
@@ -332,7 +331,7 @@ MapLayer* Map::GetNavigationLayer() {
                 if (entityType == "Player") {
                     // Create Player entity
                     if (player == nullptr) {
-                        player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
+                        //player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
                         player->position = Vector2D(x, y);
                         player->Start(); //L17: Importan to call Start to initialize teh Entity
                     }

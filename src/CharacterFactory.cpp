@@ -1,8 +1,6 @@
 ﻿#include "CharacterFactory.h"
 #include "Character.h"
 #include "Markus.h"
-#include "CharacterFactory.h"
-#include "Character.h"
 #include "SkillRegistry.h"
 #include "UpgradeTree.h"
 #include "UpgradeTier.h"
@@ -63,13 +61,21 @@ Character* CharacterFactory::Create(const std::string& name)
     Character* character = new Character(
         Vector2D(0.0f, 0.0f),
         name,
-        health, maxHealth,
+        health, 
+        maxHealth,
         0,              // experience
         0,              // initiative
         maxInitiative,
-        power,
-        durability, maxDurability,
-        speed,
+        power,          //base power
+        0,              //bonus power
+        0,              //total power
+        0,              //total durabilty
+        durability,     //base durability
+        0,              //bonus durability
+        maxDurability,
+        speed,          //base speed
+        0,              //bonus speed
+        0,              //total speed
         lifesteal,
         healingPower,
         poisonPower,
@@ -161,9 +167,9 @@ std::function<void(Character&)> CharacterFactory::ParseUpgradeEffect(const std::
     std::string stat = effect.substr(0, plusPos);
     int value = std::stoi(effect.substr(plusPos + 1));
 
-    if (stat == "power") return [value](Character& c) { c.ModifyPower(value); };
+    if (stat == "power") return [value](Character& c) { c.ModifyBasePower(value); };
     if (stat == "maxHealth") return [value](Character& c) { c.ModifyMaxHealth(value); };
-    if (stat == "speed") return [value](Character& c) { c.ModifySpeed(value); };
+    if (stat == "speed") return [value](Character& c) { c.ModifyBaseSpeed(value); };
     if (stat == "healingPower") return [value](Character& c) { c.ModifyHealingPower(value); };
 
     LOG("CharacterFactory: stat de upgrade no reconocida: '%s'", stat.c_str());

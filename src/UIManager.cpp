@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "Textures.h"
 #include "Audio.h"
+#include "Log.h"
 
 UIManager::UIManager() :Module()
 {
@@ -37,8 +38,19 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(
 
 	// Created GuiControls are add it to the list of controls
 	UIElementsList.push_back(uiElement);
-
+	if (uiElement == nullptr) { LOG("Button creation failed"); return nullptr; }
 	return uiElement;
+}
+
+void UIManager::RemoveElementsByRange(int minID, int maxID)
+{
+	for (auto& ui : UIElementsList)
+	{
+		if (ui->id >= minID && ui->id <= maxID)
+		{
+			ui->pendingToDelete = true;
+		}
+	}
 }
 
 bool UIManager::Update(float dt)

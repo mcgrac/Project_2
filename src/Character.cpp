@@ -3,18 +3,21 @@
 #include "Render.h"
 #include "Textures.h"
 #include "Log.h"
+#include "Item.h"
 
 Character::Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
-	int _maxInitiative, int _power, int _durability, int _maxDurability, int _speed,
-	int _lifesteal, float _healingPower, float _poisonPower, float _firePower, int _poisonedStatMod, int _burnedStatMod,
+	int _maxInitiative, int _basePower, int _bonusPower, int _totalPower, int _totalDurability, int _baseDurability, int _bonusDurability, int _maxDurability, int _baseSpeed,
+	int _bonusSpeed, int _totalSpeed, int _lifesteal, float _healingPower, float _poisonPower, float _firePower, int _poisonedStatMod, int _burnedStatMod,
 	int _level, int _maxHealthLevelScaling, int _speedLevelScaling, int _powerLevelScaling) :
 	position(_position), name(_name), health(_health), maxHealth(_maxHealth), experience(_experience), initiative(_initiative), maxInitiative(_maxInitiative),
-	power(_power), durability(_durability), maxDurability(_maxDurability), speed(_speed), lifesteal(_lifesteal), healingPower(_healingPower),
-	poisonPower(_poisonPower), firePower(_firePower),
+	basePower(_basePower), bonusPower(_bonusPower), totalPower(_totalPower),totalDurability(_totalDurability), baseDurability(_baseDurability), bonusDurability(_bonusDurability), 
+	maxDurability(_maxDurability), baseSpeed(_baseSpeed), bonusSpeed(_bonusSpeed), totalSpeed(_totalSpeed), lifesteal(_lifesteal), healingPower(_healingPower), poisonPower(_poisonPower), firePower(_firePower),
 	isPoisoned(false), isBurned(false), poisonStatMod(_poisonedStatMod), burnedStatMod(_burnedStatMod), level(_level), 
 	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true)
 {
-	//add loading of the spritesheet
+	SetTotalPower();
+	SetTotalSpeed();
+	SetTotalDurability();
 
 	//initialize upgrade tree
 	upgradeTree = new UpgradeTree();
@@ -22,12 +25,40 @@ Character::Character(Vector2D _position, std::string _name, int _health, int _ma
 
 Character::~Character()
 {
-	//add cleanup of the textures and sounds
+#if _DEBUG
+	LOG("\033[1;32m|Destructor Character: %s\033[0m", name.c_str());
+#endif // _DEBUG
+
+	Engine::GetInstance().textures->UnLoad(texture);
+
+	killedBy = nullptr;
+	poisonedBy = nullptr;
+	burnedBy = nullptr;
+
+	//upgradeTree
+	delete upgradeTree;
+	upgradeTree = nullptr;
+
+	//inventory
+	for (Item* i : equippedItems) {
+		delete i;
+	}
+	equippedItems.clear();
+
 }
 
 void Character::Update(float dt)
 {
 	Draw(dt);
+
+	//check death animation
+	if (pendingToDie) {
+		anims.SetCurrent("dead");
+		if (anims.IsCurrentFinished()) {
+			isAlive = false;
+			pendingToDie = false;
+		}
+	}
 }
 
 void Character::Heal(int amount)
@@ -37,15 +68,32 @@ void Character::Heal(int amount)
 	health = std::min(maxHealth, currentHealth);
 }
 
+void Character::FullyHeal()
+{
+	int currentHealth;
+	currentHealth = maxHealth;
+	health = currentHealth;
+}
+
 void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 {
+	if (!isAlive) { return; } //dont do anything if the character is already dead
+	int scaledDamage = (int)(damageReceived * incomingDamageMultiplier);
+
+	// LOG DE COMPROBACIÓN
+	if (incomingDamageMultiplier != 1.0f) {
+		LOG("DAMAGE CALC [%s]: Base: %d | Multiplier: %.2f | Final: %d (Reduced: %d)",
+			name.c_str(), damageReceived, incomingDamageMultiplier, scaledDamage, (damageReceived - scaledDamage));
+	}
+
 	int currentHealth = health;
-	currentHealth -= std::max(0, damageReceived - durability); //avoids that damage < 0
+	currentHealth -= std::max(0, scaledDamage - totalDurability); //avoids that damage < 0
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
 	if (health <= 0) {
-		isAlive = false;
+		pendingToDie = true;
+		//isAlive = false;
 		if (attacker != nullptr) {
 			killedBy = attacker;
 		}
@@ -54,13 +102,23 @@ void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 
 void Character::ReceiveMagicalDamage(int damageReceived, Character* attacker)
 {
+	if (!isAlive) { return; } //dont do anything if the character is already dead
+	int scaledDamage = (int)(damageReceived * incomingDamageMultiplier);
+
+	// LOG DE COMPROBACIÓN
+	if (incomingDamageMultiplier != 1.0f) {
+		LOG("DAMAGE CALC [%s]: Base: %d | Multiplier: %.2f | Final: %d (Reduced: %d)",
+			name.c_str(), damageReceived, incomingDamageMultiplier, scaledDamage, (damageReceived - scaledDamage));
+	}
+
 	int currentHealth = health;
-	currentHealth -= damageReceived;
+	currentHealth -= scaledDamage;
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
 	if (health <= 0) {
-		isAlive = false;
+		pendingToDie = true;
+		//isAlive = false;
 		if (attacker != nullptr) {
 			killedBy = attacker;
 		}
@@ -84,8 +142,8 @@ void Character::LevelUp()
 	//update stats
 	maxHealth += maxHealthLevelScaling;
 	health += maxHealthLevelScaling;
-	power += powerLevelScaling;
-	speed += speedLevelScaling;
+	basePower += powerLevelScaling;
+	baseSpeed += speedLevelScaling;
 }
 
 void Character::Draw(float dt) 
@@ -129,7 +187,13 @@ void Character::UseSkill(int index, Character* target)
 
 void Character::ModifyDurability(int amount)
 {
-	durability = std::max(0, std::min(maxDurability, durability + amount));
+	totalDurability = std::max(0, std::min(maxDurability, totalDurability + amount));
+}
+
+void Character::AddInitiative(int amount)
+{
+	initiative += amount;
+	if (initiative < 0) { initiative = 0; }
 }
 
 void Character::SetBurned(bool state, int damage, Character* attacker)
@@ -216,11 +280,43 @@ void Character::PlayAnimation(const std::string& name)
 	}
 }
 
+void Character::ClearBonusStats()
+{
+	bonusDurability = 0;
+	bonusPower = 0;
+	bonusSpeed = 0;
+}
+
+bool Character::EquipItem(Item* item)
+{
+	if (equippedItems.size() >= MAX_EQUIPPED_ITEMS) { return false; }
+
+	equippedItems.push_back(item);
+
+	item->ApplyEffect(this);
+#if _DEBUG
+	DebugInventory();
+#endif // _DEBUG
+	return true;
+}
+
+void Character::DebugInventory()
+{
+	LOG("\033[1;32m-----------INVENTORY OF %s --------------\033[0m", name.c_str());
+	for (auto& item : equippedItems) {
+		LOG("\033[1;33mItem: %s equipped\033[0m", item->GetName().c_str());
+		for (auto& stat : item->GetItemStats()) {
+			LOG("\033[1;33mStat: %d Value: %d\033[0m", stat.type, stat.value);
+		}
+	}
+	LOG("------------------------------------------");
+}
+
 
 void Character::PrintDebugInfo(){
 	LOG("========================================");
-	LOG("CHARACTER: %s | Level %d", name.c_str(), level);
-	LOG("  HP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, power, speed, durability);
+	LOG("\033[1;32mCHARACTER: %s | Level %d\033[0m", name.c_str(), level);
+	LOG("  \033[1;33mHP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, totalPower, totalSpeed, totalDurability);
 	LOG("  Initiative: %d/%d  Lifesteal: %d", initiative, maxInitiative, lifesteal);
 	LOG("  HealingPower: %.2f  PoisonPower: %.2f  FirePower: %.2f", healingPower, poisonPower, firePower);
 
@@ -239,7 +335,7 @@ void Character::PrintDebugInfo(){
 		}
 	}
 
-	LOG("--- UPGRADE TREE ---");
+	LOG("--- UPGRADE TREE ---\033[0m");
 	if (upgradeTree == nullptr)
 	{
 		LOG("  [NULL] No upgrade tree.");

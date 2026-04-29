@@ -7,7 +7,6 @@
 #include "Scene.h"
 #include "Log.h"
 #include "Entity.h"
-#include "EntityManager.h"
 #include "Player.h"
 #include "Map.h"
 #include "Item.h"

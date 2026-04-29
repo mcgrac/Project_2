@@ -35,7 +35,7 @@ public:
     // ── Inventario / Recursos (persisten entre combates) ─────────────────
     void AddGold(int amount);
     void SpendGold(int amount);             // no baja de 0
-    int GetGold() const;
+    inline int GetGold() const { return gold; }
 
     void AddItem(Item* item);
     void RemoveItem(Item* item);
