@@ -49,6 +49,26 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
 
             islandFaction = IslandFaction::REPTILES;
         }
+        else if (faction == "bird") {
+
+            islandFaction = IslandFaction::BIRD;
+        }
+        else if (faction == "siren") {
+
+            islandFaction = IslandFaction::SIRENS;
+        }
+        else if (faction == "tribal") {
+
+            islandFaction = IslandFaction::TRIBAL;
+        }
+        else if (faction == "jellyfish") {
+
+            islandFaction = IslandFaction::JELLYFISH;
+        }
+        else if (faction == "fish") {
+
+            islandFaction = IslandFaction::FISH;
+        }
         else {
 
             islandFaction = IslandFaction::UNDEFINED;
@@ -132,31 +152,77 @@ void WorldMap::RenderWorld(float dt)
 {
 #pragma region FINAL
     // 1. Dibujar las conexiones (Líneas) PRIMERO para que queden debajo
+    //for (auto const& pair : islands)
+    //{
+    //    Island* island = pair.second;
+    //    const std::vector<int>& nextIds = GetNextIds(pair.first);
+
+    //    for (int nextId : nextIds)
+    //    {
+    //        if (islands.find(nextId) != islands.end())
+    //        {
+    //            Island* nextIsland = islands.at(nextId);
+
+    //            // Calculamos centros dinámicamente
+    //            int startX = (int)(island->GetX() + (island->GetWidth() / 2.0f));
+    //            int startY = (int)(island->GetY() + (island->GetHeight() / 2.0f));
+
+    //            int endX = (int)(nextIsland->GetX() + (nextIsland->GetWidth() / 2.0f));
+    //            int endY = (int)(nextIsland->GetY() + (nextIsland->GetHeight() / 2.0f));
+
+    //            // Dibujamos la línea desde el centro del botón actual al siguiente
+    //            Engine::GetInstance().render->DrawLine(startX, startY, endX, endY, 200, 200, 200, 255);
+    //        }
+    //    }
+    //}
+
+    //-------UNCOMENT for dynamic islands------------
+    // 2. Dibujar sprites de islas (debajo del botón)
+    //for (auto const& pair : islands)
+    //{
+    //    Island* island = pair.second;
+
+    //    int x = (int)island->GetX();
+    //    int y = (int)island->GetY();
+
+    //    int offsetY = 40; // ajusta según tu arte
+
+    //    if (island->GetSprite() != nullptr)
+    //    {
+    //        Engine::GetInstance().render->DrawTexture(
+    //            island->GetSprite(),
+    //            x,
+    //            y + offsetY
+    //        );
+    //    }
+    //}
+    //-------------------------------------------------
+    
+    // 3. Dibujar icono de hostil (calavera)
     for (auto const& pair : islands)
     {
         Island* island = pair.second;
-        const std::vector<int>& nextIds = GetNextIds(pair.first);
 
-        for (int nextId : nextIds)
+        if (island->GetType() == IslandType::HOSTILE)
         {
-            if (islands.find(nextId) != islands.end())
+            int x = (int)island->GetX();
+            int y = (int)island->GetY();
+
+            int offsetX = -10;
+            int offsetY = -10;
+
+            if (island->GetSkullSprite() != nullptr)
             {
-                Island* nextIsland = islands.at(nextId);
-
-                // Calculamos centros dinámicamente
-                int startX = (int)(island->GetX() + (island->GetWidth() / 2.0f));
-                int startY = (int)(island->GetY() + (island->GetHeight() / 2.0f));
-
-                int endX = (int)(nextIsland->GetX() + (nextIsland->GetWidth() / 2.0f));
-                int endY = (int)(nextIsland->GetY() + (nextIsland->GetHeight() / 2.0f));
-
-                // Dibujamos la línea desde el centro del botón actual al siguiente
-                Engine::GetInstance().render->DrawLine(startX, startY, endX, endY, 200, 200, 200, 255);
+                Engine::GetInstance().render->DrawTexture(
+                    island->GetSkullSprite(),
+                    x + offsetX,
+                    y + offsetY
+                );
             }
         }
     }
 
-    // 2. Dibujar un indicador de "Jugador Actual" (Opcional)
+    // 4. Dibujar un indicador de "Jugador Actual" (Opcional)
     // Ya que los botones ya se dibujan por el UIManager, aquí solo dibujamos 
     // efectos visuales extra, como un recuadro de selección.
     if (islands.count(currentIslandId))

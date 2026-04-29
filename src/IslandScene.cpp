@@ -79,7 +79,30 @@ void IslandScene::LoadTextures()
 {
     enterButton = Engine::GetInstance().textures->Load("Assets/Textures/BeforeIslandScene/EnterButton.png");
     pillageButon = Engine::GetInstance().textures->Load("Assets/Textures/BeforeIslandScene/PillageButton.png");
-    background = Engine::GetInstance().textures->Load("Assets/Textures/BeforeIslandScene/HumanBackground.png");
+
+    //-----island background--------
+    std::string islandFaction;
+    switch (island->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:
+        islandFaction = "human";
+        break;
+    case IslandFaction::BIRD:
+        islandFaction = "bird";
+        break;
+    case IslandFaction::SIRENS:
+        islandFaction = "siren";
+        break;
+    case IslandFaction::REPTILES:
+        islandFaction = "reptile";
+        break;
+    default:
+        break;
+    }
+    std::string path = "Assets/Textures/BeforeIslandScene/" + islandFaction + ".png";
+    background = Engine::GetInstance().textures->Load(path.c_str());
+    //-------------------------------
+
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
 }
 

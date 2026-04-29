@@ -15,7 +15,6 @@
 #include "SaveLoad.h"
 #include "DialogueManager.h"
 #include "DialogueScene.h"
-#include "Ship.h"
 #include <queue>
 #include "Window.h"
 #include "PartyScene.h"
@@ -25,7 +24,13 @@ static const int ISLAND_BUTTON_ID_OFFSET = 100;
 
 InGameScene::InGameScene(std::vector<std::string> _characterNames, bool _isContinue)
     : characterNames(_characterNames)
-    , alliedParty(nullptr), background(nullptr), isContinue(_isContinue), ship(nullptr)
+    , alliedParty(nullptr)
+    , background(nullptr)
+    , isContinue(_isContinue)
+    , ship(nullptr)
+    , skullTex(nullptr)
+    , teamButton(nullptr)
+    , spritesheet(nullptr)
 {
     sceneName = "InGameScene";
 }
@@ -71,6 +76,27 @@ void InGameScene::Load()
     //load world
     worldMap.LoadWorld("Assets/Maps/world.xml");
 
+    //connect visuals 
+    
+    const auto& islands = worldMap.GetAllIslands();
+    for (auto& pair : islands)
+    {
+        Island* island = pair.second;
+
+        // Sprite según facción
+        if (island->GetIslandFaction() == IslandFaction::HUMANS)
+        {
+            island->SetSprite(islandHumanTex);
+        }
+        else if (island->GetIslandFaction() == IslandFaction::REPTILES)
+        {
+            island->SetSprite(islandReptileTex);
+        }
+
+        // Todas tienen acceso a la calavera
+        island->SetSkullSprite(skullTex);
+    }
+
     //callback when the player arrives to an island->world map notify ingameScene
     worldMap.arrivalIsland = [this](Island* island) {
         Engine::GetInstance().scene->PushScene(new IslandScene(island, &worldMap, alliedParty, ship));
@@ -89,6 +115,12 @@ void InGameScene::Load()
 
     //ship
     ship = new Ship();
+
+    //set ship ay island 0
+    int island0CenterX = 224;
+    int islandOffsetX = 125;
+    int island0CenterY = 189;
+    ship->SetPosition(Vector2D((float)(island0CenterX + islandOffsetX), (float)(island0CenterY)));
 
     CreateUI();
 }
@@ -122,7 +154,6 @@ void InGameScene::Update(float dt)
     }
 
     worldMap.Update(dt);
-    worldMap.PostUpdate(dt);
 
     //render ship
     ship->Update(dt);
@@ -135,12 +166,16 @@ void InGameScene::Update(float dt)
 
 void InGameScene::PostUpdate(float dt)
 {
-
+    worldMap.PostUpdate(dt);
 }
 
 void InGameScene::Unload()
 {
     LOG("InGameScene::Unload LLAMADO — alliedParty: %p", alliedParty);
+
+    Engine::GetInstance().textures->UnLoad(background);
+    Engine::GetInstance().textures->UnLoad(spritesheet);
+    Engine::GetInstance().textures->UnLoad(teamButton);
 
     //unload worldMap
     worldMap.UnloadWorld();
@@ -155,12 +190,19 @@ void InGameScene::Unload()
 
 void InGameScene::LoadTextures(){
     //load background
-    background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/IslandsScreen.png");
-    spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/UI/StartButtons.png");
+    background = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/WorldMap.png");
+    spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/EmptyIslandLabel.png");
+    teamButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/TeamButton.png");
+
+    islandHumanTex = Engine::GetInstance().textures->Load("Assets/Textures/Islands/island_human.png");
+    islandReptileTex = Engine::GetInstance().textures->Load("Assets/Textures/Islands/island_reptile.png");
+    skullTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/EnemySymbol.png");
 }
 
 bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    if (ship->IsMoving()) return true;
+
     switch (uiElement->id)
     {
     // Add buttons in game
@@ -173,11 +215,74 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
         break;
     default:
+      
         //islands
         //if id is 100+
-        if (uiElement->id >= ISLAND_BUTTON_ID_OFFSET) {
+        //if (uiElement->id >= ISLAND_BUTTON_ID_OFFSET) {
+        //    int islandId = uiElement->id - ISLAND_BUTTON_ID_OFFSET;
+        //    worldMap.TravelTo(islandId);
+        //}
+
+        if (uiElement->id >= ISLAND_BUTTON_ID_OFFSET)
+        {
             int islandId = uiElement->id - ISLAND_BUTTON_ID_OFFSET;
-            worldMap.TravelTo(islandId);
+
+            if (!worldMap.IsReachable(islandId))
+            {
+                break;
+            }
+
+            // --- Determine which movement the ship must perform ---
+            // We need the BFS row/colCount data that CreateIslandButtons already computed.
+            // Re-derive it here with the same logic so we can read centerY values.
+
+            const auto& treeRef = worldMap.GetTree();
+            std::unordered_map<int, int> islandColumn;
+            std::unordered_map<int, int> islandRow;
+            std::unordered_map<int, int> colCount;
+
+            std::queue<int> bfsQueue;
+            bfsQueue.push(0);
+            islandColumn[0] = 0;
+
+            while (!bfsQueue.empty())
+            {
+                int cur = bfsQueue.front();
+                bfsQueue.pop();
+
+                int col = islandColumn[cur];
+                islandRow[cur] = colCount[col];
+                colCount[col]++;
+
+                auto it = treeRef.find(cur);
+                if (it != treeRef.end())
+                {
+                    for (int childId : it->second)
+                    {
+                        if (islandColumn.find(childId) == islandColumn.end())
+                        {
+                            islandColumn[childId] = col + 1;
+                            bfsQueue.push(childId);
+                        }
+                    }
+                }
+            }
+
+            int fromId = worldMap.GetCurrentIslandId();
+            int fromCY = GetIslandCenterY(islandRow[fromId], colCount[islandColumn[fromId]]);
+            int toCY = GetIslandCenterY(islandRow[islandId], colCount[islandColumn[islandId]]);
+            int destCol = islandColumn[islandId];
+
+            ShipMovement movement = DetermineShipMovement(fromCY, toCY);
+
+            ship->MoveToIsland(movement, [this, islandId, toCY, destCol]()
+                {
+                    // Reposition ship to the right offset of the destination island
+                    // so the next departure starts correctly
+                    int destCenterX = 224.0f + 448.0f * (float)destCol;
+                    ship->SetPosition(Vector2D(destCenterX + 125.0f, (float)toCY));
+                    worldMap.TravelTo(islandId);
+                });
         }
         break;
     }
@@ -216,9 +321,8 @@ void InGameScene::RestoreFromSave(const SaveData& data)
 
 void InGameScene::CreateIslandButtons()
 {
-    static const int COL_SPACING = 200;
-    static const int BUTTON_W = 221;
-    static const int BUTTON_H = 85;
+    static const int BUTTON_W = 176;
+    static const int BUTTON_H = 68;
 
     int screenW = 0;
     int screenH = 0;
@@ -280,13 +384,37 @@ void InGameScene::CreateIslandButtons()
         int row = islandRow[islandId];
         int islandsInCol = colCount[col];
 
-        // Horizontal center of this column
-        int centerX = col * COL_SPACING + COL_SPACING / 2;
+        //--------Dynamic drawing------------
+        //// Horizontal center of this column
+        //int centerX = col * COL_SPACING + COL_SPACING / 2;
 
-        // Distribute vertically: divide the screen height into (islandsInCol + 1) slots
-        int slotH = screenH / (islandsInCol + 1);
-        int centerY = (row + 1) * slotH;
+        //// Distribute vertically: divide the screen height into (islandsInCol + 1) slots
+        //int slotH = screenH / (islandsInCol + 1);
+        //int centerY = (row + 1) * slotH;
 
+        //int btnX = centerX - BUTTON_W / 2;
+        //int btnY = centerY - BUTTON_H / 2;
+        //------------------------------------
+        
+        // --- POSICIÓN FIJA BASADA EN EL MAPA ---
+        // X centrado en columna
+        int centerX = 224 + (448 * col);
+
+        // Y según número de islas en la columna
+        int centerY = 0;
+        if (islandsInCol == 1)
+        {
+            centerY = 189;
+        }
+        else if (islandsInCol == 2)
+        {
+            if (row == 0)
+                centerY = 85;
+            else
+                centerY = 273;
+        }
+
+        // Convertir a top-left del botón
         int btnX = centerX - BUTTON_W / 2;
         int btnY = centerY - BUTTON_H / 2;
 
@@ -306,6 +434,26 @@ void InGameScene::CreateIslandButtons()
         {
             label = "Reptiles";
         }
+        else if (faction == IslandFaction::BIRD)
+        {
+            label = "Bird";
+        }
+        else if (faction == IslandFaction::SIRENS)
+        {
+            label = "Sirens";
+        }
+        else if (faction == IslandFaction::JELLYFISH)
+        {
+            label = "Jellyfish";
+        }
+        else if (faction == IslandFaction::FISH)
+        {
+            label = "Fish";
+        }
+        else if (faction == IslandFaction::TRIBAL)
+        {
+            label = "Tribal";
+        }
         else
         {
             label = island->GetName();
@@ -322,6 +470,44 @@ void InGameScene::CreateIslandButtons()
             islandId, label.c_str(), col, row, btnX, btnY);
     }
 
+}
+
+int InGameScene::GetIslandCenterY(int row, int islandsInCol)
+{
+    if (islandsInCol == 1)
+    {
+        return 189;
+    }
+    // islandsInCol == 2
+    if (row == 0)
+    {
+        return 85;
+    }
+    return 273;
+}
+
+ShipMovement InGameScene::DetermineShipMovement(int fromCenterY, int toCenterY)
+{
+    int delta = toCenterY - fromCenterY;
+
+    if (delta == 0)
+    {
+        return ShipMovement::STRAIGHT;
+    }
+    else if (delta < 0 && delta > -150)
+    {
+        return ShipMovement::UP;
+    }
+    else if (delta > 0 && delta < 150)
+    {
+        return ShipMovement::DOWN;
+    }
+    else if (delta <= -150)
+    {
+        return ShipMovement::UP2;
+    }
+    // delta >= 150
+    return ShipMovement::DOWN2;
 }
 
 void InGameScene::OnResume()
@@ -344,10 +530,10 @@ void InGameScene::CreateUI()
     );
 
     //Botón de party
-    SDL_Rect partyBtnBounds = { 20, 400, 154, 60 };
+    SDL_Rect partyBtnBounds = { 20, 600, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 2, "Party", partyBtnBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0, partyBtnBounds.w, partyBtnBounds.h
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, teamButton, 0, partyBtnBounds.w, partyBtnBounds.h
     );
 
     //island buttons

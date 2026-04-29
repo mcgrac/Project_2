@@ -48,3 +48,14 @@ void Skill::Use(Character* caster, Character* target)
     target->SetTotalSpeed();
     LOG("AFTER USE SKILL TARGET|%s| totalPower: %d, totalSpeed: %d, totalDurability:%d", target->GetName().c_str(), target->GetTotalPower(), target->GetTotalSpeed(), target->GetTotalDurability());
 }
+
+std::string Skill::GetFullDescription()
+{
+    std::string result = skillDescription;
+
+    for (const auto& e : effects) {
+        result += "\n- " + e.description;
+    }
+
+    return result;
+}

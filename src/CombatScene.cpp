@@ -7,6 +7,7 @@
 #include "Log.h"
 #include "Textures.h"
 #include "Render.h"
+#include <sstream>
 
 CombatScene::CombatScene(Party* _allied, int _shipLevel)
     : alliedParty(_allied)
@@ -95,8 +96,13 @@ void CombatScene::Update(float dt)
         //}
     }
 
-    // Gestionar UI si es turno del jugador
+    //------Gestionar UI si es turno del jugador--------
     UpdateCombatUI();
+
+    //-------Hovered Skill----------------
+    UpdateSkillHover();
+    DrawSkillTooltip();
+
     ShowCurrentHP();
 
     if (!combat->GetWaitingForInput())
@@ -306,6 +312,273 @@ bool CombatScene::IsLaneTaken(LaneType laneType) const
 }
 #pragma endregion
 
+
+#pragma region SKILL_HOVER
+void CombatScene::UpdateSkillHover()
+{
+    if (uiState != CombatUIState::SELECTING_SKILL) {
+        hoveredSkillIdx = -1;
+        return;
+    }
+
+    int mouseX, mouseY;
+
+    Vector2D pos = Engine::GetInstance().input->GetMousePosition();
+
+    mouseX = pos.getX();
+    mouseY = pos.getY();
+
+    hoveredSkillIdx = -1;
+
+    for (auto e : Engine::GetInstance().uiManager->UIElementsList)
+    {
+        if (e->id >= 1 && e->id <= 5) // skills
+        {
+            SDL_Rect r = e->bounds;
+
+            if (mouseX >= r.x && mouseX <= r.x + r.w &&
+                mouseY >= r.y && mouseY <= r.y + r.h)
+            {
+                hoveredSkillIdx = e->id - 1;
+                break;
+            }
+        }
+    }
+}
+void CombatScene::DrawSkillTooltip()
+{
+    //if (hoveredSkillIdx == -1) return;
+
+    //Character* actor = combat->GetCurrentActor();
+    //if (!actor) return;
+
+    //auto& skills = actor->GetSkills();
+
+    //if (hoveredSkillIdx >= skills.size()) return;
+
+    //std::string text = skills[hoveredSkillIdx].GetFullDescription();
+
+    //// fondo opcional
+    //SDL_Rect bg = { 600, 400, 300, 150 };
+    //Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200);
+
+    //// texto
+    //Engine::GetInstance().render->DrawText(
+    //    text.c_str(),
+    //    610,
+    //    410,
+    //    100,
+    //    80,
+    //    { 255,255,255,255 }
+    //);
+
+    if (hoveredSkillIdx == -1) return;
+
+    Character* actor = combat->GetCurrentActor();
+    if (!actor) return;
+
+    auto& skills = actor->GetSkills();
+    if (hoveredSkillIdx >= (int)skills.size()) return;
+
+    std::string text = skills[hoveredSkillIdx].GetFullDescription();
+
+    int charWidth = 8;
+    int lineHeight = 20;
+    int padding = 10;
+
+    int maxCharsPerLine = 35;
+    auto lines = WrapText(text, maxCharsPerLine);
+
+    // Calcular ancho del box según la línea más larga
+    int maxLineLen = 0;
+    for (const auto& line : lines)
+    {
+        if ((int)line.size() > maxLineLen)
+        {
+            maxLineLen = (int)line.size();
+        }
+    }
+
+    int boxWidth = maxLineLen * charWidth + padding * 2;
+    int boxHeight = (int)lines.size() * lineHeight + padding * 2;
+
+    int startX = 600;
+    int startY = 400;
+
+    SDL_Rect bg = { startX, startY, boxWidth, boxHeight };
+
+    // Fondo
+    Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200, true, false);
+
+    // Borde
+    Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
+
+    // Texto línea por línea
+    int yOffset = 0;
+    for (const auto& line : lines)
+    {
+        DrawColoredLine(line, startX + padding, startY + padding + yOffset);
+        yOffset += lineHeight;
+    }
+}
+
+std::vector<std::string> CombatScene :: WrapText(const std::string& text, int maxCharsPerLine)
+{
+    std::vector<std::string> lines;
+    std::stringstream ss(text);
+    std::string word;
+    std::string currentLine;
+
+    while (ss >> word)
+    {
+        if (currentLine.length() + word.length() + 1 > maxCharsPerLine)
+        {
+            lines.push_back(currentLine);
+            currentLine = word;
+        }
+        else
+        {
+            if (!currentLine.empty()) currentLine += " ";
+            currentLine += word;
+        }
+    }
+
+    if (!currentLine.empty())
+    {
+        lines.push_back(currentLine);
+    }
+
+    return lines;
+}
+
+void CombatScene::DrawColoredLine(const std::string& line, int x, int y)
+{
+    //std::stringstream ss(line);
+    //std::string word;
+
+    //int offsetX = 0;
+
+    //while (ss >> word)
+    //{
+    //    SDL_Color color = { 255, 255, 255, 255 };
+
+    //    if (word.find("Heal") != std::string::npos)
+    //    {
+    //        color = { 0, 255, 0, 255 };
+    //    }
+
+    //    if (word.find("Damage") != std::string::npos)
+    //    {
+    //        color = { 255, 0, 0, 255 };
+    //    }
+
+    //    // dibujar palabra
+    //    Engine::GetInstance().render->DrawText(
+    //        word.c_str(),
+    //        x + offsetX,
+    //        y,
+    //        80,   // ancho
+    //        20,
+    //        color
+    //    );
+
+    //    offsetX += 60; // espacio horizontal
+    //}
+
+    // Determinar color de toda la línea según palabra clave
+    //SDL_Color color = { 255, 255, 255, 255 };
+
+    //if (line.find("Heal") != std::string::npos)
+    //{
+    //    color = { 0, 255, 0, 255 };
+    //}
+    //else if (line.find("Damage") != std::string::npos)
+    //{
+    //    color = { 255, 80, 80, 255 };
+    //}
+
+    //// Dibujar la línea completa de una vez con tamaño fijo de carácter
+    //int charWidth = 8;   // ajusta según tu fuente
+    //int charHeight = 16;
+
+    //int textW = (int)line.size() * charWidth;
+    //int textH = charHeight;
+
+    //Engine::GetInstance().render->DrawText(
+    //    line.c_str(),
+    //    x,
+    //    y,
+    //    textW,
+    //    textH,
+    //    color
+    //);
+
+    std::stringstream ss(line);
+    std::string word;
+    int offsetX = 0;
+    int charWidth = 8;
+    int charHeight = 16;
+
+    while (ss >> word)
+    {
+        SDL_Color color = { 255, 255, 255, 255 };
+
+        if (word.find("Heal") != std::string::npos)
+        {
+            color = { 0, 255, 0, 255 };
+        }
+        else if (word.find("Damage") != std::string::npos)
+        {
+            color = { 255, 80, 80, 255 };
+        }
+
+        int wordW = (int)word.size() * charWidth;
+
+        Engine::GetInstance().render->DrawText(
+            word.c_str(),
+            x + offsetX,
+            y,
+            wordW,
+            charHeight,
+            color
+        );
+
+        offsetX += wordW + charWidth; // +charWidth = espacio entre palabras
+    }
+}
+#pragma endregion
+
+//loads skills textures and buttons depending of the character attacking
+void CombatScene::CreateSkillButtons(Character* c)
+{
+    std::string name = c->GetName();
+    auto& skills = c->GetSkills();
+
+    //load skills texture depending in the character
+    std::string path = "Assets/Textures/CombatScene/" + name + "/AbilityIcons.png";
+
+    abilityIcons2 = Engine::GetInstance().textures->Load(path.c_str());
+
+    for (int i = 0; i < (int)skills.size(); ++i)
+    {
+        SDL_Rect bounds;
+        bounds.x = 20;
+        bounds.y = 200 + i * 70;
+        bounds.w = 64;
+        bounds.h = 64;
+
+        std::string label = skills[i].GetName();
+
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON,
+            i + 1, // IDs 1..5
+            label.c_str(),
+            bounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons2, 0 + i, bounds.w, bounds.h
+        );
+    }
+}
+
 //  CreateEnemyParty
 void CombatScene::CreateEnemyParty()
 {
@@ -370,29 +643,34 @@ void CombatScene::ShowSkillButtons()
     HideCombatUI();
     uiState = CombatUIState::SELECTING_SKILL;
 
+    //Unloaad the previous ability icons and load the new ones
+    Engine::GetInstance().textures->UnLoad(abilityIcons2);
+
     Character* actor = combat->GetCurrentActor();
     if (!actor) return;
 
-    auto& skills = actor->GetSkills();
+    CreateSkillButtons(actor);
 
-    for (int i = 0; i < (int)skills.size(); ++i)
-    {
-        SDL_Rect bounds;
-        bounds.x = 20;
-        bounds.y = 200 + i * 70;
-        bounds.w = 64;
-        bounds.h = 64;
+    //auto& skills = actor->GetSkills();
 
-        std::string label = skills[i].GetName();
+    //for (int i = 0; i < (int)skills.size(); ++i)
+    //{
+    //    SDL_Rect bounds;
+    //    bounds.x = 20;
+    //    bounds.y = 200 + i * 70;
+    //    bounds.w = 64;
+    //    bounds.h = 64;
 
-        Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON,
-            i + 1, // IDs 1..5
-            label.c_str(),
-            bounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
-        );
-    }
+    //    std::string label = skills[i].GetName();
+
+    //    Engine::GetInstance().uiManager->CreateUIElement(
+    //        UIElementType::BUTTON,
+    //        i + 1, // IDs 1..5
+    //        label.c_str(),
+    //        bounds,
+    //        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
+    //    );
+    //}
 }
 
 void CombatScene::ShowTargetPanel()

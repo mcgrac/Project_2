@@ -5,12 +5,10 @@
 #include <vector>
 #include <string>
 #include "SaveLoad.h"
-
-
+#include "Ship.h"
 
 struct SDL_Texture;
 class IslandScene;
-class Ship;
 
 class InGameScene : public BaseScene
 {
@@ -45,6 +43,14 @@ private:
     //textures
     SDL_Texture* background;
     SDL_Texture* spritesheet;
+    SDL_Texture* teamButton;
+
+    // Island sprites — drawn below each island button
+    SDL_Texture* islandHumanTex;
+    SDL_Texture* islandReptileTex;
+
+    // Skull icon — drawn on hostile islands
+    SDL_Texture* skullTex;
 
     bool isContinue;
     void RestoreFromSave(const SaveData& data);
@@ -53,4 +59,7 @@ private:
 
     //ship
     Ship* ship;
+
+    static int GetIslandCenterY(int row, int islandsInCol);
+    static ShipMovement DetermineShipMovement(int fromCenterY, int toCenterY);
 };

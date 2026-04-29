@@ -14,6 +14,11 @@ enum class IslandType {
 enum class IslandFaction {
     HUMANS,
     REPTILES,
+    SIRENS,
+    JELLYFISH,
+    TRIBAL,
+    BIRD,
+    FISH,
     UNDEFINED
 };
 
@@ -40,11 +45,17 @@ public:
     inline Shop* GetShop() const { return shop; }
     inline Dockyard* GetDockyard() const { return dockyard; }
     inline Hostel* GetHostel() const { return hostel; }
+
+    SDL_Texture* GetSprite() const { return sprite; }
+    SDL_Texture* GetSkullSprite() const { return skullSprite; }
 #pragma endregion
 
+#pragma region SETTERS
+    void SetSprite(SDL_Texture* tex) { sprite = tex; }
+    void SetSkullSprite(SDL_Texture* tex) { skullSprite = tex; }
     void SetRenderPos(float x, float y, float w, float h);
-
     void SetType(IslandType _type);
+#pragma endregion
 
 private:
     int id = -1;
@@ -57,6 +68,9 @@ private:
     Shop* shop;
     Dockyard* dockyard;
     Hostel* hostel;
+
+    SDL_Texture* sprite = nullptr;
+    SDL_Texture* skullSprite = nullptr;
 
     void CreateBuildings();
     void DestroyBuildings();

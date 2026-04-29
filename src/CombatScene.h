@@ -73,6 +73,17 @@ private:
     void FinalizeLaneAssignments();
     bool IsLaneTaken(LaneType laneType) const;
 
+    void CreateSkillButtons(Character* c);
+
     SDL_Texture* abilityIcons;
+
+    SDL_Texture* abilityIcons2;
+
+    int hoveredSkillIdx = -1;
+
+    void DrawSkillTooltip();
+    void UpdateSkillHover();
+    void DrawColoredLine(const std::string& line, int x, int y);
+    std::vector<std::string> WrapText(const std::string& text, int maxCharsPerLine);
 
 };
