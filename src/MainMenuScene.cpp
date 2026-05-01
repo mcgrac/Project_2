@@ -42,6 +42,16 @@ void MainMenuScene::Update(float dt)
         LOG("Play music again!");
         Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
     }
+
+    if (pendingRefresh) //avoids double clicking buttons
+    {
+        pendingRefresh = false;
+
+        //delete and update base UI
+        Engine::GetInstance().uiManager->CleanUp();
+        CreateUI();
+    }
+
     // Lógica de update del menú principal
     Draw(dt);
 }
@@ -90,6 +100,8 @@ void MainMenuScene::Draw(float dt)
 
 bool MainMenuScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    pendingRefresh = true;
+
     switch (uiElement->id)
     {
     case 1: // new game button

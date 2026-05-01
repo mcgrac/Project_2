@@ -10,6 +10,11 @@ ItemManager::ItemManager()
 ItemManager::~ItemManager()
 {
     //destroy list all items
+    for (auto item : allItems)
+    {
+        delete item;
+    }
+    allItems.clear();
 }
 
 bool ItemManager::Start()
@@ -21,6 +26,11 @@ bool ItemManager::Start()
 
 bool ItemManager::CleanUp()
 {
+    for (auto item : allItems)
+    {
+        delete item;
+    }
+    allItems.clear();
     return true;
 }
 
@@ -57,7 +67,7 @@ bool ItemManager::LoadItemsFromXML(const std::string& path)
 
         allItems.push_back(item);
 
-#if DEBUG
+#if _DEBUG
         //debug
         LOG("|ITEM: %s created|", item->GetName().c_str());
         LOG("STATS MODIFICATION");

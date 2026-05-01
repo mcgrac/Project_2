@@ -44,6 +44,7 @@ public:
 
 private:
     void UpdateMovement(float dt);
+    void UpdateCamera();
 
     Vector2D position;
     int currentHp;

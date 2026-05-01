@@ -134,12 +134,17 @@ void InGameScene::Update(float dt)
     {
         firstFrame = false;
 
-        Engine::GetInstance().scene->PushScene(
-            new DialogueScene("intro_boss", [this]() {
-                LOG("Intro terminada");
-                //can de anything here
-            })
-        );
+        //Engine::GetInstance().scene->PushScene(
+        //    new DialogueScene("intro_boss", [this]() {
+        //        LOG("Intro terminada");
+        //        //can de anything here
+        //    })
+        //);
+
+        PushSceneFromInGame(new DialogueScene("intro_boss", [this]() {
+            LOG("Intro terminada");
+            }));
+        return;
     }
 
     //render background
@@ -148,9 +153,12 @@ void InGameScene::Update(float dt)
     //detect pause menu
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
     {
-        Engine::GetInstance().scene->PushScene(
-            new PauseScene(alliedParty, worldMap.GetCurrentIslandId())
-        );
+        //Engine::GetInstance().scene->PushScene(
+        //    new PauseScene(alliedParty, worldMap.GetCurrentIslandId())
+        //);
+
+        PushSceneFromInGame(new PauseScene(alliedParty, worldMap.GetCurrentIslandId()));
+        return;
     }
 
     worldMap.Update(dt);
@@ -209,10 +217,12 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 1:
         LOG("InGameScene: iniciando combate...");
         // PushScene — InGameScene queda suspendida con todo su estado
-        Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty, ship->GetLevel()));
+        //Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty, ship->GetLevel()));
+        PushSceneFromInGame(new CombatScene(alliedParty, ship->GetLevel()));
         break;
     case 2:
-        Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
+        //Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
+        PushSceneFromInGame(new PartyScene(alliedParty));
         break;
     default:
       
@@ -281,7 +291,10 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
                     // so the next departure starts correctly
                     int destCenterX = 224.0f + 448.0f * (float)destCol;
                     ship->SetPosition(Vector2D(destCenterX + 125.0f, (float)toCY));
+
+                    Engine::GetInstance().render->camera.x = 0;
                     worldMap.TravelTo(islandId);
+                    //worldMap.TravelTo(islandId);
                 });
         }
         break;
@@ -510,6 +523,12 @@ ShipMovement InGameScene::DetermineShipMovement(int fromCenterY, int toCenterY)
     return ShipMovement::DOWN2;
 }
 
+void InGameScene::PushSceneFromInGame(BaseScene* scene)
+{
+    Engine::GetInstance().render->camera.x = 0;
+    Engine::GetInstance().scene->PushScene(scene);
+}
+
 void InGameScene::OnResume()
 {
     CreateUI();
@@ -517,6 +536,7 @@ void InGameScene::OnResume()
 
 void InGameScene::OnPause()
 {
+    Engine::GetInstance().render->camera.x = 0;
     Engine::GetInstance().uiManager->CleanUp();
 }
 
@@ -524,17 +544,19 @@ void InGameScene::CreateUI()
 {
     //Botón de iniciar combate
     SDL_Rect combatBtnBounds = { 20, 20, 154, 60 };
-    Engine::GetInstance().uiManager->CreateUIElement(
+    auto CombatBtn = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0, combatBtnBounds.w, combatBtnBounds.h
     );
+    CombatBtn->isHUD = true;//fixed on screen
 
     //Botón de party
     SDL_Rect partyBtnBounds = { 20, 600, 72, 72 };
-    Engine::GetInstance().uiManager->CreateUIElement(
+    auto partyButon = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 2, "Party", partyBtnBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, teamButton, 0, partyBtnBounds.w, partyBtnBounds.h
     );
+    partyButon->isHUD = true; //fixed on screen
 
     //island buttons
     CreateIslandButtons();

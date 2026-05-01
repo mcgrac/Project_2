@@ -22,6 +22,7 @@ DialogueScene::~DialogueScene() {}
 
 void DialogueScene::Load()
 {
+
     LoadTextures();
 
     if (!DialogueManager::StartDialogue(dialogueId))
@@ -36,6 +37,8 @@ void DialogueScene::Load()
 
 void DialogueScene::Update(float dt)
 {
+    Engine::GetInstance().render->camera.x = 0;
+
     if (pendingRefresh) //avoids double clicking buttons
     {
         pendingRefresh = false;

@@ -48,6 +48,7 @@ void Ship::Update(float dt) {
     {
         UpdateMovement(dt);
     }
+    UpdateCamera();
     Draw(dt);
 
     if (pendingArrival)
@@ -225,6 +226,31 @@ void Ship::UpdateMovement(float dt)
     }
 }
 
+void Ship::UpdateCamera()
+{
+    static const float MAP_WIDTH = 224.0f + 448.0f * 29.0f + 224.0f; // total world width in pixels
+
+    Render* render = Engine::GetInstance().render.get();
+
+    float camW = (float)render->camera.w;
+    float shipX = position.getX() + 125.0f; // use visual center (with offset)
+
+    float limitLeft = camW / 4.0f;
+    float limitRight = MAP_WIDTH - camW * 3.0f / 4.0f;
+
+    if (shipX - limitLeft > 0.0f && shipX < limitRight)
+    {
+        render->camera.x = (int)(-shipX + camW / 4.0f);
+    }
+    else if (shipX <= limitLeft)
+    {
+        render->camera.x = 0;
+    }
+    else
+    {
+        render->camera.x = (int)(-MAP_WIDTH + camW);
+    }
+}
 #pragma endregion
 
 bool Ship::IsAlive() const

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.2" name="Boat" tilewidth="253" tileheight="253" tilecount="24" columns="3">
- <image source="Boat.png" width="760" height="2027"/>
+<tileset version="1.10" tiledversion="1.11.2" name="Boat" tilewidth="76" tileheight="76" tilecount="24" columns="3">
+ <grid orientation="orthogonal" width="253" height="253"/>
+ <image source="Boat.png" width="228" height="608"/>
  <tile id="21">
   <animation>
    <frame tileid="21" duration="150"/>

@@ -62,4 +62,5 @@ private:
 
     static int GetIslandCenterY(int row, int islandsInCol);
     static ShipMovement DetermineShipMovement(int fromCenterY, int toCenterY);
+    void PushSceneFromInGame(BaseScene* scene);
 };
