@@ -7,6 +7,9 @@ UpgradeTree::UpgradeTree()
 
 UpgradeTree::~UpgradeTree()
 {
+#if _DEBUG
+    LOG("Destructor UpgradeTree");
+#endif
 }
 
 void UpgradeTree::AddTier(UpgradeTier tier)

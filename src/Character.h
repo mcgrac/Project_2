@@ -135,10 +135,6 @@ public:
 
 	void ClearBonusStats();
 
-	//inventory management
-	bool EquipItem(Item* item);
-	void DebugInventory();
-
 
 #pragma region GETTERS
 	inline int GetTotalPower() const { return totalPower; }
@@ -182,6 +178,7 @@ public:
 	inline void ModifyBonusPower(int amount) { bonusPower += amount; }
 	inline void ModifyBonusSpeed(int amount) { bonusSpeed += amount; }
 	inline void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
+	inline void ModifyCurrentHealth(int amount) { health += amount; }
 	inline void ModifyHealingPower(int amount) { healingPower += amount; }
 	void ModifyDurability(int amount);
 	inline void ModifyBonusDurability(int amount) { bonusDurability += amount; }
@@ -203,8 +200,6 @@ public:
 #pragma endregion
 
 private:
-	std::vector<Item*> equippedItems;
-	static const int MAX_EQUIPPED_ITEMS = 3;
 
 	float incomingDamageMultiplier = 0.0f;
 

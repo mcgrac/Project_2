@@ -11,6 +11,8 @@
 #include "Textures.h"
 #include "SaveLoad.h"
 #include "SettingsScene.h"
+#include "Character.h"
+
 
 MainMenuScene::MainMenuScene() : background(nullptr), spritesheet(nullptr)
 {
@@ -118,13 +120,7 @@ bool MainMenuScene::OnUIMouseClickEvent(UIElement* uiElement)
         SaveData data = SaveLoad::Load();
         if (data.exists)
         {
-            // Reconstruir los nombres de personajes del save
-            std::vector<std::string> names;
-            for (const auto& charSave : data.characters)
-            {
-                names.push_back(charSave.name);
-            }
-            Engine::GetInstance().scene->ReplaceScene(new InGameScene(names, true));
+            Engine::GetInstance().scene->ReplaceScene(new InGameScene(std::vector<Character*>{}, true));
         }
         break;
         }

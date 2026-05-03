@@ -2,58 +2,63 @@
 <items>
 
 	<!-- ═══════════════════════════════════════════════════ -->
-	<!--  BIRDS												 -->
+	<!--  EQUIPPABLE ITEMS									 -->
 	<!-- ═════════════════════════════════════════════=═════ -->
 	
-	<item name="Bennu's Feather" faction="BIRD" price="20">
+	<!--  ===============BIRDS============================== -->
+	<item name="Bennu's Feather" type ="equippable" faction="BIRD" price="20">
 		<stat type="SPEED" value="50"/>
 	</item>
 
-	<item name="The Panomicon" faction="BIRD" price="55">
+	<item name="The Panomicon" type ="equippable" faction="BIRD" price="55">
 		<stat type="POWER" value="35"/>
 		<stat type="FIRE_POWER" value="20"/>
 		<stat type="SPEED" value="10"/>
 	</item>
 
-	<item name="Bard's Desire" faction="BIRD" price="30">
+	<item name="Bard's Desire" type ="equippable" faction="BIRD" price="30">
 		<stat type="HEALING_POWER" value="25"/>
 		<stat type="SPEED" value="25"/>
 	</item>
 
-	<item name="The Fan" faction="BIRD" price="15">
+	<item name="The Fan" type ="equippable" faction="BIRD" price="15">
 		<stat type="HEALTH" value="20"/>
 		<stat type="HEALING_POWER" value="15"/>
 	</item>
 	
-	<item name="Rainbow Mage Cap" faction="BIRD" price="80">
+	<item name="Rainbow Mage Cap" type ="equippable" faction="BIRD" price="80">
 		<stat type="POWER" value="55"/>
 		<stat type="HEALING_POWER" value="55"/>
 		<stat type="FIRE_POWER" value="55"/>
 	</item>
 
-	<item name="Stardust Sword" faction="BIRD" price="75">
+	<item name="Stardust Sword" type ="equippable" faction="BIRD" price="75">
 		<stat type="LIFESTEAL" value="25"/>
 		<stat type="SPEED" value="15"/>
 		<stat type="POWER" value="30"/>
 	</item>
 
-	<item name="Heart of the Sky" faction="BIRD" price="99">
+	<item name="Heart of the Sky" type ="equippable" faction="BIRD" price="99">
 		<stat type="SPEED" value="40"/>
 		<stat type="DURABILITY" value="20"/>
 		<stat type="HEALTH" value="85"/>
 	</item>
 
+	<!--  ===============SIREN============================== -->
+
+
+	<!--  ===============REPTIL============================= -->
+
+
+	<!--  ===============HUMAN============================== -->
+	
 	<!-- ═══════════════════════════════════════════════════ -->
-	<!--  SIREN												 -->
+	<!--  CONSUMIBLE										 -->
 	<!-- ═════════════════════════════════════════════=═════ -->
-
+	<item name="Potion" type="consumable" price="15" heal="50"/>
 
 	<!-- ═══════════════════════════════════════════════════ -->
-	<!--  REPTIL										     -->
+	<!--  KEY ITEM										     -->
 	<!-- ═════════════════════════════════════════════=═════ -->
-
-
-	<!-- ═══════════════════════════════════════════════════ -->
-	<!--  HUMAN												 -->
-	<!-- ═════════════════════════════════════════════=═════ -->
+	<item name="Key" type="key" price="15"/>
 </items>

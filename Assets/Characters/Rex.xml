@@ -25,7 +25,7 @@
         speed="45"
         lifesteal="0"
         healingPower="0"
-        poisonPower="5"
+        poisonPower="0.05"
         firePower="0"
         maxInitiative="300"
     />

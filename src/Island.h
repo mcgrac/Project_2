@@ -5,6 +5,8 @@
 #include "Dockyard.h"
 #include "Hostel.h"
 
+struct SDL_Texture;
+
 enum class IslandType { 
     FRIENDLY, 
     HOSTILE,

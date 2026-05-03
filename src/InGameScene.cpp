@@ -22,8 +22,8 @@
 // First button id reserved for combat button; island buttons start from this offset
 static const int ISLAND_BUTTON_ID_OFFSET = 100;
 
-InGameScene::InGameScene(std::vector<std::string> _characterNames, bool _isContinue)
-    : characterNames(_characterNames)
+InGameScene::InGameScene(std::vector<Character*> _characters, bool _isContinue)
+    : prebuiltCharacters(_characters)
     , alliedParty(nullptr)
     , background(nullptr)
     , isContinue(_isContinue)
@@ -47,18 +47,16 @@ void InGameScene::Load()
 
     // Construir la party aliada con los 3 personajes seleccionados
     alliedParty = new Party("Aliados");
-    for (const std::string& name : characterNames)
+    if (!prebuiltCharacters.empty())
     {
-        LOG("Creando personaje: '%s'", name.c_str());
-        Character* c = CharacterFactory::Create(name);
-        if (c != nullptr)
+        for (Character* c : prebuiltCharacters)
         {
-            alliedParty->AddMember(c);
+            if (c != nullptr)
+            {
+                alliedParty->AddMember(c);
+            }
         }
-        else
-        {
-            LOG("InGameScene::Load — no se pudo crear el personaje '%s'.", name.c_str());
-        }
+        prebuiltCharacters.clear();
     }
 
     LOG("InGameScene cargada, %d miembros en party.", alliedParty->GetMemberCount());
@@ -107,6 +105,20 @@ void InGameScene::Load()
         SaveData data = SaveLoad::Load();
         if (data.exists)
         {
+            // Crear personajes desde el save
+            for (const auto& charSave : data.characters)
+            {
+                Character* c = CharacterFactory::Create(charSave.name);
+                if (c != nullptr)
+                {
+                    alliedParty->AddMember(c);
+                }
+                else
+                {
+                    LOG("InGameScene::Load — no se pudo crear el personaje '%s' desde save.", charSave.name.c_str());
+                }
+            }
+
             RestoreFromSave(data);
             worldMap.SetCurrentIsland(data.currentIslandId);
             LOG("InGameScene: partida restaurada — isla %d.", data.currentIslandId);

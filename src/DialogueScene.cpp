@@ -59,11 +59,12 @@ void DialogueScene::PostUpdate(float dt)
     if (node == nullptr) return;
 
     // Panel de fondo semitransparente
-    SDL_Rect panel = { 0, 530, 1280, 190 };
-    Engine::GetInstance().render->DrawRectangle(panel, 10, 10, 30, 220, true, false);
+    SDL_Rect posPanel = { 0, 530, 1280, 190 };
+    Engine::GetInstance().render->DrawTexture(panel, posPanel.x, posPanel.y);
 
     // Portrait — si cambió, recargarlo
     UpdatePortrait(node->portrait);
+
     if (portraitTexture != nullptr)
     {
         SDL_Rect portraitRect = { 10, 540, 128, 170 };
@@ -106,6 +107,8 @@ void DialogueScene::Unload()
 void DialogueScene::LoadTextures()
 {
     button = Engine::GetInstance().textures->Load("Assets/Textures/Pause/ButtonsPause.png");
+    panel = Engine::GetInstance().textures->Load("Assets/Textures/Dialogues/TextBox.png");
+    
     //load spritesheet character portrait
 }
 

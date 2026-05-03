@@ -29,7 +29,11 @@ Character::~Character()
 	LOG("\033[1;32m|Destructor Character: %s\033[0m", name.c_str());
 #endif // _DEBUG
 
-	Engine::GetInstance().textures->UnLoad(texture);
+	if (texture != nullptr)
+	{
+		Engine::GetInstance().textures->UnLoad(texture);
+		texture = nullptr;
+	}
 
 	killedBy = nullptr;
 	poisonedBy = nullptr;
@@ -38,12 +42,6 @@ Character::~Character()
 	//upgradeTree
 	delete upgradeTree;
 	upgradeTree = nullptr;
-
-	//inventory
-	for (Item* i : equippedItems) {
-		delete i;
-	}
-	equippedItems.clear();
 
 }
 
@@ -64,7 +62,7 @@ void Character::Update(float dt)
 void Character::Heal(int amount)
 {
 	int currentHealth = health;
-	currentHealth += amount * healingPower;
+	currentHealth += amount * (1 + healingPower);
 	health = std::min(maxHealth, currentHealth);
 }
 
@@ -287,30 +285,31 @@ void Character::ClearBonusStats()
 	bonusSpeed = 0;
 }
 
-bool Character::EquipItem(Item* item)
-{
-	if (equippedItems.size() >= MAX_EQUIPPED_ITEMS) { return false; }
+//bool Character::EquipItem(Item* item)
+//{
+//	if (equippedItems.size() >= MAX_EQUIPPED_ITEMS) { return false; }
+//
+//	equippedItems.push_back(item);
+//
+//	item->Use(this);
+//#if _DEBUG
+//	DebugInventory();
+//#endif // _DEBUG
+//	return true;
+//}
 
-	equippedItems.push_back(item);
-
-	item->ApplyEffect(this);
-#if _DEBUG
-	DebugInventory();
-#endif // _DEBUG
-	return true;
-}
-
-void Character::DebugInventory()
-{
-	LOG("\033[1;32m-----------INVENTORY OF %s --------------\033[0m", name.c_str());
-	for (auto& item : equippedItems) {
-		LOG("\033[1;33mItem: %s equipped\033[0m", item->GetName().c_str());
-		for (auto& stat : item->GetItemStats()) {
-			LOG("\033[1;33mStat: %d Value: %d\033[0m", stat.type, stat.value);
-		}
-	}
-	LOG("------------------------------------------");
-}
+//void Character::DebugInventory()
+//{
+//	LOG("\033[1;32m-----------INVENTORY OF %s --------------\033[0m", name.c_str());
+//	for (auto& item : equippedItems) {
+//		LOG("\033[1;33mItem: %s equipped\033[0m", item->GetName().c_str());
+//		EquippableItem* equippable = dynamic_cast<EquippableItem*>(item);
+//		for (auto& stat : equippable->GetItemStats()) {
+//			LOG("\033[1;33mStat: %d Value: %d\033[0m", stat.type, stat.value);
+//		}
+//	}
+//	LOG("------------------------------------------");
+//}
 
 
 void Character::PrintDebugInfo(){

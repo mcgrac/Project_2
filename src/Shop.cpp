@@ -3,8 +3,12 @@
 #include <algorithm>
 #include <random>
 #include "Engine.h"
+#include "KeyItem.h"
+#include "ConsumableItem.h"
+#include "EquippableItem.h"
 #include "NPC.h"
 #include "Island.h"
+#include "Log.h"
 
 Shop::Shop(Island* _island) : island(_island)
 {
@@ -15,18 +19,69 @@ Shop::~Shop()
 {
     delete owner;
     owner = nullptr;
+
+    ClearCurrentItems();
 }
 
 void Shop::GenerateItems(Faction faction)
 {
-    currentItems.clear();
+    ClearCurrentItems();
 
-    auto items = Engine::GetInstance().itemManager->GetItemsByFaction(faction);
+    //Faction islandFaction = island->GetIslandFaction();
 
-    std::shuffle(items.begin(), items.end(), std::mt19937(std::random_device()()));
+    //Faction islandFaction = island->GetIslandFaction();
+    //auto items = Engine::GetInstance().itemManager->GetItemsByFaction(faction);
+    std::vector<EquippableItem*> equippables = Engine::GetInstance().itemManager->GetEquippablesByFaction(faction);
+    std::vector<ConsumableItem*> consumables;
+    std::vector<KeyItem*> keys;
 
-    for (int i = 0; i < 3 && i < items.size(); i++)
+    for (Item* item : Engine::GetInstance().itemManager->GetAllItems())
     {
-        currentItems.push_back(new Item(*items[i])); // copia
+        ConsumableItem* consumable = dynamic_cast<ConsumableItem*>(item);
+        if (consumable != nullptr)
+        {
+            consumables.push_back(consumable);
+            continue;
+        }
+
+        KeyItem* key = dynamic_cast<KeyItem*>(item);
+        if (key != nullptr)
+        {
+            keys.push_back(key);
+        }
     }
+
+    //std::shuffle(items.begin(), items.end(), std::mt19937(std::random_device()()));
+
+    std::mt19937 rng(std::random_device{}());
+
+    std::shuffle(equippables.begin(), equippables.end(), rng);
+    std::shuffle(consumables.begin(), consumables.end(), rng);
+    std::shuffle(keys.begin(), keys.end(), rng);
+
+    for (int i = 0; i < 3 && i < (int)equippables.size(); i++)
+    {
+        currentItems.push_back(equippables[i]->Clone());
+    }
+
+    for (int i = 0; i < 2 && i < (int)consumables.size(); i++)
+    {
+        currentItems.push_back(consumables[0]->Clone());
+    }
+
+    if (!keys.empty())
+    {
+        currentItems.push_back(keys[0]->Clone());
+    }
+
+    LOG("SHOP: generados %d items", (int)currentItems.size());
+}
+
+void Shop::ClearCurrentItems()
+{
+    for (Item* item : currentItems)
+    {
+        delete item;
+    }
+    currentItems.clear();
 }

@@ -9,11 +9,12 @@
 
 struct SDL_Texture;
 class IslandScene;
+class Character;
 
 class InGameScene : public BaseScene
 {
 public:
-    InGameScene(std::vector<std::string> _characterNames, bool _isContinue);
+    InGameScene(std::vector<Character*> _characters, bool _isContinue);
     ~InGameScene();
 
     void Load() override;
@@ -32,7 +33,7 @@ public:
     Party* GetAlliedParty() { return alliedParty; }
 
 private:
-    std::vector<std::string> characterNames;
+    std::vector<Character*> prebuiltCharacters;
 
     // InGameScene es owner de la party y los characters — los crea y destruye
     Party* alliedParty;

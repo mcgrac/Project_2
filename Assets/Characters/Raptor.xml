@@ -25,7 +25,7 @@
         maxDurability="40"
         speed="25"
         lifesteal="0"
-        healingPower="10"
+        healingPower="0.1"
         poisonPower="0"
         firePower="0"
         maxInitiative="300"
