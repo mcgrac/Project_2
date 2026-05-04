@@ -22,8 +22,8 @@
 // First button id reserved for combat button; island buttons start from this offset
 static const int ISLAND_BUTTON_ID_OFFSET = 100;
 
-InGameScene::InGameScene(std::vector<Character*> _characters, bool _isContinue)
-    : prebuiltCharacters(_characters)
+InGameScene::InGameScene(std::vector<Character*> _prebuiltCharacters, bool _isContinue)
+    : prebuiltCharacters(_prebuiltCharacters)
     , alliedParty(nullptr)
     , background(nullptr)
     , isContinue(_isContinue)
@@ -49,6 +49,7 @@ void InGameScene::Load()
     alliedParty = new Party("Aliados");
     if (!prebuiltCharacters.empty())
     {
+        // Venimos de LoadingScene — personajes ya creados con stats y visuals
         for (Character* c : prebuiltCharacters)
         {
             if (c != nullptr)
@@ -58,7 +59,17 @@ void InGameScene::Load()
         }
         prebuiltCharacters.clear();
     }
-
+    else if (isContinue)
+    {
+        // Venimos de MainMenuScene — crear personajes desde el save
+        SaveData data = SaveLoad::Load();
+        if (data.exists)
+        {
+            RestoreFromSave(data);
+            worldMap.SetCurrentIsland(data.currentIslandId);
+            LOG("InGameScene: partida restaurada — isla %d.", data.currentIslandId);
+        }
+    }
     LOG("InGameScene cargada, %d miembros en party.", alliedParty->GetMemberCount());
 
 #if _DEBUG
@@ -75,7 +86,6 @@ void InGameScene::Load()
     worldMap.LoadWorld("Assets/Maps/world.xml");
 
     //connect visuals 
-    
     const auto& islands = worldMap.GetAllIslands();
     for (auto& pair : islands)
     {
@@ -99,31 +109,6 @@ void InGameScene::Load()
     worldMap.arrivalIsland = [this](Island* island) {
         Engine::GetInstance().scene->PushScene(new IslandScene(island, &worldMap, alliedParty, ship));
     };
-
-    if (isContinue)
-    {
-        SaveData data = SaveLoad::Load();
-        if (data.exists)
-        {
-            // Crear personajes desde el save
-            for (const auto& charSave : data.characters)
-            {
-                Character* c = CharacterFactory::Create(charSave.name);
-                if (c != nullptr)
-                {
-                    alliedParty->AddMember(c);
-                }
-                else
-                {
-                    LOG("InGameScene::Load — no se pudo crear el personaje '%s' desde save.", charSave.name.c_str());
-                }
-            }
-
-            RestoreFromSave(data);
-            worldMap.SetCurrentIsland(data.currentIslandId);
-            LOG("InGameScene: partida restaurada — isla %d.", data.currentIslandId);
-        }
-    }
 
     //ship
     ship = new Ship();

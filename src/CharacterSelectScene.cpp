@@ -9,6 +9,7 @@
 #include "Log.h"
 #include "Render.h"
 #include "Textures.h"
+#include "LoadingScene.h"
 
 CharacterSelectScene::CharacterSelectScene() : 
     background(nullptr), 
@@ -133,8 +134,8 @@ void CharacterSelectScene::ToggleSelection(int index)
             selectedNames.erase(it);
         }
 
-        delete c.chara;
-        c.chara = nullptr;
+        //delete c.chara;
+        //c.chara = nullptr;
 
         SetPortraitButtonStateNormal(index);
         LOG("CharacterSelect: %s deseleccionado.", c.name.c_str());
@@ -159,14 +160,14 @@ void CharacterSelectScene::ToggleSelection(int index)
             return;
         }
 
-        Character* created = CharacterFactory::Create(c.name);
-        if (created == nullptr)
-        {
-            LOG("CharacterSelect: no se pudo crear el personaje '%s'.", c.name.c_str());
-            return;
-        }
+        //Character* created = CharacterFactory::Create(c.name);
+        //if (created == nullptr)
+        //{
+        //    LOG("CharacterSelect: no se pudo crear el personaje '%s'.", c.name.c_str());
+        //    return;
+        //}
 
-        c.chara = created;
+        //c.chara = created;
         c.selected = true;
         selectedNames.push_back(c.name);
         SetPortraitButtonStatePressed(index);
@@ -237,28 +238,28 @@ void CharacterSelectScene::RenderSelection()
 
 void CharacterSelectScene::ConfirmSelection()
 {
-    std::vector<Character*> selectedCharacters;
+    //std::vector<Character*> selectedCharacters;
 
-    for (SelectableCharacter& c : availableCharacters)
-    {
-        if (c.selected && c.chara != nullptr)
-        {
-            selectedCharacters.push_back(c.chara);
-            c.chara = nullptr; // InGameScene es ahora owner, no borrar en Unload
-        }
-    }
-
-    LOG("CharacterSelect: confirmado, lanzando InGameScene con %d personajes.", (int)selectedCharacters.size());
-
-    //LOG("CharacterSelect: confirmado, lanzando InGameScene.");
-    //LOG("Nombres seleccionados: %d", (int)selectedNames.size());
-    //for (const std::string& n : selectedNames)
+    //for (SelectableCharacter& c : availableCharacters)
     //{
-    //    LOG("  -> '%s'", n.c_str());
+    //    if (c.selected && c.chara != nullptr)
+    //    {
+    //        selectedCharacters.push_back(c.chara);
+    //        c.chara = nullptr; // InGameScene es ahora owner, no borrar en Unload
+    //    }
     //}
 
-    // Pasa el vector de nombres a InGameScene
-    Engine::GetInstance().scene->ReplaceScene(new InGameScene(selectedCharacters, false));
+#if _DEBUG
+    LOG("CharacterSelect: confirmado, lanzando LoadingScene.");
+    LOG("Nombres seleccionados: %d", (int)selectedNames.size());
+    for (const std::string& n : selectedNames)
+    {
+        LOG("  -> '%s'", n.c_str());
+    }
+#endif // _DEBUG
+
+    //Engine::GetInstance().scene->ReplaceScene(new InGameScene(selectedNames, false));
+    Engine::GetInstance().scene->ReplaceScene(new LoadingScene(selectedNames, false));
 }
 
 void CharacterSelectScene::CreateCharactersButtons()

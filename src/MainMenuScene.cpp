@@ -11,7 +11,7 @@
 #include "Textures.h"
 #include "SaveLoad.h"
 #include "SettingsScene.h"
-#include "Character.h"
+#include "LoadingScene.h"
 
 
 MainMenuScene::MainMenuScene() : background(nullptr), spritesheet(nullptr)
@@ -104,29 +104,33 @@ bool MainMenuScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
     pendingRefresh = true;
 
+    Engine::GetInstance().audio->PlayFx(buttonSelectionFx);
+
     switch (uiElement->id)
     {
     case 1: // new game button
         LOG("MainMenu: Nueva Partida clicked!");
-        Engine::GetInstance().audio->PlayFx(buttonSelectionFx);
 
         SaveLoad::ClearSave(); //clear any data saved
         Engine::GetInstance().scene->ReplaceScene(new CharacterSelectScene());
         break;
         {
     case 2: //continue button
-        Engine::GetInstance().audio->PlayFx(buttonSelectionFx);
-
         SaveData data = SaveLoad::Load();
         if (data.exists)
         {
-            Engine::GetInstance().scene->ReplaceScene(new InGameScene(std::vector<Character*>{}, true));
+            // Reconstruir los nombres de personajes del save
+            std::vector<std::string> names;
+            for (const auto& charSave : data.characters)
+            {
+                names.push_back(charSave.name);
+            }
+            //Engine::GetInstance().scene->ReplaceScene(new InGameScene(names, true));
+            Engine::GetInstance().scene->ReplaceScene(new LoadingScene(names, true));
         }
         break;
         }
     case 3: //options button
-        Engine::GetInstance().audio->PlayFx(buttonSelectionFx);
-
         Engine::GetInstance().scene->PushScene(new SettingsScene());
 
         //Engine::GetInstance().window->ToggleFullscreen();
@@ -134,7 +138,6 @@ bool MainMenuScene::OnUIMouseClickEvent(UIElement* uiElement)
         //Engine::GetInstance().render->UpdateCamera();
         break;
     case 4: //quit button
-        Engine::GetInstance().audio->PlayFx(buttonSelectionFx);
         //Engine::GetInstance().input->quit = true;
         //quit
         break;

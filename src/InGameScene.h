@@ -14,7 +14,7 @@ class Character;
 class InGameScene : public BaseScene
 {
 public:
-    InGameScene(std::vector<Character*> _characters, bool _isContinue);
+    InGameScene(std::vector<Character*> _prebuiltCharacters, bool _isContinue);
     ~InGameScene();
 
     void Load() override;

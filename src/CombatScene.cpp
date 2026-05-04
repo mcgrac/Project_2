@@ -589,7 +589,7 @@ void CombatScene::CreateEnemyParty()
 
     for (int i = 0; i < 3; ++i)
     {
-        Character* c = CharacterFactory::Create(enemyNames[i]);
+        Character* c = CharacterFactory::CreateDataOnly(enemyNames[i]);
         if (c != nullptr)
         {
             enemyParty->AddMember(c);

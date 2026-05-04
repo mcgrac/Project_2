@@ -65,7 +65,7 @@ void SplashScene::StartTimer(){
 
 void SplashScene::RunTimer(float dt){
     timer += dt;
-#if DEBUG
+#if _DEBUG
     LOG("Timer: %f", timer);
 #endif
 }
