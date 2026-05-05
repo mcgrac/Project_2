@@ -590,6 +590,7 @@ void CombatScene::CreateEnemyParty()
     for (int i = 0; i < 3; ++i)
     {
         Character* c = CharacterFactory::CreateDataOnly(enemyNames[i]);
+        
         if (c != nullptr)
         {
             enemyParty->AddMember(c);
@@ -598,6 +599,8 @@ void CombatScene::CreateEnemyParty()
         {
             LOG("CombatScene: no se pudo crear el enemigo '%s'.", enemyNames[i]);
         }
+
+        CharacterFactory::LoadVisualsFor(c, c->GetName());
     }
 
     // Recompensas del combate

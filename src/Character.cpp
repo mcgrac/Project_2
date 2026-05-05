@@ -13,7 +13,7 @@ Character::Character(Vector2D _position, std::string _name, int _health, int _ma
 	basePower(_basePower), bonusPower(_bonusPower), totalPower(_totalPower),totalDurability(_totalDurability), baseDurability(_baseDurability), bonusDurability(_bonusDurability), 
 	maxDurability(_maxDurability), baseSpeed(_baseSpeed), bonusSpeed(_bonusSpeed), totalSpeed(_totalSpeed), lifesteal(_lifesteal), healingPower(_healingPower), poisonPower(_poisonPower), firePower(_firePower),
 	isPoisoned(false), isBurned(false), poisonStatMod(_poisonedStatMod), burnedStatMod(_burnedStatMod), level(_level), 
-	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true)
+	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true), isAllied(false)
 {
 	SetTotalPower();
 	SetTotalSpeed();
@@ -152,12 +152,19 @@ void Character::Draw(float dt)
 
 	int drawX = (int)position.getX() - animFrame.w / 2;
 	int drawY = (int)position.getY() - animFrame.h / 2;
+	
+	double rotation = 0.0f;
+	if (!isAllied) { rotation = -1.0; }
+
+	float speed = 1.0f;
 
 	Engine::GetInstance().render->DrawTexture(
 		texture,
 		drawX,
 		drawY,
-		&animFrame
+		&animFrame,
+		speed,
+		rotation
 	);
 }
 

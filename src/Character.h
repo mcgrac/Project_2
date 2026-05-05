@@ -4,12 +4,9 @@
 #include <SDL3/SDL.h>
 #include <vector>
 #include "Vector2D.h"
-
 #include "Animation.h"
 #include "Skill.h"
 #include "UpgradeTree.h"
-
-class Item;
 
 struct AnimAlias
 {
@@ -53,6 +50,8 @@ protected:
 	int level;
 	bool isAlive;
 #pragma endregion
+
+	bool isAllied;
 
 	//animations
 	AnimationSet anims;
@@ -170,6 +169,7 @@ public:
 	inline int GetTotalDurability() const { return totalDurability; }
 
 	inline UpgradeTree* GetUpgradeTree() const { return upgradeTree; }
+	inline bool GetIsAllied() const { return isAllied; }
 #pragma endregion
 
 #pragma region MODIFIERS
@@ -193,6 +193,7 @@ public:
 	inline void SetTotalSpeed() { totalSpeed = baseSpeed + bonusSpeed; }
 
 	inline void SetIncomingDamageMultiplier(float f) { incomingDamageMultiplier = f; }
+	inline void SetIsAllied(bool b) { isAllied = b; }
 #pragma endregion
 
 #pragma region TEST

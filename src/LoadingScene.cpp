@@ -28,7 +28,7 @@ void LoadingScene::Load()
 
 void LoadingScene::DoBackgroundLoad()
 {
-    //characters
+    //characters allies
     std::vector<std::string> namesToLoad;
     if (isContinue)
     {
@@ -58,6 +58,8 @@ void LoadingScene::DoBackgroundLoad()
         {
             LOG("LoadingScene: no se pudo crear '%s'.", name.c_str());
         }
+
+        c->SetIsAllied(true);
     }
 
     // WorldMap — solo datos, sin texturas

@@ -92,7 +92,7 @@ int Lane::GetHealthBonus(int shipLevel) const
     // BACK and SIDE give no health bonus
 }
 
-// ---------- Lane assignment (called by CombatScene) --------------------------------
+// ---------- Lane assignment (called by CombatScene) --------------------
 void Combat::AssignLane(Character* character, LaneType laneType)
 {
     if (laneType == LaneType::BACK)
@@ -304,7 +304,7 @@ void Combat::StartCombat()
     // defaultPositions[2] = Back  (furthest from enemies)
     if (frontLane.occupant != nullptr)
     {
-        frontLane.occupant->SetPosition(defaultPositions[0].getX(), defaultPositions[0].getY());
+        frontLane.occupant->SetPosition(defaultPositions[2].getX(), defaultPositions[2].getY());
     }
     if (sideLane.occupant != nullptr)
     {
@@ -312,7 +312,7 @@ void Combat::StartCombat()
     }
     if (backLane.occupant != nullptr)
     {
-        backLane.occupant->SetPosition(defaultPositions[2].getX(), defaultPositions[2].getY());
+        backLane.occupant->SetPosition(defaultPositions[0].getX(), defaultPositions[0].getY());
     }
 
     // Allies: reset initiative
