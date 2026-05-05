@@ -185,6 +185,8 @@ void Combat::Run()
         break;
 
     case CombatState::CALCULATE_INITIATIVE:
+        // Accumulate initiative for everyone.
+        // Returns true only if at least one combatant reached >= 100.
         if (!CalculateInitiative())
         {
             //dont do anything -> go to next frame
@@ -192,13 +194,25 @@ void Combat::Run()
         else
         {
             //state = CombatState::ATTACK;
-            state = CombatState::ATTACK_START;
+            //state = CombatState::ATTACK_START;
+            state = CombatState::FILL_QUEUE;
         }
+        break;
+
+    case CombatState::FILL_QUEUE:
+        FillQueue();
+        state = CombatState::PROCESS_QUEUE;
+        break;
+
+    case CombatState::PROCESS_QUEUE:
+        ProcessQueue();
+        // ProcessQueue sets the next state itself (ATTACK_START or CALCULATE_INITIATIVE).
         break;
 
     case CombatState::ATTACK_START:
         AttackStart();
         break;
+
     case CombatState::WAITING_FOR_PLAYER_INPUT:
         //do nothing->combatScene manages selection
         break;
@@ -352,6 +366,10 @@ void Combat::StartCombat()
 //  CALCULATE_INITIATIVE
 bool Combat::CalculateInitiative()
 {
+    LOG("── CalculateInitiative tick ──");
+
+    bool anyReady = false;
+
     for (Character* c : GetAllCombatants())
     {
         if (c->GetIsAlive())
@@ -371,23 +389,91 @@ bool Combat::CalculateInitiative()
 #endif
             if (after >= 100)
             {
-                std::cout << "  [PUEDE ACTUAR]";
+                anyReady = true;
+                LOG("  %s | %d + %d = %d  [READY TO ACT]",
+                    c->GetName().c_str(), before, bonus, after);
+            }
+            else {
+                LOG("  %s | %d + %d = %d",
+                    c->GetName().c_str(), before, bonus, after);
             }
 
             std::cout << "\n";
         }
     }
 
+    return anyReady;
+
     currentActor = GetHighestInitiativeActor();
 
-#if _DEBUG
-    if (currentActor != nullptr)
+//#if _DEBUG
+//    if (currentActor != nullptr)
+//    {
+//        std::cout << "  >> Turno para: " << currentActor->GetName()
+//            << " (iniciativa: " << currentActor->GetCurrentInitiative() << ")\n";
+//    }
+//#endif
+//    return currentActor != nullptr;
+}
+
+void Combat::FillQueue()
+{
+    actorsQueue.clear();
+
+    for (Character* c : GetAllCombatants())
     {
-        std::cout << "  >> Turno para: " << currentActor->GetName()
-            << " (iniciativa: " << currentActor->GetCurrentInitiative() << ")\n";
+        if (c->GetIsAlive() && c->GetCurrentInitiative() >= 100)
+        {
+            actorsQueue.push_back(c);
+        }
     }
-#endif
-    return currentActor != nullptr;
+
+    // Sort highest initiative first
+    std::sort(actorsQueue.begin(), actorsQueue.end(),
+        [](Character* a, Character* b)
+        {
+            return a->GetCurrentInitiative() > b->GetCurrentInitiative();
+        });
+
+    LOG("── FillQueue | %d actor(s) ready to act ──", static_cast<int>(actorsQueue.size()));
+    for (int i = 0; i < static_cast<int>(actorsQueue.size()); i++)
+    {
+        Character* c = actorsQueue[i];
+        LOG("  [%d] %s | Initiative: %d | HP: %d/%d | Alive: %s",
+            i,
+            c->GetName().c_str(),
+            c->GetCurrentInitiative(),
+            c->GetCurrentHP(), c->GetMaxHP(),
+            c->GetIsAlive() ? "YES" : "NO");
+    }
+}
+
+void Combat::ProcessQueue()
+{
+    // Remove dead actors from the front of the queue before processing
+    while (!actorsQueue.empty() && !actorsQueue.front()->GetIsAlive())
+    {
+        LOG("ProcessQueue | Skipping dead actor: %s", actorsQueue.front()->GetName().c_str());
+        actorsQueue.erase(actorsQueue.begin());
+    }
+
+    if (actorsQueue.empty())
+    {
+        LOG("ProcessQueue | Queue empty -> CALCULATE_INITIATIVE");
+        state = CombatState::CALCULATE_INITIATIVE;
+        return;
+    }
+
+    // Pop the next actor
+    currentActor = actorsQueue.front();
+    actorsQueue.erase(actorsQueue.begin());
+
+    LOG("ProcessQueue | Next actor: %s | Initiative: %d | Remaining in queue: %d",
+        currentActor->GetName().c_str(),
+        currentActor->GetCurrentInitiative(),
+        static_cast<int>(actorsQueue.size()));
+
+    state = CombatState::ATTACK_START;
 }
 
 //  ATTACK
@@ -510,6 +596,26 @@ void Combat::ApplyModifiers()
 //  CHECK_DEFEAT
 void Combat::CheckDefeat()
 {
+    LOG("── CheckDefeat ──");
+
+#if _DEBUG
+    // Log current HP for all combatants
+    for (Character* c : alliedParty->GetMembers())
+    {
+        LOG("  [ALLY]  %s | HP: %d/%d | Alive: %s",
+            c->GetName().c_str(),
+            c->GetCurrentHP(), c->GetMaxHP(),
+            c->GetIsAlive() ? "YES" : "NO");
+    }
+    for (Character* c : enemyParty->GetMembers())
+    {
+        LOG("  [ENEMY] %s | HP: %d/%d | Alive: %s",
+            c->GetName().c_str(),
+            c->GetCurrentHP(), c->GetMaxHP(),
+            c->GetIsAlive() ? "YES" : "NO");
+    }
+#endif // _DEBUG
+
     if (IsPartyDefeated(enemyParty))
     {
         result = CombatResult::VICTORY;
@@ -525,7 +631,8 @@ void Combat::CheckDefeat()
     else
     {
         // El combate continúa
-        state = CombatState::CALCULATE_INITIATIVE;
+        state = CombatState::PROCESS_QUEUE;
+        LOG("CheckDefeat | Combat continues -> PROCESS_QUEUE");
     }
 }
 
@@ -871,66 +978,99 @@ std::vector<Character*> Combat::GetAllCombatants()
 
 void Combat::SubmitPlayerChoice(int skillIndex, int targetIndex)
 {
-    std::cout << "---- SubmitPlayerChoice ----" << std::endl;
+    //std::cout << "---- SubmitPlayerChoice ----" << std::endl;
 
-    std::cout << "Combat state: " << (int)state << std::endl;
+    //std::cout << "Combat state: " << (int)state << std::endl;
 
-    if (currentActor == nullptr)
+    //if (currentActor == nullptr)
+    //{
+    //    std::cout << "ERROR: currentActor is NULL" << std::endl;
+    //    return;
+    //}
+
+    //std::cout << "Current actor: " << currentActor->GetName() << std::endl;
+
+    //if (state != CombatState::WAITING_FOR_PLAYER_INPUT) return;
+    //if (currentActor == nullptr) return;
+
+    //auto& skills = currentActor->GetSkills();
+    //auto aliveEnemies = GetAliveMembers(enemyParty);
+
+    //std::cout << "SkillIndex received: " << skillIndex << std::endl;
+    //std::cout << "TargetIndex received: " << targetIndex << std::endl;
+
+    //std::cout << "Skills available: " << skills.size() << std::endl;
+    //std::cout << "Alive enemies: " << aliveEnemies.size() << std::endl;
+
+    //if (skillIndex < 0 || skillIndex >= (int)skills.size()) return;
+    //if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size()) return;
+
+    //if (state != CombatState::WAITING_FOR_PLAYER_INPUT)
+    //{
+    //    std::cout << "ERROR: Combat state is not WAITING_FOR_PLAYER_INPUT" << std::endl;
+    //    return;
+    //}
+
+    //if (skillIndex < 0 || skillIndex >= (int)skills.size())
+    //{
+    //    std::cout << "ERROR: Invalid skillIndex" << std::endl;
+    //    return;
+    //}
+
+    //if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size())
+    //{
+    //    std::cout << "ERROR: Invalid targetIndex" << std::endl;
+    //    return;
+    //}
+
+    //currentSkill = &skills[skillIndex];
+    //currentTarget = aliveEnemies[targetIndex];
+
+    //std::cout << "Skill selected: " << currentSkill->GetName() << std::endl;
+    //std::cout << "Target selected: " << currentTarget->GetName() << std::endl;
+
+    //// play animation and change state
+    //std::string anim = currentSkill->GetAnimationId();
+
+    //std::cout << "Playing animation: " << anim << std::endl;
+
+    //currentActor->PlayAnimation(anim);
+    //state = CombatState::ATTACK_ANIMATION;
+
+    //std::cout << "State changed to ATTACK_ANIMATION" << std::endl;
+
+    if (state != CombatState::WAITING_FOR_PLAYER_INPUT) { return; }
+    if (currentActor == nullptr) { return; }
+
+    // --- PASS ------------------------------
+    if (skillIndex == -1)
     {
-        std::cout << "ERROR: currentActor is NULL" << std::endl;
+        LOG("SubmitPlayerChoice | %s PASS (no initiative cost)", currentActor->GetName().c_str());
+        currentSkill = nullptr;
+        currentTarget = nullptr;
+        currentActor->PlayAnimation("idle");
+        state = CombatState::MODIFIERS;
         return;
     }
 
-    std::cout << "Current actor: " << currentActor->GetName() << std::endl;
-
-    if (state != CombatState::WAITING_FOR_PLAYER_INPUT) return;
-    if (currentActor == nullptr) return;
-
+    // --- NORMAL ACTION ----------------------
     auto& skills = currentActor->GetSkills();
-    auto aliveEnemies = GetAliveMembers(enemyParty);
+    auto  aliveEnemies = GetAliveMembers(enemyParty);
 
-    std::cout << "SkillIndex received: " << skillIndex << std::endl;
-    std::cout << "TargetIndex received: " << targetIndex << std::endl;
-
-    std::cout << "Skills available: " << skills.size() << std::endl;
-    std::cout << "Alive enemies: " << aliveEnemies.size() << std::endl;
-
-    if (skillIndex < 0 || skillIndex >= (int)skills.size()) return;
-    if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size()) return;
-
-    if (state != CombatState::WAITING_FOR_PLAYER_INPUT)
-    {
-        std::cout << "ERROR: Combat state is not WAITING_FOR_PLAYER_INPUT" << std::endl;
-        return;
-    }
-
-    if (skillIndex < 0 || skillIndex >= (int)skills.size())
-    {
-        std::cout << "ERROR: Invalid skillIndex" << std::endl;
-        return;
-    }
-
-    if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size())
-    {
-        std::cout << "ERROR: Invalid targetIndex" << std::endl;
-        return;
-    }
+    if (skillIndex < 0 || skillIndex >= (int)skills.size()) { return; }
+    if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size()) { return; }
 
     currentSkill = &skills[skillIndex];
     currentTarget = aliveEnemies[targetIndex];
 
-    std::cout << "Skill selected: " << currentSkill->GetName() << std::endl;
-    std::cout << "Target selected: " << currentTarget->GetName() << std::endl;
-
-    // play animation and change state
     std::string anim = currentSkill->GetAnimationId();
-
-    std::cout << "Playing animation: " << anim << std::endl;
-
     currentActor->PlayAnimation(anim);
     state = CombatState::ATTACK_ANIMATION;
 
-    std::cout << "State changed to ATTACK_ANIMATION" << std::endl;
+    LOG("SubmitPlayerChoice | %s uses %s on %s -> ATTACK_ANIMATION",
+        currentActor->GetName().c_str(),
+        currentSkill->GetName().c_str(),
+        currentTarget->GetName().c_str());
 }
 
 void Combat::ForceVictory()

@@ -69,6 +69,7 @@ void CombatScene::Update(float dt)
 
     // Reset the click guard every frame so the next real click is accepted
     laneInputConsumed = false;
+    combatInputConsumed = false;
 
     // Lane selection is still ongoing — don't run combat yet
     if (uiState == CombatUIState::SELECTING_LANE)
@@ -107,8 +108,19 @@ void CombatScene::Update(float dt)
 
     if (!combat->GetWaitingForInput())
     {
-        LOG("Combat RUN");
-        combat->Run();
+        // Iterar hasta que el combate necesite esperar input externo
+        // (input del jugador o animación) o haya terminado
+        bool keepRunning = true;
+
+        while (keepRunning)
+        {
+            combat->Run();
+
+            if (combat->CombatIsFinished()) { keepRunning = false; }
+            else if (combat->GetWaitingForInput()) { keepRunning = false; }
+            else if (combat->IsWaitingAnimation()) { keepRunning = false; }
+        }
+        //combat->Run();
     }
 
     // Al acabar el combate volvemos a InGameScene (que quedó suspendida)
@@ -156,6 +168,9 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 4:
     case 5:
     {
+        if (combatInputConsumed) { break; }
+        combatInputConsumed = true;
+
         selectedSkillIdx = uiElement->id - 1;
         ShowTargetPanel();
         break;
@@ -166,8 +181,10 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 11:
     case 12:
     {
-        int targetIndex = uiElement->id - 10;
+        if (combatInputConsumed) { break; }
+        combatInputConsumed = true;
 
+        int targetIndex = uiElement->id - 10;
         combat->SubmitPlayerChoice(selectedSkillIdx, targetIndex);
 
         HideCombatUI();
@@ -180,6 +197,9 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
     // ---------- BACK ----------
     case 20:
     {
+        if (combatInputConsumed) { break; }
+        combatInputConsumed = true;
+
         ShowSkillButtons();
         break;
     }
@@ -224,6 +244,16 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
         {
             FinalizeLaneAssignments();
         }
+        break;
+    }
+    case 40: // PASS
+    {
+        if (combatInputConsumed) { break; }
+        combatInputConsumed = true;
+
+        combat->SubmitPlayerChoice(-1, 0);
+        HideCombatUI();
+        selectedSkillIdx = -1;
         break;
     }
     default:
@@ -674,6 +704,22 @@ void CombatScene::ShowSkillButtons()
     //        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
     //    );
     //}
+
+    // Botón de pasar turno — sin coste de iniciativa
+    SDL_Rect passBounds;
+    passBounds.x = 20;
+    passBounds.y = 550;   // debajo de los botones de skill
+    passBounds.w = 64;
+    passBounds.h = 64;
+
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON,
+        40,
+        "Pass",
+        passBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+        {}, abilityIcons, 0, passBounds.w, passBounds.h
+    );
 }
 
 void CombatScene::ShowTargetPanel()
@@ -822,6 +868,22 @@ void CombatScene::CreateUI()
                 [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
             );
         }
+
+        // Botón Pass
+        SDL_Rect passBounds;
+        passBounds.x = 20;
+        passBounds.y = 550;
+        passBounds.w = 64;
+        passBounds.h = 64;
+
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON,
+            40,
+            "Pass",
+            passBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+            {}, abilityIcons, 0, passBounds.w, passBounds.h
+        );
     }
     else if (uiState == CombatUIState::SELECTING_LANE)
     {

@@ -66,6 +66,7 @@ private:
 
     // Prevents the same click from propagating to the next lane panel in the same frame
     bool laneInputConsumed;
+    bool combatInputConsumed = false;
 
     int shipLevel;
 
