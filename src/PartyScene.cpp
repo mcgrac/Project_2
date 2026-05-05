@@ -50,6 +50,7 @@ void PartyScene::PostUpdate(float dt)
     SDL_Rect bg = { 0, 0, 1280, 720 };
     Engine::GetInstance().render->DrawRectangle(bg, 5, 5, 20, 230, true, false);
 
+    RenderBackground(selected);
     RenderMemberTabs();
     RenderPortrait(selected);
     RenderBars(selected);
@@ -131,6 +132,50 @@ bool PartyScene::OnUIMouseClickEvent(UIElement* uiElement)
     }
 
     return true;
+}
+
+#pragma region LOAD
+void PartyScene::LoadTextures()
+{
+    auto& members = alliedParty->GetMembers();
+    Character* c = members[selectedMemberIndex];
+
+    LoadBackground(c);
+    LoadStatsTable();
+    LoadCharacterNames(c);
+
+    background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/PartyBackground.png");
+    statsPanelTexture = Engine::GetInstance().textures->Load("Assets/Textures/UI/StatsPanel.png");
+}
+
+void PartyScene::LoadBackground(Character* c)
+{
+    std::string path;
+    path = "   " + c->GetName(); +"   ";
+    Engine::GetInstance().textures->Load(path.c_str());
+}
+
+void PartyScene::LoadStatsTable()
+{
+    Engine::GetInstance().textures->Load("  ");
+}
+
+void PartyScene::LoadCharacterNames(Character* c)
+{
+    std::string path;
+    path = "   " + c->GetName(); +"   ";
+    Engine::GetInstance().textures->Load(path.c_str());
+}
+#pragma endregion
+
+
+
+#pragma region RENDER
+void PartyScene::RenderBackground(Character* c)
+{
+    std::string path;
+    path = "   " + c->GetName(); +"   ";
+
 }
 
 void PartyScene::RenderMemberTabs()
@@ -256,11 +301,11 @@ void PartyScene::RenderStats(Character* c)
     SDL_Color col = { 220, 220, 220, 255 };
 
     auto DrawStat = [&](const std::string& label, int value)
-    {
-         std::string line = label + ": " + std::to_string(value);
-         Engine::GetInstance().render->DrawText(line.c_str(), textX, textY, STATS_PANEL_W - 20, lineH - 2, col);
-         textY += lineH;
-    };
+        {
+            std::string line = label + ": " + std::to_string(value);
+            Engine::GetInstance().render->DrawText(line.c_str(), textX, textY, STATS_PANEL_W - 20, lineH - 2, col);
+            textY += lineH;
+        };
 
     DrawStat("Level", c->GetLevel());
     DrawStat("Power", c->GetTotalPower());
@@ -325,14 +370,14 @@ void PartyScene::RenderSkillIcons(Character* c)
         Uint8 r, g, b;
         switch (skills[i].GetDamageType())
         {
-        case DamageType::Physical: 
-            r = 180; g = 100; b = 50;  
+        case DamageType::Physical:
+            r = 180; g = 100; b = 50;
             break;
-        case DamageType::Magical:  
-            r = 80;  g = 80;  b = 200; 
+        case DamageType::Magical:
+            r = 80;  g = 80;  b = 200;
             break;
-        default: 
-            r = 80;  g = 150; b = 80;  
+        default:
+            r = 80;  g = 150; b = 80;
             break;
         }
 
@@ -487,6 +532,9 @@ void PartyScene::RenderTooltip(int mouseX, int mouseY)
         { 255, 255, 255, 255 }
     );
 }
+#pragma endregion
+
+
 
 void PartyScene::RefreshButtons()
 {
@@ -556,13 +604,7 @@ void PartyScene::ClearButtons()
 }
 
 
-void PartyScene::LoadTextures()
-{
-    background = Engine::GetInstance().textures->Load(
-        "Assets/Textures/Backgrounds/PartyBackground.png");
-    statsPanelTexture = Engine::GetInstance().textures->Load(
-        "Assets/Textures/UI/StatsPanel.png");
-}
+
 
 void PartyScene::UnloadTextures()
 {

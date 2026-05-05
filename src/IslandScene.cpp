@@ -132,7 +132,7 @@ void IslandScene::EnterIsland()
     //save data
     SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId());
 
-    Engine::GetInstance().scene->PushScene(new IslandInteriorScene(island, alliedParty));
+    Engine::GetInstance().scene->PushScene(new IslandInteriorScene(island, alliedParty, ship));
 }
 
 void IslandScene::AttackIsland()

@@ -62,11 +62,12 @@ private:
 
     Vector2D segStart[2];   // start position of each segment
     Vector2D segEnd[2];     // end position of each segment
-    int segCount = 0;  // 1 or 2
+    int segCount = 0;       // 1 or 2
     int currentSeg = 0;
-    float segT = 0.0f;   // normalised progress [0,1] within current segment
+    float segT = 0.0f;      // normalised progress [0,1] within current segment
 
-    static const float MOVE_SPEED; // units per second — tune to taste
+    static const float MOVE_SPEED;
+    static const int MAX_LEVEL_SHIP = 3;
 
     std::function<void()> onArrivalCallback;
     bool pendingArrival = false;

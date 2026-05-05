@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Textures.h"
 #include "Render.h"
+#include "Log.h"
 
 const float Ship::MOVE_SPEED = 0.1f; // pixels per second
 
@@ -291,11 +292,19 @@ void Ship::Heal(int amount)
 
 void Ship::LevelUp()
 {
-    level += 1;
-    maxHp += HP_PER_LEVEL;
-    currentHp += HP_PER_LEVEL;
+    if(level < MAX_LEVEL_SHIP)
+    {
+        level += 1;
+        maxHp += HP_PER_LEVEL;
+        currentHp += HP_PER_LEVEL;
+    }
 
-    //level up modificators also
+#if _DEBUG
+    LOG("Ship improved to level -> %d", level);
+    LOG("maxHp improved from: %d to %d", maxHp - HP_PER_LEVEL, maxHp);
+    LOG("current HP modifies from: %d to %d", currentHp - HP_PER_LEVEL, currentHp);
+#endif // _DEBUG
+
 }
 
 void Ship::LoseBattle()

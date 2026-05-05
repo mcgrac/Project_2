@@ -28,8 +28,8 @@ void LoadingScene::Load()
 
 void LoadingScene::DoBackgroundLoad()
 {
+    //characters
     std::vector<std::string> namesToLoad;
-
     if (isContinue)
     {
         SaveData data = SaveLoad::Load();
@@ -60,12 +60,16 @@ void LoadingScene::DoBackgroundLoad()
         }
     }
 
+    // WorldMap — solo datos, sin texturas
+    loadedWorldMap = new WorldMap();
+    loadedWorldMap->LoadWorldData("Assets/Maps/world.xml");
+
     loadingDone = true;
 }
 
 void LoadingScene::Update(float dt)
 {
-
+    //create thread in the first frame
     if (framesRendered == 0 && !loadThread.joinable())
     {
         loadThread = std::thread(&LoadingScene::DoBackgroundLoad, this);
@@ -106,14 +110,23 @@ void LoadingScene::Update(float dt)
         loadThread.join();
     }
 
-    // Cargar texturas en el hilo principal — seguro
+    // Cargar texturas en el hilo principal
+    //characters
     for (Character* c : loadedCharacters)
     {
         CharacterFactory::LoadVisualsFor(c, c->GetName());
     }
 
+    loadedWorldMap->LoadNPCTextures();
+
+    //worldMap
+    SDL_Texture * humanTex = Engine::GetInstance().textures->Load("Assets/Textures/Islands/island_human.png");
+    SDL_Texture* reptileTex = Engine::GetInstance().textures->Load("Assets/Textures/Islands/island_reptile.png");
+    SDL_Texture* skullTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/EnemySymbol.png");
+    loadedWorldMap->ConnectVisuals(humanTex, reptileTex, skullTex);
+
     LOG("LoadingScene: carga completada, lanzando InGameScene.");
-    Engine::GetInstance().scene->ReplaceScene(new InGameScene(loadedCharacters, isContinue));
+    Engine::GetInstance().scene->ReplaceScene(new InGameScene(loadedCharacters, loadedWorldMap, isContinue));
 }
 
 void LoadingScene::PostUpdate(float dt)

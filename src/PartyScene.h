@@ -30,11 +30,17 @@ private:
     SDL_Texture* portraitTexture = nullptr;  // portrait grande del personaje actual
     std::string loadedPortraitName = "";        // para saber si hay que recargar
 
+    void LoadBackground(Character* c);
+    void LoadStatsTable();
+    void LoadCharacterNames(Character* c);
     // ------------ Tooltips ----------
     std::string tooltipText = "";   // texto a mostrar en el tooltip activo
     int hoveredSkillIdx = -1;   // índice de la skill hoverada (-1 = ninguna)
 
     // ------------ Secciones de la UI --------------
+    // Background
+    void RenderBackground(Character* c);
+
     // Dibuja los 3 botones mini de selección de personaje (esquina superior derecha)
     void RenderMemberTabs();
 

@@ -336,7 +336,7 @@ void Combat::StartCombat()
         enemies[i]->ResetCurrentInitiative();
     }
 
-#if DEBUG
+#if _DEBUG
     std::cout << "\n[ALIADOS tras bonificaciones de lane]\n";
     for (Character* c : alliedParty->GetMembers())
     {
@@ -714,7 +714,7 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 
             int targetHpAfter = target->GetCurrentHP();
             int damageDone = targetHpBefore - targetHpAfter;
-#if DEBUG
+#if _DEBUG
             std::cout << user->GetName() << " usa " << skill.GetName()
                 << " -> " << target->GetName() << "\n";
 #endif
@@ -722,7 +722,7 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
             //-----------------debug-----------------
             if (damageDone > 0)
             {
-#if DEBUG
+#if _DEBUG
                 std::cout << "    Daño: " << damageDone
                     << " | HP " << target->GetName() << ": "
                     << targetHpBefore << " -> " << targetHpAfter;
@@ -737,7 +737,7 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
             }
             else if (damageDone < 0)
             {
-#if DEBUG
+#if _DEBUG
                 std::cout << "    Curación: " << (-damageDone)
                     << " | HP " << target->GetName() << ": "
                     << targetHpBefore << " -> " << targetHpAfter << "\n";
@@ -747,7 +747,7 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
             // Estado de efectos del target tras el ataque
             if (target->IsBurning())
             {
-#if DEBUG
+#if _DEBUG
                 std::cout << "    " << target->GetName()
                     << " esta QUEMADO: " << target->GetBurnDamage() << " de daño/turno\n";
 #endif
@@ -755,12 +755,12 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 
             if (target->IsPoisoned())
             {
-#if DEBUG
+#if _DEBUG
                 std::cout << "    " << target->GetName()
                     << " esta ENVENENADO: " << target->GetPoisonDamage() << " de daño/turno\n";
 #endif
             }
-#if DEBUG
+#if _DEBUG
 
             std::cout << "    Iniciativa restante de " << user->GetName()
                 << ": " << user->GetCurrentInitiative() << "\n";
@@ -792,7 +792,7 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
         std::cout << user->GetName() << " usa " << skill.GetName()
             << " -> " << target->GetName()
             << "  | Iniciativa restante: " << user->GetCurrentInitiative() << "\n";
-#if DEBUG
+#if _DEBUG
         //-----------------debug-----------------
         if (damageDone > 0)
         {

@@ -4,6 +4,7 @@
 #include <string>
 #include <thread>
 #include <atomic>
+#include "WorldMap.h"
 
 class Character;
 struct SDL_Texture;
@@ -39,4 +40,6 @@ private:
     //animation
     float dotTimer;
     int dotCount;
+
+    WorldMap* loadedWorldMap;
 };

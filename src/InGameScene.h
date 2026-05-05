@@ -14,7 +14,7 @@ class Character;
 class InGameScene : public BaseScene
 {
 public:
-    InGameScene(std::vector<Character*> _prebuiltCharacters, bool _isContinue);
+    InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* _worldMap, bool _isContinue);
     ~InGameScene();
 
     void Load() override;
@@ -39,7 +39,7 @@ private:
     Party* alliedParty;
     void DestroyParty();
 
-    WorldMap worldMap;
+    WorldMap* worldMap;
 
     //textures
     SDL_Texture* background;
@@ -49,8 +49,6 @@ private:
     // Island sprites — drawn below each island button
     SDL_Texture* islandHumanTex;
     SDL_Texture* islandReptileTex;
-
-    // Skull icon — drawn on hostile islands
     SDL_Texture* skullTex;
 
     bool isContinue;
