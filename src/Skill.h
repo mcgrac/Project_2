@@ -26,7 +26,7 @@ private:
     bool areaEffectTargetAllies;
     std::string animationId;
 
-    std::string skillDescription = "Texto de prueba para ver si funciona: Heal 10 Damage 40\n";
+    std::string skillDescription = "";
 
 public:
     Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost, std::string _animationId = "none");
@@ -44,10 +44,6 @@ public:
     inline bool GetHasAreaEffect() const { return hasAreaEffect; }
     inline bool GetAreaEffectTargetAllies() const { return areaEffectTargetAllies; }
     inline std::string GetAnimationId() const { return animationId; }
-
-    inline void SetHasAreaEffect(bool b) { hasAreaEffect = b; }
-    inline void SetAreaEffectTargetAllies(bool b) { areaEffectTargetAllies = b; }
-
     inline DamageType GetDamageType() const { return damageType; }
 
     inline std::string GetDescription() const { return skillDescription; }
@@ -58,6 +54,12 @@ public:
     //--------------------------
 #pragma endregion
 
+#pragma region SETTERS
+    inline void SetHasAreaEffect(bool b) { hasAreaEffect = b; }
+    inline void SetAreaEffectTargetAllies(bool b) { areaEffectTargetAllies = b; }
     inline void SetDescription(const std::string& desc) { skillDescription = desc; }
+#pragma endregion
+
+
 
 };

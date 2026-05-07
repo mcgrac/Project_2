@@ -9,11 +9,12 @@
 
 struct SDL_Texture;
 class IslandScene;
+class Character;
 
 class InGameScene : public BaseScene
 {
 public:
-    InGameScene(std::vector<std::string> _characterNames, bool _isContinue);
+    InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* _worldMap, bool _isContinue);
     ~InGameScene();
 
     void Load() override;
@@ -32,13 +33,13 @@ public:
     Party* GetAlliedParty() { return alliedParty; }
 
 private:
-    std::vector<std::string> characterNames;
+    std::vector<Character*> prebuiltCharacters;
 
     // InGameScene es owner de la party y los characters — los crea y destruye
     Party* alliedParty;
     void DestroyParty();
 
-    WorldMap worldMap;
+    WorldMap* worldMap;
 
     //textures
     SDL_Texture* background;
@@ -48,8 +49,6 @@ private:
     // Island sprites — drawn below each island button
     SDL_Texture* islandHumanTex;
     SDL_Texture* islandReptileTex;
-
-    // Skull icon — drawn on hostile islands
     SDL_Texture* skullTex;
 
     bool isContinue;
@@ -62,4 +61,5 @@ private:
 
     static int GetIslandCenterY(int row, int islandsInCol);
     static ShipMovement DetermineShipMovement(int fromCenterY, int toCenterY);
+    void PushSceneFromInGame(BaseScene* scene);
 };

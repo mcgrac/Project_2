@@ -12,7 +12,9 @@ class WorldMap
 public:
     WorldMap();
 
-    bool LoadWorld (const std::string& xmlPath);
+    bool LoadWorldData (const std::string& xmlPath); //only data, no visuals
+    void ConnectVisuals(SDL_Texture* humanTex, SDL_Texture* reptileTex, SDL_Texture* skullTex); // hilo principal
+
     bool Update (float dt);
     bool PostUpdate (float dt);
     void UnloadWorld ();
@@ -37,6 +39,8 @@ public:
 
     //callback
     std::function<void(Island*)> arrivalIsland;
+
+    void LoadNPCTextures();
 
 private:
     //

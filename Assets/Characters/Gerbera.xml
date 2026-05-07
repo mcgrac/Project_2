@@ -31,7 +31,7 @@
         healingPower="0"
         poisonPower="0"
         firePower="0"
-        maxInitiative="300"
+        maxInitiative="250"
     />
 
 	<levelScaling
@@ -42,10 +42,10 @@
 
 	<skills>
 		<skill id="fire_charge" initiativeCost="100" />
-		<skill id="charge_arrow" initiativeCost="100" />
+		<skill id="charge_arrow" initiativeCost="160" />
 		<skill id="green_arrow" initiativeCost="100" />
 		<skill id="charged_arrow" initiativeCost="100" />
-		<skill id="fire_arrow_2" initiativeCost="100" />
+		<skill id="fire_arrow_2" initiativeCost="135" />
 	</skills>
 
 	<upgradeTree>

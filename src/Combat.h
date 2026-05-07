@@ -17,8 +17,10 @@ enum class CombatState
     START_COMBAT,
     CALCULATE_INITIATIVE,
 
+    FILL_QUEUE,
+    PROCESS_QUEUE,
+    NEXT_ROUND_PAUSE,
     ATTACK_START,
-
     WAITING_FOR_PLAYER_INPUT,
 
     ATTACK_ANIMATION,
@@ -87,7 +89,9 @@ public:
     std::unordered_map<Character*, Character::PreCombatValues> preCombatValues;
 
     //getter
+    inline bool IsNextRoundPause() const { return state == CombatState::NEXT_ROUND_PAUSE; }
     inline bool GetWaitingForInput() const { return state == CombatState::WAITING_FOR_PLAYER_INPUT; }
+    inline bool IsWaitingAnimation() const { return state == CombatState::ATTACK_ANIMATION; }
     inline Character* GetCurrentActor() const { return currentActor; }
     inline std::vector<Character*> GetAliveEnemies() { return GetAliveMembers(enemyParty); }
     inline std::vector<Character*> GetAliveAllies() { return GetAliveMembers(alliedParty); }
@@ -102,6 +106,7 @@ public:
     void ForceDefeat();
 
     float GetLaneDamageMultiplier(Character* c);
+    void ResumeFromNextRoundPause();
 
 private:
 
@@ -111,8 +116,7 @@ private:
     CombatState state;
     CombatResult result;
 
-    Character* currentActor;    //one with most iniciative (attacking)
-
+    Character* currentActor = nullptr;    //one with most iniciative (attacking)
     Skill* currentSkill = nullptr;
     Character* currentTarget = nullptr;
 
@@ -125,6 +129,8 @@ private:
 
     void ApplyLaneBonuses();
 
+    std::vector<Character*> actorsQueue;
+
     // ── Posiciones predefinidas ───────────────
     // Índice 0-2: aliados  |  Índice 3-5: enemigos
     // Puedes cambiar el tipo a sf::Vector2f si usas SFML, etc.
@@ -136,6 +142,8 @@ private:
     void ResetBonusStats(Character* c);
     void StartCombat();
     bool CalculateInitiative();
+    void FillQueue();            // build actorsQueue from everyone >= 100, sorted desc
+    void ProcessQueue();         // pop next actor; if empty -> CALCULATE_INITIATIVE
 
     //Attack
     void AttackStart();
@@ -146,15 +154,13 @@ private:
 
     void CheckDefeat();
     void EndCombat();
+
     void PlayerTurn();
     void EnemyTurn();
-
     void ExecuteSkill(Character* user, Skill& skill, Character* target);
 
     Character* GetHighestInitiativeActor();
     std::vector<Character*> GetAliveMembers(Party* party);
-
     bool IsPartyDefeated(Party* party);
-
     bool IsAllied(Character* character);
 };

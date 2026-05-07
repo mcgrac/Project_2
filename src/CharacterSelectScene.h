@@ -4,6 +4,7 @@
 #include <string>
 #include <SDL3/SDL.h>
 #include "Vector2D.h"
+#include "CharacterFactory.h"
 
 class Character;
 
@@ -11,9 +12,7 @@ struct SelectableCharacter
 {
     std::string name;       // identificador — el mismo que usa CharacterFactory
     std::string label;      // nombre visible en pantalla
-    //SDL_Rect bounds;     // área clickable
     bool selected;
-    //int portraitCol;
     int labelRow;
     int panelRow;
 
@@ -57,7 +56,7 @@ private:
 
     // names of the three characters selected
     std::vector<std::string> selectedNames;
-    std::vector<Character*> createdCharacters;
+    //std::vector<Character*> createdCharacters;
 
     // Activa/desactiva la selección de un personaje
     void ToggleSelection(int index);

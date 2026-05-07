@@ -39,4 +39,5 @@ private:
     SDL_Texture* spritesheet;
 
     int buttonSelectionFx;
+    bool pendingRefresh = false;
 };

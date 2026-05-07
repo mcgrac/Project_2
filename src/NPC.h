@@ -18,10 +18,9 @@ public:
     inline const std::string& GetDialogueId() const { return dialogueId; }
     inline SDL_Texture* GetTexture() { return spritesheet; }
 
-private:
-    
     void LoadTexture();
 
+private:
     std::string name;
     std::string dialogueId;
 

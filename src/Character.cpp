@@ -13,7 +13,7 @@ Character::Character(Vector2D _position, std::string _name, int _health, int _ma
 	basePower(_basePower), bonusPower(_bonusPower), totalPower(_totalPower),totalDurability(_totalDurability), baseDurability(_baseDurability), bonusDurability(_bonusDurability), 
 	maxDurability(_maxDurability), baseSpeed(_baseSpeed), bonusSpeed(_bonusSpeed), totalSpeed(_totalSpeed), lifesteal(_lifesteal), healingPower(_healingPower), poisonPower(_poisonPower), firePower(_firePower),
 	isPoisoned(false), isBurned(false), poisonStatMod(_poisonedStatMod), burnedStatMod(_burnedStatMod), level(_level), 
-	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true)
+	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true), isAllied(false)
 {
 	SetTotalPower();
 	SetTotalSpeed();
@@ -29,7 +29,11 @@ Character::~Character()
 	LOG("\033[1;32m|Destructor Character: %s\033[0m", name.c_str());
 #endif // _DEBUG
 
-	Engine::GetInstance().textures->UnLoad(texture);
+	if (texture != nullptr)
+	{
+		Engine::GetInstance().textures->UnLoad(texture);
+		texture = nullptr;
+	}
 
 	killedBy = nullptr;
 	poisonedBy = nullptr;
@@ -38,12 +42,6 @@ Character::~Character()
 	//upgradeTree
 	delete upgradeTree;
 	upgradeTree = nullptr;
-
-	//inventory
-	for (Item* i : equippedItems) {
-		delete i;
-	}
-	equippedItems.clear();
 
 }
 
@@ -64,7 +62,7 @@ void Character::Update(float dt)
 void Character::Heal(int amount)
 {
 	int currentHealth = health;
-	currentHealth += amount * healingPower;
+	currentHealth += amount * (1 + healingPower);
 	health = std::min(maxHealth, currentHealth);
 }
 
@@ -86,8 +84,26 @@ void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 			name.c_str(), damageReceived, incomingDamageMultiplier, scaledDamage, (damageReceived - scaledDamage));
 	}
 
+	float durabilityReduction = totalDurability / 100.0f; //% of durability
+	float durabilityMultiplier = 1.0f - durabilityReduction;
+	if (durabilityMultiplier < 0.0f) { durabilityMultiplier = 0.0f; }
+
+	// --- LOG NUEVO ---
+	int damageAfterDurability = std::max(0, (int)(scaledDamage * durabilityMultiplier));
+
+	LOG("PHYSICAL DMG [%s]: incoming=%d | totalDurability=%d (base=%d, bonus=%d) | damageAfterDurability=%d | HP antes=%d | HP despues=%d",
+		name.c_str(),
+		scaledDamage,
+		totalDurability,
+		baseDurability,
+		bonusDurability,
+		damageAfterDurability,
+		health,
+		std::max(0, health - damageAfterDurability));
+	// -----------------
+
 	int currentHealth = health;
-	currentHealth -= std::max(0, scaledDamage - totalDurability); //avoids that damage < 0
+	currentHealth -= damageAfterDurability; 
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
@@ -154,12 +170,19 @@ void Character::Draw(float dt)
 
 	int drawX = (int)position.getX() - animFrame.w / 2;
 	int drawY = (int)position.getY() - animFrame.h / 2;
+	
+	double rotation = 0.0f;
+	if (!isAllied) { rotation = -1.0; }
+
+	float speed = 1.0f;
 
 	Engine::GetInstance().render->DrawTexture(
 		texture,
 		drawX,
 		drawY,
-		&animFrame
+		&animFrame,
+		speed,
+		rotation
 	);
 }
 
@@ -194,6 +217,7 @@ void Character::AddInitiative(int amount)
 {
 	initiative += amount;
 	if (initiative < 0) { initiative = 0; }
+	if (initiative > maxInitiative) { initiative = maxInitiative; }
 }
 
 void Character::SetBurned(bool state, int damage, Character* attacker)
@@ -287,30 +311,31 @@ void Character::ClearBonusStats()
 	bonusSpeed = 0;
 }
 
-bool Character::EquipItem(Item* item)
-{
-	if (equippedItems.size() >= MAX_EQUIPPED_ITEMS) { return false; }
+//bool Character::EquipItem(Item* item)
+//{
+//	if (equippedItems.size() >= MAX_EQUIPPED_ITEMS) { return false; }
+//
+//	equippedItems.push_back(item);
+//
+//	item->Use(this);
+//#if _DEBUG
+//	DebugInventory();
+//#endif // _DEBUG
+//	return true;
+//}
 
-	equippedItems.push_back(item);
-
-	item->ApplyEffect(this);
-#if _DEBUG
-	DebugInventory();
-#endif // _DEBUG
-	return true;
-}
-
-void Character::DebugInventory()
-{
-	LOG("\033[1;32m-----------INVENTORY OF %s --------------\033[0m", name.c_str());
-	for (auto& item : equippedItems) {
-		LOG("\033[1;33mItem: %s equipped\033[0m", item->GetName().c_str());
-		for (auto& stat : item->GetItemStats()) {
-			LOG("\033[1;33mStat: %d Value: %d\033[0m", stat.type, stat.value);
-		}
-	}
-	LOG("------------------------------------------");
-}
+//void Character::DebugInventory()
+//{
+//	LOG("\033[1;32m-----------INVENTORY OF %s --------------\033[0m", name.c_str());
+//	for (auto& item : equippedItems) {
+//		LOG("\033[1;33mItem: %s equipped\033[0m", item->GetName().c_str());
+//		EquippableItem* equippable = dynamic_cast<EquippableItem*>(item);
+//		for (auto& stat : equippable->GetItemStats()) {
+//			LOG("\033[1;33mStat: %d Value: %d\033[0m", stat.type, stat.value);
+//		}
+//	}
+//	LOG("------------------------------------------");
+//}
 
 
 void Character::PrintDebugInfo(){

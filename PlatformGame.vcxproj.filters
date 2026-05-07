@@ -243,6 +243,18 @@
     <ClCompile Include="src\PartyScene.cpp">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="src\EquippableItem.cpp">
+      <Filter>Source Files\Game\Characters\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConsumableItem.cpp">
+      <Filter>Source Files\Game\Characters\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KeyItem.cpp">
+      <Filter>Source Files\Game\Characters\Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LoadingScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Audio.h">
@@ -432,6 +444,18 @@
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\PartyScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EquippableItem.h">
+      <Filter>Source Files\Game\Characters\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConsumableItem.h">
+      <Filter>Source Files\Game\Characters\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyItem.h">
+      <Filter>Source Files\Game\Characters\Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LoadingScene.h">
       <Filter>Source Files\Game\Scenes</Filter>
     </ClInclude>
   </ItemGroup>

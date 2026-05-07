@@ -1,4 +1,6 @@
 #include "ItemManager.h"
+#include "ConsumableItem.h"
+#include "KeyItem.h"
 #include "pugixml.hpp"
 #include "Log.h"
 
@@ -10,6 +12,11 @@ ItemManager::ItemManager()
 ItemManager::~ItemManager()
 {
     //destroy list all items
+    for (auto item : allItems)
+    {
+        delete item;
+    }
+    allItems.clear();
 }
 
 bool ItemManager::Start()
@@ -21,6 +28,11 @@ bool ItemManager::Start()
 
 bool ItemManager::CleanUp()
 {
+    for (auto item : allItems)
+    {
+        delete item;
+    }
+    allItems.clear();
     return true;
 }
 
@@ -35,36 +47,98 @@ bool ItemManager::LoadItemsFromXML(const std::string& path)
         return false;
     }
 
+//    for (pugi::xml_node itemNode : doc.child("items").children("item"))
+//    {
+//        std::string name = itemNode.attribute("name").as_string();
+//        std::string factionStr = itemNode.attribute("faction").as_string();
+//        int price = itemNode.attribute("price").as_int();
+//
+//        Faction faction = StringToFaction(factionStr);
+//
+//        Item* item = new Item(name, faction, price);
+//
+//        for (pugi::xml_node statNode : itemNode.children("stat"))
+//        {
+//            std::string typeStr = statNode.attribute("type").as_string();
+//            int value = statNode.attribute("value").as_int();
+//
+//            StatType type = StringToStat(typeStr);
+//
+//            item->AddStat(type, value);
+//        }
+//
+//        allItems.push_back(item);
+//
+//#if _DEBUG
+//        //debug
+//        LOG("|ITEM: %s created|", item->GetName().c_str());
+//        LOG("STATS MODIFICATION");
+//        for (auto& stat : item->GetItemStats()) {
+//            LOG("Modificatin type: %d | value: %d", stat.type, stat.value);
+//        }
+//#endif
+//    }
+//
+//    LOG("||TOTAL ITEMS CREATED: %d||", allItems.size());
+
     for (pugi::xml_node itemNode : doc.child("items").children("item"))
     {
-        std::string name = itemNode.attribute("name").as_string();
-        std::string factionStr = itemNode.attribute("faction").as_string();
+        std::string itemName = itemNode.attribute("name").as_string();
+        std::string type = itemNode.attribute("type").as_string();
         int price = itemNode.attribute("price").as_int();
 
-        Faction faction = StringToFaction(factionStr);
+        Item* item = nullptr;
 
-        Item* item = new Item(name, faction, price);
-
-        for (pugi::xml_node statNode : itemNode.children("stat"))
+        if (type == "equippable")
         {
-            std::string typeStr = statNode.attribute("type").as_string();
-            int value = statNode.attribute("value").as_int();
+            std::string factionStr = itemNode.attribute("faction").as_string();
+            Faction faction = StringToFaction(factionStr);
 
-            StatType type = StringToStat(typeStr);
+            EquippableItem* equippable = new EquippableItem(itemName, faction, price);
 
-            item->AddStat(type, value);
+            for (pugi::xml_node statNode : itemNode.children("stat"))
+            {
+                std::string statTypeStr = statNode.attribute("type").as_string();
+                int value = statNode.attribute("value").as_int();
+                StatType statType = StringToStat(statTypeStr);
+                equippable->AddStat(statType, value);
+            }
+
+            item = equippable;
+
+#if _DEBUG
+            LOG("|EQUIPPABLE ITEM: %s created|", item->GetName().c_str());
+            LOG("STATS MODIFICATION");
+            for (auto& stat : equippable->GetItemStats())
+            {
+                LOG("Modification type: %d | value: %d", stat.type, stat.value);
+            }
+#endif
+        }
+        else if (type == "consumable")
+        {
+            int healAmount = itemNode.attribute("heal").as_int();
+            item = new ConsumableItem(itemName, price, healAmount);
+
+#if _DEBUG
+            LOG("|CONSUMABLE ITEM: %s created | heal: %d|", item->GetName().c_str(), healAmount);
+#endif
+        }
+        else if (type == "key")
+        {
+            item = new KeyItem(itemName, price);
+
+#if _DEBUG
+            LOG("|KEY ITEM: %s created|", item->GetName().c_str());
+#endif
+        }
+        else
+        {
+            LOG("WARNING: Unknown item type '%s' for item '%s', skipping.", type.c_str(), itemName.c_str());
+            continue;
         }
 
         allItems.push_back(item);
-
-#if DEBUG
-        //debug
-        LOG("|ITEM: %s created|", item->GetName().c_str());
-        LOG("STATS MODIFICATION");
-        for (auto& stat : item->GetItemStats()) {
-            LOG("Modificatin type: %d | value: %d", stat.type, stat.value);
-        }
-#endif
     }
 
     LOG("||TOTAL ITEMS CREATED: %d||", allItems.size());
@@ -72,14 +146,22 @@ bool ItemManager::LoadItemsFromXML(const std::string& path)
     return true;
 }
 
-std::vector<Item*> ItemManager::GetItemsByFaction(Faction faction)
+std::vector<Item*> ItemManager::GetAllItems() const
 {
-    std::vector<Item*> result;
+    return allItems;
+}
+
+std::vector<EquippableItem*> ItemManager::GetEquippablesByFaction(Faction faction) const
+{
+    std::vector<EquippableItem*> result;
 
     for (auto item : allItems)
     {
-        if (item->GetFaction() == faction)
-            result.push_back(item);
+        EquippableItem* equippable = dynamic_cast<EquippableItem*>(item);
+        if (equippable != nullptr && equippable->GetFaction() == faction)
+        {
+            result.push_back(equippable);
+        }
     }
 
     return result;
@@ -96,25 +178,54 @@ Item* ItemManager::GetItemByName(const std::string& name)
     return nullptr;
 }
 
+
+ConsumableItem* ItemManager::GetConsumable()
+{
+    for (Item* item : allItems)
+    {
+        ConsumableItem* consumable = dynamic_cast<ConsumableItem*>(item);
+        if (consumable != nullptr)
+        {
+            return consumable;
+        }
+    }
+
+    return nullptr;
+}
+
+KeyItem* ItemManager::GetKey()
+{
+    for (Item* item : allItems)
+    {
+        KeyItem* key = dynamic_cast<KeyItem*>(item);
+        if (key != nullptr)
+        {
+            return key;
+        }
+    }
+    return nullptr;
+}
+
 Faction ItemManager::StringToFaction(const std::string& str)
 {
-    if (str == "BIRD") return Faction::BIRD;
-    if (str == "HUMAN") return Faction::HUMAN;
-    if (str == "SIREN") return Faction::SIREN;
+    if (str == "BIRD")      return Faction::BIRD;
+    if (str == "HUMAN")     return Faction::HUMAN;
+    if (str == "SIREN")     return Faction::SIREN;
+    if (str == "REPTILE")   return Faction::REPTILE;
 
     return Faction::UNDEFINED;
 }
 
 StatType ItemManager::StringToStat(const std::string& str)
 {
-    if (str == "POWER") return StatType::POWER;
-    if (str == "SPEED") return StatType::SPEED;
-    if (str == "HEALTH") return StatType::HEALTH;
-    if (str == "FIRE_POWER") return StatType::FIRE_POWER;
-    if (str == "POISON_POWER") return StatType::POISON_POWER;
-    if (str == "HEALING_POWER") return StatType::HEALING_POWER;
-    if (str == "DURABILITY") return StatType::DURABILITY;
-    if (str == "LIFESTEAL") return StatType::LIFESTEAL;
+    if (str == "POWER")           return StatType::POWER;
+    if (str == "SPEED")           return StatType::SPEED;
+    if (str == "HEALTH")          return StatType::HEALTH;
+    if (str == "FIRE_POWER")      return StatType::FIRE_POWER;
+    if (str == "POISON_POWER")    return StatType::POISON_POWER;
+    if (str == "HEALING_POWER")   return StatType::HEALING_POWER;
+    if (str == "DURABILITY")      return StatType::DURABILITY;
+    if (str == "LIFESTEAL")       return StatType::LIFESTEAL;
 
     return StatType::POWER;
 }

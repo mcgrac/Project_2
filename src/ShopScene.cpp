@@ -11,6 +11,10 @@
 #include "DialogueManager.h"
 #include "Log.h"
 #include "NPC.h"
+#include "EquippableItem.h"
+#include "ConsumableItem.h"
+#include "KeyItem.h"
+#include "Party.h"
 
 ShopScene::ShopScene(Shop* shop, Party* allied)
     : shop(shop), alliedParty(allied)
@@ -111,16 +115,12 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 100:
     case 101:
     case 102:
+    case 103: //potion
+    case 104: //key
     {
         int index = uiElement->id - ITEMS_AVAILABLE_BASE;
 
         Item* item = shop->GetCurrentItems()[index];
-
-        if (item->IsPurchased())
-        {
-            LOG("Item ya comprado");
-            return true;
-        }
 
         if (alliedParty->GetGold() <= item->GetPrice())
         {
@@ -128,11 +128,39 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
             return true;
         }
 
-        selectedItem = item;
+        if (EquippableItem* equippable = dynamic_cast<EquippableItem*>(item)) { //if is qquippable
+            if (item->IsPurchased())
+            {
+                LOG("Item ya comprado");
+                return true;
+            }
+            selectedItem = item;
 
-        state = ShopState::SELECT_CHARACTER;
+            state = ShopState::SELECT_CHARACTER;
 
-        CreateCharacterSelectionUI();
+            CreateCharacterSelectionUI();
+        }
+
+        if (ConsumableItem* consumable = dynamic_cast<ConsumableItem*>(item)) { //if is consumable
+            alliedParty->SpendGold(item->GetPrice());
+            alliedParty->GetInventory().AddItem("consumable");
+
+#if _DEBUG
+            LOG("|Key purchased|");
+            LOG("Keys in the party: %d", alliedParty->GetInventory().GetItemCount("consumable"));
+#endif // _DEBUG
+        }
+
+        if (KeyItem* keyItem = dynamic_cast<KeyItem*>(item)) { //if is key
+            alliedParty->SpendGold(item->GetPrice());
+            alliedParty->GetInventory().AddItem("key");
+
+#if _DEBUG
+            LOG("|Key purchased|");
+            LOG("Keys in the party: %d", alliedParty->GetInventory().GetItemCount("key"));
+#endif // _DEBUG
+        }
+
         break;
     }
     case 200:
@@ -142,7 +170,10 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         int index = uiElement->id - CHARACTERS_AVAILABLE_BASE;
         Character* character = alliedParty->GetMembers()[index];
 
-        if (character->EquipItem(selectedItem))
+        EquippableItem* equippable = dynamic_cast<EquippableItem*>(selectedItem);
+        if (!equippable) { return false; }
+
+        if (alliedParty->GetInventory().EquipItem(character->GetName(), equippable))
         {
             alliedParty->SpendGold(selectedItem->GetPrice());
 

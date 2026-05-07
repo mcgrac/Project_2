@@ -4,11 +4,12 @@
 #include "Party.h"
 
 struct SDL_Texture;
+class Ship;
 
 class IslandInteriorScene : public BaseScene
 {
 public:
-    IslandInteriorScene(Island* island, Party* allied);
+    IslandInteriorScene(Island* island, Party* allied, Ship* _ship);
     ~IslandInteriorScene();
 
     void Load() override;
@@ -27,6 +28,7 @@ public:
 private:
     Island* island;
     Party* alliedParty;
+    Ship* ship;
 
     static constexpr int SHOP_BUTTON_ID = 1;
     static constexpr int HOSTEL_BUTTON_ID = 2;

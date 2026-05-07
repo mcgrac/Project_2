@@ -13,7 +13,6 @@
 #include "Textures.h"
 #include "Render.h"
 #include "SaveLoad.h"
-#include "DialogueManager.h"
 #include "DialogueScene.h"
 #include <queue>
 #include "Window.h"
@@ -22,8 +21,9 @@
 // First button id reserved for combat button; island buttons start from this offset
 static const int ISLAND_BUTTON_ID_OFFSET = 100;
 
-InGameScene::InGameScene(std::vector<std::string> _characterNames, bool _isContinue)
-    : characterNames(_characterNames)
+InGameScene::InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* _worldMap, bool _isContinue)
+    : prebuiltCharacters(_prebuiltCharacters)
+    , worldMap(_worldMap)
     , alliedParty(nullptr)
     , background(nullptr)
     , isContinue(_isContinue)
@@ -31,6 +31,8 @@ InGameScene::InGameScene(std::vector<std::string> _characterNames, bool _isConti
     , skullTex(nullptr)
     , teamButton(nullptr)
     , spritesheet(nullptr)
+    , islandHumanTex(nullptr)
+    , islandReptileTex(nullptr)
 {
     sceneName = "InGameScene";
 }
@@ -42,76 +44,40 @@ InGameScene::~InGameScene()
 
 void InGameScene::Load()
 {
-    //load dialogues 
-    DialogueManager::LoadDialogues("dialogues.xml");
-
     // Construir la party aliada con los 3 personajes seleccionados
     alliedParty = new Party("Aliados");
-    for (const std::string& name : characterNames)
+    if (!prebuiltCharacters.empty())
     {
-        LOG("Creando personaje: '%s'", name.c_str());
-        Character* c = CharacterFactory::Create(name);
-        if (c != nullptr)
+        // Venimos de LoadingScene — personajes ya creados con stats y visuals
+        for (Character* c : prebuiltCharacters)
         {
-            alliedParty->AddMember(c);
+            if (c != nullptr)
+            {
+                alliedParty->AddMember(c);
+            }
         }
-        else
-        {
-            LOG("InGameScene::Load — no se pudo crear el personaje '%s'.", name.c_str());
-        }
+        prebuiltCharacters.clear();
     }
-
-    LOG("InGameScene cargada, %d miembros en party.", alliedParty->GetMemberCount());
-
-#if _DEBUG
-    for (Character* c : alliedParty->GetMembers())
+    else if (isContinue)
     {
-        c->PrintDebugInfo();
-    }
-#endif
-
-    //load textures
-    LoadTextures();
-
-    //load world
-    worldMap.LoadWorld("Assets/Maps/world.xml");
-
-    //connect visuals 
-    
-    const auto& islands = worldMap.GetAllIslands();
-    for (auto& pair : islands)
-    {
-        Island* island = pair.second;
-
-        // Sprite según facción
-        if (island->GetIslandFaction() == IslandFaction::HUMANS)
-        {
-            island->SetSprite(islandHumanTex);
-        }
-        else if (island->GetIslandFaction() == IslandFaction::REPTILES)
-        {
-            island->SetSprite(islandReptileTex);
-        }
-
-        // Todas tienen acceso a la calavera
-        island->SetSkullSprite(skullTex);
-    }
-
-    //callback when the player arrives to an island->world map notify ingameScene
-    worldMap.arrivalIsland = [this](Island* island) {
-        Engine::GetInstance().scene->PushScene(new IslandScene(island, &worldMap, alliedParty, ship));
-    };
-
-    if (isContinue)
-    {
+        // Venimos de MainMenuScene — crear personajes desde el save
         SaveData data = SaveLoad::Load();
         if (data.exists)
         {
             RestoreFromSave(data);
-            worldMap.SetCurrentIsland(data.currentIslandId);
+            worldMap->SetCurrentIsland(data.currentIslandId);
             LOG("InGameScene: partida restaurada — isla %d.", data.currentIslandId);
         }
     }
+    LOG("InGameScene cargada, %d miembros en party.", alliedParty->GetMemberCount());
+
+    //load textures
+    LoadTextures();
+
+    //callback when the player arrives to an island->world map notify ingameScene
+    worldMap->arrivalIsland = [this](Island* island) {
+        Engine::GetInstance().scene->PushScene(new IslandScene(island, worldMap, alliedParty, ship));
+    };
 
     //ship
     ship = new Ship();
@@ -133,13 +99,10 @@ void InGameScene::Update(float dt)
     if (firstFrame && !isContinue)
     {
         firstFrame = false;
-
-        Engine::GetInstance().scene->PushScene(
-            new DialogueScene("intro_boss", [this]() {
-                LOG("Intro terminada");
-                //can de anything here
-            })
-        );
+        PushSceneFromInGame(new DialogueScene("intro_boss", [this]() {
+            LOG("Intro terminada");
+            }));
+        return;
     }
 
     //render background
@@ -148,12 +111,11 @@ void InGameScene::Update(float dt)
     //detect pause menu
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
     {
-        Engine::GetInstance().scene->PushScene(
-            new PauseScene(alliedParty, worldMap.GetCurrentIslandId())
-        );
+        PushSceneFromInGame(new PauseScene(alliedParty, worldMap->GetCurrentIslandId()));
+        return;
     }
 
-    worldMap.Update(dt);
+    worldMap->Update(dt);
 
     //render ship
     ship->Update(dt);
@@ -166,7 +128,7 @@ void InGameScene::Update(float dt)
 
 void InGameScene::PostUpdate(float dt)
 {
-    worldMap.PostUpdate(dt);
+    worldMap->PostUpdate(dt);
 }
 
 void InGameScene::Unload()
@@ -176,9 +138,14 @@ void InGameScene::Unload()
     Engine::GetInstance().textures->UnLoad(background);
     Engine::GetInstance().textures->UnLoad(spritesheet);
     Engine::GetInstance().textures->UnLoad(teamButton);
+    Engine::GetInstance().textures->UnLoad(islandHumanTex);
+    Engine::GetInstance().textures->UnLoad(islandReptileTex);
+    Engine::GetInstance().textures->UnLoad(skullTex);
 
     //unload worldMap
-    worldMap.UnloadWorld();
+    worldMap->UnloadWorld();
+    delete worldMap;
+    worldMap = nullptr;
 
     DestroyParty();
     Engine::GetInstance().uiManager->CleanUp();
@@ -193,10 +160,6 @@ void InGameScene::LoadTextures(){
     background = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/WorldMap.png");
     spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/EmptyIslandLabel.png");
     teamButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/TeamButton.png");
-
-    islandHumanTex = Engine::GetInstance().textures->Load("Assets/Textures/Islands/island_human.png");
-    islandReptileTex = Engine::GetInstance().textures->Load("Assets/Textures/Islands/island_reptile.png");
-    skullTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/EnemySymbol.png");
 }
 
 bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -209,10 +172,12 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 1:
         LOG("InGameScene: iniciando combate...");
         // PushScene — InGameScene queda suspendida con todo su estado
-        Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty, ship->GetLevel()));
+        //Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty, ship->GetLevel()));
+        PushSceneFromInGame(new CombatScene(alliedParty, ship->GetLevel()));
         break;
     case 2:
-        Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
+        //Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
+        PushSceneFromInGame(new PartyScene(alliedParty));
         break;
     default:
       
@@ -227,7 +192,7 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
         {
             int islandId = uiElement->id - ISLAND_BUTTON_ID_OFFSET;
 
-            if (!worldMap.IsReachable(islandId))
+            if (!worldMap->IsReachable(islandId))
             {
                 break;
             }
@@ -236,7 +201,7 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
             // We need the BFS row/colCount data that CreateIslandButtons already computed.
             // Re-derive it here with the same logic so we can read centerY values.
 
-            const auto& treeRef = worldMap.GetTree();
+            const auto& treeRef = worldMap->GetTree();
             std::unordered_map<int, int> islandColumn;
             std::unordered_map<int, int> islandRow;
             std::unordered_map<int, int> colCount;
@@ -268,7 +233,7 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
                 }
             }
 
-            int fromId = worldMap.GetCurrentIslandId();
+            int fromId = worldMap->GetCurrentIslandId();
             int fromCY = GetIslandCenterY(islandRow[fromId], colCount[islandColumn[fromId]]);
             int toCY = GetIslandCenterY(islandRow[islandId], colCount[islandColumn[islandId]]);
             int destCol = islandColumn[islandId];
@@ -281,7 +246,10 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
                     // so the next departure starts correctly
                     int destCenterX = 224.0f + 448.0f * (float)destCol;
                     ship->SetPosition(Vector2D(destCenterX + 125.0f, (float)toCY));
-                    worldMap.TravelTo(islandId);
+
+                    Engine::GetInstance().render->camera.x = 0;
+                    worldMap->TravelTo(islandId);
+                    //worldMap.TravelTo(islandId);
                 });
         }
         break;
@@ -328,8 +296,8 @@ void InGameScene::CreateIslandButtons()
     int screenH = 0;
     Engine::GetInstance().window->GetWindowSize(screenW, screenH);
 
-    const auto& islands = worldMap.GetAllIslands();
-    const auto& tree = worldMap.GetTree();
+    const auto& islands = worldMap->GetAllIslands();
+    const auto& tree = worldMap->GetTree();
 
     // BFS to assign a column index to every island
     // Column 0 = starting island, column N = N hops from the root
@@ -510,6 +478,12 @@ ShipMovement InGameScene::DetermineShipMovement(int fromCenterY, int toCenterY)
     return ShipMovement::DOWN2;
 }
 
+void InGameScene::PushSceneFromInGame(BaseScene* scene)
+{
+    Engine::GetInstance().render->camera.x = 0;
+    Engine::GetInstance().scene->PushScene(scene);
+}
+
 void InGameScene::OnResume()
 {
     CreateUI();
@@ -517,6 +491,7 @@ void InGameScene::OnResume()
 
 void InGameScene::OnPause()
 {
+    Engine::GetInstance().render->camera.x = 0;
     Engine::GetInstance().uiManager->CleanUp();
 }
 
@@ -524,17 +499,19 @@ void InGameScene::CreateUI()
 {
     //Botón de iniciar combate
     SDL_Rect combatBtnBounds = { 20, 20, 154, 60 };
-    Engine::GetInstance().uiManager->CreateUIElement(
+    auto CombatBtn = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0, combatBtnBounds.w, combatBtnBounds.h
     );
+    CombatBtn->isHUD = true;//fixed on screen
 
     //Botón de party
     SDL_Rect partyBtnBounds = { 20, 600, 72, 72 };
-    Engine::GetInstance().uiManager->CreateUIElement(
+    auto partyButon = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 2, "Party", partyBtnBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, teamButton, 0, partyBtnBounds.w, partyBtnBounds.h
     );
+    partyButon->isHUD = true; //fixed on screen
 
     //island buttons
     CreateIslandButtons();

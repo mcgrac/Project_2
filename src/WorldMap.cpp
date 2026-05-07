@@ -14,7 +14,7 @@ const std::vector<int> WorldMap::EMPTY = {};
 
 WorldMap::WorldMap(){}
 
-bool WorldMap::LoadWorld(const std::string& xmlPath)
+bool WorldMap::LoadWorldData(const std::string& xmlPath)
 {
     pugi::xml_document doc;
     if (!doc.load_file(xmlPath.c_str()))
@@ -125,6 +125,25 @@ bool WorldMap::LoadWorld(const std::string& xmlPath)
     return true;
 }
 
+void WorldMap::ConnectVisuals(SDL_Texture* humanTex, SDL_Texture* reptileTex, SDL_Texture* skullTex)
+{
+    for (auto& pair : islands)
+    {
+        Island* island = pair.second;
+
+        if (island->GetIslandFaction() == IslandFaction::HUMANS)
+        {
+            island->SetSprite(humanTex);
+        }
+        else if (island->GetIslandFaction() == IslandFaction::REPTILES)
+        {
+            island->SetSprite(reptileTex);
+        }
+
+        island->SetSkullSprite(skullTex);
+    }
+}
+
 const std::vector<int>& WorldMap::GetNextIds(int islandId) const
 {
     auto it = tree.find(islandId);
@@ -146,6 +165,15 @@ bool WorldMap::IsReachable(int islandId) const
         }
     }
     return false;
+}
+
+void WorldMap::LoadNPCTextures()
+{
+    for (auto& pair : islands)
+    {
+        Island* island = pair.second;
+        island->LoadNPCTextures();
+    }
 }
 
 void WorldMap::RenderWorld(float dt)

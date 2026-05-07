@@ -1,10 +1,11 @@
 #pragma once
 #include <vector>
-#include "Item.h"
+#include "EquippableItem.h"
 
 class NPC;
 class Party;
 class Island;
+class Item;
 
 class Shop
 {
@@ -20,8 +21,8 @@ public:
 
 private:
     NPC* owner;
-
     std::vector<Item*> currentItems;
-
     Island* island;
+
+    void ClearCurrentItems();
 };

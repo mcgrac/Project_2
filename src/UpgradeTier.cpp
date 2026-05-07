@@ -8,6 +8,7 @@ UpgradeTier::UpgradeTier(int _requiredLevel, Upgrade _optionA, Upgrade _optionB)
 
 UpgradeTier::~UpgradeTier()
 {
+    chosenUpgrade = nullptr;
 }
 
 bool UpgradeTier::ChooseUpgrade(int choice, Character& character)

@@ -64,7 +64,7 @@ bool Render::Awake()
 	TTF_Init();
 
 	//load a font into memory
-	font = TTF_OpenFont("Assets/Fonts/arial.ttf", 25);
+	font = TTF_OpenFont("Assets/Fonts/PixelFont.ttf", 25);
 
 	return ret;
 }
@@ -124,7 +124,7 @@ void Render::ResetViewPort()
 }
 
 // Blit to screen
-bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY) const
+bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY, bool flipHorizontal) const
 {
 	bool ret = true;
 	int scale = Engine::GetInstance().window->GetScale();
@@ -172,7 +172,8 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 	}
 
 	// SDL3: returns bool; map to int-style check
-	int rc = SDL_RenderTextureRotated(renderer, texture, src, &rect, angle, p, SDL_FLIP_NONE) ? 0 : -1;
+	SDL_FlipMode flipMode = flipHorizontal ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+	int rc = SDL_RenderTextureRotated(renderer, texture, src, &rect, angle, p, flipMode) ? 0 : -1;
 	if (rc != 0)
 	{
 		LOG("Cannot blit to screen. SDL_RenderTextureRotated error: %s", SDL_GetError());

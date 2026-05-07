@@ -5,6 +5,8 @@
 #include "Dockyard.h"
 #include "Hostel.h"
 
+struct SDL_Texture;
+
 enum class IslandType { 
     FRIENDLY, 
     HOSTILE,
@@ -29,6 +31,8 @@ public:
     Island(int _id, const std::string& _name, IslandType _type, IslandFaction _islandFaction);
 
     ~Island();
+
+    void LoadNPCTextures();
 
 #pragma region GETTERS
     inline int GetId() const { return id; }

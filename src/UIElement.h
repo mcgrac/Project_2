@@ -108,4 +108,7 @@ public:
 	std::function<bool(UIElement*)> onClickCallback;
 
 	bool pendingToDelete = false;
+
+	bool isHUD = false; //if true, fixed on screen regardless of camera movement
+	bool createdThisFrame = true; // ignores input on the frame it was created
 };

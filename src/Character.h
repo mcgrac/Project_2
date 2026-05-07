@@ -4,12 +4,9 @@
 #include <SDL3/SDL.h>
 #include <vector>
 #include "Vector2D.h"
-
 #include "Animation.h"
 #include "Skill.h"
 #include "UpgradeTree.h"
-
-class Item;
 
 struct AnimAlias
 {
@@ -53,6 +50,8 @@ protected:
 	int level;
 	bool isAlive;
 #pragma endregion
+
+	bool isAllied;
 
 	//animations
 	AnimationSet anims;
@@ -135,12 +134,10 @@ public:
 
 	void ClearBonusStats();
 
-	//inventory management
-	bool EquipItem(Item* item);
-	void DebugInventory();
-
 
 #pragma region GETTERS
+	inline Vector2D GetPosition() const { return position; }
+
 	inline int GetTotalPower() const { return totalPower; }
 	inline int GetBasePower() const { return basePower; }
 
@@ -159,6 +156,7 @@ public:
 
 	inline int GetExperience() const { return experience; }
 	inline int GetCurrentInitiative() const { return initiative; }
+	inline int GetMaxInitiative() const { return maxInitiative; }
 	inline bool IsPoisoned() const { return isPoisoned; }
 	inline bool IsBurning() const { return isBurned; }
 	inline int GetPoisonDamage() const { return poisonStatMod; }
@@ -174,6 +172,7 @@ public:
 	inline int GetTotalDurability() const { return totalDurability; }
 
 	inline UpgradeTree* GetUpgradeTree() const { return upgradeTree; }
+	inline bool GetIsAllied() const { return isAllied; }
 #pragma endregion
 
 #pragma region MODIFIERS
@@ -182,6 +181,7 @@ public:
 	inline void ModifyBonusPower(int amount) { bonusPower += amount; }
 	inline void ModifyBonusSpeed(int amount) { bonusSpeed += amount; }
 	inline void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
+	inline void ModifyCurrentHealth(int amount) { health += amount; }
 	inline void ModifyHealingPower(int amount) { healingPower += amount; }
 	void ModifyDurability(int amount);
 	inline void ModifyBonusDurability(int amount) { bonusDurability += amount; }
@@ -196,6 +196,7 @@ public:
 	inline void SetTotalSpeed() { totalSpeed = baseSpeed + bonusSpeed; }
 
 	inline void SetIncomingDamageMultiplier(float f) { incomingDamageMultiplier = f; }
+	inline void SetIsAllied(bool b) { isAllied = b; }
 #pragma endregion
 
 #pragma region TEST
@@ -203,8 +204,6 @@ public:
 #pragma endregion
 
 private:
-	std::vector<Item*> equippedItems;
-	static const int MAX_EQUIPPED_ITEMS = 3;
 
 	float incomingDamageMultiplier = 0.0f;
 

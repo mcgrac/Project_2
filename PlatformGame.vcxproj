@@ -154,12 +154,14 @@
     <ClCompile Include="src\CharacterSelectScene.cpp" />
     <ClCompile Include="src\Combat.cpp" />
     <ClCompile Include="src\CombatScene.cpp" />
+    <ClCompile Include="src\ConsumableItem.cpp" />
     <ClCompile Include="src\DialogueManager.cpp" />
     <ClCompile Include="src\DialogueScene.cpp" />
     <ClCompile Include="src\DialogueUI.cpp" />
     <ClCompile Include="src\Dockyard.cpp" />
     <ClCompile Include="src\DockyardScene.cpp" />
     <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="src\EquippableItem.cpp" />
     <ClCompile Include="src\Fonts.cpp" />
     <ClCompile Include="src\Gerbera.cpp" />
     <ClCompile Include="src\Hostel.cpp" />
@@ -172,6 +174,8 @@
     <ClCompile Include="src\IslandScene.cpp" />
     <ClCompile Include="src\Item.cpp" />
     <ClCompile Include="src\ItemManager.cpp" />
+    <ClCompile Include="src\KeyItem.cpp" />
+    <ClCompile Include="src\LoadingScene.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\MainMenuScene.cpp" />
     <ClCompile Include="src\Map.cpp" />
@@ -215,6 +219,7 @@
     <ClInclude Include="src\CharacterSelectScene.h" />
     <ClInclude Include="src\Combat.h" />
     <ClInclude Include="src\CombatScene.h" />
+    <ClInclude Include="src\ConsumableItem.h" />
     <ClInclude Include="src\DialogueManager.h" />
     <ClInclude Include="src\DialogueNode.h" />
     <ClInclude Include="src\DialogueScene.h" />
@@ -223,6 +228,7 @@
     <ClInclude Include="src\DockyardScene.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Entity.h" />
+    <ClInclude Include="src\EquippableItem.h" />
     <ClInclude Include="src\Fonts.h" />
     <ClInclude Include="src\Gerbera.h" />
     <ClInclude Include="src\Hostel.h" />
@@ -236,6 +242,8 @@
     <ClInclude Include="src\Item.h" />
     <ClInclude Include="src\ItemManager.h" />
     <ClInclude Include="src\IUIObserver.h" />
+    <ClInclude Include="src\KeyItem.h" />
+    <ClInclude Include="src\LoadingScene.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\MainMenuScene.h" />
     <ClInclude Include="src\Map.h" />

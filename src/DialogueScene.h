@@ -31,6 +31,7 @@ private:
     std::function<void()> onFinished; //callback to do an action when the dialogue finishes
 
     SDL_Texture* portraitTexture;
+    SDL_Texture* panel;
     std::string currentPortraitPath = "";
     SDL_Texture* button;
 

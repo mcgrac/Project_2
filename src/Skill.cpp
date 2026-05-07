@@ -51,7 +51,7 @@ void Skill::Use(Character* caster, Character* target)
 
 std::string Skill::GetFullDescription()
 {
-    std::string result = skillDescription;
+    std::string result = name + " " + skillDescription;
 
     for (const auto& e : effects) {
         result += "\n- " + e.description;

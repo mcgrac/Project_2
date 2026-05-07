@@ -8,10 +8,12 @@
 #include "UIManager.h"
 #include "Render.h"
 #include "Log.h"
+#include "Ship.h"
 
-IslandInteriorScene::IslandInteriorScene(Island* island, Party* allied)
+IslandInteriorScene::IslandInteriorScene(Island* island, Party* allied, Ship* _ship)
     : island(island)
     , alliedParty(allied)
+    , ship(_ship)
     , background(nullptr)
     , dockyardbutton(nullptr)
     , shopButton(nullptr)
@@ -86,6 +88,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
 
     case DOCKYARD_BUTTON_ID:
         LOG("IslandInteriorScene: abriendo astillero.");
+        island->GetDockyard()->AssignShip(ship);
         Engine::GetInstance().scene->PushScene(
             new DockyardScene(island->GetDockyard(), alliedParty)
         );

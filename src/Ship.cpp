@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Textures.h"
 #include "Render.h"
+#include "Log.h"
 
 const float Ship::MOVE_SPEED = 0.1f; // pixels per second
 
@@ -48,6 +49,7 @@ void Ship::Update(float dt) {
     {
         UpdateMovement(dt);
     }
+    UpdateCamera();
     Draw(dt);
 
     if (pendingArrival)
@@ -225,6 +227,31 @@ void Ship::UpdateMovement(float dt)
     }
 }
 
+void Ship::UpdateCamera()
+{
+    static const float MAP_WIDTH = 224.0f + 448.0f * 29.0f + 224.0f; // total world width in pixels
+
+    Render* render = Engine::GetInstance().render.get();
+
+    float camW = (float)render->camera.w;
+    float shipX = position.getX() + 125.0f; // use visual center (with offset)
+
+    float limitLeft = camW / 4.0f;
+    float limitRight = MAP_WIDTH - camW * 3.0f / 4.0f;
+
+    if (shipX - limitLeft > 0.0f && shipX < limitRight)
+    {
+        render->camera.x = (int)(-shipX + camW / 4.0f);
+    }
+    else if (shipX <= limitLeft)
+    {
+        render->camera.x = 0;
+    }
+    else
+    {
+        render->camera.x = (int)(-MAP_WIDTH + camW);
+    }
+}
 #pragma endregion
 
 bool Ship::IsAlive() const
@@ -265,11 +292,19 @@ void Ship::Heal(int amount)
 
 void Ship::LevelUp()
 {
-    level += 1;
-    maxHp += HP_PER_LEVEL;
-    currentHp += HP_PER_LEVEL;
+    if(level < MAX_LEVEL_SHIP)
+    {
+        level += 1;
+        maxHp += HP_PER_LEVEL;
+        currentHp += HP_PER_LEVEL;
+    }
 
-    //level up modificators also
+#if _DEBUG
+    LOG("Ship improved to level -> %d", level);
+    LOG("maxHp improved from: %d to %d", maxHp - HP_PER_LEVEL, maxHp);
+    LOG("current HP modifies from: %d to %d", currentHp - HP_PER_LEVEL, currentHp);
+#endif // _DEBUG
+
 }
 
 void Ship::LoseBattle()

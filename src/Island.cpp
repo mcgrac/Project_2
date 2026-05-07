@@ -1,4 +1,5 @@
 #include "Island.h"
+#include "NPC.h"
 
 Island::Island(int _id, const std::string& _name, IslandType _type, IslandFaction _islandFaction)
     : id(_id), 
@@ -20,6 +21,22 @@ Island::Island(int _id, const std::string& _name, IslandType _type, IslandFactio
 Island::~Island()
 {
     DestroyBuildings();
+}
+
+void Island::LoadNPCTextures()
+{
+    if (shop != nullptr && shop->GetOwner() != nullptr)
+    {
+        shop->GetOwner()->LoadTexture();
+    }
+    if (hostel != nullptr && hostel->GetOwner() != nullptr)
+    {
+        hostel->GetOwner()->LoadTexture();
+    }
+    if (dockyard != nullptr && dockyard->GetOwner() != nullptr)
+    {
+        dockyard->GetOwner()->LoadTexture();
+    }
 }
 
 void Island::SetRenderPos(float x, float y, float w, float h)

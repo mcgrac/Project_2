@@ -26,7 +26,7 @@ UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _text
 	// Crear texto si existe
 	if (!this->text.empty())
 	{
-		font = Engine::GetInstance().fonts->LoadFont("Assets/Fonts/arial.ttf", 24);
+		font = Engine::GetInstance().fonts->LoadFont("Assets/Fonts/PixelFont.ttf", 24);
 
 		if (font != nullptr)
 		{
@@ -72,18 +72,57 @@ UIButton::~UIButton()
 
 bool UIButton::Update(float dt)
 {
+	// Skip input on the frame this button was created
+	if (createdThisFrame)
+	{
+		createdThisFrame = false;
+		DrawButton();
+		return false;
+	}
 
-	if (Engine::GetInstance().scene->GetIgnoreInputThisFrame()) { return false; } //ignore frame
+	if (Engine::GetInstance().scene->GetIgnoreInputThisFrame()) { DrawButton();  return false; } //ignore frame
 
 	if (state != UIElementState::DISABLED)
 	{
 		// L16: TODO 3: Update the state of the GUiButton according to the mouse position
 		Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
 
-		//If the position of the mouse if inside the bounds of the button 
-		if (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w && mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) {
+		//adjust bounds camera 
+		//int camX = Engine::GetInstance().render->camera.x;
+		int camX = isHUD ? 0 : Engine::GetInstance().render->camera.x;
 
-			if(state != UIElementState::SELECTED)
+		// Adjust bounds to screen space using camera offset
+		int screenX = bounds.x + camX;
+		int screenY = bounds.y;
+
+		////If the position of the mouse if inside the bounds of the button 
+		//if (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w && mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) {
+
+		//	if(state != UIElementState::SELECTED)
+		//	{
+		//		state = UIElementState::FOCUSED;
+		//	}
+
+		//	if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
+		//		state = UIElementState::PRESSED;
+		//	}
+
+		//	if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
+		//		NotifyObserver();
+		//	}
+		//}
+		//else {
+		//	if(state != UIElementState::SELECTED)
+		//	{
+		//		state = UIElementState::NORMAL;
+		//	}
+		//}
+
+		//If the position of the mouse if inside the bounds of the button 
+		if (mousePos.getX() > screenX && mousePos.getX() < screenX + bounds.w &&
+			mousePos.getY() > screenY && mousePos.getY() < screenY + bounds.h) {
+
+			if (state != UIElementState::SELECTED)
 			{
 				state = UIElementState::FOCUSED;
 			}
@@ -97,7 +136,7 @@ bool UIButton::Update(float dt)
 			}
 		}
 		else {
-			if(state != UIElementState::SELECTED)
+			if (state != UIElementState::SELECTED)
 			{
 				state = UIElementState::NORMAL;
 			}
@@ -185,11 +224,13 @@ void UIButton::DrawButton() const
 		ResetTint();
 	}
 
+	float speed = isHUD ? 0.0f : 1.0f;
+
 	Engine::GetInstance().render->DrawTexture(
 		spritesheet,
 		bounds.x, bounds.y,
 		&frameRect,
-		1.0f    // sin parallax
+		speed    // sin parallax
 	);
 
 	//Dibujar texto encima
@@ -200,7 +241,7 @@ void UIButton::DrawButton() const
 			textRect.x,
 			textRect.y,
 			nullptr,
-			1.0f
+			speed
 		);
 	}
 

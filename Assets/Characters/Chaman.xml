@@ -25,9 +25,9 @@
         speed="30"
         lifesteal="0"
         healingPower="0"
-        poisonPower="2"
-        firePower="2"
-        maxInitiative="300"
+        poisonPower="0.02"
+        firePower="0.02"
+        maxInitiative="250"
     />
 
     <levelScaling
@@ -37,7 +37,8 @@
     />
 
     <skills>
-        <skill id="chaman_bonk_fire" initiativeCost="100" />
+        <skill id="chaman_bonk_fire" initiativeCost="130" />
+		<skill id="chaman_charge" initiativeCost="60" />
     </skills>
 
 </character>
