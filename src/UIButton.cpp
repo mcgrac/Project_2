@@ -26,7 +26,7 @@ UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _text
 	// Crear texto si existe
 	if (!this->text.empty())
 	{
-		font = Engine::GetInstance().fonts->LoadFont("Assets/Fonts/arial.ttf", 24);
+		font = Engine::GetInstance().fonts->LoadFont("Assets/Fonts/PixelFont.ttf", 24);
 
 		if (font != nullptr)
 		{

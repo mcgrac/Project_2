@@ -217,6 +217,7 @@ void Character::AddInitiative(int amount)
 {
 	initiative += amount;
 	if (initiative < 0) { initiative = 0; }
+	if (initiative > maxInitiative) { initiative = maxInitiative; }
 }
 
 void Character::SetBurned(bool state, int damage, Character* attacker)

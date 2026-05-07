@@ -35,6 +35,7 @@ SkillRegistry::SkillRegistry()
     Register("red_dance", [](int cost)
         {
             Skill s("Red Dance", DamageType::Magical, 10, 0.15f, cost, "red_dance");
+            s.SetDescription("Deal 10(+15 power) Magical damage");
             s.AddEffect({
                 "Inflict 10 Fire",
                 [](Character* caster, Character* target) {
@@ -49,6 +50,7 @@ SkillRegistry::SkillRegistry()
     //incomplete
     Register("laser_upward", [](int cost) {
         Skill s("Laser Upward", DamageType::Magical, 15, 0.2f, cost, "laser_upward");
+        s.SetDescription("Deal 15(+20 power) Magical damage");
         s.AddEffect({
             "Heal ally or damage enemy",
             [](Character* caster, Character* target) {
@@ -60,6 +62,7 @@ SkillRegistry::SkillRegistry()
 
     Register("blue_dance", [](int cost) {
         Skill s("Blue Dance", DamageType::Magical, 0, 0.0f, cost, "blue_dance");
+        s.SetDescription("");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
@@ -73,6 +76,7 @@ SkillRegistry::SkillRegistry()
 
     Register("flame", [](int cost) {
         Skill s("Flame", DamageType::None, 0, 0.0f, cost, "flame");
+        s.SetDescription("");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(false);
         s.AddEffect({
@@ -88,6 +92,7 @@ SkillRegistry::SkillRegistry()
     //incompleta
     Register("healing_halo", [](int cost) {
         Skill s("Healing Halo", DamageType::None, 0, 0.0f, cost, "healing_halo");
+        s.SetDescription("");
         s.AddEffect({
             "Heal and clean poison effect and burn effect to an ally",
             [](Character* caster, Character* target) {
@@ -104,6 +109,7 @@ SkillRegistry::SkillRegistry()
 
     Register("encourage", [](int cost) {
         Skill s("Encourage", DamageType::None, 0, 0.0f, cost, "encourage");
+        s.SetDescription("");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
@@ -119,6 +125,7 @@ SkillRegistry::SkillRegistry()
 
     Register("battle_fury", [](int cost) {
         Skill s("Battle Fury", DamageType::Magical, 0, 0.5f, cost, "battle_fury");
+        s.SetDescription("");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
@@ -133,6 +140,7 @@ SkillRegistry::SkillRegistry()
 
     Register("slash", [](int cost) {
         Skill s("Slash", DamageType::Physical, 10, 0.1f, cost, "slash");
+        s.SetDescription("Deal 10 (+10% power) Physical damage");
         s.AddEffect({
             "Steal 5 durability",
             [](Character* caster, Character* target) {
@@ -146,6 +154,7 @@ SkillRegistry::SkillRegistry()
     //probolema deal x + durability
     Register("shield_bash", [](int cost) {
         Skill s("Shield Bash", DamageType::Physical, 5, 0.0f, cost, "shield_bash");
+        s.SetDescription("Deal 5 (+durability) Physical damage");
         s.AddEffect({
             "Reduce initiative by 15 + level",
             [](Character* caster, Character* target) {
@@ -157,6 +166,7 @@ SkillRegistry::SkillRegistry()
 
     Register("double_blade", [](int cost) {
         Skill s("Double Blade", DamageType::Physical, 10, 0.25f, cost, "double_blade");
+        s.SetDescription("Deal 10 (+25% power) Physical damage");
         s.AddEffect({
             "Inflict 10 fire",
             [](Character* caster, Character* target) {
@@ -175,6 +185,7 @@ SkillRegistry::SkillRegistry()
 
     Register("fire_charge", [](int cost) {
         Skill s("Fire Charge", DamageType::Physical, 10, 0.35f, cost, "fire_charge");
+        s.SetDescription("Deal 10 (+35% power) Physical damage");
         s.AddEffect({
             "Inflict 5 Fire",
             [](Character* caster, Character* target) {
@@ -187,6 +198,7 @@ SkillRegistry::SkillRegistry()
 
     Register("charge_arrow", [](int cost) {
         Skill s("Charge Arrow", DamageType::None, 0, 0.0f, cost, "charge_arrow");
+        s.SetDescription("");
         s.AddEffect({
             "Gain 20 power and 30 initiative",
             [](Character* caster, Character* target) {
@@ -199,6 +211,7 @@ SkillRegistry::SkillRegistry()
 
     Register("green_arrow", [](int cost) {
         Skill s("Green Arrow", DamageType::Physical, 20, 0.1f, cost, "green_arrow");
+        s.SetDescription("Deal 20 (+10% power) Physical damage");
         s.AddEffect({
             "Inflict 10 poison",
             [](Character* caster, Character* target) {
@@ -211,6 +224,7 @@ SkillRegistry::SkillRegistry()
 
     Register("charged_arrow", [](int cost) {
         Skill s("Charged Arrow", DamageType::None, 0, 0.0f, cost, "charged_arrow");
+        s.SetDescription("");
         s.AddEffect({
             "Waste all Initiative and gain 50% of it as Power",
             [](Character* caster, Character* target) {
@@ -223,6 +237,7 @@ SkillRegistry::SkillRegistry()
 
     Register("fire_arrow_2", [](int cost) {
         Skill s("Fire Arrow 2", DamageType::Physical, 15, 0.1f, cost, "fire_arrow_2");
+        s.SetDescription("Deal 15 (+10% power) Physical damage");
         s.AddEffect({
             "Deal bonus damage per fire stack and reset fire to 0",
             [](Character* caster, Character* target) {
@@ -243,11 +258,11 @@ SkillRegistry::SkillRegistry()
 
     // Slam: Deal 30(+10%Power) physical damage and heal 10(+20%Power)
     Register("raptor_slam", [](int cost) {
-        Skill s("Slam", DamageType::Physical, 30, 0.1f, cost, "raptor_slam");
+        Skill s("Slam", DamageType::Physical, 8, 0.5f, cost, "raptor_slam");
         s.AddEffect({
-            "Heal 10(+20%Power)",
+            "Deal 8(50%Power) physical damage and heal 5(+35%Power) health",
             [](Character* caster, Character* target) {
-                caster->Heal(10 + (int)(caster->GetTotalPower() * 0.2f));
+                caster->Heal(5 + (int)(caster->GetTotalPower() * 0.35f));
             }
             });
         return s;
@@ -259,8 +274,8 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Gain 25 Durability and 20 Power",
             [](Character* caster, Character* target) {
-                caster->ModifyBonusDurability(25);
-                caster->ModifyBonusPower(20);
+                caster->ModifyBonusDurability(20);
+                caster->ModifyBonusPower(30);
             }
             });
         return s;
@@ -282,7 +297,7 @@ SkillRegistry::SkillRegistry()
             "Gain 25 Speed and 20 Power",
             [](Character* caster, Character* target) {
                 caster->ModifyBonusSpeed(25);
-                caster->ModifyBonusPower(20);
+                caster->ModifyBonusPower(30);
             }
             });
         return s;
@@ -292,12 +307,12 @@ SkillRegistry::SkillRegistry()
 #pragma region CHAMAN
     // Bonk Fire: Deal 25(+20%Power) Magic Damage and inflict 15 fire and 15 Poison
     Register("chaman_bonk_fire", [](int cost) {
-        Skill s("Bonk Fire", DamageType::Magical, 25, 0.2f, cost, "chaman_bonk_fire");
+        Skill s("Bonk Fire", DamageType::Magical, 8, 0.4f, cost, "chaman_bonk_fire");
         s.AddEffect({
             "Inflict 15 Fire and 15 Poison",
             [](Character* caster, Character* target) {
-                int damageFirePower = (int)(15 * (1 + caster->GetFirePower() / 100.0f));
-                int damagePoisonPower = (int)(15 * (1 + caster->GetPoisonPower() / 100.0f));
+                int damageFirePower = (int)(4 * (1 + caster->GetFirePower() / 100.0f));
+                int damagePoisonPower = (int)(4 * (1 + caster->GetPoisonPower() / 100.0f));
 
                 target->SetBurned(true, damageFirePower, caster);
                 target->SetPoisoned(true, damagePoisonPower, caster);
@@ -309,11 +324,11 @@ SkillRegistry::SkillRegistry()
     Register("chaman_charge", [](int cost) {
         Skill s("Charge", DamageType::Magical, 0, 0.0f, cost, "chaman_charge");
         s.AddEffect({
-            "Gain 10 fire mod and 20 power",
+            "Gain 50 FirePower and 50 PoisonPower and 20 power",
             [](Character* caster, Character* target) {
                 caster->ModifyBonusPower(20);
-                caster->ModifyPoisonPower(20.0f);
-                caster->ModifyFirePower(20.0f);
+                caster->ModifyPoisonPower(50.0f);
+                caster->ModifyFirePower(50.0f);
             }
             });
         return s;
@@ -321,7 +336,4 @@ SkillRegistry::SkillRegistry()
 #pragma endregion
 
 #pragma endregion
-
-
-
 }

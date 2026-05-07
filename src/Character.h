@@ -136,6 +136,8 @@ public:
 
 
 #pragma region GETTERS
+	inline Vector2D GetPosition() const { return position; }
+
 	inline int GetTotalPower() const { return totalPower; }
 	inline int GetBasePower() const { return basePower; }
 
@@ -154,6 +156,7 @@ public:
 
 	inline int GetExperience() const { return experience; }
 	inline int GetCurrentInitiative() const { return initiative; }
+	inline int GetMaxInitiative() const { return maxInitiative; }
 	inline bool IsPoisoned() const { return isPoisoned; }
 	inline bool IsBurning() const { return isBurned; }
 	inline int GetPoisonDamage() const { return poisonStatMod; }
