@@ -312,10 +312,6 @@ void Combat::StartCombat()
 
     auto allCombatants = GetAllCombatants();
 
-    // Allies: position determined by lane assignment
-    // defaultPositions[0] = Front (closest to enemies)
-    // defaultPositions[1] = Side  (middle)
-    // defaultPositions[2] = Back  (furthest from enemies)
     if (frontLane.occupant != nullptr)
     {
         frontLane.occupant->SetPosition(defaultPositions[2].getX(), defaultPositions[2].getY());
@@ -334,13 +330,6 @@ void Combat::StartCombat()
     {
         c->ResetCurrentInitiative();
     }
-    //// Asignar posiciones y resetear iniciativa acumulada
-    //for (int i = 0; i < static_cast<int>(allCombatants.size()); ++i)
-    //{
-    //    Character* c = allCombatants[i];
-    //    c->SetPosition(defaultPositions[i].getX(), defaultPositions[i].getY());
-    //    c->ResetCurrentInitiative();   // currentInitiative = 0
-    //}
 
     // Enemies: position by index, starting at slot 3
     auto& enemies = enemyParty->GetMembers();
@@ -405,15 +394,6 @@ bool Combat::CalculateInitiative()
     return anyReady;
 
     currentActor = GetHighestInitiativeActor();
-
-//#if _DEBUG
-//    if (currentActor != nullptr)
-//    {
-//        std::cout << "  >> Turno para: " << currentActor->GetName()
-//            << " (iniciativa: " << currentActor->GetCurrentInitiative() << ")\n";
-//    }
-//#endif
-//    return currentActor != nullptr;
 }
 
 void Combat::FillQueue()
@@ -451,11 +431,15 @@ void Combat::FillQueue()
 void Combat::ProcessQueue()
 {
     // Remove dead actors from the front of the queue before processing
-    while (!actorsQueue.empty() && !actorsQueue.front()->GetIsAlive())
-    {
-        LOG("ProcessQueue | Skipping dead actor: %s", actorsQueue.front()->GetName().c_str());
-        actorsQueue.erase(actorsQueue.begin());
-    }
+    //while (!actorsQueue.empty() && !actorsQueue.front()->GetIsAlive())
+    //{
+    //    LOG("ProcessQueue | Skipping dead actor: %s", actorsQueue.front()->GetName().c_str());
+    //    actorsQueue.erase(actorsQueue.begin());
+    //}
+
+    // Remove dead from the queue
+    actorsQueue.erase(std::remove_if(actorsQueue.begin(), actorsQueue.end(), [](Character* c) { return !c->GetIsAlive() || c->GetPendingToDie(); }),actorsQueue.end());
+
 
     if (actorsQueue.empty())
     {
@@ -480,6 +464,11 @@ void Combat::ProcessQueue()
 void Combat::AttackStart()
 {
     if (currentActor == nullptr) return;
+    if (!currentActor->GetIsAlive() || currentActor->GetPendingToDie())
+    {
+        state = CombatState::PROCESS_QUEUE;
+        return;
+    }
 
 #if _DEBUG
     std::cout << "\n──────────────────────────────────────\n";
@@ -534,7 +523,7 @@ void Combat::ApplyModifiers()
     {
         //if (!c->GetIsAlive()) continue;
 
-        if (!c->GetPendingToDie()) continue;
+        if (!c->GetIsAlive()) continue; //only apply modifiers to the live characters
 
         if (c->IsPoisoned())
         {
@@ -744,8 +733,6 @@ void Combat::PlayerTurn()
 
     currentSkill = &chosenSkill;
     currentTarget = aliveEnemies[targetChoice];
-
-    //ExecuteSkill(currentActor, chosenSkill, aliveEnemies[targetChoice]);
 }
 
 //  ENEMY TURN — habilidad y target aleatorios
@@ -771,8 +758,6 @@ void Combat::EnemyTurn()
 
     currentSkill = &chosenSkill;
     currentTarget = target;
-
-    //ExecuteSkill(currentActor, chosenSkill, target);
 }
 
 //  EXECUTE SKILL
@@ -978,66 +963,7 @@ std::vector<Character*> Combat::GetAllCombatants()
 
 void Combat::SubmitPlayerChoice(int skillIndex, int targetIndex)
 {
-    //std::cout << "---- SubmitPlayerChoice ----" << std::endl;
-
-    //std::cout << "Combat state: " << (int)state << std::endl;
-
-    //if (currentActor == nullptr)
-    //{
-    //    std::cout << "ERROR: currentActor is NULL" << std::endl;
-    //    return;
-    //}
-
-    //std::cout << "Current actor: " << currentActor->GetName() << std::endl;
-
-    //if (state != CombatState::WAITING_FOR_PLAYER_INPUT) return;
-    //if (currentActor == nullptr) return;
-
-    //auto& skills = currentActor->GetSkills();
-    //auto aliveEnemies = GetAliveMembers(enemyParty);
-
-    //std::cout << "SkillIndex received: " << skillIndex << std::endl;
-    //std::cout << "TargetIndex received: " << targetIndex << std::endl;
-
-    //std::cout << "Skills available: " << skills.size() << std::endl;
-    //std::cout << "Alive enemies: " << aliveEnemies.size() << std::endl;
-
-    //if (skillIndex < 0 || skillIndex >= (int)skills.size()) return;
-    //if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size()) return;
-
-    //if (state != CombatState::WAITING_FOR_PLAYER_INPUT)
-    //{
-    //    std::cout << "ERROR: Combat state is not WAITING_FOR_PLAYER_INPUT" << std::endl;
-    //    return;
-    //}
-
-    //if (skillIndex < 0 || skillIndex >= (int)skills.size())
-    //{
-    //    std::cout << "ERROR: Invalid skillIndex" << std::endl;
-    //    return;
-    //}
-
-    //if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size())
-    //{
-    //    std::cout << "ERROR: Invalid targetIndex" << std::endl;
-    //    return;
-    //}
-
-    //currentSkill = &skills[skillIndex];
-    //currentTarget = aliveEnemies[targetIndex];
-
-    //std::cout << "Skill selected: " << currentSkill->GetName() << std::endl;
-    //std::cout << "Target selected: " << currentTarget->GetName() << std::endl;
-
-    //// play animation and change state
-    //std::string anim = currentSkill->GetAnimationId();
-
-    //std::cout << "Playing animation: " << anim << std::endl;
-
-    //currentActor->PlayAnimation(anim);
-    //state = CombatState::ATTACK_ANIMATION;
-
-    //std::cout << "State changed to ATTACK_ANIMATION" << std::endl;
+    std::cout << "---- SubmitPlayerChoice ----" << std::endl;
 
     if (state != CombatState::WAITING_FOR_PLAYER_INPUT) { return; }
     if (currentActor == nullptr) { return; }
@@ -1089,8 +1015,12 @@ void Combat::ForceDefeat()
 
 float Combat:: GetLaneDamageMultiplier(Character* c)
 {
-    // Si el objetivo es un enemigo, no aplicamos bonos de lane (o puedes definir otros)
-    if (!IsAllied(c)) return 1.0f;
+    // Si el objetivo es un enemigo, no aplicamos bonos de lane
+    if (!IsAllied(c))
+    {
+        LOG("Lane damage multiplier not applied to %s [ENEMY]", c->GetName().c_str());
+        return 1.0f;
+    }
     float reduction = 0.0f;
 
     //----test----
@@ -1110,12 +1040,6 @@ float Combat:: GetLaneDamageMultiplier(Character* c)
 
     if (sideLane.occupant == c)
     {
-        //// El SIDE solo tiene reducción si el FRONT está vivo
-        //if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
-        //{
-        //    reduction = 0.15f; // 15% de reducción
-        //}
-
         targetLane = "SIDE";
         if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
         {
@@ -1125,16 +1049,6 @@ float Combat:: GetLaneDamageMultiplier(Character* c)
     }
     else if (backLane.occupant == c)
     {
-        //// El BACK comprueba cuántos tiene delante vivos
-        //if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
-        //{
-        //    reduction += 0.15f;
-        //}
-        //if (sideLane.occupant != nullptr && sideLane.occupant->GetIsAlive())
-        //{
-        //    reduction += 0.15f;
-        //}
-
         targetLane = "BACK";
         if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
         {
@@ -1167,7 +1081,7 @@ std::vector<Character*> Combat::GetAliveMembers(Party* party)
     std::vector<Character*> alive;
     for (Character* c : party->GetMembers())
     {
-        if (c->GetIsAlive())
+        if (c->GetIsAlive() && !c->GetPendingToDie())
         {
             alive.push_back(c);
         }

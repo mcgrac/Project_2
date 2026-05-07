@@ -6,6 +6,7 @@
 #include "Render.h"
 #include "Textures.h"
 #include "Log.h"
+#include "DialogueManager.h"
 
 LoadingScene::LoadingScene(std::vector<std::string> _characterNames, bool _isContinue)
     : characterNames(_characterNames)
@@ -65,6 +66,9 @@ void LoadingScene::DoBackgroundLoad()
     // WorldMap — solo datos, sin texturas
     loadedWorldMap = new WorldMap();
     loadedWorldMap->LoadWorldData("Assets/Maps/world.xml");
+
+    //dialogues
+    DialogueManager::LoadDialogues("dialogues.xml");
 
     loadingDone = true;
 }

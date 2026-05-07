@@ -13,7 +13,6 @@
 #include "Textures.h"
 #include "Render.h"
 #include "SaveLoad.h"
-#include "DialogueManager.h"
 #include "DialogueScene.h"
 #include <queue>
 #include "Window.h"
@@ -45,9 +44,6 @@ InGameScene::~InGameScene()
 
 void InGameScene::Load()
 {
-    //load dialogues 
-    DialogueManager::LoadDialogues("dialogues.xml");
-
     // Construir la party aliada con los 3 personajes seleccionados
     alliedParty = new Party("Aliados");
     if (!prebuiltCharacters.empty())
@@ -74,13 +70,6 @@ void InGameScene::Load()
         }
     }
     LOG("InGameScene cargada, %d miembros en party.", alliedParty->GetMemberCount());
-
-#if _DEBUG
-    //for (Character* c : alliedParty->GetMembers())
-    //{
-    //    c->PrintDebugInfo();
-    //}
-#endif
 
     //load textures
     LoadTextures();
@@ -110,14 +99,6 @@ void InGameScene::Update(float dt)
     if (firstFrame && !isContinue)
     {
         firstFrame = false;
-
-        //Engine::GetInstance().scene->PushScene(
-        //    new DialogueScene("intro_boss", [this]() {
-        //        LOG("Intro terminada");
-        //        //can de anything here
-        //    })
-        //);
-
         PushSceneFromInGame(new DialogueScene("intro_boss", [this]() {
             LOG("Intro terminada");
             }));
@@ -130,10 +111,6 @@ void InGameScene::Update(float dt)
     //detect pause menu
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
     {
-        //Engine::GetInstance().scene->PushScene(
-        //    new PauseScene(alliedParty, worldMap.GetCurrentIslandId())
-        //);
-
         PushSceneFromInGame(new PauseScene(alliedParty, worldMap->GetCurrentIslandId()));
         return;
     }

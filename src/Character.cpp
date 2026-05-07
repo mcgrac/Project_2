@@ -84,8 +84,26 @@ void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 			name.c_str(), damageReceived, incomingDamageMultiplier, scaledDamage, (damageReceived - scaledDamage));
 	}
 
+	float durabilityReduction = totalDurability / 100.0f; //% of durability
+	float durabilityMultiplier = 1.0f - durabilityReduction;
+	if (durabilityMultiplier < 0.0f) { durabilityMultiplier = 0.0f; }
+
+	// --- LOG NUEVO ---
+	int damageAfterDurability = std::max(0, (int)(scaledDamage * durabilityMultiplier));
+
+	LOG("PHYSICAL DMG [%s]: incoming=%d | totalDurability=%d (base=%d, bonus=%d) | damageAfterDurability=%d | HP antes=%d | HP despues=%d",
+		name.c_str(),
+		scaledDamage,
+		totalDurability,
+		baseDurability,
+		bonusDurability,
+		damageAfterDurability,
+		health,
+		std::max(0, health - damageAfterDurability));
+	// -----------------
+
 	int currentHealth = health;
-	currentHealth -= std::max(0, scaledDamage - totalDurability); //avoids that damage < 0
+	currentHealth -= damageAfterDurability; 
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead

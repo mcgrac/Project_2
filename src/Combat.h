@@ -127,8 +127,6 @@ private:
 
     void ApplyLaneBonuses();
 
-    // Queue of actors that have reached >= 100 initiative this round,
-    // sorted highest-first. Drained before the next initiative tick.
     std::vector<Character*> actorsQueue;
 
     // ── Posiciones predefinidas ───────────────
