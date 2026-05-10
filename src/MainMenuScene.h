@@ -40,4 +40,6 @@ private:
 
     int buttonSelectionFx;
     bool pendingRefresh = false;
+
+    const char* musicDir;
 };

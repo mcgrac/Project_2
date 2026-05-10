@@ -27,7 +27,7 @@ MainMenuScene::~MainMenuScene()
 
 void MainMenuScene::Load()
 {
-    Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
+    //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
 
     //textures
     LoadTextures();
@@ -43,6 +43,7 @@ void MainMenuScene::Update(float dt)
     if (!Engine::GetInstance().audio->IsMusicPlaying()) {
         LOG("Play music again!");
         Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/8bitMusic/nancy.wav");
     }
 
     if (pendingRefresh) //avoids double clicking buttons
