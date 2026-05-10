@@ -4,6 +4,8 @@
 #include "Party.h"
 
 struct SDL_Texture;
+struct SDL_Rect;
+
 class Ship;
 
 class IslandInteriorScene : public BaseScene
@@ -35,10 +37,40 @@ private:
     static constexpr int DOCKYARD_BUTTON_ID = 3;
     static constexpr int LEAVE_BUTTON_ID = 4;
 
+     //helper
+    SDL_Rect GetDockBounds() const;
+    SDL_Rect GetShopBounds() const;
+    SDL_Rect GetHostelBounds() const;
+
+#pragma region POSITIONS
+#pragma region DOCK
+    static const SDL_Rect DOCK_HUMAN_BOUNDS;
+    static const SDL_Rect DOCK_BIRD_BOUNDS;
+    static const SDL_Rect DOCK_SIREN_BOUNDS;
+    static const SDL_Rect DOCK_REPTILE_BOUNDS;
+#pragma endregion
+
+#pragma region SHOP
+    static const SDL_Rect SHOP_HUMAN_BOUNDS;
+    static const SDL_Rect SHOP_BIRD_BOUNDS;
+    static const SDL_Rect SHOP_SIREN_BOUNDS;
+    static const SDL_Rect SHOP_REPTILE_BOUNDS;
+#pragma endregion
+
+#pragma region HOSTEL
+    static const SDL_Rect HOSTEL_HUMAN_BOUNDS;
+    static const SDL_Rect HOSTEL_BIRD_BOUNDS;
+    static const SDL_Rect HOSTEL_SIREN_BOUNDS;
+    static const SDL_Rect HOSTEL_REPTILE_BOUNDS;
+#pragma endregion
+#pragma endregion
+
+#pragma region TEXTURES
     SDL_Texture* background;
     SDL_Texture* dockyardbutton;
     SDL_Texture* shopButton;
     SDL_Texture* hostelButton;
     SDL_Texture* exitButton;
+#pragma endregion
 
 };
