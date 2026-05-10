@@ -53,6 +53,7 @@ private:
 
     //audio variables
     int spendMoneyfx;
-    void loadSound();
+    int buttonPress;
+    void LoadSound();
 
 };

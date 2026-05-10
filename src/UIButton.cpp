@@ -128,8 +128,15 @@ bool UIButton::Update(float dt)
 
 			if (state != UIElementState::SELECTED)
 			{
+				if (state != UIElementState::FOCUSED && state != UIElementState::PRESSED)
+				{
+					Engine::GetInstance().audio->PlayFx(SelectedFx);
+				}
+
 				state = UIElementState::FOCUSED;
 			}
+
+			
 
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
 				state = UIElementState::PRESSED;

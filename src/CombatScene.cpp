@@ -4,6 +4,7 @@
 #include "Scene.h"
 #include "UIManager.h"
 #include "Engine.h"
+#include "Audio.h"
 #include "Log.h"
 #include "Textures.h"
 #include "Render.h"
@@ -33,6 +34,7 @@ void CombatScene::Load()
     LOG("CombatScene: cargando...");
 
     LoadTextures();
+    LoadSound();
 
     // ---------Testing------------
     for (Character* c : alliedParty->GetMembers())
@@ -66,6 +68,12 @@ void CombatScene::Update(float dt)
 {
     // Dibujar background cada frame
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
+
+    //play music
+    if (!Engine::GetInstance().audio->IsMusicPlaying()) {
+        LOG("Play music again!");
+        Engine::GetInstance().audio->PlayMusic(combMusic);
+    }
 
     // Reset the click guard every frame so the next real click is accepted
     laneInputConsumed = false;
@@ -889,4 +897,8 @@ void CombatScene::CreateUI()
     {
         ShowLaneSelectionFor(laneAssignmentCursor);
     }
+}
+
+void CombatScene::LoadSound() {
+    buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }

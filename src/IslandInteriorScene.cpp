@@ -30,7 +30,7 @@ IslandInteriorScene::~IslandInteriorScene() {}
 void IslandInteriorScene::Load()
 {
     LoadTextures();
-    loadSound();
+    LoadSound();
     CreateUI();
 }
 
@@ -79,6 +79,8 @@ void IslandInteriorScene::LoadTextures()
 
 bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    //play button Press when pressing a button
+    Engine::GetInstance().audio->PlayFx(buttonPress);
     switch (uiElement->id)
     {
     case SHOP_BUTTON_ID:
@@ -154,13 +156,14 @@ void IslandInteriorScene::CreateUI()
     );
 }
 
-void IslandInteriorScene::loadSound() {
-    ambiance = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/island_ambiance.wav");
+void IslandInteriorScene::LoadSound() {
+    buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }
 
 void IslandInteriorScene::UpdateSound() {
     //ckeck for type of island to put ambience
-    if (!musicPlaying) {
+    if (!Engine::GetInstance().audio->IsMusicPlaying()) {
+        LOG("Play music again!");
         switch (island->GetIslandFaction()) {
         case IslandFaction::HUMANS:
             //play crowd sounds
@@ -175,6 +178,5 @@ void IslandInteriorScene::UpdateSound() {
             Engine::GetInstance().audio->PlayMusic(reptileAmb, 0);
             break;
         }
-        musicPlaying = true;
     }
 }

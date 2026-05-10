@@ -103,7 +103,7 @@ void InGameScene::Update(float dt)
 
     if (!Engine::GetInstance().audio->IsMusicPlaying()) {
         LOG("Play music again!");
-        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/8bitMusic/Shipwreck.wav");
+        Engine::GetInstance().audio->PlayMusic(mapMusic);
     }
 
     if (firstFrame && !isContinue)

@@ -42,7 +42,7 @@ void MainMenuScene::Update(float dt)
     //check if music is playing
     if (!Engine::GetInstance().audio->IsMusicPlaying()) {
         LOG("Play music again!");
-        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
+        //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
         Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/8bitMusic/nancy.wav");
     }
 

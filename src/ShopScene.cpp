@@ -29,7 +29,7 @@ void ShopScene::Load()
 {
     LOG("ShopScene: cargando tienda.");
     LoadTextures();
-    loadSound();
+    LoadSound();
     CreateUI();
 }
 
@@ -79,10 +79,12 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     switch (uiElement->id)
     {
     case BACK_BUTTON_ID:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().scene->PopScene();
         break;
     case OPEN_SHOP_BUTTON:
     {
+        Engine::GetInstance().audio->PlayFx(buttonPress);
         NPC* npc = shop->GetOwner();
         if (npc == nullptr)
         {
@@ -280,6 +282,7 @@ void ShopScene::CreateCharacterSelectionUI()
     }
 }
 
-void ShopScene::loadSound() {
+void ShopScene::LoadSound() {
     spendMoneyfx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/coin2.wav");
+    buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }
