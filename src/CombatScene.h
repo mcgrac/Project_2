@@ -20,10 +20,14 @@ public:
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
+    inline bool DidPlayerWin() const { return playerWon; }
+
     //helpers
     void OnResume() override;
     void OnPause() override;
     void CreateUI();
+
+    std::function<void(bool)> onCombatEnd;
 
 private:
     Party* alliedParty;
@@ -31,6 +35,7 @@ private:
     Combat* combat;
 
     bool combatFinished;
+    bool playerWon;
 
     void CreateEnemyParty();
     void DestroyEnemyParty();

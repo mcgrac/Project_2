@@ -12,7 +12,8 @@
 
 const std::vector<int> WorldMap::EMPTY = {};
 
-WorldMap::WorldMap(){}
+WorldMap::WorldMap() : pendingIslandId(-1)
+{}
 
 bool WorldMap::LoadWorldData(const std::string& xmlPath)
 {
@@ -174,6 +175,20 @@ void WorldMap::LoadNPCTextures()
         Island* island = pair.second;
         island->LoadNPCTextures();
     }
+}
+
+void WorldMap::ConfirmTravel()
+{
+    if (pendingIslandId == -1)
+    {
+        LOG("WorldMap::ConfirmTravel — no hay isla pendiente.");
+        return;
+    }
+
+    currentIslandId = pendingIslandId;
+    pendingIslandId = -1;
+
+    LOG("WorldMap: viaje confirmado a isla id=%d (%s)", currentIslandId, islands.at(currentIslandId)->GetName().c_str());
 }
 
 void WorldMap::RenderWorld(float dt)
@@ -463,13 +478,15 @@ void WorldMap::TravelTo(int islandId)
         return;
     }
 
-    currentIslandId = islandId;
+    //currentIslandId = islandId;
+    pendingIslandId = islandId;
 
-    LOG("WorldMap: travelled to island id=%d (%s)", currentIslandId, islands.at(currentIslandId)->GetName().c_str());
+    LOG("WorldMap: navegando hacia isla id=%d (%s) — pendiente de confirmar",pendingIslandId, islands.at(pendingIslandId)->GetName().c_str());
 
     if (arrivalIsland)
     {
-        arrivalIsland(islands.at(currentIslandId));
+        //arrivalIsland(islands.at(currentIslandId));
+        arrivalIsland(islands.at(pendingIslandId));
     }
 }
 

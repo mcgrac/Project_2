@@ -14,6 +14,7 @@ public:
     void UnassignShip();
 
     inline NPC* GetOwner() const { return owner; }
+    inline Ship* GetShip() const { return ship; }
 
 private:
     NPC* owner;

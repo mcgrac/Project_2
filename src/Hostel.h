@@ -12,15 +12,19 @@ public:
     ~Hostel();
 
     inline NPC* GetOwner() const { return owner; }
+    inline int GetRestCost() const { return costRest; }
+    inline int GetMealCost() const { return mealCost; }
 
     void Rest(Party* party);
     void BuyXP(Party* party, int amount);
     void GetADrink(Party* party, std::string id);
 
+    bool CheckGold(int amount, Party* party);
 private:
     NPC* owner;
     
     int costRest;
+    int mealCost;
 
     Island* island;
 };

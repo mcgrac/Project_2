@@ -42,6 +42,13 @@ public:
 
     void LoadNPCTextures();
 
+    void SetPendingIsland(int islandId) { pendingIslandId = islandId; }
+    int GetPendingIslandId() const { return pendingIslandId; }
+    void ConfirmTravel();   // confirma el viaje al pendingIslandId
+
+    inline void SetShipReturnPosition(Vector2D pos) { shipReturnPosition = pos; }
+    inline Vector2D GetShipReturnPosition() const { return shipReturnPosition; }
+
 private:
     //
     //void UpdateWorld();
@@ -52,11 +59,14 @@ private:
 
     // Current island and selection
     int currentIslandId = -1;
+    int pendingIslandId;  // isla a la que el jugador intenta viajar, aún no confirmada
 
     //
     //int selectedChildIndex = 0;   // 0 or 1
     //
     
+    Vector2D shipReturnPosition;
+
     // All nodes of the three
     std::unordered_map<int, Island*> islands;
     std::unordered_map<int, std::vector<int>> tree;    // id -> [hijoId, ...]

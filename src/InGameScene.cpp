@@ -197,6 +197,9 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
                 break;
             }
 
+            // Guardar posición actual del barco ANTES de moverse
+            Vector2D posBeforeMove = ship->GetPosition();
+
             // --- Determine which movement the ship must perform ---
             // We need the BFS row/colCount data that CreateIslandButtons already computed.
             // Re-derive it here with the same logic so we can read centerY values.
@@ -240,17 +243,21 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
 
             ShipMovement movement = DetermineShipMovement(fromCY, toCY);
 
-            ship->MoveToIsland(movement, [this, islandId, toCY, destCol]()
-                {
+            ship->MoveToIsland(movement, [this, islandId, toCY, destCol, posBeforeMove]()
+            {
                     // Reposition ship to the right offset of the destination island
                     // so the next departure starts correctly
                     int destCenterX = 224.0f + 448.0f * (float)destCol;
                     ship->SetPosition(Vector2D(destCenterX + 125.0f, (float)toCY));
 
                     Engine::GetInstance().render->camera.x = 0;
+
+                    // Guardar posición de origen en WorldMap para restaurarla si hay derrota
+                    worldMap->SetShipReturnPosition(posBeforeMove);
+
                     worldMap->TravelTo(islandId);
                     //worldMap.TravelTo(islandId);
-                });
+            });
         }
         break;
     }

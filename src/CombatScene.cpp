@@ -24,6 +24,7 @@ CombatScene::CombatScene(Party* _allied, int _shipLevel)
     , selectedSkillIdx(-1)
     , laneInputConsumed (false)
     , shipLevel (_shipLevel)
+    , playerWon(false)
 {
     sceneName = "CombatScene";
 }
@@ -137,6 +138,11 @@ void CombatScene::Update(float dt)
     if(combat->CombatIsFinished())
     {
         HideCombatUI();
+        bool won = (combat->GetResult() == CombatResult::VICTORY);
+        if (onCombatEnd)
+        {
+            onCombatEnd(won);
+        }
         Engine::GetInstance().scene->PopScene();
     }
 }
