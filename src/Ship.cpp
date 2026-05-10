@@ -1,5 +1,6 @@
 #include "Ship.h"
 #include "Engine.h"
+#include "Audio.h"
 #include "Textures.h"
 #include "Render.h"
 #include "Log.h"
@@ -36,6 +37,9 @@ Ship::Ship(Vector2D position, int maxHp, int level)
 
     //load texture
     spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/Animations/Boat.png");
+
+    //load audio
+    
 }
 
 Ship::~Ship()
@@ -49,6 +53,7 @@ void Ship::Update(float dt) {
     {
         UpdateMovement(dt);
     }
+    UpdateSound();
     UpdateCamera();
     Draw(dt);
 
@@ -310,4 +315,31 @@ void Ship::LevelUp()
 void Ship::LoseBattle()
 {
     TakeDamage(HP_LOST_FOR_BATTLE);
+}
+
+//used to load all the sounds into the variables
+void Ship::LoadAudio() {
+    movingfx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/Ship_moving.wav");
+    dockShip = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/ship_arriving_port.wav");
+    shipLeave = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/ship_setting_sail.wav");
+}
+
+void Ship::UpdateSound() {
+    if (isMoving && movingAudioPlaying == false) {
+        //start playing moving sound
+        Engine::GetInstance().audio->PlayFx(movingfx);
+        movingAudioPlaying = true;
+    }
+    lastMovState = isMoving;
+    //check if the ship has stopped moving since last frame, if so, play docking sound
+    if (lastMovState == true && isMoving == false) {
+        //play docking sound
+        Engine::GetInstance().audio->PlayFx(dockShip);
+        movingAudioPlaying = false;
+    }
+    //check if the ship has started moving since last frame, if so, play leaving sound
+    if (lastMovState == false && isMoving == true) {
+        //play docking sound
+        Engine::GetInstance().audio->PlayFx(shipLeave);
+    }
 }

@@ -46,6 +46,9 @@ private:
     void UpdateMovement(float dt);
     void UpdateCamera();
 
+    void LoadAudio();
+    void UpdateSound();
+
     Vector2D position;
     int currentHp;
     int maxHp;
@@ -80,4 +83,11 @@ private:
     static const int HP_LOST_FOR_BATTLE = 25;
 
     static const int VISUAL_OFFSET_Y = 111; // 300 - 189 = 111
+
+    //audio variables
+    int movingfx;
+    int dockShip;
+    int shipLeave;
+    bool movingAudioPlaying;
+    bool lastMovState;
 };

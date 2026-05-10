@@ -89,6 +89,11 @@ void InGameScene::Load()
     ship->SetPosition(Vector2D((float)(island0CenterX + islandOffsetX), (float)(island0CenterY)));
 
     CreateUI();
+
+    //audio loading
+    LoadAudio();
+    //audio ambiance playing
+    Engine::GetInstance().audio->PlayFx(islandAmbiance);
 }
 
 void InGameScene::Update(float dt)
@@ -160,6 +165,10 @@ void InGameScene::LoadTextures(){
     background = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/WorldMap.png");
     spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/EmptyIslandLabel.png");
     teamButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/TeamButton.png");
+}
+
+void InGameScene::LoadAudio() {
+    islandAmbiance = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/island_ambiance.wav");
 }
 
 bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)

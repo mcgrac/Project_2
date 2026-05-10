@@ -16,6 +16,10 @@ UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _text
 	canClick = true;
 	drawBasic = false;
 
+	//load sound
+	PressedFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
+	SelectedFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/select.wav");
+
 	//if (spritesheet) {
 	//	LOG("spritesheet in button");
 	//}
@@ -118,7 +122,7 @@ bool UIButton::Update(float dt)
 		//	}
 		//}
 
-		//If the position of the mouse if inside the bounds of the button 
+		//If the position of the mouse is inside the bounds of the button 
 		if (mousePos.getX() > screenX && mousePos.getX() < screenX + bounds.w &&
 			mousePos.getY() > screenY && mousePos.getY() < screenY + bounds.h) {
 
@@ -129,6 +133,7 @@ bool UIButton::Update(float dt)
 
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
 				state = UIElementState::PRESSED;
+				Engine::GetInstance().audio->PlayFx(PressedFx);
 			}
 
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
