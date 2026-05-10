@@ -133,7 +133,7 @@ bool UIButton::Update(float dt)
 
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
 				state = UIElementState::PRESSED;
-				Engine::GetInstance().audio->PlayFx(PressedFx);
+				//Engine::GetInstance().audio->PlayFx(PressedFx);
 			}
 
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {

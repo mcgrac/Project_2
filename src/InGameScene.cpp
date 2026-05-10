@@ -101,6 +101,11 @@ void InGameScene::Update(float dt)
     // in first frame launch initial dialogue
     static bool firstFrame = true;
 
+    if (!Engine::GetInstance().audio->IsMusicPlaying()) {
+        LOG("Play music again!");
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/8bitMusic/Shipwreck.wav");
+    }
+
     if (firstFrame && !isContinue)
     {
         firstFrame = false;
@@ -116,6 +121,7 @@ void InGameScene::Update(float dt)
     //detect pause menu
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
     {
+        Engine::GetInstance().audio->PlayFx(buttonPress);
         PushSceneFromInGame(new PauseScene(alliedParty, worldMap->GetCurrentIslandId()));
         return;
     }
@@ -169,6 +175,7 @@ void InGameScene::LoadTextures(){
 
 void InGameScene::LoadAudio() {
     islandAmbiance = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/island_ambiance.wav");
+    buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }
 
 bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -182,10 +189,12 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
         LOG("InGameScene: iniciando combate...");
         // PushScene — InGameScene queda suspendida con todo su estado
         //Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty, ship->GetLevel()));
+        Engine::GetInstance().audio->PlayFx(startCombat);
         PushSceneFromInGame(new CombatScene(alliedParty, ship->GetLevel()));
         break;
     case 2:
         //Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
+        Engine::GetInstance().audio->PlayFx(buttonPress);
         PushSceneFromInGame(new PartyScene(alliedParty));
         break;
     default:

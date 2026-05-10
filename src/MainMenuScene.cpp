@@ -87,7 +87,7 @@ void MainMenuScene::LoadTextures()
 
 void MainMenuScene::LoadSounds()
 {
-    buttonSelectionFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/buttonSelection.wav");
+    buttonSelectionFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }
 
 void MainMenuScene::UnloadTextures()

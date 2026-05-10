@@ -66,4 +66,6 @@ private:
 
     //audio variables
     int islandAmbiance;
+    int buttonPress;
+    int startCombat;
 };

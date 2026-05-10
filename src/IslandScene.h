@@ -12,6 +12,7 @@ public:
     ~IslandScene();
 
     void Load() override;
+    void LoadSound();
     void Update(float dt) override;
     void PostUpdate(float dt) override;
     void Unload() override;
@@ -42,4 +43,7 @@ private:
     SDL_Texture* pillageButon;
     SDL_Texture* background;
     SDL_Texture* exitButton;
+
+    //audio variables
+    int startCombat;
 };
