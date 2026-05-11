@@ -11,6 +11,18 @@
 #include <sstream>
 #include "Window.h"
 
+
+#pragma region ABILITIES_SOUND
+void AbilitiesSounds::SetIdSound(std::string id)
+{
+    idSound = id;
+}
+void AbilitiesSounds::SetFxSound(std::string path)
+{
+    fxSound = Engine::GetInstance().audio->LoadFx(path.c_str());
+}
+#pragma endregion
+
 CombatScene::CombatScene(Party* _allied, int _shipLevel)
     : alliedParty(_allied)
     , enemyParty(nullptr)
@@ -25,6 +37,7 @@ CombatScene::CombatScene(Party* _allied, int _shipLevel)
     , selectedSkillIdx(-1)
     , laneInputConsumed (false)
     , shipLevel (_shipLevel)
+    , playerWon(false)
 {
     sceneName = "CombatScene";
 }
@@ -34,12 +47,30 @@ CombatScene::~CombatScene()
     DestroyEnemyParty();
 }
 
+void CombatScene::LoadSounds() {
+
+    for (Character* c : alliedParty->GetMembers()) {
+        for (int i = 0; i < c->GetSkills().size(); i++) {
+            Skill skill = c->GetSkills()[i];
+
+            AbilitiesSounds ability;
+
+            std::string path = "Assets/Audio/Fx/" + c->GetName() + "/" + skill.GetAnimationId();
+            ability.SetFxSound(path);
+            ability.SetIdSound(skill.GetAnimationId());
+
+            abilities.push_back(ability);
+        }
+    }
+}
+
 void CombatScene::Load()
 {
     LOG("CombatScene: cargando...");
 
     CreateEnemyParty();
     LoadTextures();
+    LoadSounds();
     LoadSound();
 
     // ---------Testing------------
@@ -145,6 +176,11 @@ void CombatScene::Update(float dt)
     if(combat->CombatIsFinished())
     {
         HideCombatUI();
+        bool won = (combat->GetResult() == CombatResult::VICTORY);
+        if (onCombatEnd)
+        {
+            onCombatEnd(won);
+        }
         Engine::GetInstance().scene->PopScene();
     }
 }
@@ -238,6 +274,10 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
         combatInputConsumed = true;
 
         int targetIndex = uiElement->id - 10;
+
+        //Play Sound
+        ChooseSound(combat->GetCurrentActor()->GetSkills()[selectedSkillIdx].GetAnimationId());
+
         combat->SubmitPlayerChoice(selectedSkillIdx, targetIndex);
 
         HideCombatUI();
@@ -641,7 +681,17 @@ void CombatScene::DrawColoredLine(const std::string& line, int x, int y)
 }
 #pragma endregion
 
+void CombatScene::ChooseSound(std::string id)
+{
+    for (AbilitiesSounds sound : abilities) {
+        if (sound.idSound == id) {
+            Engine::GetInstance().audio->PlayFx(sound.fxSound);
+        }
+    }
+}
+
 #pragma region CHARACTER PANELS
+
 void CombatScene::DrawAlliedPanels()
 {
     auto& members = alliedParty->GetMembers();
@@ -1154,6 +1204,8 @@ void CombatScene::CreateUI()
         ShowLaneSelectionFor(laneAssignmentCursor);
     }
 }
+
+
 
 void CombatScene::LoadSound() {
     buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");

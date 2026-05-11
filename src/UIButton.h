@@ -62,5 +62,4 @@ private:
 	int PressedFx;
 	int SelectedFx;
 };
-
 #pragma once

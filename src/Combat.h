@@ -95,6 +95,7 @@ public:
     inline Character* GetCurrentActor() const { return currentActor; }
     inline std::vector<Character*> GetAliveEnemies() { return GetAliveMembers(enemyParty); }
     inline std::vector<Character*> GetAliveAllies() { return GetAliveMembers(alliedParty); }
+    inline CombatResult GetResult() const { return result; }
 
     // Lane assignment — called by CombatScene during lane selection phase
     void AssignLane(Character* character, LaneType laneType);

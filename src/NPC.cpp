@@ -12,12 +12,6 @@ NPC::NPC(const std::string& _name, const std::string& _dialogueId, IslandFaction
     , building(_building)
     , spritesheet(nullptr)
 {
-    //LOG("Loading texture NPC...");
-    //LoadTexture();
-    //if (spritesheet)
-    //{
-    //    LOG("Texture loading succesfull");
-    //}
 }
 
 NPC::~NPC()

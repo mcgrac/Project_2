@@ -10,6 +10,30 @@
 #include "Render.h"
 #include "Log.h"
 #include "Ship.h"
+#include "SceneUtils.h"
+
+#pragma region POSITIONS
+#pragma region DOCK
+const SDL_Rect IslandInteriorScene::DOCK_HUMAN_BOUNDS = { 1,  2,  3,  4 };
+const SDL_Rect IslandInteriorScene::DOCK_BIRD_BOUNDS = { 5,  6,  7,  8 };
+const SDL_Rect IslandInteriorScene::DOCK_SIREN_BOUNDS = { 9,  10, 11, 12 };
+const SDL_Rect IslandInteriorScene::DOCK_REPTILE_BOUNDS = { 13, 14, 15, 16 };
+#pragma endregion
+
+#pragma region SHOP
+const SDL_Rect IslandInteriorScene::SHOP_HUMAN_BOUNDS = { 1,  2,  3,  4 };
+const SDL_Rect IslandInteriorScene::SHOP_BIRD_BOUNDS = { 5,  6,  7,  8 };
+const SDL_Rect IslandInteriorScene::SHOP_SIREN_BOUNDS = { 9,  10, 11, 12 };
+const SDL_Rect IslandInteriorScene::SHOP_REPTILE_BOUNDS = { 13, 14, 15, 16 };
+#pragma endregion
+
+#pragma region HOSTEL
+const SDL_Rect IslandInteriorScene::HOSTEL_HUMAN_BOUNDS = { 1,  2,  3,  4 };
+const SDL_Rect IslandInteriorScene::HOSTEL_BIRD_BOUNDS = { 5,  6,  7,  8 };
+const SDL_Rect IslandInteriorScene::HOSTEL_SIREN_BOUNDS = { 9,  10, 11, 12 };
+const SDL_Rect IslandInteriorScene::HOSTEL_REPTILE_BOUNDS = { 13, 14, 15, 16 };
+#pragma endregion
+#pragma endregion
 
 IslandInteriorScene::IslandInteriorScene(Island* island, Party* allied, Ship* _ship)
     : island(island)
@@ -69,11 +93,22 @@ void IslandInteriorScene::unloadSound() {
 
 void IslandInteriorScene::LoadTextures()
 {
-    background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Background.png");
-    dockyardbutton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/DocksButton.png");
-    shopButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/ShopButton.png");
-    hostelButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/HostelButton.png");
+    //dockyardbutton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/DocksButton.png");
+    //shopButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/ShopButton.png");
+    //hostelButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/HostelButton.png");
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
+
+    std::string backgroundPath = SceneUtils::GetIslandTexturePath(island->GetIslandFaction());
+    background = Engine::GetInstance().textures->Load(backgroundPath.c_str());
+
+    std::string dockyardPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Dockyard");
+    dockyardbutton = Engine::GetInstance().textures->Load(dockyardPath.c_str());
+
+    std::string shopPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Shop");
+    dockyardbutton = Engine::GetInstance().textures->Load(shopPath.c_str());
+
+    std::string hostelPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Hostel");
+    dockyardbutton = Engine::GetInstance().textures->Load(hostelPath.c_str());
 }
 
 
@@ -130,10 +165,10 @@ void IslandInteriorScene::CreateUI()
 {
     LOG("IslandInteriorScene: entrando en '%s'.", island->GetName().c_str());
 
-    SDL_Rect shopBounds = { 20, 470, 270, 204 };
-    SDL_Rect hostelBounds = { 200, 55, 492, 435 };
-    SDL_Rect dockyardBounds = { 780, 0, 507, 720 };
-    SDL_Rect leaveBounds = { 20,  20,  72,  72 };
+    SDL_Rect shopBounds = GetShopBounds();
+    SDL_Rect hostelBounds = GetHostelBounds();
+    SDL_Rect dockyardBounds = GetDockBounds();
+    SDL_Rect leaveBounds = { 20, 20, 72, 72 };
 
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, SHOP_BUTTON_ID, "", shopBounds,
@@ -154,6 +189,43 @@ void IslandInteriorScene::CreateUI()
         UIElementType::BUTTON, LEAVE_BUTTON_ID, "", leaveBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, leaveBounds.w, leaveBounds.h
     );
+}
+
+//helpers
+SDL_Rect IslandInteriorScene::GetDockBounds() const
+{
+    switch (island->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:   return DOCK_HUMAN_BOUNDS;
+    case IslandFaction::BIRD:     return DOCK_BIRD_BOUNDS;
+    case IslandFaction::SIRENS:   return DOCK_SIREN_BOUNDS;
+    case IslandFaction::REPTILES: return DOCK_REPTILE_BOUNDS;
+    default:                      return DOCK_HUMAN_BOUNDS;
+    }
+}
+
+SDL_Rect IslandInteriorScene::GetShopBounds() const
+{
+    switch (island->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:   return SHOP_HUMAN_BOUNDS;
+    case IslandFaction::BIRD:     return SHOP_BIRD_BOUNDS;
+    case IslandFaction::SIRENS:   return SHOP_SIREN_BOUNDS;
+    case IslandFaction::REPTILES: return SHOP_REPTILE_BOUNDS;
+    default:                      return SHOP_HUMAN_BOUNDS;
+    }
+}
+
+SDL_Rect IslandInteriorScene::GetHostelBounds() const
+{
+    switch (island->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:   return HOSTEL_HUMAN_BOUNDS;
+    case IslandFaction::BIRD:     return HOSTEL_BIRD_BOUNDS;
+    case IslandFaction::SIRENS:   return HOSTEL_SIREN_BOUNDS;
+    case IslandFaction::REPTILES: return HOSTEL_REPTILE_BOUNDS;
+    default:                      return HOSTEL_HUMAN_BOUNDS;
+    }
 }
 
 void IslandInteriorScene::LoadSound() {

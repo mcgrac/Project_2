@@ -4,6 +4,7 @@
 #include "WorldMap.h"
 #include "Party.h"
 #include "Ship.h"
+#include "CombatScene.h"
 
 class IslandScene : public BaseScene
 {
@@ -31,7 +32,13 @@ private:
     Party* alliedParty;  
     Ship* ship;
 
+    Vector2D shipPositionBeforeCombat;
+
     bool combatLaunched;
+
+    // Pon esto:
+    bool combatPending;
+    bool lastCombatWon;
 
     // Entra en la isla (lógica futura: tienda, NPCs, etc.)
     void EnterIsland();

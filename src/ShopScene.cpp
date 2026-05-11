@@ -64,6 +64,14 @@ void ShopScene::Unload()
 {
     Engine::GetInstance().textures->UnLoad(exitButton);
     Engine::GetInstance().textures->UnLoad(background);
+    Engine::GetInstance().textures->UnLoad(emptyButtons);
+    Engine::GetInstance().textures->UnLoad(potionButton);
+    Engine::GetInstance().textures->UnLoad(keyButton);
+    for (SDL_Texture* tex : loadedItemTextures)
+    {
+        Engine::GetInstance().textures->UnLoad(tex);
+    }
+    loadedItemTextures.clear();
 
     Engine::GetInstance().uiManager->CleanUp();
 }
@@ -72,6 +80,9 @@ void ShopScene::LoadTextures()
 {
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
     background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/ShopBackground.png");
+    emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
+    keyButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyKeyButton.png");
+    potionButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyPotionButton.png");
 }
 
 bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -156,8 +167,8 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
             Engine::GetInstance().audio->PlayFx(spendMoneyfx);
 
 #if _DEBUG
-            LOG("|Key purchased|");
-            LOG("Keys in the party: %d", alliedParty->GetInventory().GetItemCount("consumable"));
+            LOG("|Consumable purchased|");
+            LOG("Consumables in the party: %d", alliedParty->GetInventory().GetItemCount("consumable"));
 #endif // _DEBUG
         }
 
@@ -171,7 +182,6 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
             LOG("Keys in the party: %d", alliedParty->GetInventory().GetItemCount("key"));
 #endif // _DEBUG
         }
-
         break;
     }
     case 200:
@@ -243,9 +253,13 @@ void ShopScene::CreateItemButtons()
 
     int startX = 400;
 
+    loadedItemTextures.clear();
+
     for (int i = 0; i < shop->GetCurrentItems().size(); i++)
     {
-        SDL_Rect rect = { startX + i * 150, 300, 72, 72 };
+        SDL_Rect rect = { startX + i * 150, 300, 229, 304};
+        SDL_Rect keyBtn = {40, 40, 64, 64};
+        SDL_Rect potionBtn = {80, 80, 64, 64};
 
         std::string label = shop->GetCurrentItems()[i]->GetName();
 
@@ -254,13 +268,54 @@ void ShopScene::CreateItemButtons()
             label += " (SOLD)";
         }
 
-        Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON,
-            ITEMS_AVAILABLE_BASE + i,
-            label.c_str(),
-            rect,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, rect.w, rect.h
-        );
+        Item* item = shop->GetCurrentItems()[i];
+
+        if (item == dynamic_cast<EquippableItem*>(item)) {
+#if _DEBUG
+            LOG("CREATING ITEMS BUTTONS: Item is equippable (name-> %s)", shop->GetCurrentItems()[i]->GetName().c_str());
+#endif // _DEBUG
+            std::string texturePath = "Assets/Textures/ShopScene/Items/" + shop->GetCurrentItems()[i]->GetName() + ".png";
+            SDL_Texture* itemTexture = Engine::GetInstance().textures->Load(texturePath.c_str());
+
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON,
+                ITEMS_AVAILABLE_BASE + i,
+                label.c_str(),
+                rect,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, itemTexture, 0, rect.w, rect.h
+            );
+
+            loadedItemTextures.push_back(itemTexture);
+        }
+        else if (item == dynamic_cast<KeyItem*>(item)) {
+#if _DEBUG
+            LOG("CREATING ITEMS BUTTONS: Item is key");
+#endif // _DEBUG
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON,
+                ITEMS_AVAILABLE_BASE + i,
+                "",
+                keyBtn,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, keyButton, 0, keyBtn.w, keyBtn.h
+            );
+        }
+        else if (item == dynamic_cast<ConsumableItem*>(item)) {
+#if _DEBUG
+            LOG("CREATING ITEMS BUTTONS: Item is consumable");
+#endif // _DEBUG
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON,
+                ITEMS_AVAILABLE_BASE + i,
+                "",
+                potionBtn,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, potionButton, 0, potionBtn.w, potionBtn.h
+            );
+        }
+        else {
+#if _DEBUG
+            LOG("Item not recognized");
+#endif // _DEBUG
+        }
     }
 }
 
@@ -270,14 +325,14 @@ void ShopScene::CreateCharacterSelectionUI()
 
     for (int i = 0; i < alliedParty->GetMemberCount(); i++)
     {
-        SDL_Rect rect = { 400, 400 + i * 80, 72, 72 };
+        SDL_Rect rect = { 400, 400 + i * 80, 202, 63 };
 
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,
             CHARACTERS_AVAILABLE_BASE + i,
             alliedParty->GetMembers()[i]->GetName().c_str(),
             rect,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, rect.w, rect.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, emptyButtons, 0, rect.w, rect.h
         );
     }
 }

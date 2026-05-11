@@ -5,7 +5,7 @@
 #include "Log.h"
 #include "Island.h"
 
-Hostel::Hostel(Island* _island) : costRest(50), island(_island)
+Hostel::Hostel(Island* _island) : costRest(50), mealCost(30),island(_island)
 {
 	owner = new NPC("Hostel owner", "npc_hostel", island->GetIslandFaction(), "Hostel");
 
@@ -20,18 +20,11 @@ Hostel::~Hostel()
 void Hostel::Rest(Party* party)
 {
 	LOG("Hostel: resting");
-
-	if(party->GetGold() >= costRest)
-	{
-		for (auto member : party->GetMembers()) {
-			//heal an amount
-			LOG("Character: %s | Previous health: %d", member->GetName(), member->GetCurrentHP());
-			member->FullyHeal();
-			LOG("Current health: %d", member->GetCurrentHP());
-		}
-	}
-	else {
-		LOG("Not enough gold for resting!");
+	for (auto member : party->GetMembers()) {
+		//heal an amount
+		LOG("Character: %s | Previous health: %d", member->GetName(), member->GetCurrentHP());
+		member->FullyHeal();
+		LOG("Current health: %d", member->GetCurrentHP());
 	}
 }
 
@@ -65,4 +58,13 @@ void Hostel::GetADrink(Party* party, std::string id)
 		}
 	}
 
+}
+
+bool Hostel::CheckGold(int amount, Party* party)
+{
+	bool b = false;
+	if (amount <= party->GetGold()) {
+		b = true;
+	}
+	return b;
 }
