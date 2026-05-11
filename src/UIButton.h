@@ -57,6 +57,10 @@ private:
 	int buttonRowNormal = 0;
 	int buttonAnimStart = 2;   // primera fila de animacion
 	int butonAnimFrames = 4;   // cuantos frames tiene la animacion
+
+	//sound
+	int PressedFx;
+	int SelectedFx;
 };
 
 #pragma once

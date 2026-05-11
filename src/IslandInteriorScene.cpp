@@ -3,6 +3,7 @@
 #include "HostelScene.h"
 #include "DockyardScene.h"
 #include "Engine.h"
+#include "Audio.h"
 #include "Textures.h"
 #include "Scene.h"
 #include "UIManager.h"
@@ -29,11 +30,13 @@ IslandInteriorScene::~IslandInteriorScene() {}
 void IslandInteriorScene::Load()
 {
     LoadTextures();
+    LoadSound();
     CreateUI();
 }
 
 void IslandInteriorScene::Update(float dt) {
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    UpdateSound();
 
 }
 
@@ -55,7 +58,13 @@ void IslandInteriorScene::Unload()
     Engine::GetInstance().textures->UnLoad(hostelButton);
     Engine::GetInstance().textures->UnLoad(exitButton);
 
+    //unloadSound();
+
     Engine::GetInstance().uiManager->CleanUp();
+}
+
+void IslandInteriorScene::unloadSound() {
+    
 }
 
 void IslandInteriorScene::LoadTextures()
@@ -70,6 +79,8 @@ void IslandInteriorScene::LoadTextures()
 
 bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    //play button Press when pressing a button
+    Engine::GetInstance().audio->PlayFx(buttonPress);
     switch (uiElement->id)
     {
     case SHOP_BUTTON_ID:
@@ -143,4 +154,29 @@ void IslandInteriorScene::CreateUI()
         UIElementType::BUTTON, LEAVE_BUTTON_ID, "", leaveBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, leaveBounds.w, leaveBounds.h
     );
+}
+
+void IslandInteriorScene::LoadSound() {
+    buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
+}
+
+void IslandInteriorScene::UpdateSound() {
+    //ckeck for type of island to put ambience
+    if (!Engine::GetInstance().audio->IsMusicPlaying()) {
+        LOG("Play music again!");
+        switch (island->GetIslandFaction()) {
+        case IslandFaction::HUMANS:
+            //play crowd sounds
+            Engine::GetInstance().audio->PlayMusic(humanAmb, 0);
+            break;
+        case IslandFaction::SIRENS:
+            //play wave sounds
+            Engine::GetInstance().audio->PlayMusic(sirenAmb, 0);
+            break;
+        case IslandFaction::REPTILES:
+            //play jungle sounds
+            Engine::GetInstance().audio->PlayMusic(reptileAmb, 0);
+            break;
+        }
+    }
 }

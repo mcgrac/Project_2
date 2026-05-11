@@ -40,6 +40,7 @@ void CharacterSelectScene::Load()
     }
 
     LoadTextures();
+    LoadSounds();
     CreateUI();
 }
 
@@ -94,8 +95,15 @@ void CharacterSelectScene::UnloadTextures()
     Engine::GetInstance().textures->UnLoad(backButtonSpritesheet);
 }
 
+void CharacterSelectScene::LoadSounds() {
+    buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
+}
+
 bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    //button pressed sound
+    Engine::GetInstance().audio->PlayFx(buttonPress);
+
     switch (uiElement->id)
     {
     case 1:

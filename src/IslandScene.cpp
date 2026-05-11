@@ -3,6 +3,7 @@
 #include "CombatScene.h"
 #include "Scene.h"
 #include "Engine.h"
+#include "Audio.h"
 #include "Textures.h"
 #include "UIManager.h"
 #include "Render.h"
@@ -30,6 +31,10 @@ void IslandScene::Load()
     CreateUI();
 }
 
+void IslandScene::LoadSound() {
+    startCombat = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/start_combat.wav");
+}
+
 void IslandScene::Update(float dt)
 {
     if (island == nullptr) { LOG("island es nullptr"); }
@@ -38,6 +43,7 @@ void IslandScene::Update(float dt)
         if (island->GetType() == IslandType::HOSTILE && !combatLaunched)
         {
             combatLaunched = true;
+            Engine::GetInstance().audio->PlayFx(startCombat);
             AttackIsland();
 
         }

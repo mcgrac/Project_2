@@ -51,5 +51,9 @@ private:
     ShopState state = ShopState::CLOSED;
     Item* selectedItem = nullptr;
 
+    //audio variables
+    int spendMoneyfx;
+    int buttonPress;
+    void LoadSound();
 
 };
