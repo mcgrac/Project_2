@@ -15,6 +15,7 @@ public:
     ~SettingsScene();
 
     void Load() override;
+    void LoadSound();
     void Update(float dt) override;
     void PostUpdate(float dt) override;
     void Unload() override;
@@ -47,4 +48,7 @@ private:
     SDL_Rect GetSFXHandle()   const;
     SDL_Rect GetHandleFromVolume(const SDL_Rect& track, float volume) const;
     float GetVolumeFromMouseX(const SDL_Rect& track, int mouseX)   const;
+
+    int buttonPress;
+
 };

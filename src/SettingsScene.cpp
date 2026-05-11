@@ -162,8 +162,14 @@ void SettingsScene::LoadTextures()
     buttonTexture = Engine::GetInstance().textures->Load("Assets/Textures/Pause/ButtonsPause.png");
 }
 
+void SettingsScene::LoadSound() {
+    buttonPress = buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
+}
+
 bool SettingsScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    //play button press when pressing a button
+    Engine::GetInstance().audio->PlayFx(buttonPress);
     if (uiElement->id == BACK_BTN_ID)
     {
         Engine::GetInstance().scene->PopScene();

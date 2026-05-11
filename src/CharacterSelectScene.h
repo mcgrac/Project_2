@@ -37,6 +37,7 @@ public:
     CharacterSelectScene();
 
     void Load() override;
+    void LoadSounds();
     void Update(float dt) override;
     void PostUpdate(float dt) override;
     void Unload() override;
@@ -92,4 +93,7 @@ private:
     SDL_Texture* panelInformationSpritesheet;
     SDL_Texture* labelSpritesheets;
     SDL_Texture* backButtonSpritesheet;
+
+    //audio variables
+    int buttonPress;
 };

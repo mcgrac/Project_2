@@ -12,6 +12,7 @@ public:
     ~HostelScene();
 
     void Load() override;
+    void LoadSound();
     void Update(float dt) override;
     void PostUpdate(float dt) override;
     void Unload() override;
@@ -64,4 +65,8 @@ private:
     bool showRestPanel;
     bool showSelectCharaPanel;
     bool pendingRefresh;
+
+    //audio variables
+    int restfx;
+    int buttonPress;
 };

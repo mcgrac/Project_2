@@ -1,5 +1,6 @@
 #include "HostelScene.h"
 #include "Engine.h"
+#include "Audio.h"
 #include "Scene.h"
 #include "UIManager.h"
 #include "Render.h"
@@ -31,6 +32,7 @@ void HostelScene::Load()
 {
     LOG("HostelScene: cargando hostel.");
     LoadTextures();
+    LoadSound();
     CreateUI();
 }
 
@@ -83,6 +85,11 @@ void HostelScene::LoadTextures()
     emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
 }
 
+void HostelScene::LoadSound() {
+    restfx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/rest.wav");
+    buttonPress = buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
+}
+
 bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
     pendingRefresh = true;
@@ -90,6 +97,8 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     switch (uiElement->id)
     {
     case BACK_BUTTON_ID:
+        //sound of basic button
+        Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().scene->PopScene();
         break;
     case START_DIALOGUE:
@@ -126,6 +135,7 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 20:
         //rest
         if (hostel->CheckGold(hostel->GetRestCost(), alliedParty)) {
+            Engine::GetInstance().audio->PlayFx(restfx);
             hostel->Rest(alliedParty);
             showRestPanel = false;
         }
@@ -151,6 +161,7 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case 22:
         //back panel
+        Engine::GetInstance().audio->PlayFx(buttonPress);
         showRestPanel = false;
         showSelectCharaPanel = false;
         break;

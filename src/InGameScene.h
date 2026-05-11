@@ -22,6 +22,7 @@ public:
     void PostUpdate(float dt) override;
     void Unload() override;
     void LoadTextures() override;
+    void LoadAudio();
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
@@ -62,4 +63,11 @@ private:
     static int GetIslandCenterY(int row, int islandsInCol);
     static ShipMovement DetermineShipMovement(int fromCenterY, int toCenterY);
     void PushSceneFromInGame(BaseScene* scene);
+
+    //audio variables
+    int islandAmbiance;
+    int buttonPress;
+    int startCombat;
+
+    const char* mapMusic = "Assets/Audio/Music/8bitMusic/Shipwreck.wav";
 };
