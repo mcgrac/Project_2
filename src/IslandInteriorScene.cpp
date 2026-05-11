@@ -98,7 +98,7 @@ void IslandInteriorScene::LoadTextures()
     //hostelButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/HostelButton.png");
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
 
-    std::string backgroundPath = SceneUtils::GetIslandTexturePath(island->GetIslandFaction());
+    std::string backgroundPath = SceneUtils::GetIslandTexturePath( island->GetIslandFaction());
     background = Engine::GetInstance().textures->Load(backgroundPath.c_str());
 
     std::string dockyardPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Dockyard");
@@ -107,7 +107,7 @@ void IslandInteriorScene::LoadTextures()
     std::string shopPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Shop");
     dockyardbutton = Engine::GetInstance().textures->Load(shopPath.c_str());
 
-    std::string hostelPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Hostel");
+    std::string hostelPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Hostel");         
     dockyardbutton = Engine::GetInstance().textures->Load(hostelPath.c_str());
 }
 

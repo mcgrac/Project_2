@@ -88,7 +88,6 @@ void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 	float durabilityMultiplier = 1.0f - durabilityReduction;
 	if (durabilityMultiplier < 0.0f) { durabilityMultiplier = 0.0f; }
 
-	// --- LOG NUEVO ---
 	int damageAfterDurability = std::max(0, (int)(scaledDamage * durabilityMultiplier));
 
 	LOG("PHYSICAL DMG [%s]: incoming=%d | totalDurability=%d (base=%d, bonus=%d) | damageAfterDurability=%d | HP antes=%d | HP despues=%d",

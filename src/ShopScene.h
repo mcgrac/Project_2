@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseScene.h"
 #include "Shop.h"
+#include <SDL3/SDL.h>  // sustituye struct SDL_Texture;
 
 struct SDL_Texture;
 

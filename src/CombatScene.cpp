@@ -55,7 +55,7 @@ void CombatScene::LoadSounds() {
 
             AbilitiesSounds ability;
 
-            std::string path = "Assets/Audio/Fx/" + c->GetName() + "/" + skill.GetAnimationId();
+            std::string path = "Assets/Audio/Fx/" + c->GetName() + "/" + skill.GetAnimationId() + ".wav";
             ability.SetFxSound(path);
             ability.SetIdSound(skill.GetAnimationId());
 
@@ -998,7 +998,7 @@ void CombatScene::ShowTargetPanel()
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON,
         20,
-        "< Back",
+        "",
         backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {},  abilityIcons, 0, backBounds.w, backBounds.h
     );

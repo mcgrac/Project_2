@@ -16,6 +16,7 @@
 #include "ConsumableItem.h"
 #include "KeyItem.h"
 #include "Party.h"
+#include "SceneUtils.h"
 
 ShopScene::ShopScene(Shop* shop, Party* allied)
     : shop(shop), alliedParty(allied)
@@ -79,10 +80,15 @@ void ShopScene::Unload()
 void ShopScene::LoadTextures()
 {
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
-    background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/ShopBackground.png");
+    //background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/ShopBackground.png");
     emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
     keyButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyKeyButton.png");
     potionButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyPotionButton.png");
+
+    // Background cambia por facción
+    IslandFaction faction = shop->GetIsland()->GetIslandFaction();
+    std::string path = "Assets/Textures/ShopScene/" + SceneUtils::GetFactionString(faction) + "/background.png";
+    background = Engine::GetInstance().textures->Load(path.c_str());
 }
 
 bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -274,7 +280,10 @@ void ShopScene::CreateItemButtons()
 #if _DEBUG
             LOG("CREATING ITEMS BUTTONS: Item is equippable (name-> %s)", shop->GetCurrentItems()[i]->GetName().c_str());
 #endif // _DEBUG
-            std::string texturePath = "Assets/Textures/ShopScene/Items/" + shop->GetCurrentItems()[i]->GetName() + ".png";
+
+            IslandFaction faction = shop->GetIsland()->GetIslandFaction();
+            std::string factionFolder = SceneUtils::GetFactionString(faction);
+            std::string texturePath = "Assets/Textures/ShopScene/Items/" + factionFolder + "/" + shop->GetCurrentItems()[i]->GetName() + ".png";
             SDL_Texture* itemTexture = Engine::GetInstance().textures->Load(texturePath.c_str());
 
             Engine::GetInstance().uiManager->CreateUIElement(

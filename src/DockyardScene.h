@@ -2,6 +2,7 @@
 #include "BaseScene.h"
 #include "Dockyard.h"
 #include "Party.h"
+#include <SDL3/SDL.h>
 
 struct SDL_Texture;
 

@@ -11,7 +11,7 @@
 #include "NPC.h"
 #include "Combat.h"
 #include "Ship.h"
-
+#include "SceneUtils.h"
 
 DockyardScene::DockyardScene(Dockyard* dockyard, Party* allied)
     : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr)
@@ -65,10 +65,15 @@ void DockyardScene::Unload()
 void DockyardScene::LoadTextures()
 {
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
-    background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/DocksMennu.png");
+    //background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/DocksMennu.png");
     chartNormal = Engine::GetInstance().textures->Load("Assets/Textures/DockyardScene/Chart1.png");
     chartImproved = Engine::GetInstance().textures->Load("Assets/Textures/DockyardScene/Chart2.png");
     improveShip = Engine::GetInstance().textures->Load("Assets/Textures/DockyardScene/UpgradeBaotButton.png");
+
+    // Background cambia por facción
+    IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
+    std::string path = "Assets/Textures/DockyardScene/" + SceneUtils::GetFactionString(faction) + "/background.png";
+    background = Engine::GetInstance().textures->Load(path.c_str());
 }
 
 bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)

@@ -10,6 +10,23 @@
 #include "DialogueScene.h"
 #include "DialogueManager.h"
 #include "Character.h"
+#include "SceneUtils.h"
+
+#pragma region POSITIONS
+#pragma region REST_BUTTON
+const SDL_Rect HostelScene::REST_HUMAN_BOUNDS = { 100, 50, 414, 414 };
+const SDL_Rect HostelScene::REST_BIRD_BOUNDS = { 100, 50, 414, 414 };
+const SDL_Rect HostelScene::REST_SIREN_BOUNDS = { 100, 50, 414, 414 };
+const SDL_Rect HostelScene::REST_REPTILE_BOUNDS = { 100, 50, 414, 414 };
+#pragma endregion
+#pragma region MEAL_BUTTON
+const SDL_Rect HostelScene::MEAL_HUMAN_BOUNDS = { 500, 50, 414, 414 };
+const SDL_Rect HostelScene::MEAL_BIRD_BOUNDS = { 500, 50, 414, 414 };
+const SDL_Rect HostelScene::MEAL_SIREN_BOUNDS = { 500, 50, 414, 414 };
+const SDL_Rect HostelScene::MEAL_REPTILE_BOUNDS = { 500, 50, 414, 414 };
+#pragma endregion
+const SDL_Rect HostelScene::CHARA_SELECT_BOUNDS = { 200, 500, 202, 63 };
+#pragma endregion
 
 HostelScene::HostelScene(Hostel* hostel, Party* allied)
     : hostel(hostel),
@@ -77,12 +94,18 @@ void HostelScene::Unload()
 
 void HostelScene::LoadTextures()
 {
+    //always the same
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
-    background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/HostelBackground.png");
-    ownerSprite = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
     restButton = Engine::GetInstance().textures->Load("Assets/Textures/HostelScene/RestButton.png");
-    mealButton = Engine::GetInstance().textures->Load("Assets/Textures/HostelScene/BuyMealButtonHuman.png");
     emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
+
+    // Changing textures depending on factions
+    IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
+    std::string path = "Assets/Textures/HostelScene/" + SceneUtils::GetFactionString(faction) + "/";
+
+    background = Engine::GetInstance().textures->Load((path + "background.png").c_str());
+    ownerSprite = Engine::GetInstance().textures->Load((path + "ownerSprite.png").c_str());
+    mealButton = Engine::GetInstance().textures->Load((path + "mealButton.png").c_str());
 }
 
 void HostelScene::LoadSound() {
@@ -224,13 +247,13 @@ void HostelScene::OpenRestPanel()
 
     showRestPanel = true;
 
-    SDL_Rect restBtn = { REST_BUTTON_X, REST_BUTTON_Y, REST_BUTTON_W, REST_BUTTON_H };
+    SDL_Rect restBtn = GetRestBounds();
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 20, "", restBtn,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, restButton, 0, restBtn.w, restBtn.h
     );
 
-    SDL_Rect xpBtn = { MEAL_BUTTON_X, MEAL_BUTTON_Y, MEAL_BUTTON_W, MEAL_BUTTON_H };
+    SDL_Rect xpBtn = GetMealBounds();
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 21, "", xpBtn,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, mealButton, 0, xpBtn.w, xpBtn.h
@@ -239,7 +262,7 @@ void HostelScene::OpenRestPanel()
     SDL_Rect backPanel = { 400, 440, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 22, "", backPanel,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, backPanel.w, backPanel.h
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backPanel.w, backPanel.h
     );
 }
 
@@ -249,7 +272,8 @@ void HostelScene::OpenSelectCharaPanel()
 
     //character buttons
     for (int i = 0; i < alliedParty->GetMemberCount(); i++) {
-        SDL_Rect charaBtn = { CHARA_SELECT_X, CHARA_SELECT_Y + (70*i), CHARA_SELECT_BUTTON_W, CHARA_SELECT_BUTTON_H};
+        SDL_Rect charaBtn = CHARA_SELECT_BOUNDS;
+        charaBtn.y += (70 * i);
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, 30 + i, alliedParty->GetMembers()[i]->GetName().c_str(), charaBtn,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, emptyButtons, 0, charaBtn.w, charaBtn.h
@@ -262,4 +286,28 @@ void HostelScene::OpenSelectCharaPanel()
         UIElementType::BUTTON, 33, "back", backPanel,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backPanel.w, backPanel.h
     );
+}
+
+SDL_Rect HostelScene::GetRestBounds() const
+{
+    switch (hostel->GetIsland()->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:   return REST_HUMAN_BOUNDS;
+    case IslandFaction::BIRD:     return REST_BIRD_BOUNDS;
+    case IslandFaction::SIRENS:   return REST_SIREN_BOUNDS;
+    case IslandFaction::REPTILES: return REST_REPTILE_BOUNDS;
+    default:                      return REST_HUMAN_BOUNDS;
+    }
+}
+
+SDL_Rect HostelScene::GetMealBounds() const
+{
+    switch (hostel->GetIsland()->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:   return MEAL_HUMAN_BOUNDS;
+    case IslandFaction::BIRD:     return MEAL_BIRD_BOUNDS;
+    case IslandFaction::SIRENS:   return MEAL_SIREN_BOUNDS;
+    case IslandFaction::REPTILES: return MEAL_REPTILE_BOUNDS;
+    default:                      return MEAL_HUMAN_BOUNDS;
+    }
 }

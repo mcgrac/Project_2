@@ -1031,6 +1031,7 @@ float Combat:: GetLaneDamageMultiplier(Character* c)
         LOG("Lane damage multiplier not applied to %s [ENEMY]", c->GetName().c_str());
         return 1.0f;
     }
+
     float reduction = 0.0f;
 
     //----test----

@@ -14,6 +14,7 @@ public:
     inline NPC* GetOwner() const { return owner; }
     inline int GetRestCost() const { return costRest; }
     inline int GetMealCost() const { return mealCost; }
+    inline Island* GetIsland() const { return island; }
 
     void Rest(Party* party);
     void BuyXP(Party* party, int amount);
