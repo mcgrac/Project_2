@@ -28,7 +28,7 @@
         healingPower="0.1"
         poisonPower="0"
         firePower="0"
-        maxInitiative="300"
+        maxInitiative="250"
     />
 
     <levelScaling
@@ -38,8 +38,8 @@
     />
 
     <skills>
-        <skill id="raptor_slam"   initiativeCost="100" />
-        <skill id="raptor_charge" initiativeCost="100" />
+        <skill id="raptor_slam"   initiativeCost="125" />
+        <skill id="raptor_charge" initiativeCost="75" />
     </skills>
 
 </character>

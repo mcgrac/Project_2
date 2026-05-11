@@ -31,7 +31,7 @@
         healingPower="0"
         poisonPower="0"
         firePower="0"
-        maxInitiative="300"
+        maxInitiative="250"
     />
 
 	<levelScaling
@@ -41,11 +41,11 @@
     />
 
 	<skills>
-		<skill id="encourage" initiativeCost="100" />
-		<skill id="battle_fury" initiativeCost="100" />
-		<skill id="slash" initiativeCost="100" />
-		<skill id="shield_bash" initiativeCost="100" />
-		<skill id="double_blade" initiativeCost="100" />
+		<skill id="encourage" initiativeCost="155" />
+		<skill id="battle_fury" initiativeCost="130" />
+		<skill id="slash" initiativeCost="95" />
+		<skill id="shield_bash" initiativeCost="110" />
+		<skill id="double_blade" initiativeCost="105" />
 	</skills>
 
 	<upgradeTree>

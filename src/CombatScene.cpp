@@ -9,6 +9,7 @@
 #include "Textures.h"
 #include "Render.h"
 #include <sstream>
+#include "Window.h"
 
 CombatScene::CombatScene(Party* _allied, int _shipLevel)
     : alliedParty(_allied)
@@ -16,6 +17,10 @@ CombatScene::CombatScene(Party* _allied, int _shipLevel)
     , combat(nullptr)
     , combatFinished(false)
     , background(nullptr)
+    , nextRound(nullptr)
+    , arrow(nullptr)
+    , poisonIcon(nullptr)
+    , burnIcon(nullptr)
     , uiState(CombatUIState::HIDDEN)
     , selectedSkillIdx(-1)
     , laneInputConsumed (false)
@@ -33,6 +38,7 @@ void CombatScene::Load()
 {
     LOG("CombatScene: cargando...");
 
+    CreateEnemyParty();
     LoadTextures();
     LoadSound();
 
@@ -42,8 +48,6 @@ void CombatScene::Load()
         c->PrintDebugInfo();
     }
     // -----------------------------
-
-    CreateEnemyParty();
 
     if (enemyParty == nullptr)
     {
@@ -100,10 +104,15 @@ void CombatScene::Update(float dt)
     for (Character* c : combat->GetAllCombatants()) {
         //call update of every character (animations)
         c->Update(dt);
-        //if (c->GetIsAlive()) {
-        //    c->Update(dt);
-        //}
     }
+
+    //------Draw panels--------------------
+    DrawAlliedPanels();
+    DrawEnemyPanels();
+
+    DrawArrowCurrentActor();
+    UpdateNextRoundPause(dt);
+    DrawSkillCosts();
 
     //------Gestionar UI si es turno del jugador--------
     UpdateCombatUI();
@@ -112,7 +121,7 @@ void CombatScene::Update(float dt)
     UpdateSkillHover();
     DrawSkillTooltip();
 
-    ShowCurrentHP();
+    //ShowCurrentHP();
 
     if (!combat->GetWaitingForInput())
     {
@@ -127,6 +136,7 @@ void CombatScene::Update(float dt)
             if (combat->CombatIsFinished()) { keepRunning = false; }
             else if (combat->GetWaitingForInput()) { keepRunning = false; }
             else if (combat->IsWaitingAnimation()) { keepRunning = false; }
+            else if (combat->IsNextRoundPause()) { keepRunning = false; }
         }
         //combat->Run();
     }
@@ -152,7 +162,19 @@ void CombatScene::Unload()
     //textures
     Engine::GetInstance().textures->UnLoad(background);
     Engine::GetInstance().textures->UnLoad(abilityIcons);
+    Engine::GetInstance().textures->UnLoad(panelBaseTexture);
+    Engine::GetInstance().textures->UnLoad(hpBarChunkTexture);
+    Engine::GetInstance().textures->UnLoad(initiativeBarChunkTexture);
+    Engine::GetInstance().textures->UnLoad(nextRound);
+    Engine::GetInstance().textures->UnLoad(arrow);
+    Engine::GetInstance().textures->UnLoad(poisonIcon);
+    Engine::GetInstance().textures->UnLoad(burnIcon);
 
+    for (auto& pair : characterIcons)
+    {
+        Engine::GetInstance().textures->UnLoad(pair.second);
+    }
+    characterIcons.clear();
     delete combat;
     combat = nullptr;
 
@@ -163,6 +185,29 @@ void CombatScene::LoadTextures()
 {
     abilityIcons = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/AbilityIcons.png");
     background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/BattleBackground.png");
+    panelBaseTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/Panel.png");
+    hpBarChunkTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/HealthPoint.png");
+    initiativeBarChunkTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/InitiativePoint.png");
+    nextRound = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/nextRound.png");
+    arrow = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/ArrowMarker.png");
+    poisonIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/PoisonIndicator.png");
+    burnIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/FireIndicator.png");
+
+    // Cargar icono de cada personaje dinámicamente desde las parties
+    auto loadIconForParty = [&](Party* party)
+        {
+            for (Character* c : party->GetMembers())
+            {
+                const std::string& name = c->GetName();
+                if (characterIcons.find(name) != characterIcons.end()) { continue; } // ya cargado
+
+                std::string path = "Assets/Textures/CombatScene/Icons/" + name + "_icon.png";
+                characterIcons[name] = Engine::GetInstance().textures->Load(path.c_str());
+            }
+        };
+
+    loadIconForParty(alliedParty);
+    loadIconForParty(enemyParty);
 }
 
 bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -350,6 +395,15 @@ bool CombatScene::IsLaneTaken(LaneType laneType) const
 }
 #pragma endregion
 
+void CombatScene::DrawArrowCurrentActor()
+{
+    Character* c = combat->GetCurrentActor();
+    if (c == nullptr) { return; }
+    Vector2D position { 0,0 };
+    position.setX((int)c->GetPosition().getX() - (arrow->w / 2));
+    position.setY((int)c->GetPosition().getY() - 100);
+    Engine::GetInstance().render->DrawTexture(arrow, position.getX(), position.getY());
+}
 
 #pragma region SKILL_HOVER
 void CombatScene::UpdateSkillHover()
@@ -383,6 +437,7 @@ void CombatScene::UpdateSkillHover()
         }
     }
 }
+
 void CombatScene::DrawSkillTooltip()
 {
     //if (hoveredSkillIdx == -1) return;
@@ -440,8 +495,8 @@ void CombatScene::DrawSkillTooltip()
     int boxWidth = maxLineLen * charWidth + padding * 2;
     int boxHeight = (int)lines.size() * lineHeight + padding * 2;
 
-    int startX = 600;
-    int startY = 400;
+    int startX = (int)Engine::GetInstance().window->width/3;
+    int startY = 600;
 
     SDL_Rect bg = { startX, startY, boxWidth, boxHeight };
 
@@ -586,6 +641,159 @@ void CombatScene::DrawColoredLine(const std::string& line, int x, int y)
 }
 #pragma endregion
 
+#pragma region CHARACTER PANELS
+void CombatScene::DrawAlliedPanels()
+{
+    auto& members = alliedParty->GetMembers();
+    for (int i = 0; i < (int)members.size(); i++)
+    {
+        int panelY = ALLIED_PANEL_START_Y + i * PANEL_VERTICAL_GAP;
+        DrawCharacterPanel(members[i], ALLIED_PANEL_X, panelY, true);
+    }
+}
+
+void CombatScene::DrawEnemyPanels()
+{
+    auto& members = enemyParty->GetMembers();
+    for (int i = 0; i < (int)members.size(); i++)
+    {
+        int panelY = ENEMY_PANEL_START_Y + i * PANEL_VERTICAL_GAP;
+        DrawCharacterPanel(members[i], ENEMY_PANEL_X, panelY, false);
+    }
+}
+
+void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool isAlly)
+{
+    // 1 — fondo del panel
+    SDL_Rect panelDest = { panelX, panelY, PANEL_W, PANEL_H };
+    Engine::GetInstance().render->DrawTexture(panelBaseTexture, panelX, panelY, nullptr, 1.0f, 0.0, INT_MAX, INT_MAX, !isAlly);
+
+    // 2 — icono del personaje
+    auto it = characterIcons.find(c->GetName());
+    if (it != characterIcons.end() && it->second != nullptr)
+    {
+        int iconX;
+        if (isAlly)
+        {
+            iconX = panelX + ICON_OFFSET_X;
+        }
+        else
+        {
+            iconX = panelX + PANEL_W - ICON_W;
+        }
+        int iconY = panelY + ICON_OFFSET_Y;
+        Engine::GetInstance().render->DrawTexture(it->second, iconX, iconY, nullptr, false);
+
+        //int iconX = panelX + ICON_OFFSET_X;
+        //int iconY = panelY + ICON_OFFSET_Y;
+        //SDL_Rect iconDest = { iconX, iconY, ICON_W, ICON_H };
+        //Engine::GetInstance().render->DrawTexture(it->second, iconX, iconY, nullptr, false);
+    }
+
+    // 3 — barra de vida
+    //int hpBarX = panelX + HP_BAR_OFFSET_X;
+    //int hpBarY = panelY + HP_BAR_OFFSET_Y;
+
+
+    //DrawHealthBar(hpBarX, hpBarY, c->GetCurrentHP(), c->GetMaxHP());
+
+    //// 4 — barra de iniciativa
+    //int initBarX = panelX + INIT_BAR_OFFSET_X;
+    //int initBarY = panelY + INIT_BAR_OFFSET_Y;
+    //DrawInitiativeBar(initBarX, initBarY, c->GetCurrentInitiative());
+
+    int hpBarX;
+    int initBarX;
+    if (isAlly)
+    {
+        hpBarX = panelX + HP_BAR_OFFSET_X;
+        initBarX = panelX + INIT_BAR_OFFSET_X;
+    }
+    else
+    {
+        hpBarX = panelX + HP_BAR_OFFSET_X_ENEMY;
+        initBarX = panelX + INIT_BAR_OFFSET_X_ENEMY;
+    }
+
+    int hpBarY = panelY + HP_BAR_OFFSET_Y;
+    int initBarY = panelY + INIT_BAR_OFFSET_Y;
+
+    DrawHealthBar(hpBarX, hpBarY, c->GetCurrentHP(), c->GetMaxHP(), isAlly);
+    DrawInitiativeBar(initBarX, initBarY, c->GetCurrentInitiative(), isAlly);
+}
+
+void CombatScene::DrawHealthBar(int x, int y, int currentHP, int maxHP, bool leftToRight)
+{
+    //if (maxHP <= 0) return;
+
+    //// Cada cuadradito es el 10% de la vida máxima del personaje
+    //float hpPerChunk = maxHP / (float)HP_MAX_CHUNKS;
+    //int filledChunks = (int)(currentHP / hpPerChunk);
+    //filledChunks = std::min(filledChunks, HP_MAX_CHUNKS);
+    //filledChunks = std::max(filledChunks, 0);
+
+    //for (int i = 0; i < filledChunks; i++)
+    //{
+    //    int chunkX = x + i * (HP_CHUNK_W);
+    //    Engine::GetInstance().render->DrawTexture(hpBarChunkTexture, chunkX, y, nullptr, false);
+    //}
+
+    if (maxHP <= 0) { return; }
+
+    float hpPerChunk = maxHP / (float)HP_MAX_CHUNKS;
+    int filledChunks = std::min((int)(currentHP / hpPerChunk), HP_MAX_CHUNKS);
+    filledChunks = std::max(filledChunks, 0);
+
+    for (int i = 0; i < filledChunks; i++)
+    {
+        int chunkX;
+        if (leftToRight)
+        {
+            chunkX = x + i * (HP_CHUNK_W);
+        }
+        else
+        {
+            chunkX = x - i * (HP_CHUNK_W);
+        }
+        Engine::GetInstance().render->DrawTexture(hpBarChunkTexture, chunkX, y, nullptr, false);
+    }
+}
+
+void CombatScene::DrawInitiativeBar(int x, int y, int currentInitiative, bool leftToRight)
+{
+    // Cada cuadradito es el 10% de 250 (= 25 puntos de iniciativa)
+    //int maxInitiative = 250;
+    //int clampedInit = std::min(currentInitiative, maxInitiative);
+    //clampedInit = std::max(clampedInit, 0);
+    //int filledChunks = (int)(clampedInit / (maxInitiative / (float)INIT_MAX_CHUNKS));
+    //filledChunks = std::min(filledChunks, INIT_MAX_CHUNKS);
+
+    //for (int i = 0; i < filledChunks; i++)
+    //{
+    //    int chunkX = x + i * (INIT_CHUNK_W - 2);
+    //    Engine::GetInstance().render->DrawTexture(initiativeBarChunkTexture, chunkX, y, nullptr, false);
+    //}
+
+    int clampedInit = std::max(std::min(currentInitiative, MAX_INITIATIVE), 0);
+    int filledChunks = std::min((int)(clampedInit / (MAX_INITIATIVE / (float)INIT_MAX_CHUNKS)), INIT_MAX_CHUNKS);
+
+    for (int i = 0; i < filledChunks; i++)
+    {
+        int chunkX;
+        if (leftToRight)
+        {
+            chunkX = x + i * (INIT_CHUNK_W - BAR_CHUNK_OVERLAP);
+        }
+        else
+        {
+            chunkX = x - i * (INIT_CHUNK_W - BAR_CHUNK_OVERLAP);
+        }
+        Engine::GetInstance().render->DrawTexture(initiativeBarChunkTexture, chunkX, y, nullptr, false);
+    }
+}
+
+#pragma endregion
+
 //loads skills textures and buttons depending of the character attacking
 void CombatScene::CreateSkillButtons(Character* c)
 {
@@ -600,8 +808,8 @@ void CombatScene::CreateSkillButtons(Character* c)
     for (int i = 0; i < (int)skills.size(); ++i)
     {
         SDL_Rect bounds;
-        bounds.x = 20;
-        bounds.y = 200 + i * 70;
+        bounds.x = (int)(Engine::GetInstance().window->width / 3) + (i * 70);
+        bounds.y = 500;
         bounds.w = 64;
         bounds.h = 64;
 
@@ -692,27 +900,6 @@ void CombatScene::ShowSkillButtons()
 
     CreateSkillButtons(actor);
 
-    //auto& skills = actor->GetSkills();
-
-    //for (int i = 0; i < (int)skills.size(); ++i)
-    //{
-    //    SDL_Rect bounds;
-    //    bounds.x = 20;
-    //    bounds.y = 200 + i * 70;
-    //    bounds.w = 64;
-    //    bounds.h = 64;
-
-    //    std::string label = skills[i].GetName();
-
-    //    Engine::GetInstance().uiManager->CreateUIElement(
-    //        UIElementType::BUTTON,
-    //        i + 1, // IDs 1..5
-    //        label.c_str(),
-    //        bounds,
-    //        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
-    //    );
-    //}
-
     // Botón de pasar turno — sin coste de iniciativa
     SDL_Rect passBounds;
     passBounds.x = 20;
@@ -802,6 +989,75 @@ void CombatScene::ShowCurrentHP()
         std::string text = "Character " + name + "|" + " Current hp " + std::to_string(currentHp) + "/" + std::to_string(maxHp);
         Engine::GetInstance().render->DrawText(text.c_str(), 500, 600 + (50 * i), 200, 40, { 255, 255, 255, 255 });
     }
+}
+
+void CombatScene::DrawSkillCosts()
+{
+    if (uiState != CombatUIState::SELECTING_SKILL) { return; }
+
+    Character* actor = combat->GetCurrentActor();
+    if (actor == nullptr) { return; }
+
+    auto& skills = actor->GetSkills();
+    int totalWidth = (int)skills.size() * SKILL_BTN_SPACING;
+    int startX = (int)(Engine::GetInstance().window->width / 3);
+
+    for (int i = 0; i < (int)skills.size(); ++i)
+    {
+        bool canAfford = actor->GetCurrentInitiative() >= skills[i].GetInitiativeCost();
+
+        SDL_Rect costBg;
+        costBg.x = startX + i * SKILL_BTN_SPACING;
+        costBg.y = SKILL_BTN_Y + SKILL_BTN_H;
+        costBg.w = SKILL_BTN_W;
+        costBg.h = 20;
+
+        // verde si puede usarla, rojo si no tiene iniciativa suficiente
+        if (canAfford)
+        {
+            Engine::GetInstance().render->DrawRectangle(costBg, 0, 0, 0, 180, true, false);
+        }
+        else
+        {
+            Engine::GetInstance().render->DrawRectangle(costBg, 150, 0, 0, 180, true, false);
+        }
+
+        std::string costText = std::to_string(skills[i].GetInitiativeCost());
+        Engine::GetInstance().render->DrawText(
+            costText.c_str(),
+            costBg.x, costBg.y,
+            costBg.w, costBg.h,
+            canAfford ? SDL_Color{ 255, 255, 255, 255 } : SDL_Color{ 255, 80, 80, 255 }
+        );
+    }
+}
+
+void CombatScene::UpdateNextRoundPause(float dt)
+{
+    if (!combat->IsNextRoundPause()) { return; }
+
+    if (!nextRoundPauseActive)
+    {
+        // Primera vez que entramos — arranca el timer
+        nextRoundPauseActive = true;
+        nextRoundTimer = 0.0f;
+    }
+
+    nextRoundTimer += dt;
+    DrawNextRoundBanner();
+
+    if (nextRoundTimer >= NEXT_ROUND_PAUSE_DURATION)
+    {
+        nextRoundPauseActive = false;
+        nextRoundTimer = 0.0f;
+        combat->ResumeFromNextRoundPause();
+    }
+}
+
+void CombatScene::DrawNextRoundBanner()
+{
+    Vector2D position{ 0.0f, Engine::GetInstance().window->height / 2.0f };
+    Engine::GetInstance().render->DrawTexture(nextRound, (int)position.getX(), (int)position.getY());
 }
 
 void CombatScene::OnResume()

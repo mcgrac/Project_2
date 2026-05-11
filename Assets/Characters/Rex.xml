@@ -27,7 +27,7 @@
         healingPower="0"
         poisonPower="0.05"
         firePower="0"
-        maxInitiative="300"
+        maxInitiative="250"
     />
 
     <levelScaling
@@ -37,8 +37,8 @@
     />
 
     <skills>
-        <skill id="rex_bite"   initiativeCost="100" />
-        <skill id="rex_charge" initiativeCost="100" />
+        <skill id="rex_bite"   initiativeCost="70" />
+        <skill id="rex_charge" initiativeCost="80" />
     </skills>
 
 </character>

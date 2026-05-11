@@ -26,7 +26,7 @@ private:
     bool areaEffectTargetAllies;
     std::string animationId;
 
-    std::string skillDescription = "Texto de prueba para ver si funciona: Heal 10 Damage 40\n";
+    std::string skillDescription = "";
 
 public:
     Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost, std::string _animationId = "none");

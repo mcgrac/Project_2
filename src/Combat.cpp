@@ -209,6 +209,10 @@ void Combat::Run()
         // ProcessQueue sets the next state itself (ATTACK_START or CALCULATE_INITIATIVE).
         break;
 
+    case CombatState::NEXT_ROUND_PAUSE:
+        // CombatScene gestiona el timer y llama ResumeFromNextRoundPause()
+        break;
+
     case CombatState::ATTACK_START:
         AttackStart();
         break;
@@ -430,21 +434,15 @@ void Combat::FillQueue()
 
 void Combat::ProcessQueue()
 {
-    // Remove dead actors from the front of the queue before processing
-    //while (!actorsQueue.empty() && !actorsQueue.front()->GetIsAlive())
-    //{
-    //    LOG("ProcessQueue | Skipping dead actor: %s", actorsQueue.front()->GetName().c_str());
-    //    actorsQueue.erase(actorsQueue.begin());
-    //}
-
     // Remove dead from the queue
     actorsQueue.erase(std::remove_if(actorsQueue.begin(), actorsQueue.end(), [](Character* c) { return !c->GetIsAlive() || c->GetPendingToDie(); }),actorsQueue.end());
 
-
     if (actorsQueue.empty())
     {
-        LOG("ProcessQueue | Queue empty -> CALCULATE_INITIATIVE");
-        state = CombatState::CALCULATE_INITIATIVE;
+        //LOG("ProcessQueue | Queue empty -> CALCULATE_INITIATIVE");
+        //state = CombatState::CALCULATE_INITIATIVE;
+        LOG("ProcessQueue | Queue empty -> NEXT_ROUND_PAUSE");
+        state = CombatState::NEXT_ROUND_PAUSE;
         return;
     }
 
@@ -986,6 +984,18 @@ void Combat::SubmitPlayerChoice(int skillIndex, int targetIndex)
     if (skillIndex < 0 || skillIndex >= (int)skills.size()) { return; }
     if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size()) { return; }
 
+    // --- CHECK INITIATIVE COST --------------
+    int cost = skills[skillIndex].GetInitiativeCost();
+    if (currentActor->GetCurrentInitiative() < cost)
+    {
+        LOG("SubmitPlayerChoice | %s cannot use %s — not enough initiative (%d < %d)",
+            currentActor->GetName().c_str(),
+            skills[skillIndex].GetName().c_str(),
+            currentActor->GetCurrentInitiative(),
+            cost);
+        return; // rechaza la elección, CombatScene sigue en WAITING_FOR_PLAYER_INPUT
+    }
+
     currentSkill = &skills[skillIndex];
     currentTarget = aliveEnemies[targetIndex];
 
@@ -1074,6 +1084,14 @@ float Combat:: GetLaneDamageMultiplier(Character* c)
     //----------------
 
     return finalMultiplier;
+}
+
+void Combat::ResumeFromNextRoundPause()
+{
+    if (state == CombatState::NEXT_ROUND_PAUSE)
+    {
+        state = CombatState::CALCULATE_INITIATIVE;
+    }
 }
 
 std::vector<Character*> Combat::GetAliveMembers(Party* party)

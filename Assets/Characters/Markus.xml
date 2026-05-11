@@ -31,7 +31,7 @@
         healingPower="0"
         poisonPower="0"
         firePower="0"
-        maxInitiative="300"
+        maxInitiative="250"
     />
 
 	<levelScaling
@@ -41,10 +41,10 @@
     />
 
 	<skills>
-		<skill id="red_dance" initiativeCost="100" />
-		<skill id="laser_upward" initiativeCost="100" />
-		<skill id="healing_halo" initiativeCost="100" />
-		<skill id="flame" initiativeCost="100" />
+		<skill id="red_dance" initiativeCost="120" />
+		<skill id="laser_upward" initiativeCost="150" />
+		<skill id="healing_halo" initiativeCost="125" />
+		<skill id="flame" initiativeCost="125" />
 		<skill id="blue_dance" initiativeCost="100" />
 	</skills>
 

@@ -19,7 +19,7 @@ enum class CombatState
 
     FILL_QUEUE,
     PROCESS_QUEUE,
-
+    NEXT_ROUND_PAUSE,
     ATTACK_START,
     WAITING_FOR_PLAYER_INPUT,
 
@@ -89,6 +89,7 @@ public:
     std::unordered_map<Character*, Character::PreCombatValues> preCombatValues;
 
     //getter
+    inline bool IsNextRoundPause() const { return state == CombatState::NEXT_ROUND_PAUSE; }
     inline bool GetWaitingForInput() const { return state == CombatState::WAITING_FOR_PLAYER_INPUT; }
     inline bool IsWaitingAnimation() const { return state == CombatState::ATTACK_ANIMATION; }
     inline Character* GetCurrentActor() const { return currentActor; }
@@ -105,6 +106,7 @@ public:
     void ForceDefeat();
 
     float GetLaneDamageMultiplier(Character* c);
+    void ResumeFromNextRoundPause();
 
 private:
 
