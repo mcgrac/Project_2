@@ -33,6 +33,8 @@ public:
     void LoadTextures() override;
     void LoadSounds();
 
+    void ChooseSound(std::string id);
+
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
     inline bool DidPlayerWin() const { return playerWon; }

@@ -36,6 +36,7 @@ private:
     static constexpr int HOSTEL_BUTTON_ID = 2;
     static constexpr int DOCKYARD_BUTTON_ID = 3;
     static constexpr int LEAVE_BUTTON_ID = 4;
+    static constexpr int CHEST_BUTTON_ID = 5;
 
      //helper
     SDL_Rect GetDockBounds() const;
@@ -63,6 +64,13 @@ private:
     static const SDL_Rect HOSTEL_SIREN_BOUNDS;
     static const SDL_Rect HOSTEL_REPTILE_BOUNDS;
 #pragma endregion
+
+#pragma region CHEST
+    static const SDL_Rect CHEST_HUMAN_BOUNDS;
+    static const SDL_Rect CHEST_BIRD_BOUNDS;
+    static const SDL_Rect CHEST_SIREN_BOUNDS;
+    static const SDL_Rect CHEST_REPTILE_BOUNDS;
+#pragma endregion
 #pragma endregion
 
 #pragma region TEXTURES
@@ -70,6 +78,7 @@ private:
     SDL_Texture* dockyardbutton;
     SDL_Texture* shopButton;
     SDL_Texture* hostelButton;
+    SDL_Texture* chestButton;
     SDL_Texture* exitButton;
 #pragma endregion
 

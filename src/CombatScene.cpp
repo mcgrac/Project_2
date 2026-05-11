@@ -55,7 +55,7 @@ void CombatScene::LoadSounds() {
 
             AbilitiesSounds ability;
 
-            std::string path = "Assets/Audio/Fx/" + c->GetName() + "/" + skill.GetAnimationId();
+            std::string path = "Assets/Audio/Fx/" + c->GetName() + "/" + skill.GetAnimationId() + ".wav";
             ability.SetFxSound(path);
             ability.SetIdSound(skill.GetAnimationId());
 
