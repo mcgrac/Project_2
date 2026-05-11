@@ -2,8 +2,22 @@
 #include "BaseScene.h"
 #include "Combat.h"
 #include "Party.h"
+#include "Engine.h"
+#include "Audio.h"
 
 struct SDL_Texture;
+
+struct AbilitiesSounds {
+
+    std::string idSound = "";
+    int fxSound = -1;
+
+    AbilitiesSounds() = default;
+    ~AbilitiesSounds(){}
+
+    void SetIdSound(std::string id);
+    void SetFxSound(std::string path);
+};
 
 class CombatScene : public BaseScene
 {
@@ -17,6 +31,7 @@ public:
     void PostUpdate(float dt) override;
     void Unload() override;
     void LoadTextures() override;
+    void LoadSounds();
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
@@ -110,14 +125,16 @@ private:
     float nextRoundTimer = 0.0f;
     bool nextRoundPauseActive = false;
 
-    // ── Character Panels ─────────────────────────────────────────────────────
+    std::vector<AbilitiesSounds> abilities;
+
+    // ---Character Panels ---------------------------
     void DrawAlliedPanels();
     void DrawEnemyPanels();
     void DrawCharacterPanel(Character* c, int panelX, int panelY, bool isAlly);
     void DrawHealthBar(int x, int y, int currentHP, int maxHP, bool leftToRight = true);
     void DrawInitiativeBar(int x, int y, int currentInitiative, bool leftToRight = true);
 
-    //---------Timer---------
+    //---------Timer-----------
     static constexpr float NEXT_ROUND_PAUSE_DURATION = 3000.0f; // segundos
 
     // -------- Panel layout constants ------------------
