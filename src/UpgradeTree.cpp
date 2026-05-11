@@ -7,6 +7,9 @@ UpgradeTree::UpgradeTree()
 
 UpgradeTree::~UpgradeTree()
 {
+#if _DEBUG
+    LOG("Destructor UpgradeTree");
+#endif
 }
 
 void UpgradeTree::AddTier(UpgradeTier tier)
@@ -21,6 +24,11 @@ UpgradeTier* UpgradeTree::GetAvailableTier(int currentLevel)
             return &tier;
     }
     return nullptr;
+}
+
+std::vector<UpgradeTier>& UpgradeTree::GetTiers()
+{
+    return tiers;
 }
 
 const std::vector<UpgradeTier>& UpgradeTree::GetTiers() const

@@ -2,14 +2,67 @@
 #include "Render.h"
 #include "Engine.h"
 #include "Audio.h"
+#include "Log.h"
+#include "Scene.h"
+#include "Fonts.h"
 
-UIButton::UIButton(int id, SDL_Rect bounds, const char* text) : UIElement(UIElementType::BUTTON, id)
+UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _texture, int _spriteCol, int _btnWidth, int _btnHeight) :
+	UIElement(UIElementType::BUTTON, id), spritesheet(_texture), spriteCol(_spriteCol), playingAnim(false),
+	animFrame(0), animTimer(0.0f), animFrameDuration(0.1f), buttonHeight(_btnHeight), buttonWidth(_btnWidth)
 {
 	this->bounds = bounds;
 	this->text = text;
 
 	canClick = true;
 	drawBasic = false;
+
+	//if (spritesheet) {
+	//	LOG("spritesheet in button");
+	//}
+	//else {
+	//	LOG("No spritesheet in buttons");
+	//}
+
+	// Crear texto si existe
+	if (!this->text.empty())
+	{
+		font = Engine::GetInstance().fonts->LoadFont("Assets/Fonts/PixelFont.ttf", 24);
+
+		if (font != nullptr)
+		{
+			textTexture = Engine::GetInstance().fonts->CreateTextTexture(
+				this->text,
+				textColor,
+				font
+			);
+
+			if (textTexture != nullptr)
+			{
+				//SDL_GetTextureSize(textTexture, (float*)&textRect.w, (float*)&textRect.h);
+
+				//textRect.x = bounds.x + (bounds.w - textRect.w) / 2;
+				//textRect.y = bounds.y + (bounds.h - textRect.h) / 2;
+
+				float w, h;
+				SDL_GetTextureSize(textTexture, &w, &h);
+
+				textRect.w = (int)w;
+				textRect.h = (int)h;
+
+				// Centrado
+				textRect.x = bounds.x + (bounds.w - textRect.w) / 2;
+				textRect.y = bounds.y + (bounds.h - textRect.h) / 2;
+			}
+			else
+			{
+				LOG("ERROR: no se pudo crear textTexture");
+			}
+		}
+		else
+		{
+			LOG("ERROR: font es nullptr");
+		}
+	}
 }
 
 UIButton::~UIButton()
@@ -19,15 +72,60 @@ UIButton::~UIButton()
 
 bool UIButton::Update(float dt)
 {
+	// Skip input on the frame this button was created
+	if (createdThisFrame)
+	{
+		createdThisFrame = false;
+		DrawButton();
+		return false;
+	}
+
+	if (Engine::GetInstance().scene->GetIgnoreInputThisFrame()) { DrawButton();  return false; } //ignore frame
+
 	if (state != UIElementState::DISABLED)
 	{
 		// L16: TODO 3: Update the state of the GUiButton according to the mouse position
 		Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
 
-		//If the position of the mouse if inside the bounds of the button 
-		if (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w && mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) {
+		//adjust bounds camera 
+		//int camX = Engine::GetInstance().render->camera.x;
+		int camX = isHUD ? 0 : Engine::GetInstance().render->camera.x;
 
-			state = UIElementState::FOCUSED;
+		// Adjust bounds to screen space using camera offset
+		int screenX = bounds.x + camX;
+		int screenY = bounds.y;
+
+		////If the position of the mouse if inside the bounds of the button 
+		//if (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w && mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) {
+
+		//	if(state != UIElementState::SELECTED)
+		//	{
+		//		state = UIElementState::FOCUSED;
+		//	}
+
+		//	if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
+		//		state = UIElementState::PRESSED;
+		//	}
+
+		//	if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
+		//		NotifyObserver();
+		//	}
+		//}
+		//else {
+		//	if(state != UIElementState::SELECTED)
+		//	{
+		//		state = UIElementState::NORMAL;
+		//	}
+		//}
+
+		//If the position of the mouse if inside the bounds of the button 
+		if (mousePos.getX() > screenX && mousePos.getX() < screenX + bounds.w &&
+			mousePos.getY() > screenY && mousePos.getY() < screenY + bounds.h) {
+
+			if (state != UIElementState::SELECTED)
+			{
+				state = UIElementState::FOCUSED;
+			}
 
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
 				state = UIElementState::PRESSED;
@@ -38,35 +136,114 @@ bool UIButton::Update(float dt)
 			}
 		}
 		else {
-			state = UIElementState::NORMAL;
+			if (state != UIElementState::SELECTED)
+			{
+				state = UIElementState::NORMAL;
+			}
 		}
-
-		//L16: TODO 4: Draw the button according the GuiControl State
-		switch (state)
-		{
-		case UIElementState::DISABLED:
-			Engine::GetInstance().render->DrawRectangle(bounds, 200, 200, 200, 255, true, false);
-			break;
-		case UIElementState::NORMAL:
-			Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 255, 255, true, false);
-			break;
-		case UIElementState::FOCUSED:
-			Engine::GetInstance().render->DrawRectangle(bounds, 0, 0, 20, 255, true, false);
-			break;
-		case UIElementState::PRESSED:
-			Engine::GetInstance().render->DrawRectangle(bounds, 0, 255, 0, 255, true, false);
-			break;
-		}
-
-		Engine::GetInstance().render->DrawText(text.c_str(), bounds.x, bounds.y, bounds.w, bounds.h, {255,255,255,255});
-
 	}
+
+	DrawButton();
 
 	return false;
 }
 
 bool UIButton::CleanUp()
 {
+	if (textTexture != nullptr)
+	{
+		SDL_DestroyTexture(textTexture);
+		textTexture = nullptr;
+	}
+
 	pendingToDelete = true;
 	return true;
+}
+
+SDL_Rect UIButton::GetFrameRect(int row) const
+{
+	SDL_Rect rect;
+
+	rect.x = spriteCol * buttonWidth;
+	rect.y = row * buttonHeight;
+	rect.w = buttonWidth;
+	rect.h = buttonHeight;
+
+	return rect;
+}
+
+void UIButton::SetTint(Uint8 r, Uint8 g, Uint8 b) const
+{
+	SDL_SetTextureColorMod(spritesheet, r, g, b);
+}
+
+void UIButton::ResetTint() const
+{
+	SDL_SetTextureColorMod(spritesheet, 255, 255, 255);
+}
+
+void UIButton::DrawButton() const
+{
+	if (spritesheet == nullptr) 
+	{
+		return;
+	}
+
+	SDL_Rect frameRect;
+
+	if (playingAnim)
+	{
+		// Frames de animacion post-click (filas 2-5)
+		frameRect = GetFrameRect(buttonAnimStart + animFrame);
+		ResetTint();
+	}
+	else if (state == UIElementState::DISABLED)
+	{
+		frameRect = GetFrameRect(buttonRowNormal);
+		SetTint(100, 100, 100);     // oscurecer para disabled
+	}
+	else if (state == UIElementState::PRESSED)
+	{
+		frameRect = GetFrameRect(buttonRowFocused);
+		SetTint(200, 230, 255);     // tinte claro para pressed
+	}
+	else if (state == UIElementState::SELECTED) 
+	{
+		frameRect = GetFrameRect(buttonRowFocused);
+		ResetTint();
+	}
+	else if (state == UIElementState::FOCUSED)
+	{
+		frameRect = GetFrameRect(buttonRowFocused);
+		ResetTint();
+	}
+	else
+	{
+		// NORMAL
+		frameRect = GetFrameRect(buttonRowNormal);
+		ResetTint();
+	}
+
+	float speed = isHUD ? 0.0f : 1.0f;
+
+	Engine::GetInstance().render->DrawTexture(
+		spritesheet,
+		bounds.x, bounds.y,
+		&frameRect,
+		speed    // sin parallax
+	);
+
+	//Dibujar texto encima
+	if (textTexture != nullptr)
+	{
+		Engine::GetInstance().render->DrawTexture(
+			textTexture,
+			textRect.x,
+			textRect.y,
+			nullptr,
+			speed
+		);
+	}
+
+	ResetTint();
 }

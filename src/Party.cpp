@@ -61,28 +61,6 @@ void Party::SpendGold(int amount)
     gold = std::max(0, gold - amount);
 }
 
-int Party::GetGold() const
-{
-    return gold;
-}
-
-void Party::AddItem(Item* item)
-{
-    inventory.push_back(item);
-}
-
-void Party::RemoveItem(Item* item)
-{
-    auto it = std::find(inventory.begin(), inventory.end(), item);
-    if (it != inventory.end())
-        inventory.erase(it);
-}
-
-std::vector<Item*>& Party::GetInventory()
-{
-    return inventory;
-}
-
 //  Rewards
 
 void Party::SetXPReward(int xp)

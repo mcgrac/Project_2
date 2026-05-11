@@ -1,18 +1,23 @@
 #include "Character.h"
 #include "Engine.h"
+#include "Render.h"
+#include "Textures.h"
 #include "Log.h"
+#include "Item.h"
 
 Character::Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
-	int _maxInitiative, int _power, int _durability, int _maxDurability, int _speed,
-	int _lifesteal, float _healingPower, float _poisonPower, float _firePower, int _poisonedStatMod, int _burnedStatMod,
+	int _maxInitiative, int _basePower, int _bonusPower, int _totalPower, int _totalDurability, int _baseDurability, int _bonusDurability, int _maxDurability, int _baseSpeed,
+	int _bonusSpeed, int _totalSpeed, int _lifesteal, float _healingPower, float _poisonPower, float _firePower, int _poisonedStatMod, int _burnedStatMod,
 	int _level, int _maxHealthLevelScaling, int _speedLevelScaling, int _powerLevelScaling) :
 	position(_position), name(_name), health(_health), maxHealth(_maxHealth), experience(_experience), initiative(_initiative), maxInitiative(_maxInitiative),
-	power(_power), durability(_durability), maxDurability(_maxDurability), speed(_speed), lifesteal(_lifesteal), healingPower(_healingPower),
-	poisonPower(_poisonPower), firePower(_firePower),
+	basePower(_basePower), bonusPower(_bonusPower), totalPower(_totalPower),totalDurability(_totalDurability), baseDurability(_baseDurability), bonusDurability(_bonusDurability), 
+	maxDurability(_maxDurability), baseSpeed(_baseSpeed), bonusSpeed(_bonusSpeed), totalSpeed(_totalSpeed), lifesteal(_lifesteal), healingPower(_healingPower), poisonPower(_poisonPower), firePower(_firePower),
 	isPoisoned(false), isBurned(false), poisonStatMod(_poisonedStatMod), burnedStatMod(_burnedStatMod), level(_level), 
-	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true)
+	maxHealthLevelScaling(_maxHealthLevelScaling), powerLevelScaling(_powerLevelScaling), speedLevelScaling(_speedLevelScaling), isAlive(true), isAllied(false)
 {
-	//add loading of the spritesheet
+	SetTotalPower();
+	SetTotalSpeed();
+	SetTotalDurability();
 
 	//initialize upgrade tree
 	upgradeTree = new UpgradeTree();
@@ -20,49 +25,119 @@ Character::Character(Vector2D _position, std::string _name, int _health, int _ma
 
 Character::~Character()
 {
-	//add cleanup of the textures and sounds
+#if _DEBUG
+	LOG("\033[1;32m|Destructor Character: %s\033[0m", name.c_str());
+#endif // _DEBUG
+
+	if (texture != nullptr)
+	{
+		Engine::GetInstance().textures->UnLoad(texture);
+		texture = nullptr;
+	}
+
+	killedBy = nullptr;
+	poisonedBy = nullptr;
+	burnedBy = nullptr;
+
+	//upgradeTree
+	delete upgradeTree;
+	upgradeTree = nullptr;
+
 }
 
-//void Character::AttackPhysical(Character& target, int damage)
-//{
-//	target.ReceivePhysicalDamage(damage);
-//	Heal(damage * lifesteal);
-//}
-//
-//void Character::AttackMagical(Character& target, int damage)
-//{
-//	target.ReceiveMagicalDamage(damage);
-//	Heal(damage * lifesteal);
-//}
+void Character::Update(float dt)
+{
+	Draw(dt);
+
+	//check death animation
+	if (pendingToDie) {
+		anims.SetCurrent("dead");
+		if (anims.IsCurrentFinished()) {
+			isAlive = false;
+			pendingToDie = false;
+		}
+	}
+}
 
 void Character::Heal(int amount)
 {
 	int currentHealth = health;
-	currentHealth += amount * healingPower;
+	currentHealth += amount * (1 + healingPower);
 	health = std::min(maxHealth, currentHealth);
+}
+
+void Character::FullyHeal()
+{
+	int currentHealth;
+	currentHealth = maxHealth;
+	health = currentHealth;
 }
 
 void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 {
+	if (!isAlive) { return; } //dont do anything if the character is already dead
+	int scaledDamage = (int)(damageReceived * incomingDamageMultiplier);
+
+	// LOG DE COMPROBACIÓN
+	if (incomingDamageMultiplier != 1.0f) {
+		LOG("DAMAGE CALC [%s]: Base: %d | Multiplier: %.2f | Final: %d (Reduced: %d)",
+			name.c_str(), damageReceived, incomingDamageMultiplier, scaledDamage, (damageReceived - scaledDamage));
+	}
+
+	float durabilityReduction = totalDurability / 100.0f; //% of durability
+	float durabilityMultiplier = 1.0f - durabilityReduction;
+	if (durabilityMultiplier < 0.0f) { durabilityMultiplier = 0.0f; }
+
+	// --- LOG NUEVO ---
+	int damageAfterDurability = std::max(0, (int)(scaledDamage * durabilityMultiplier));
+
+	LOG("PHYSICAL DMG [%s]: incoming=%d | totalDurability=%d (base=%d, bonus=%d) | damageAfterDurability=%d | HP antes=%d | HP despues=%d",
+		name.c_str(),
+		scaledDamage,
+		totalDurability,
+		baseDurability,
+		bonusDurability,
+		damageAfterDurability,
+		health,
+		std::max(0, health - damageAfterDurability));
+	// -----------------
+
 	int currentHealth = health;
-	currentHealth -= std::max(0, damageReceived - durability); //avoids that damage < 0
+	currentHealth -= damageAfterDurability; 
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
-	if (health == 0 && attacker != nullptr) {
-		killedBy = attacker;
+	if (health <= 0) {
+		pendingToDie = true;
+		//isAlive = false;
+		if (attacker != nullptr) {
+			killedBy = attacker;
+		}
 	}
 }
 
 void Character::ReceiveMagicalDamage(int damageReceived, Character* attacker)
 {
+	if (!isAlive) { return; } //dont do anything if the character is already dead
+	int scaledDamage = (int)(damageReceived * incomingDamageMultiplier);
+
+	// LOG DE COMPROBACIÓN
+	if (incomingDamageMultiplier != 1.0f) {
+		LOG("DAMAGE CALC [%s]: Base: %d | Multiplier: %.2f | Final: %d (Reduced: %d)",
+			name.c_str(), damageReceived, incomingDamageMultiplier, scaledDamage, (damageReceived - scaledDamage));
+	}
+
 	int currentHealth = health;
-	currentHealth -= damageReceived;
+	currentHealth -= scaledDamage;
 	health = std::max(0, currentHealth); //avoids having negative health
 
 	//check if character is dead
-	if (health == 0 && attacker != nullptr) {
-		killedBy = attacker;
+	if (health <= 0) {
+		pendingToDie = true;
+		//isAlive = false;
+		if (attacker != nullptr) {
+			killedBy = attacker;
+		}
 	}
 }
 
@@ -83,38 +158,32 @@ void Character::LevelUp()
 	//update stats
 	maxHealth += maxHealthLevelScaling;
 	health += maxHealthLevelScaling;
-	power += powerLevelScaling;
-	speed += speedLevelScaling;
+	basePower += powerLevelScaling;
+	baseSpeed += speedLevelScaling;
 }
 
 void Character::Draw(float dt) 
 {
 	anims.Update(dt);
+
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-	// Update render position using your PhysBody helper
-	//int x, y;
-	//pbody->GetPosition(x, y);
-	//position.setX((float)x);
-	//position.setY((float)y);
+	int drawX = (int)position.getX() - animFrame.w / 2;
+	int drawY = (int)position.getY() - animFrame.h / 2;
+	
+	double rotation = 0.0f;
+	if (!isAllied) { rotation = -1.0; }
 
-	//L10: TODO 7: Center the camera on the player
-	//Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
-	//float limitLeft = (float)Engine::GetInstance().render->camera.w / 4;
-	//float limitRight = (float)mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
-	//if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {
-	//	Engine::GetInstance().render->camera.x = (int)-position.getX() + (int)(Engine::GetInstance().render->camera.w / 4);
-	//}
-	//else if (position.getX() <= limitLeft) {
-	//	Engine::GetInstance().render->camera.x = 0;
-	//}
-	//else {
-	//	Engine::GetInstance().render->camera.x = -(float)mapSize.getX() + Engine::GetInstance().render->camera.w;
-	//}
+	float speed = 1.0f;
 
-	// L10: TODO 5: Draw the player using the texture and the current animation frame
-	//Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
-
+	Engine::GetInstance().render->DrawTexture(
+		texture,
+		drawX,
+		drawY,
+		&animFrame,
+		speed,
+		rotation
+	);
 }
 
 void Character::AddSkill(Skill skill)
@@ -131,9 +200,9 @@ void Character::UseSkill(int index, Character* target)
 	{
 		Skill& skill = skills[index];
 
-		if (initiative >= skill.initiativeCost)
+		if (initiative >= skill.GetInitiativeCost())
 		{
-			initiative -= skill.initiativeCost;
+			initiative -= skill.GetInitiativeCost();
 			skill.Use(this, target);
 		}
 	}
@@ -141,19 +210,56 @@ void Character::UseSkill(int index, Character* target)
 
 void Character::ModifyDurability(int amount)
 {
-	durability = std::max(0, std::min(maxDurability, durability + amount));
+	totalDurability = std::max(0, std::min(maxDurability, totalDurability + amount));
 }
 
-void Character::SetBurned(bool state, int damage)
+void Character::AddInitiative(int amount)
+{
+	initiative += amount;
+	if (initiative < 0) { initiative = 0; }
+	if (initiative > maxInitiative) { initiative = maxInitiative; }
+}
+
+void Character::SetBurned(bool state, int damage, Character* attacker)
 {
 	isBurned = state;
-	burnedStatMod = damage;
+
+	if(isBurned) //if character burns
+	{
+		if (burnedStatMod > 0) { //if already burned
+			burnedStatMod += damage;
+		}
+		else {
+			burnedStatMod = damage;
+		}
+
+		burnedBy = attacker; //the one that takes the kill by burning is the last character that burn
+	}
+	else {//burning = false (clean burning effect)
+		burnedStatMod = 0;
+		burnedBy = nullptr;
+	}
 }
 
-void Character::SetPoisoned(bool state, int damage)
+void Character::SetPoisoned(bool state, int damage, Character* attacker)
 {
 	isPoisoned = state;
-	poisonStatMod = damage;
+
+	if(isPoisoned)
+	{
+		if (poisonStatMod > 0) { //if already poisoned
+			poisonStatMod += damage;
+		}
+		else {
+			poisonStatMod = damage;
+		}
+
+		poisonedBy = attacker; //the one that takes the kill by poisoning is the last character that poison
+	}
+	else {
+		poisonStatMod = 0;
+		poisonedBy = nullptr;
+	}
 }
 
 void Character::ClearStatusEffects()
@@ -164,10 +270,78 @@ void Character::ClearStatusEffects()
 	burnedStatMod = 0;
 }
 
+void Character::LoadVisuals(const std::string& spriteSheet, const std::string& tsx,
+							const std::unordered_map<int, std::string>& aliases,
+							const std::unordered_map<std::string, AnimAlias>& animData)
+{
+	anims.LoadFromTSX(tsx.c_str(), aliases);
+
+	// aplicar loop a cada animación
+	for (auto it = animData.begin(); it != animData.end(); ++it)
+	{
+		const std::string& name = it->first;
+		const AnimAlias& data = it->second;
+
+		anims.SetLoop(name, data.loop);
+	}
+
+	anims.SetCurrent("idle");
+
+	texture = Engine::GetInstance().textures->Load(spriteSheet.c_str());
+	if (texture == nullptr) { LOG("Fail texture loading"); }
+}
+
+void Character::PlayAnimation(const std::string& name)
+{
+	if (anims.Has(name))
+	{
+		anims.SetCurrent(name);
+	}
+	else
+	{
+		LOG("Animation '%s' not found for character %s", name.c_str(), GetName().c_str());
+		anims.SetCurrent("idle");
+	}
+}
+
+void Character::ClearBonusStats()
+{
+	bonusDurability = 0;
+	bonusPower = 0;
+	bonusSpeed = 0;
+}
+
+//bool Character::EquipItem(Item* item)
+//{
+//	if (equippedItems.size() >= MAX_EQUIPPED_ITEMS) { return false; }
+//
+//	equippedItems.push_back(item);
+//
+//	item->Use(this);
+//#if _DEBUG
+//	DebugInventory();
+//#endif // _DEBUG
+//	return true;
+//}
+
+//void Character::DebugInventory()
+//{
+//	LOG("\033[1;32m-----------INVENTORY OF %s --------------\033[0m", name.c_str());
+//	for (auto& item : equippedItems) {
+//		LOG("\033[1;33mItem: %s equipped\033[0m", item->GetName().c_str());
+//		EquippableItem* equippable = dynamic_cast<EquippableItem*>(item);
+//		for (auto& stat : equippable->GetItemStats()) {
+//			LOG("\033[1;33mStat: %d Value: %d\033[0m", stat.type, stat.value);
+//		}
+//	}
+//	LOG("------------------------------------------");
+//}
+
+
 void Character::PrintDebugInfo(){
 	LOG("========================================");
-	LOG("CHARACTER: %s | Level %d", name.c_str(), level);
-	LOG("  HP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, power, speed, durability);
+	LOG("\033[1;32mCHARACTER: %s | Level %d\033[0m", name.c_str(), level);
+	LOG("  \033[1;33mHP: %d/%d  Power: %d  Speed: %d  Durability: %d", health, maxHealth, totalPower, totalSpeed, totalDurability);
 	LOG("  Initiative: %d/%d  Lifesteal: %d", initiative, maxInitiative, lifesteal);
 	LOG("  HealingPower: %.2f  PoisonPower: %.2f  FirePower: %.2f", healingPower, poisonPower, firePower);
 
@@ -186,7 +360,7 @@ void Character::PrintDebugInfo(){
 		}
 	}
 
-	LOG("--- UPGRADE TREE ---");
+	LOG("--- UPGRADE TREE ---\033[0m");
 	if (upgradeTree == nullptr)
 	{
 		LOG("  [NULL] No upgrade tree.");

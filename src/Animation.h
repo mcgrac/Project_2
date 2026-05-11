@@ -35,8 +35,7 @@ public:
     AnimationSet();
 
     // load from TSX with aliases {baseTileId -> name}
-    bool LoadFromTSX(const char* tsxPath,
-        const std::unordered_map<int, std::string>& aliases);
+    bool LoadFromTSX(const char* tsxPath, const std::unordered_map<int, std::string>& aliases);
 
     // manage animations
     void SetCurrent(const std::string& name);
@@ -45,6 +44,8 @@ public:
     const std::string& GetCurrentName() const;
 
     bool Has(const std::string& name) const;
+    bool IsCurrentFinished() const;
+    void SetLoop(const std::string& name, bool v);
 
 private:
     int tileW_ = 0, tileH_ = 0, columns_ = 0;

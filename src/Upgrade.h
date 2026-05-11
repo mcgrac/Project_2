@@ -11,7 +11,7 @@ public:
     std::function<void(Character& character)> apply;
 
     Upgrade(std::string _name, std::string _desc, std::function<void(Character&)> _apply);
-    ~Upgrade();
+    ~Upgrade() = default;
 
     void Apply(Character& character);
 };

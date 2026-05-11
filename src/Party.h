@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <vector>
 #include <string>
+#include "Inventory.h"
 
 // Forward declarations
 class Character;
@@ -10,17 +11,17 @@ class Party
 {
 private:
     std::string name;
-
-    std::vector<Character*> members;    // máximo 3, NO owner (los gestiona quien los crea)
+    std::vector<Character*> members;    
 
     // Resources allies  (aliados)
-    int gold;
-    std::vector<Item*> inventory;       // NO owner de los items
+    int gold;     
 
     // Rewards enemies (enemigos)
     int xpReward;
     int goldReward;
-    std::vector<Item*> lootItems;       // NO owner
+    std::vector<Item*> lootItems;
+
+    Inventory inventory;
 
 public:
 
@@ -36,17 +37,14 @@ public:
     // ── Inventario / Recursos (persisten entre combates) ─────────────────
     void AddGold(int amount);
     void SpendGold(int amount);             // no baja de 0
-    int GetGold() const;
+    inline int GetGold() const { return gold; }
 
-    void AddItem(Item* item);
-    void RemoveItem(Item* item);
-    std::vector<Item*>& GetInventory();
+    inline Inventory& GetInventory() { return inventory; }
 
     // rewards
     void SetXPReward(int xp);
     void SetGoldReward(int gold);
     void AddLootItem(Item* item);
-
     int GetTotalXPReward() const;
     int GetTotalGoldReward() const;
     std::vector<Item*> GetLootItems() const;

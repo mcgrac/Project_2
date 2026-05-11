@@ -43,13 +43,20 @@ public:
 	// Empy all the stack and loads a single scene as the only one
 	// Use it for changing scenes totally (e.g.: InGame -> MainMenu)
 	void ReplaceScene(BaseScene* scene);
+
+	//debug
+	void PrintStack();
+
+	//getter
+	inline bool GetIgnoreInputThisFrame() const { return ignoreInputThisFrame; }
+
 #pragma endregion
 
 private:
 
 	SDL_Texture* mouseTileTex = nullptr;
 	std::string tilePosDebug = "[0,0]";
-	bool once = false;
+	bool ignoreInputThisFrame = false; // ignore first frame, avoid UI bugs
 
 #pragma region SCENE MANAGER (STACK)
 	//----STACK SCENE MANAGER----//

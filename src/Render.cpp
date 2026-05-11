@@ -64,7 +64,7 @@ bool Render::Awake()
 	TTF_Init();
 
 	//load a font into memory
-	font = TTF_OpenFont("Assets/Fonts/arial.ttf", 25);
+	font = TTF_OpenFont("Assets/Fonts/PixelFont.ttf", 25);
 
 	return ret;
 }
@@ -124,7 +124,7 @@ void Render::ResetViewPort()
 }
 
 // Blit to screen
-bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY) const
+bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY, bool flipHorizontal) const
 {
 	bool ret = true;
 	int scale = Engine::GetInstance().window->GetScale();
@@ -172,7 +172,8 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 	}
 
 	// SDL3: returns bool; map to int-style check
-	int rc = SDL_RenderTextureRotated(renderer, texture, src, &rect, angle, p, SDL_FLIP_NONE) ? 0 : -1;
+	SDL_FlipMode flipMode = flipHorizontal ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+	int rc = SDL_RenderTextureRotated(renderer, texture, src, &rect, angle, p, flipMode) ? 0 : -1;
 	if (rc != 0)
 	{
 		LOG("Cannot blit to screen. SDL_RenderTextureRotated error: %s", SDL_GetError());
@@ -365,4 +366,26 @@ bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int margin)
 	return result;
 }
 
+void Render::UpdateCamera(){
+	int w = 0;
+	int h = 0;
+	SDL_GetWindowSize(Engine::GetInstance().window->window, &w, &h);
 
+	int scale = Engine::GetInstance().window->GetScale();
+
+	LOG("UpdateCamera: SDL_GetWindowSize devuelve %dx%d | escala=%d", w, h, scale);
+	LOG("UpdateCamera: camera ANTES — w=%d h=%d x=%d y=%d", camera.w, camera.h, camera.x, camera.y);
+
+	camera.w = w * scale;
+	camera.h = h * scale;
+
+	// Decirle al renderer el nuevo tamaño de output
+	SDL_SetRenderLogicalPresentation(
+		renderer,
+		1280, 720,
+		SDL_LOGICAL_PRESENTATION_LETTERBOX
+	);
+
+
+	LOG("UpdateCamera: camera DESPUES — w=%d h=%d", camera.w, camera.h);
+}

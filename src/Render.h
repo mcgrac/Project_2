@@ -32,7 +32,7 @@ public:
 	void ResetViewPort();
 
 	// Drawing
-	bool DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section = NULL, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX) const;
+	bool DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section = NULL, float speed = 1.0f, double angle = 0, int pivotX = INT_MAX, int pivotY = INT_MAX, bool flipHorizontal = false) const;
 	bool DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool filled = true, bool useCamera = true) const;
 	bool DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
 	bool DrawCircle(int x1, int y1, int redius, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
@@ -45,6 +45,8 @@ public:
 	// L19 TODO 4: Create a method to know if a rectangle is inside the camera frustum
 	bool IsOnScreenWorldRect(float x, float y, float w, float h, int margin = 0) const;
 
+	//for fullscreen mode
+	void UpdateCamera();
 public:
 
 	SDL_Renderer* renderer;

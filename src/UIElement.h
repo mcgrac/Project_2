@@ -94,6 +94,9 @@ public:
 	UIElementState state;
 
 	std::string text;       // UIElement text (if required)
+	SDL_Texture* textTexture = nullptr; //fondo
+	SDL_Rect textRect = { 0, 0, 0, 0 }; //posicion texto
+
 	SDL_Rect bounds;        // Position and size
 	SDL_Color color;        // Tint color
 
@@ -105,4 +108,7 @@ public:
 	std::function<bool(UIElement*)> onClickCallback;
 
 	bool pendingToDelete = false;
+
+	bool isHUD = false; //if true, fixed on screen regardless of camera movement
+	bool createdThisFrame = true; // ignores input on the frame it was created
 };

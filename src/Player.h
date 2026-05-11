@@ -39,7 +39,7 @@ private:
 	void Jump();
 	void Teleport();
 	void ApplyPhysics();
-	void Draw(float dt);
+	//void Draw(float dt);
 
 public:
 

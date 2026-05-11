@@ -98,3 +98,30 @@ int Window::GetScale() const
 {
 	return scale;
 }
+
+void Window::ToggleFullscreen()
+{
+	if (isFullscreen)
+	{
+		// Go back to default 1280 x 720 resolution
+		SDL_SetWindowFullscreen(window, false);
+		SDL_SetWindowSize(window, width, height);
+		SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+		isFullscreen = false;
+		LOG("Window: window mode (1280x720)");
+	}
+	else
+	{
+		// Pantalla completa borderless — usa la resolución del escritorio
+		SDL_SetWindowFullscreenMode(window, nullptr);
+		SDL_SetWindowFullscreen(window, true);
+		isFullscreen = true;
+		LOG("Window: fullscreen mode");
+	}
+
+	// Log para diagnosticar
+	int currentW = 0;
+	int currentH = 0;
+	SDL_GetWindowSize(window, &currentW, &currentH);
+	LOG("Window size tras toggle: %d x %d", currentW, currentH);
+}

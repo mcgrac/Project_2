@@ -1,41 +1,65 @@
 #pragma once
 #include "BaseScene.h"
 #include "Party.h"
+#include "WorldMap.h"
 #include <vector>
 #include <string>
+#include "SaveLoad.h"
+#include "Ship.h"
 
-// IDs de personaje — definidos aquí para que CharacterSelectScene
-// también pueda incluir este header sin circularidad
-enum class CharacterID
-{
-    WARRIOR,
-    MAGE,
-    ROGUE
-    // Añade más según tu juego
-};
+struct SDL_Texture;
+class IslandScene;
+class Character;
 
 class InGameScene : public BaseScene
 {
 public:
-    // Recibe los IDs de los 3 personajes seleccionados por el jugador
-    InGameScene(std::vector<std::string> _characterNames);
+    InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* _worldMap, bool _isContinue);
     ~InGameScene();
 
     void Load() override;
     void Update(float dt) override;
     void PostUpdate(float dt) override;
     void Unload() override;
+    void LoadTextures() override;
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
-    // Acceso a la party aliada para otros sistemas (CombatScene, TeamScene...)
+    //helpers
+    void OnResume() override;
+    void OnPause() override;
+    void CreateUI();
+
     Party* GetAlliedParty() { return alliedParty; }
 
 private:
-    std::vector<std::string> characterNames;
+    std::vector<Character*> prebuiltCharacters;
 
     // InGameScene es owner de la party y los characters — los crea y destruye
     Party* alliedParty;
-
     void DestroyParty();
+
+    WorldMap* worldMap;
+
+    //textures
+    SDL_Texture* background;
+    SDL_Texture* spritesheet;
+    SDL_Texture* teamButton;
+
+    // Island sprites — drawn below each island button
+    SDL_Texture* islandHumanTex;
+    SDL_Texture* islandReptileTex;
+    SDL_Texture* skullTex;
+
+    bool isContinue;
+    void RestoreFromSave(const SaveData& data);
+
+    void CreateIslandButtons();   // builds one button per island using screen-space layout
+
+    //ship
+    Ship* ship;
+
+    static int GetIslandCenterY(int row, int islandsInCol);
+    static ShipMovement DetermineShipMovement(int fromCenterY, int toCenterY);
+    void PushSceneFromInGame(BaseScene* scene);
 };

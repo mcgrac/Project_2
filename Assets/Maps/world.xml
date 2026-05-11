@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<world>
+    <island id="0"   name="Puerto Inicio"  type="hostile"    faction="fish"  />
+    <island id="1"   name="Isla Coral"     type="friendly"   faction="human"  /> 
+    <island id="2"   name="Isla Calavera"  type="hostile"    faction="tribal"  />
+    <island id="3"   name="Isla Pirata"    type="friendly"   faction="reptile"/>
+	<island id="4"   name="Isla Rayo"      type="friendly"   faction="siren"  />
+	<island id="5"   name="Isla Final"     type="hostile"    faction="jellyfish"/>
+	<island id="6"   name="Isla Pirata"    type="friendly"   faction="bird"/>
+	<island id="7"   name="Isla Rayo"      type="friendly"   faction="human"  />
+	<island id="8"   name="Isla Final"     type="hostile"    faction="fish"/>
+	<island id="9"   name="Isla Rayo"      type="friendly"   faction="reptile"  />
+	<island id="10"  name="Isla Final"     type="hostile"    faction="siren"/>
+	<island id="11"  name="Puerto Inicio"  type="friendly"   faction="bird"  />
+	<island id="12"  name="Isla Coral"     type="friendly"   faction="reptile"  />
+	<island id="13"  name="Isla Calavera"  type="friendly"   faction="human"  />
+	<island id="14"  name="Isla Rayo"      type="friendly"   faction="siren"  />
+	<island id="15"  name="Isla Final"     type="hostile"    faction="jellyfish"/>
+	<island id="16"  name="Isla Pirata"    type="friendly"   faction="bird"/>
+	<island id="17"  name="Isla Rayo"      type="friendly"   faction="siren"  />
+	<island id="18"  name="Isla Final"     type="friendly"   faction="reptile"/>
+	<island id="19"  name="Isla Rayo"      type="friendly"   faction="human"  />
+	<island id="20"  name="Isla Final"     type="friendly"   faction="bird"/>
+	<island id="21"  name="Puerto Inicio"  type="friendly"   faction="bird"  />
+	<island id="22"  name="Isla Coral"     type="friendly"   faction="siren"  />
+	<island id="23"  name="Isla Calavera"  type="friendly"   faction="human"  />
+	<island id="24"  name="Isla Rayo"      type="friendly"   faction="reptile"  />
+	<island id="25"  name="Isla Final"     type="friendly"   faction="reptile"/>
+	<island id="26"  name="Isla Pirata"    type="friendly"   faction="siren"/>
+	<island id="27"  name="Isla Rayo"      type="hostile"    faction="jellyfish"  />
+	<island id="28"  name="Isla Final"     type="hostile"    faction="tribal"/>
+	<island id="29"  name="Isla Rayo"      type="friendly"   faction="bird"  />
+	<island id="30"  name="Isla Final"     type="hostile"    faction="crab" boss ="true"/>
+
+    <node islandId="0">
+        <next>1</next>
+    </node>
+    <node islandId="1">
+        <next>2</next>
+		<next>3</next>
+    </node>
+    <node islandId="2">
+		<next>4</next>
+    </node>
+	<node islandId="3">
+		<next>5</next>
+	</node>
+	<node islandId="4">
+		<next>6</next>
+	</node>
+	<node islandId="5">
+		<next>6</next>
+	</node>
+	<node islandId="6">
+		<next>7</next>
+	</node>
+	<node islandId="7">
+		<next>8</next>
+		<next>9</next>
+	</node>
+	<node islandId="8">
+		<next>10</next>
+	</node>
+	<node islandId="9">
+		<next>10</next>
+	</node>
+	<node islandId="10">
+		<next>11</next>
+		<next>12</next>
+	</node>
+	<node islandId="11">
+		<next>13</next>
+	</node>
+	<node islandId="12">
+		<next>14</next>
+	</node>
+	<node islandId="13">
+		<next>15</next>
+		<next>16</next>
+	</node>
+	<node islandId="14">
+		<next>15</next>
+		<next>16</next>
+	</node>
+	<node islandId="15">
+		<next>17</next>
+		<next>18</next>
+	</node>
+	<node islandId="16">
+		<next>17</next>
+		<next>18</next>
+	</node>
+	<node islandId="17">
+		<next>19</next>
+	</node>
+	<node islandId="18">
+		<next>20</next>
+	</node>
+	<node islandId="19">
+		<next>21</next>
+	</node>
+	<node islandId="20">
+		<next>22</next>
+	</node>
+	<node islandId="21">
+		<next>23</next>
+		<next>24</next>
+	</node>
+	<node islandId="22">
+		<next>23</next>
+		<next>24</next>
+	</node>
+	<node islandId="23">
+		<next>25</next>
+	</node>
+	<node islandId="24">
+		<next>26</next>
+	</node>
+	<node islandId="25">
+		<next>27</next>
+	</node>
+	<node islandId="26">
+		<next>27</next>
+	</node>
+	<node islandId="27">
+		<next>28</next>
+	</node>
+	<node islandId="28">
+		<next>29</next>
+	</node>
+	<node islandId="29">
+		<next>30</next>
+	</node>
+</world>
