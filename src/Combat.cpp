@@ -12,6 +12,7 @@
 #include <iostream>
 #include <limits>
 #include <random>
+#include <math.h>
 
 #include "Render.h"
 #include "Textures.h"
@@ -368,8 +369,14 @@ bool Combat::CalculateInitiative()
         if (c->GetIsAlive())
         {
             int before = c->GetCurrentInitiative();
-
-            int bonus = 50 + c->GetTotalSpeed();
+            int bonus = 50;
+            int totalSpeedTemp = c->GetTotalSpeed();
+            LOG("Total Speed: %d\n", totalSpeedTemp);
+            if(totalSpeedTemp>1){
+                bonus += 6*log2(totalSpeedTemp);
+                LOG("Total Speed: %f\n", 6 * log2(totalSpeedTemp));
+            }
+            LOG("Total Bonus: %d\n", bonus);
             c->AddInitiative(bonus);
 
             int after = c->GetCurrentInitiative();
