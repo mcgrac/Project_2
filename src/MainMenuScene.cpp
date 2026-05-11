@@ -27,7 +27,7 @@ MainMenuScene::~MainMenuScene()
 
 void MainMenuScene::Load()
 {
-    Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
+    //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
 
     //textures
     LoadTextures();
@@ -42,7 +42,8 @@ void MainMenuScene::Update(float dt)
     //check if music is playing
     if (!Engine::GetInstance().audio->IsMusicPlaying()) {
         LOG("Play music again!");
-        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
+        //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/8bitMusic/nancy.wav");
     }
 
     if (pendingRefresh) //avoids double clicking buttons
@@ -86,7 +87,7 @@ void MainMenuScene::LoadTextures()
 
 void MainMenuScene::LoadSounds()
 {
-    buttonSelectionFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/buttonSelection.wav");
+    buttonSelectionFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }
 
 void MainMenuScene::UnloadTextures()

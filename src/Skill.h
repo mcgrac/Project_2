@@ -45,7 +45,6 @@ public:
     inline bool GetAreaEffectTargetAllies() const { return areaEffectTargetAllies; }
     inline std::string GetAnimationId() const { return animationId; }
     inline DamageType GetDamageType() const { return damageType; }
-
     inline std::string GetDescription() const { return skillDescription; }
     std::string GetFullDescription();
 

@@ -1,5 +1,6 @@
 #include "ShopScene.h"
 #include "Engine.h"
+#include "Audio.h"
 #include "Scene.h"
 #include "UIManager.h"
 #include "Render.h"
@@ -28,6 +29,7 @@ void ShopScene::Load()
 {
     LOG("ShopScene: cargando tienda.");
     LoadTextures();
+    LoadSound();
     CreateUI();
 }
 
@@ -88,10 +90,12 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     switch (uiElement->id)
     {
     case BACK_BUTTON_ID:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().scene->PopScene();
         break;
     case OPEN_SHOP_BUTTON:
     {
+        Engine::GetInstance().audio->PlayFx(buttonPress);
         NPC* npc = shop->GetOwner();
         if (npc == nullptr)
         {
@@ -145,6 +149,10 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
                 LOG("Item ya comprado");
                 return true;
             }
+            else {
+                //play spend money sound
+                Engine::GetInstance().audio->PlayFx(spendMoneyfx);
+            }
             selectedItem = item;
 
             state = ShopState::SELECT_CHARACTER;
@@ -155,6 +163,8 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         if (ConsumableItem* consumable = dynamic_cast<ConsumableItem*>(item)) { //if is consumable
             alliedParty->SpendGold(item->GetPrice());
             alliedParty->GetInventory().AddItem("consumable");
+            //play spend money sound
+            Engine::GetInstance().audio->PlayFx(spendMoneyfx);
 
 #if _DEBUG
             LOG("|Consumable purchased|");
@@ -165,6 +175,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         if (KeyItem* keyItem = dynamic_cast<KeyItem*>(item)) { //if is key
             alliedParty->SpendGold(item->GetPrice());
             alliedParty->GetInventory().AddItem("key");
+            Engine::GetInstance().audio->PlayFx(spendMoneyfx);
 
 #if _DEBUG
             LOG("|Key purchased|");
@@ -186,6 +197,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         if (alliedParty->GetInventory().EquipItem(character->GetName(), equippable))
         {
             alliedParty->SpendGold(selectedItem->GetPrice());
+            Engine::GetInstance().audio->PlayFx(spendMoneyfx);
 
             selectedItem->SetPurchased(true);
 
@@ -323,4 +335,9 @@ void ShopScene::CreateCharacterSelectionUI()
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, emptyButtons, 0, rect.w, rect.h
         );
     }
+}
+
+void ShopScene::LoadSound() {
+    spendMoneyfx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/coin2.wav");
+    buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }
