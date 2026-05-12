@@ -113,8 +113,9 @@ void IslandInteriorScene::LoadTextures()
     std::string shopPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Shop");
     shopButton = Engine::GetInstance().textures->Load(shopPath.c_str());
 
-    std::string hostelPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Hostel");
-    dockyardbutton = Engine::GetInstance().textures->Load(hostelPath.c_str());
+    std::string hostelPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Hostel");         
+    hostelButton = Engine::GetInstance().textures->Load(hostelPath.c_str());
+
 
     chestButton = Engine::GetInstance().textures->Load(("Assets/Textures/ShopScene/chest" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".png").c_str());
 }
