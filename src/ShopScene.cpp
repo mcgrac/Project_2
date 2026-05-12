@@ -16,6 +16,16 @@
 #include "ConsumableItem.h"
 #include "KeyItem.h"
 #include "Party.h"
+#include "SceneUtils.h"
+
+#pragma region POSITIONS
+#pragma region CHEST
+const SDL_Rect ShopScene::CHEST_HUMAN_BOUNDS = { 1,  2,  3,  4 };
+const SDL_Rect ShopScene::CHEST_BIRD_BOUNDS = { 5,  6,  7,  8 };
+const SDL_Rect ShopScene::CHEST_SIREN_BOUNDS = { 9,  10, 11, 12 };
+const SDL_Rect ShopScene::CHEST_REPTILE_BOUNDS = { 13, 14, 15, 16 };
+#pragma endregion
+#pragma endregion
 
 ShopScene::ShopScene(Shop* shop, Party* allied)
     : shop(shop), alliedParty(allied)
@@ -67,6 +77,8 @@ void ShopScene::Unload()
     Engine::GetInstance().textures->UnLoad(emptyButtons);
     Engine::GetInstance().textures->UnLoad(potionButton);
     Engine::GetInstance().textures->UnLoad(keyButton);
+    Engine::GetInstance().textures->UnLoad(chestButton);
+
     for (SDL_Texture* tex : loadedItemTextures)
     {
         Engine::GetInstance().textures->UnLoad(tex);
@@ -83,6 +95,7 @@ void ShopScene::LoadTextures()
     emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
     keyButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyKeyButton.png");
     potionButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyPotionButton.png");
+    chestButton = Engine::GetInstance().textures->Load(("Assets/Textures/ShopScene/chest" + SceneUtils::GetFactionString(shop->GetIsland()->GetIslandFaction()) + ".png").c_str());
 }
 
 bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -231,6 +244,17 @@ void ShopScene::OnPause()
 
 void ShopScene::CreateUI()
 {
+
+    SDL_Rect chestBounds = GetChestBoundsShop();
+
+    IslandFaction faction = shop->GetIsland()->GetIslandFaction();
+    if (faction == IslandFaction::HUMANS || faction == IslandFaction::BIRD) {
+        Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, OPEN_CHEST_ID, "", chestBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, chestButton, 0, chestBounds.w, chestBounds.h
+            );
+    }
+
     SDL_Rect backBounds = { 20, 20, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
@@ -244,6 +268,8 @@ void ShopScene::CreateUI()
         UIElementType::BUTTON, OPEN_SHOP_BUTTON, "OPEN SHOP", openBtn,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, shop->GetOwner()->GetTexture(), 0, openBtn.w, openBtn.h
     );
+
+
 }
 
 void ShopScene::CreateItemButtons()
@@ -334,6 +360,18 @@ void ShopScene::CreateCharacterSelectionUI()
             rect,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, emptyButtons, 0, rect.w, rect.h
         );
+    }
+}
+
+SDL_Rect ShopScene::GetChestBoundsShop() const
+{
+    switch (shop->GetIsland()->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:   return CHEST_HUMAN_BOUNDS;
+    case IslandFaction::BIRD:     return CHEST_BIRD_BOUNDS;
+    case IslandFaction::SIRENS:   return CHEST_SIREN_BOUNDS;
+    case IslandFaction::REPTILES: return CHEST_REPTILE_BOUNDS;
+    default:                      return CHEST_HUMAN_BOUNDS;
     }
 }
 
