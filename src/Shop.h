@@ -16,6 +16,7 @@ public:
     void GenerateItems(Faction faction);
 
     inline const std::vector<Item*>& GetCurrentItems() const { return currentItems; }
+    inline Island* GetIsland() const { return island; }
     inline NPC* GetOwner() const { return owner; }
 
 private:
