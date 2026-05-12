@@ -72,6 +72,7 @@ bool DialogueManager::StartDialogue(const std::string& dialogueId)
     activeDialogueId = dialogueId;
     currentNodeId = 0;
     active = true;
+    lastChoiceTag = "";
 
     LOG("DialogueManager: iniciando dialogo '%s'.", dialogueId.c_str());
     return true;

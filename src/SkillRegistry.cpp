@@ -151,9 +151,8 @@ SkillRegistry::SkillRegistry()
         return s;
         });
 
-    //probolema deal x + durability
     Register("shield_bash", [](int cost) {
-        Skill s("Shield Bash", DamageType::Physical, 5, 0.0f, cost, "shield_bash");
+        Skill s("Shield Bash", DamageType::Physical, 5, 100.0f, cost, "shield_bash", MultiplierStat::DURABILITY);
         s.SetDescription("Deal 5 (+durability) Physical damage");
         s.AddEffect({
             "Reduce initiative by 15 + level",
