@@ -18,7 +18,6 @@ public:
     inline const std::vector<Item*>& GetCurrentItems() const { return currentItems; }
     inline Island* GetIsland() const { return island; }
     inline NPC* GetOwner() const { return owner; }
-    inline Island* GetIsland() const { return island; }
 
 private:
     NPC* owner;

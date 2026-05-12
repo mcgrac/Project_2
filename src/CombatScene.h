@@ -81,8 +81,6 @@ private:
     void UpdateNextRoundPause(float dt);
     void DrawNextRoundBanner();
 
-    void ChooseSound(std::string id);
-
     // ── Lane selection ───────────────────────────────────────────────────────
     // Tracks which lane each allied character has been assigned to.
     // Key = character pointer, Value = assigned LaneType.
