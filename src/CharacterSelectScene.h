@@ -16,6 +16,7 @@ struct SelectableCharacter
     int labelRow;
     int panelRow;
 
+
     Vector2D labelPos;
     Vector2D panelPos;
 
@@ -45,6 +46,10 @@ public:
 
     void UnloadTextures();
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
+
+
+    int backgroundSwitch = 0;
+    std::string backName;
 
     //helpers
     void OnResume() override;
@@ -84,11 +89,17 @@ private:
     static constexpr int LABEL_FRAME_H = 81;
 
     // Dimensiones frames panel spritesheet
-    static constexpr int PANEL_FRAME_W = 396;
-    static constexpr int PANEL_FRAME_H = 309;
+    static constexpr int PANEL_FRAME_W = 1280;
+    static constexpr int PANEL_FRAME_H = 720;
 
     SDL_Texture* spritesheetStartBtn;
     SDL_Texture* background;
+    SDL_Texture* backgroundGerbera;
+    SDL_Texture* backgroundIgnis;
+    SDL_Texture* backgroundMarkus;
+    SDL_Texture* backgroundTheresia;
+    SDL_Texture* backgroundFatuus;
+    SDL_Texture* backgroundJochi;
     SDL_Texture* spritesheetCharacters;
     SDL_Texture* panelInformationSpritesheet;
     SDL_Texture* labelSpritesheets;
