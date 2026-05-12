@@ -32,8 +32,6 @@ public:
 
     ~Island();
 
-    void LoadNPCTextures();
-
 #pragma region GETTERS
     inline int GetId() const { return id; }
     inline std::string GetName() const { return name; }

@@ -28,7 +28,7 @@ const SDL_Rect ShopScene::CHEST_REPTILE_BOUNDS = { 13, 14, 15, 16 };
 #pragma endregion
 
 ShopScene::ShopScene(Shop* shop, Party* allied)
-    : shop(shop), alliedParty(allied)
+    : shop(shop), alliedParty(allied), ownerSprite(nullptr)
 {
     sceneName = "ShopScene";
 }
@@ -62,12 +62,6 @@ void ShopScene::PostUpdate(float dt)
     Engine::GetInstance().render->DrawText(
         "TIENDA", 540, 50, 200, 40, { 255, 255, 255, 255 }
     );
-
-    //Engine::GetInstance().render->DrawText(
-    //    "Gold: " + std::to_string(alliedParty->GetGold()),
-    //    20, 80, 200, 30,
-    //    { 255, 215, 0, 255 }
-    //);
 }
 
 void ShopScene::Unload()
@@ -77,6 +71,7 @@ void ShopScene::Unload()
     Engine::GetInstance().textures->UnLoad(emptyButtons);
     Engine::GetInstance().textures->UnLoad(potionButton);
     Engine::GetInstance().textures->UnLoad(keyButton);
+    Engine::GetInstance().textures->UnLoad(ownerSprite);
     Engine::GetInstance().textures->UnLoad(chestButton);
 
     for (SDL_Texture* tex : loadedItemTextures)
@@ -91,10 +86,15 @@ void ShopScene::Unload()
 void ShopScene::LoadTextures()
 {
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
-    background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/ShopBackground.png");
+    //background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/ShopBackground.png");
     emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
     keyButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyKeyButton.png");
     potionButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyPotionButton.png");
+
+    IslandFaction faction = shop->GetIsland()->GetIslandFaction();
+    std::string path = "Assets/Textures/ShopScene/" + SceneUtils::GetFactionString(faction);
+    background = Engine::GetInstance().textures->Load((path + "/background.png").c_str());
+    ownerSprite = Engine::GetInstance().textures->Load((path + "/ownerSprite.png").c_str());
     chestButton = Engine::GetInstance().textures->Load(("Assets/Textures/ShopScene/chest" + SceneUtils::GetFactionString(shop->GetIsland()->GetIslandFaction()) + ".png").c_str());
 }
 
@@ -263,10 +263,9 @@ void ShopScene::CreateUI()
 
     // BOTÓN ABRIR TIENDA
     SDL_Rect openBtn = { 500, 600, 309, 186 };
-
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, OPEN_SHOP_BUTTON, "OPEN SHOP", openBtn,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, shop->GetOwner()->GetTexture(), 0, openBtn.w, openBtn.h
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, openBtn.w, openBtn.h
     );
 
 
@@ -300,7 +299,10 @@ void ShopScene::CreateItemButtons()
 #if _DEBUG
             LOG("CREATING ITEMS BUTTONS: Item is equippable (name-> %s)", shop->GetCurrentItems()[i]->GetName().c_str());
 #endif // _DEBUG
-            std::string texturePath = "Assets/Textures/ShopScene/Items/" + shop->GetCurrentItems()[i]->GetName() + ".png";
+
+            IslandFaction faction = shop->GetIsland()->GetIslandFaction();
+            std::string factionFolder = SceneUtils::GetFactionString(faction);
+            std::string texturePath = "Assets/Textures/ShopScene/Items/" + factionFolder + "/" + shop->GetCurrentItems()[i]->GetName() + ".png";
             SDL_Texture* itemTexture = Engine::GetInstance().textures->Load(texturePath.c_str());
 
             Engine::GetInstance().uiManager->CreateUIElement(

@@ -14,7 +14,7 @@ Skill::~Skill()
 
 void Skill::Use(Character* caster, Character* target)
 {
-    int totalDamage = baseDamage + (int)(caster->GetTotalPower() * powerMultiplier);
+    int totalDamage = baseDamage + ((int)(caster->GetTotalPower() * powerMultiplier));
 
     if (damageType == DamageType::Physical)
     {
@@ -56,6 +56,5 @@ std::string Skill::GetFullDescription()
     for (const auto& e : effects) {
         result += "\n- " + e.description;
     }
-
     return result;
 }

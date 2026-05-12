@@ -56,6 +56,7 @@ private:
     SDL_Texture* emptyButtons;
     SDL_Texture* keyButton;
     SDL_Texture* potionButton;
+    SDL_Texture* ownerSprite;
     SDL_Texture* chestButton;
     std::vector<SDL_Texture*> loadedItemTextures;
 #pragma endregion

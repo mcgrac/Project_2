@@ -34,45 +34,45 @@ void NPC::Interact()
     DialogueManager::StartDialogue(dialogueId);
 }
 
-void NPC::LoadTexture()
-{
-    //load texture depending on the NPC
-    switch (faction)
-    {
-    case IslandFaction::HUMANS:
-
-        if (building == "Shop") {
-            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Shop/ShopOwner.png");
-        }
-        else if (building == "Hostel") {
-            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Hostel/HostelOwner.png");
-        }
-        else if (building == "Dockyard") {
-            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Dock/DockOwner.png");
-        }
-        else {
-            LOG("ERROR: no building found");
-        }
-
-        break;
-    case IslandFaction::REPTILES:
-
-        if (building == "Shop") {
-            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Shop/ShopOwner.png");
-        }
-        else if (building == "Hostel") {
-            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Hostel/HostelOwner.png");
-        }
-        else if (building == "Dockyard") {
-            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Dock/DockOwner.png");
-        }
-        else {
-            LOG("ERROR: no building found");
-        }
-
-        break;
-
-    default:
-        break;
-    }
-}
+//void NPC::LoadTexture()
+//{
+//    //load texture depending on the NPC
+//    switch (faction)
+//    {
+//    case IslandFaction::HUMANS:
+//
+//        if (building == "Shop") {
+//            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Shop/ShopOwner.png");
+//        }
+//        else if (building == "Hostel") {
+//            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Hostel/HostelOwner.png");
+//        }
+//        else if (building == "Dockyard") {
+//            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Dock/DockOwner.png");
+//        }
+//        else {
+//            LOG("ERROR: no building found");
+//        }
+//
+//        break;
+//    case IslandFaction::REPTILES:
+//
+//        if (building == "Shop") {
+//            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Shop/ShopOwner.png");
+//        }
+//        else if (building == "Hostel") {
+//            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Hostel/HostelOwner.png");
+//        }
+//        else if (building == "Dockyard") {
+//            spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/Dock/DockOwner.png");
+//        }
+//        else {
+//            LOG("ERROR: no building found");
+//        }
+//
+//        break;
+//
+//    default:
+//        break;
+//    }
+//}

@@ -998,7 +998,7 @@ void CombatScene::ShowTargetPanel()
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON,
         20,
-        "< Back",
+        "",
         backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {},  abilityIcons, 0, backBounds.w, backBounds.h
     );
