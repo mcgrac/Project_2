@@ -2,13 +2,15 @@
 #include "NPC.h"
 #include "Ship.h"
 #include "Island.h"
+#include "SceneUtils.h"
 
 Dockyard::Dockyard(Island* _island) : 
 	  owner(nullptr)
 	, ship(nullptr)
 	, island(_island)
 {
-	owner = new NPC("Dockyard owner", "npc_dockyard", island->GetIslandFaction(), "Dockyard");
+	std::string dialogueId = "npc_dockyard_" + SceneUtils::GetFactionString(island->GetIslandFaction());
+	owner = new NPC("Dockyard owner", dialogueId, island->GetIslandFaction(), "Dockyard");
 }
 
 Dockyard::~Dockyard()

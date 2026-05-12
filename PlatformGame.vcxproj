@@ -143,6 +143,7 @@
     <None Include=".gitignore" />
     <None Include="Assets\Textures\Animations\Boat.tsx" />
     <None Include="Assets\Textures\Animations\MarkusSpritesheet.tsx" />
+    <None Include="Assets\Textures\Animations\RexSpritesheet.tsx" />
     <None Include="vcpkg-configuration.json" />
     <None Include="vcpkg.json" />
   </ItemGroup>

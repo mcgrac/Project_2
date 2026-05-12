@@ -35,8 +35,12 @@ public:
 
 private:
 
+    void PushDialogue();
     void CreateItemButtons();
     void CreateCharacterSelectionUI();
+
+    bool pendingDialogue = false;
+    bool pendingPop = false;
 
     Shop* shop; 
     Party* alliedParty;
