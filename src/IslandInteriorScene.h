@@ -42,6 +42,7 @@ private:
     SDL_Rect GetDockBounds() const;
     SDL_Rect GetShopBounds() const;
     SDL_Rect GetHostelBounds() const;
+    SDL_Rect GetChestBounds() const;
 
 #pragma region POSITIONS
 #pragma region DOCK
