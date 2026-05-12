@@ -39,6 +39,7 @@ private:
     SDL_Texture* chartNormal;
     SDL_Texture* chartImproved;
     SDL_Texture* improveShip;
+    SDL_Texture* ownerSprite;
 #pragma endregion
 
     void DrawChartStats();

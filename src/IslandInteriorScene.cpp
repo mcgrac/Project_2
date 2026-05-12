@@ -14,21 +14,21 @@
 
 #pragma region POSITIONS
 #pragma region DOCK
-const SDL_Rect IslandInteriorScene::DOCK_HUMAN_BOUNDS = { 1,  2,  3,  4 };
+const SDL_Rect IslandInteriorScene::DOCK_HUMAN_BOUNDS = { 780,  0,  507,  720 };
 const SDL_Rect IslandInteriorScene::DOCK_BIRD_BOUNDS = { 5,  6,  7,  8 };
 const SDL_Rect IslandInteriorScene::DOCK_SIREN_BOUNDS = { 9,  10, 11, 12 };
 const SDL_Rect IslandInteriorScene::DOCK_REPTILE_BOUNDS = { 13, 14, 15, 16 };
 #pragma endregion
 
 #pragma region SHOP
-const SDL_Rect IslandInteriorScene::SHOP_HUMAN_BOUNDS = { 1,  2,  3,  4 };
+const SDL_Rect IslandInteriorScene::SHOP_HUMAN_BOUNDS = { 20,  470,  270,  204 };
 const SDL_Rect IslandInteriorScene::SHOP_BIRD_BOUNDS = { 5,  6,  7,  8 };
 const SDL_Rect IslandInteriorScene::SHOP_SIREN_BOUNDS = { 9,  10, 11, 12 };
 const SDL_Rect IslandInteriorScene::SHOP_REPTILE_BOUNDS = { 13, 14, 15, 16 };
 #pragma endregion
 
 #pragma region HOSTEL
-const SDL_Rect IslandInteriorScene::HOSTEL_HUMAN_BOUNDS = { 1,  2,  3,  4 };
+const SDL_Rect IslandInteriorScene::HOSTEL_HUMAN_BOUNDS = { 200,  55,  492,  435 };
 const SDL_Rect IslandInteriorScene::HOSTEL_BIRD_BOUNDS = { 5,  6,  7,  8 };
 const SDL_Rect IslandInteriorScene::HOSTEL_SIREN_BOUNDS = { 9,  10, 11, 12 };
 const SDL_Rect IslandInteriorScene::HOSTEL_REPTILE_BOUNDS = { 13, 14, 15, 16 };
@@ -93,9 +93,6 @@ void IslandInteriorScene::unloadSound() {
 
 void IslandInteriorScene::LoadTextures()
 {
-    //dockyardbutton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/DocksButton.png");
-    //shopButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/ShopButton.png");
-    //hostelButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/HostelButton.png");
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
 
     std::string backgroundPath = SceneUtils::GetIslandTexturePath( island->GetIslandFaction());
@@ -105,10 +102,10 @@ void IslandInteriorScene::LoadTextures()
     dockyardbutton = Engine::GetInstance().textures->Load(dockyardPath.c_str());
 
     std::string shopPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Shop");
-    dockyardbutton = Engine::GetInstance().textures->Load(shopPath.c_str());
+    shopButton = Engine::GetInstance().textures->Load(shopPath.c_str());
 
     std::string hostelPath = SceneUtils::GetBuildingTexturePath(island->GetIslandFaction(), "Hostel");         
-    dockyardbutton = Engine::GetInstance().textures->Load(hostelPath.c_str());
+    hostelButton = Engine::GetInstance().textures->Load(hostelPath.c_str());
 }
 
 

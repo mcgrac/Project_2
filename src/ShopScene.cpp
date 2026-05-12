@@ -19,7 +19,7 @@
 #include "SceneUtils.h"
 
 ShopScene::ShopScene(Shop* shop, Party* allied)
-    : shop(shop), alliedParty(allied)
+    : shop(shop), alliedParty(allied), ownerSprite(nullptr)
 {
     sceneName = "ShopScene";
 }
@@ -53,12 +53,6 @@ void ShopScene::PostUpdate(float dt)
     Engine::GetInstance().render->DrawText(
         "TIENDA", 540, 50, 200, 40, { 255, 255, 255, 255 }
     );
-
-    //Engine::GetInstance().render->DrawText(
-    //    "Gold: " + std::to_string(alliedParty->GetGold()),
-    //    20, 80, 200, 30,
-    //    { 255, 215, 0, 255 }
-    //);
 }
 
 void ShopScene::Unload()
@@ -68,6 +62,8 @@ void ShopScene::Unload()
     Engine::GetInstance().textures->UnLoad(emptyButtons);
     Engine::GetInstance().textures->UnLoad(potionButton);
     Engine::GetInstance().textures->UnLoad(keyButton);
+    Engine::GetInstance().textures->UnLoad(ownerSprite);
+
     for (SDL_Texture* tex : loadedItemTextures)
     {
         Engine::GetInstance().textures->UnLoad(tex);
@@ -85,10 +81,10 @@ void ShopScene::LoadTextures()
     keyButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyKeyButton.png");
     potionButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyPotionButton.png");
 
-    // Background cambia por facción
     IslandFaction faction = shop->GetIsland()->GetIslandFaction();
-    std::string path = "Assets/Textures/ShopScene/" + SceneUtils::GetFactionString(faction) + "/background.png";
-    background = Engine::GetInstance().textures->Load(path.c_str());
+    std::string path = "Assets/Textures/ShopScene/" + SceneUtils::GetFactionString(faction);
+    background = Engine::GetInstance().textures->Load((path + "/background.png").c_str());
+    ownerSprite = Engine::GetInstance().textures->Load((path + "/ownerSprite.png").c_str());
 }
 
 bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -245,10 +241,9 @@ void ShopScene::CreateUI()
 
     // BOTÓN ABRIR TIENDA
     SDL_Rect openBtn = { 500, 600, 309, 186 };
-
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, OPEN_SHOP_BUTTON, "OPEN SHOP", openBtn,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, shop->GetOwner()->GetTexture(), 0, openBtn.w, openBtn.h
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, openBtn.w, openBtn.h
     );
 }
 

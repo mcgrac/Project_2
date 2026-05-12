@@ -14,7 +14,7 @@
 #include "SceneUtils.h"
 
 DockyardScene::DockyardScene(Dockyard* dockyard, Party* allied)
-    : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr)
+    : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr), ownerSprite(nullptr)
 {
     sceneName = "DockyardScene";
 }
@@ -58,6 +58,7 @@ void DockyardScene::Unload()
     Engine::GetInstance().textures->UnLoad(chartNormal);
     Engine::GetInstance().textures->UnLoad(chartImproved);
     Engine::GetInstance().textures->UnLoad(improveShip);
+    Engine::GetInstance().textures->UnLoad(ownerSprite);
 
     Engine::GetInstance().uiManager->CleanUp();
 }
@@ -70,10 +71,10 @@ void DockyardScene::LoadTextures()
     chartImproved = Engine::GetInstance().textures->Load("Assets/Textures/DockyardScene/Chart2.png");
     improveShip = Engine::GetInstance().textures->Load("Assets/Textures/DockyardScene/UpgradeBaotButton.png");
 
-    // Background cambia por facción
     IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
-    std::string path = "Assets/Textures/DockyardScene/" + SceneUtils::GetFactionString(faction) + "/background.png";
-    background = Engine::GetInstance().textures->Load(path.c_str());
+    std::string path = "Assets/Textures/DockyardScene/" + SceneUtils::GetFactionString(faction);
+    background = Engine::GetInstance().textures->Load((path + "/background.png").c_str());
+    ownerSprite = Engine::GetInstance().textures->Load((path + "/ownerSprite.png").c_str());
 }
 
 bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)

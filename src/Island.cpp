@@ -23,22 +23,6 @@ Island::~Island()
     DestroyBuildings();
 }
 
-void Island::LoadNPCTextures()
-{
-    if (shop != nullptr && shop->GetOwner() != nullptr)
-    {
-        shop->GetOwner()->LoadTexture();
-    }
-    if (hostel != nullptr && hostel->GetOwner() != nullptr)
-    {
-        hostel->GetOwner()->LoadTexture();
-    }
-    if (dockyard != nullptr && dockyard->GetOwner() != nullptr)
-    {
-        dockyard->GetOwner()->LoadTexture();
-    }
-}
-
 void Island::SetRenderPos(float x, float y, float w, float h)
 {
     position.setX(x);
@@ -49,15 +33,6 @@ void Island::SetRenderPos(float x, float y, float w, float h)
 
 void Island::SetType(IslandType _type)
 {
-    //if (_type == IslandType::HOSTILE) {
-    //    DestroyBuildings();
-    //}
-    //else if (_type == IslandType::FRIENDLY) {
-    //    if(!dockyard && !shop && !hostel)
-    //    {
-    //        CreateBuildings();
-    //    }
-    //}
 
     type = _type;
 }

@@ -99,10 +99,8 @@ void HostelScene::LoadTextures()
     restButton = Engine::GetInstance().textures->Load("Assets/Textures/HostelScene/RestButton.png");
     emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
 
-    // Changing textures depending on factions
     IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
     std::string path = "Assets/Textures/HostelScene/" + SceneUtils::GetFactionString(faction) + "/";
-
     background = Engine::GetInstance().textures->Load((path + "background.png").c_str());
     ownerSprite = Engine::GetInstance().textures->Load((path + "ownerSprite.png").c_str());
     mealButton = Engine::GetInstance().textures->Load((path + "mealButton.png").c_str());
