@@ -15,24 +15,23 @@
 #pragma region POSITIONS
 #pragma region DOCK
 const SDL_Rect IslandInteriorScene::DOCK_HUMAN_BOUNDS = { 780,  0,  507,  720 };
-const SDL_Rect IslandInteriorScene::DOCK_BIRD_BOUNDS = { 5,  6,  7,  8 };
-const SDL_Rect IslandInteriorScene::DOCK_SIREN_BOUNDS = { 9,  10, 11, 12 };
-const SDL_Rect IslandInteriorScene::DOCK_REPTILE_BOUNDS = { 300, 300, 342, 366 };
+const SDL_Rect IslandInteriorScene::DOCK_BIRD_BOUNDS = { 985,  608,  138,  108 };
+const SDL_Rect IslandInteriorScene::DOCK_SIREN_BOUNDS = { 0,  249, 265, 471 };
+const SDL_Rect IslandInteriorScene::DOCK_REPTILE_BOUNDS = { 653, 17, 510, 514 };
 #pragma endregion
 
 #pragma region SHOP
 const SDL_Rect IslandInteriorScene::SHOP_HUMAN_BOUNDS = { 20,  470,  270,  204 };
-const SDL_Rect IslandInteriorScene::SHOP_BIRD_BOUNDS = { 5,  6,  7,  8 };
-const SDL_Rect IslandInteriorScene::SHOP_SIREN_BOUNDS = { 9,  10, 11, 12 };
-const SDL_Rect IslandInteriorScene::SHOP_REPTILE_BOUNDS = { 13, 14, 15, 16 };
+const SDL_Rect IslandInteriorScene::SHOP_BIRD_BOUNDS = { 524,  392,  88,  64 };
+const SDL_Rect IslandInteriorScene::SHOP_SIREN_BOUNDS = { 903,  312, 292, 265 };
+const SDL_Rect IslandInteriorScene::SHOP_REPTILE_BOUNDS = { 297, 170, 201, 204 };
 #pragma endregion
 
 #pragma region HOSTEL
 const SDL_Rect IslandInteriorScene::HOSTEL_HUMAN_BOUNDS = { 200,  55,  492,  435 };
-const SDL_Rect IslandInteriorScene::HOSTEL_BIRD_BOUNDS = { 5,  6,  7,  8 };
-const SDL_Rect IslandInteriorScene::HOSTEL_SIREN_BOUNDS = { 9,  10, 11, 12 };
-const SDL_Rect IslandInteriorScene::HOSTEL_REPTILE_BOUNDS = { 13, 14, 15, 16 };
-#pragma endregion
+const SDL_Rect IslandInteriorScene::HOSTEL_BIRD_BOUNDS = { 574,  8,  144,  150 };
+const SDL_Rect IslandInteriorScene::HOSTEL_SIREN_BOUNDS = { 516,  340, 174, 249 };
+const SDL_Rect IslandInteriorScene::HOSTEL_REPTILE_BOUNDS = { 373, 301, 214, 230 };
 
 #pragma region CHEST
 const SDL_Rect IslandInteriorScene::CHEST_HUMAN_BOUNDS = { 784,  154,  93,  90 };

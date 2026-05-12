@@ -25,6 +25,12 @@ const SDL_Rect ShopScene::CHEST_BIRD_BOUNDS = { 112,  412,  102,  142 };
 const SDL_Rect ShopScene::CHEST_SIREN_BOUNDS = { 228,  468,  102,  117 };
 const SDL_Rect ShopScene::CHEST_REPTILE_BOUNDS = { 626,  486,  54,  42 };
 #pragma endregion
+#pragma endregion NPC
+const SDL_Rect ShopScene::HUMAN_CHARA_SELECT_BOUNDS = { 484, 256, 315, 192 };
+const SDL_Rect ShopScene::BIRD_CHARA_SELECT_BOUNDS = { 241, 270, 308, 253 };
+const SDL_Rect ShopScene::SIREN_CHARA_SELECT_BOUNDS = { 903,  312, 292, 265 };
+const SDL_Rect ShopScene::REPTILE_CHARA_SELECT_BOUNDS = { 297, 170, 201, 204 };
+#pragma endregion
 #pragma endregion
 
 ShopScene::ShopScene(Shop* shop, Party* allied)
@@ -265,6 +271,18 @@ void ShopScene::OnPause()
     Engine::GetInstance().uiManager->CleanUp();
 }
 
+SDL_Rect ShopScene::GetOwnerBounds() const
+{
+    switch (shop->GetIsland()->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:   return HUMAN_CHARA_SELECT_BOUNDS;
+    case IslandFaction::BIRD:     return BIRD_CHARA_SELECT_BOUNDS;
+    case IslandFaction::SIRENS:   return SIREN_CHARA_SELECT_BOUNDS;
+    case IslandFaction::REPTILES: return REPTILE_CHARA_SELECT_BOUNDS;
+    default:                      return HUMAN_CHARA_SELECT_BOUNDS;
+    }
+}
+
 void ShopScene::CreateUI()
 {
 
@@ -285,7 +303,7 @@ void ShopScene::CreateUI()
     );
 
     // BOTÓN ABRIR TIENDA
-    SDL_Rect openBtn = { 500, 600, 309, 186 };
+    SDL_Rect openBtn = GetOwnerBounds();
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, OPEN_SHOP_BUTTON, "OPEN SHOP", openBtn,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, openBtn.w, openBtn.h
@@ -293,6 +311,20 @@ void ShopScene::CreateUI()
 
 
 }
+
+/*Faction ShopScene::IslandFactionToFaction(IslandFaction fact)
+{
+    Faction tempFaction = Faction::UNDEFINED;
+
+    if (fact == IslandFaction::HUMANS) { tempFaction = Faction::HUMAN; }
+    else if (fact == IslandFaction::BIRD) { tempFaction = Faction::BIRD; }
+    else if (fact == IslandFaction::SIRENS) { tempFaction = Faction::SIREN; }
+    else if (fact == IslandFaction::REPTILES) { tempFaction = Faction::REPTILE; }
+
+    return tempFaction;
+}*/
+
+
 
 void ShopScene::PushDialogue()
 {
@@ -318,7 +350,14 @@ void ShopScene::PushDialogue()
                 if (action == "buy")
                 {
                     LOG("SHOP: buy");
-                    shop->GenerateItems(Faction::BIRD);
+
+                    //Faction factShop = IslandFactionToFaction(shop->GetIsland()->GetIslandFaction());
+                    Faction factShop = Faction::UNDEFINED;
+                    if (shop->GetIsland()->GetIslandFaction() == IslandFaction::HUMANS) { factShop = Faction::HUMAN; }
+                    else if (shop->GetIsland()->GetIslandFaction() == IslandFaction::BIRD) { factShop = Faction::BIRD; }
+                    else if (shop->GetIsland()->GetIslandFaction() == IslandFaction::SIRENS) { factShop = Faction::SIREN; }
+                    else if (shop->GetIsland()->GetIslandFaction() == IslandFaction::REPTILES) { factShop = Faction::REPTILE; }
+                    shop->GenerateItems(factShop);
 
                     state = ShopState::SHOW_ITEMS;
 
@@ -334,20 +373,22 @@ void ShopScene::PushDialogue()
     );
 }
 
+ 
+
 void ShopScene::CreateItemButtons()
 {
     // borrar items y characters anteriores
     Engine::GetInstance().uiManager->RemoveElementsByRange(ITEMS_AVAILABLE_BASE, CHARACTERS_AVAILABLE_BASE + 99);
 
-    int startX = 400;
+    int startX = 193;
 
     loadedItemTextures.clear();
 
     for (int i = 0; i < shop->GetCurrentItems().size(); i++)
     {
-        SDL_Rect rect = { startX + i * 150, 300, 229, 304};
-        SDL_Rect keyBtn = {40, 40, 64, 64};
-        SDL_Rect potionBtn = {80, 80, 64, 64};
+        SDL_Rect rect = { startX + i * 256, 138, 229, 304};
+        SDL_Rect keyBtn = {961, 135, 64, 64};
+        SDL_Rect potionBtn = {961, 207, 64, 64};
 
         std::string label = shop->GetCurrentItems()[i]->GetName();
 
@@ -416,7 +457,7 @@ void ShopScene::CreateCharacterSelectionUI()
 
     for (int i = 0; i < alliedParty->GetMemberCount(); i++)
     {
-        SDL_Rect rect = { 400, 400 + i * 80, 202, 63 };
+        SDL_Rect rect = { 190, 455 + i * 63, 202, 63 };
 
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,

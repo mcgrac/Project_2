@@ -151,8 +151,11 @@ void DockyardScene::CreateUI()
         UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
     );
-
     SDL_Rect talkBounds = { NPC_X, NPC_Y, NPC_W, NPC_H };
+    if (SceneUtils::GetFactionString(dockyard->GetIsland()->GetIslandFaction()) == "Bird") {
+        SDL_Rect talkBounds = { 215, 443, 102, 126 };
+    }
+   
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, talkBounds.w, talkBounds.h

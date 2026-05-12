@@ -2,6 +2,7 @@
 #include "BaseScene.h"
 #include "Shop.h"
 #include "SDL3/SDL.h"
+#include "EquippableItem.h"
 
 struct SDL_Texture;
 
@@ -32,6 +33,9 @@ public:
     void OnResume() override;
     void OnPause() override;
     void CreateUI();
+
+   // Faction IslandFactionToFaction(IslandFaction fact);
+
 
 private:
 
@@ -66,6 +70,7 @@ private:
 #pragma endregion
 
     SDL_Rect GetChestBoundsShop() const;
+    SDL_Rect GetOwnerBounds() const;
 
 #pragma region POSITIONS
 #pragma region CHEST
@@ -73,6 +78,14 @@ private:
     static const SDL_Rect CHEST_BIRD_BOUNDS;
     static const SDL_Rect CHEST_SIREN_BOUNDS;
     static const SDL_Rect CHEST_REPTILE_BOUNDS;
+#pragma endregion
+#pragma endregion NPC
+
+    static const SDL_Rect HUMAN_CHARA_SELECT_BOUNDS;
+    static const SDL_Rect BIRD_CHARA_SELECT_BOUNDS;
+    static const SDL_Rect SIREN_CHARA_SELECT_BOUNDS;
+    static const SDL_Rect REPTILE_CHARA_SELECT_BOUNDS;
+
 #pragma endregion
 #pragma endregion
 
