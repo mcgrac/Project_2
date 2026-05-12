@@ -2,10 +2,11 @@
 #include "Character.h"
 #include "Log.h"
 
-Skill::Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost, std::string _animationId)
+Skill::Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, 
+    int _initiativeCost, std::string _animationId, MultiplierStat _multiplierStat)
     : name(_name), damageType(_type), baseDamage(_baseDamage), 
     powerMultiplier(_multiplier), initiativeCost(_initiativeCost), animationId(_animationId),
-    hasAreaEffect(false), areaEffectTargetAllies(false)
+    hasAreaEffect(false), areaEffectTargetAllies(false), multiplierStat(_multiplierStat)
 {}
 
 Skill::~Skill()
@@ -14,7 +15,21 @@ Skill::~Skill()
 
 void Skill::Use(Character* caster, Character* target)
 {
-    int totalDamage = baseDamage + ((int)(caster->GetTotalPower() * powerMultiplier));
+    int statValue = 0;
+    if (multiplierStat == MultiplierStat::POWER)
+    {
+        statValue = caster->GetTotalPower();
+    }
+    else if (multiplierStat == MultiplierStat::SPEED)
+    {
+        statValue = caster->GetTotalSpeed();
+    }
+    else if (multiplierStat == MultiplierStat::DURABILITY)
+    {
+        statValue = caster->GetTotalDurability();
+    }
+
+    int totalDamage = baseDamage + ((int)(statValue * powerMultiplier));
 
     if (damageType == DamageType::Physical)
     {
