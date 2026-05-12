@@ -9,10 +9,12 @@
 #include "NPC.h"
 #include "Island.h"
 #include "Log.h"
+#include "SceneUtils.h"
 
 Shop::Shop(Island* _island) : island(_island)
 {
-    owner = new NPC("Shop owner", "npc_shop", island->GetIslandFaction(), "Shop");
+    std::string dialogueId = "npc_shop_" + SceneUtils::GetFactionString(island->GetIslandFaction());
+    owner = new NPC("Shop owner", dialogueId, island->GetIslandFaction(), "Shop");
 }
 
 Shop::~Shop()

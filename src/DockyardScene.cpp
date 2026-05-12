@@ -26,10 +26,29 @@ void DockyardScene::Load()
     LOG("DockyardScene: cargando astillero.");
     LoadTextures();
     CreateUI();
+
+    IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
+    if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
+    {
+        pendingDialogue = true;
+    }
 }
 
 void DockyardScene::Update(float dt)
 {
+    if (pendingDialogue)
+    {
+        pendingDialogue = false;
+        PushDialogue();
+    }
+
+    if (pendingPop)
+    {
+        pendingPop = false;
+        Engine::GetInstance().scene->PopScene();
+        return;
+    }
+
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
 
     if(showChart)
@@ -92,32 +111,7 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case START_DIALOGUE:
     {
-        NPC* npc = dockyard->GetOwner();
-        if (npc == nullptr)
-        {
-            LOG("Dockyard: NPC es nullptr");
-            break;
-        }
-        else {
-            LOG("Dockyard: NPC correcto");
-        }
-
-        LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
-        Engine::GetInstance().scene->PushScene(
-            new DialogueScene(npc->GetDialogueId(),
-                [this]()
-                {
-                    std::string action = DialogueManager::GetLastChoiceTag();
-
-                    if (action == "upgrade")
-                    {
-                        LOG("DOCKYARD: upgrade");
-                        CreateChartButtons();
-                        showChart = true;
-                    }
-                }
-            )
-        );
+        PushDialogue();
         break;
     }
     case IMPROVE_SHIP:
@@ -176,6 +170,39 @@ void DockyardScene::CreateUI()
     //        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, talkBounds.w, talkBounds.h
     //    );
     //}
+}
+
+void DockyardScene::PushDialogue()
+{
+    NPC* npc = dockyard->GetOwner();
+    if (npc == nullptr)
+    {
+        LOG("Dockyard: NPC es nullptr");
+        return;
+    }
+    IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
+    bool popOnLeave = (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES);
+
+    Engine::GetInstance().scene->PushScene(
+        new DialogueScene(npc->GetDialogueId(),
+            [this, popOnLeave]()
+            {
+                std::string action = DialogueManager::GetLastChoiceTag();
+
+                if (action == "upgrade")
+                {
+                    LOG("DOCKYARD: upgrade");
+                    CreateChartButtons();
+                    showChart = true;
+                }
+                else if (popOnLeave)
+                {
+                    LOG("DOCK SCENE: Pop scene");
+                    pendingPop = true;
+                }
+            }
+        )
+    );
 }
 
 void DockyardScene::CreateChartButtons()

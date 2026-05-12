@@ -41,10 +41,29 @@ void ShopScene::Load()
     LoadTextures();
     LoadSound();
     CreateUI();
+
+    IslandFaction faction = shop->GetIsland()->GetIslandFaction();
+    if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
+    {
+        pendingDialogue = true;
+    }
 }
 
 void ShopScene::Update(float dt)
 {
+    if (pendingDialogue)
+    {
+        pendingDialogue = false;
+        PushDialogue();
+    }
+
+    if (pendingPop)
+    {
+        pendingPop = false;
+        Engine::GetInstance().scene->PopScene();
+        return;
+    }
+
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
     //lógica de compra de items
 
@@ -109,35 +128,36 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     case OPEN_SHOP_BUTTON:
     {
         Engine::GetInstance().audio->PlayFx(buttonPress);
-        NPC* npc = shop->GetOwner();
-        if (npc == nullptr)
-        {
-            LOG("Hostel: NPC es nullptr");
-            break;
-        }
-        else {
-            LOG("Hostel: NPC correcto");
-        }
+        PushDialogue();
+        //NPC* npc = shop->GetOwner();
+        //if (npc == nullptr)
+        //{
+        //    LOG("Hostel: NPC es nullptr");
+        //    break;
+        //}
+        //else {
+        //    LOG("Hostel: NPC correcto");
+        //}
 
-        LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
-        Engine::GetInstance().scene->PushScene(
-            new DialogueScene(npc->GetDialogueId(),
-                [this]()
-                {
-                    std::string action = DialogueManager::GetLastChoiceTag();
+        //LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
+        //Engine::GetInstance().scene->PushScene(
+        //    new DialogueScene(npc->GetDialogueId(),
+        //        [this]()
+        //        {
+        //            std::string action = DialogueManager::GetLastChoiceTag();
 
-                    if (action == "buy")
-                    {
-                        LOG("SHOP: buy");
-                        shop->GenerateItems(Faction::BIRD);
+        //            if (action == "buy")
+        //            {
+        //                LOG("SHOP: buy");
+        //                shop->GenerateItems(Faction::BIRD);
 
-                        state = ShopState::SHOW_ITEMS;
+        //                state = ShopState::SHOW_ITEMS;
 
-                        CreateItemButtons();
-                    }
-                }
-            )
-        );
+        //                CreateItemButtons();
+        //            }
+        //        }
+        //    )
+        //);
         break;
     }
     case 100:
@@ -269,6 +289,46 @@ void ShopScene::CreateUI()
     );
 
 
+}
+
+void ShopScene::PushDialogue()
+{
+    NPC* npc = shop->GetOwner();
+    if (npc == nullptr)
+    {
+        LOG("Hostel: NPC es nullptr");
+        return;
+    }
+    else {
+        LOG("Hostel: NPC correcto");
+    }
+    IslandFaction faction = shop->GetIsland()->GetIslandFaction();
+    bool popOnLeave = (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES);
+
+    LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
+    Engine::GetInstance().scene->PushScene(
+        new DialogueScene(npc->GetDialogueId(),
+            [this, popOnLeave]()
+            {
+                std::string action = DialogueManager::GetLastChoiceTag();
+
+                if (action == "buy")
+                {
+                    LOG("SHOP: buy");
+                    shop->GenerateItems(Faction::BIRD);
+
+                    state = ShopState::SHOW_ITEMS;
+
+                    CreateItemButtons();
+                }
+                else if (popOnLeave)
+                {
+                    LOG("DOCK SCENE: Pop scene");
+                    pendingPop = true;
+                }
+            }
+        )
+    );
 }
 
 void ShopScene::CreateItemButtons()

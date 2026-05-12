@@ -26,6 +26,10 @@ public:
     void CreateUI();
 
 private:
+    void PushDialogue();
+    bool pendingDialogue = false;
+    bool pendingPop = false;
+
     Dockyard* dockyard; 
     Party* alliedParty;  
 

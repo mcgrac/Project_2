@@ -51,10 +51,29 @@ void HostelScene::Load()
     LoadTextures();
     LoadSound();
     CreateUI();
+
+    IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
+    if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES) {
+
+        pendingDialogue = true;
+    }
 }
 
 void HostelScene::Update(float dt)
 {
+    if (pendingDialogue)
+    {
+        pendingDialogue = false;
+        PushDialogue();
+    }
+
+    if (pendingPop)
+    {
+        pendingPop = false;
+        Engine::GetInstance().scene->PopScene();
+        return;
+    }
+
     if (pendingRefresh) //avoids double clicking buttons
     {
         pendingRefresh = false;
@@ -125,32 +144,32 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     case START_DIALOGUE:
     {
         //start dialogue
+        PushDialogue();
+        //NPC* npc = hostel->GetOwner();
+        //if (npc == nullptr)
+        //{
+        //    LOG("Hostel: NPC es nullptr");
+        //    break;
+        //}
+        //else {
+        //    LOG("Hostel: NPC correcto");
+        //}
 
-        NPC* npc = hostel->GetOwner();
-        if (npc == nullptr)
-        {
-            LOG("Hostel: NPC es nullptr");
-            break;
-        }
-        else {
-            LOG("Hostel: NPC correcto");
-        }
-
-        LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
-        Engine::GetInstance().scene->PushScene(
-            new DialogueScene(npc->GetDialogueId(),
-                [this]()
-                {
-                    std::string action = DialogueManager::GetLastChoiceTag();
-                    
-                    if (action == "rest")
-                    {
-                        LOG("Hostel: abrir panel de descanso");
-                        showRestPanel = true;
-                    }
-                }
-            )
-        );
+        //LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
+        //Engine::GetInstance().scene->PushScene(
+        //    new DialogueScene(npc->GetDialogueId(),
+        //        [this]()
+        //        {
+        //            std::string action = DialogueManager::GetLastChoiceTag();
+        //            
+        //            if (action == "rest")
+        //            {
+        //                LOG("Hostel: abrir panel de descanso");
+        //                showRestPanel = true;
+        //            }
+        //        }
+        //    )
+        //);
         break;
     }
     case 20:
@@ -308,4 +327,35 @@ SDL_Rect HostelScene::GetMealBounds() const
     case IslandFaction::REPTILES: return MEAL_REPTILE_BOUNDS;
     default:                      return MEAL_HUMAN_BOUNDS;
     }
+}
+
+void HostelScene::PushDialogue()
+{
+    NPC* npc = hostel->GetOwner();
+    if (npc == nullptr)
+    {
+        LOG("Dockyard: NPC es nullptr");
+        return;
+    }
+    IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
+    bool popOnLeave = (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES);
+
+    Engine::GetInstance().scene->PushScene(
+        new DialogueScene(npc->GetDialogueId(),
+            [this, popOnLeave]()
+            {
+                std::string action = DialogueManager::GetLastChoiceTag();
+
+                if (action == "leave")
+                {
+                    Engine::GetInstance().scene->PopScene();
+                }
+                else if (popOnLeave)
+                {
+                    LOG("DOCK SCENE: Pop scene");
+                    pendingPop = true;
+                }
+            }
+        )
+    );
 }
