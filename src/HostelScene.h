@@ -34,6 +34,12 @@ public:
     SDL_Rect GetMealBounds() const;
 
 private:
+    void PushDialogue();
+
+    bool pendingDialogue = false;
+    bool pendingPop = false;
+
+
     Hostel* hostel;         
     Party* alliedParty;   
 

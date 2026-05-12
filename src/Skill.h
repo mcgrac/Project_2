@@ -8,6 +8,13 @@ class Party;
 
 enum class DamageType { Physical, Magical, None };
 
+enum class MultiplierStat
+{
+    POWER,
+    SPEED,
+    DURABILITY
+};
+
 //Each effect contains a function that is applied to the caster or target
 struct SkillEffect {
     std::string description;
@@ -27,9 +34,11 @@ private:
     std::string animationId;
 
     std::string skillDescription = "";
+    MultiplierStat multiplierStat;
 
 public:
-    Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, int _initiativeCost, std::string _animationId = "none");
+    Skill(std::string _name, DamageType _type, int _baseDamage, float _multiplier, 
+        int _initiativeCost, std::string _animationId = "none", MultiplierStat _multiplierStat = MultiplierStat::POWER);
     ~Skill();
 
     void AddEffect(SkillEffect effect) {

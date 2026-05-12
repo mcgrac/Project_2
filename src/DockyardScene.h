@@ -26,6 +26,10 @@ public:
     void CreateUI();
 
 private:
+    void PushDialogue();
+    bool pendingDialogue = false;
+    bool pendingPop = false;
+
     Dockyard* dockyard; 
     Party* alliedParty;  
 
@@ -42,7 +46,10 @@ private:
     SDL_Texture* ownerSprite;
 #pragma endregion
 
+    void CreateChartButtons();
     void DrawChartStats();
+
+    bool showChart;
     bool shipImproved = false;
     int levelBeforeImprove = 1;
     static constexpr int COST_IMPROVE_SHIP = 50;
