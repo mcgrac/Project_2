@@ -228,7 +228,7 @@ void HostelScene::CreateUI()
         SDL_Rect talkBounds = { 500, 300, 168, 211 };
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, hostel->GetOwner()->GetTexture(), 0, talkBounds.w, talkBounds.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, talkBounds.w, talkBounds.h
         );
     }
     else if (showRestPanel && !showSelectCharaPanel) {

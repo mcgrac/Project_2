@@ -79,7 +79,7 @@
         </node>
         <node id="1" speaker="Dockmaster" portrait=""
               text="Repairs, upgrades, reinforcements. Name it and I'll quote you a price.">
-            <option text="Let's talk details." nextNode="2" />
+            <option text="Let's talk details." nextNode="2" action ="upgrade"/>
         </node>
         <node id="2" speaker="Dockmaster" portrait=""
               text="Come back when you're ready." end="true" />

@@ -17,7 +17,7 @@
 const SDL_Rect IslandInteriorScene::DOCK_HUMAN_BOUNDS = { 780,  0,  507,  720 };
 const SDL_Rect IslandInteriorScene::DOCK_BIRD_BOUNDS = { 5,  6,  7,  8 };
 const SDL_Rect IslandInteriorScene::DOCK_SIREN_BOUNDS = { 9,  10, 11, 12 };
-const SDL_Rect IslandInteriorScene::DOCK_REPTILE_BOUNDS = { 13, 14, 15, 16 };
+const SDL_Rect IslandInteriorScene::DOCK_REPTILE_BOUNDS = { 300, 300, 342, 366 };
 #pragma endregion
 
 #pragma region SHOP
@@ -81,8 +81,6 @@ void IslandInteriorScene::Unload()
     Engine::GetInstance().textures->UnLoad(shopButton);
     Engine::GetInstance().textures->UnLoad(hostelButton);
     Engine::GetInstance().textures->UnLoad(exitButton);
-
-    //unloadSound();
 
     Engine::GetInstance().uiManager->CleanUp();
 }
