@@ -106,6 +106,9 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().scene->PopScene();
         break;
+    case OPEN_CHEST_ID:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
+        break;
     case OPEN_SHOP_BUTTON:
     {
         Engine::GetInstance().audio->PlayFx(buttonPress);
