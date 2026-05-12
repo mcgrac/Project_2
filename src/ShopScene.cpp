@@ -20,10 +20,10 @@
 
 #pragma region POSITIONS
 #pragma region CHEST
-const SDL_Rect ShopScene::CHEST_HUMAN_BOUNDS = { 1,  2,  3,  4 };
-const SDL_Rect ShopScene::CHEST_BIRD_BOUNDS = { 5,  6,  7,  8 };
-const SDL_Rect ShopScene::CHEST_SIREN_BOUNDS = { 9,  10, 11, 12 };
-const SDL_Rect ShopScene::CHEST_REPTILE_BOUNDS = { 13, 14, 15, 16 };
+const SDL_Rect ShopScene::CHEST_HUMAN_BOUNDS = { 784,  154,  93,  90 };
+const SDL_Rect ShopScene::CHEST_BIRD_BOUNDS = { 112,  412,  102,  142 };
+const SDL_Rect ShopScene::CHEST_SIREN_BOUNDS = { 228,  468,  102,  117 };
+const SDL_Rect ShopScene::CHEST_REPTILE_BOUNDS = { 626,  486,  54,  42 };
 #pragma endregion
 #pragma endregion
 
@@ -124,6 +124,9 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     case BACK_BUTTON_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().scene->PopScene();
+        break;
+    case OPEN_CHEST_ID:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
         break;
     case OPEN_SHOP_BUTTON:
     {
