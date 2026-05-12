@@ -40,8 +40,6 @@ public:
     //callback
     std::function<void(Island*)> arrivalIsland;
 
-    void LoadNPCTextures();
-
     void SetPendingIsland(int islandId) { pendingIslandId = islandId; }
     int GetPendingIslandId() const { return pendingIslandId; }
     void ConfirmTravel();   // confirma el viaje al pendingIslandId

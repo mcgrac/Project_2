@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseScene.h"
 #include "Shop.h"
+#include <SDL3/SDL.h>  // sustituye struct SDL_Texture;
 
 struct SDL_Texture;
 
@@ -53,6 +54,7 @@ private:
     SDL_Texture* emptyButtons;
     SDL_Texture* keyButton;
     SDL_Texture* potionButton;
+    SDL_Texture* ownerSprite;
     std::vector<SDL_Texture*> loadedItemTextures;
 #pragma endregion
 

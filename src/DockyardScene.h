@@ -2,6 +2,7 @@
 #include "BaseScene.h"
 #include "Dockyard.h"
 #include "Party.h"
+#include <SDL3/SDL.h>
 
 struct SDL_Texture;
 
@@ -38,6 +39,7 @@ private:
     SDL_Texture* chartNormal;
     SDL_Texture* chartImproved;
     SDL_Texture* improveShip;
+    SDL_Texture* ownerSprite;
 #pragma endregion
 
     void DrawChartStats();

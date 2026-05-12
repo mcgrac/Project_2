@@ -6,12 +6,16 @@ std::string SceneUtils::GetFactionString(IslandFaction faction)
 	{
 	case IslandFaction::HUMANS:
 		return "human";
+		break;
 	case IslandFaction::BIRD:
 		return "bird";
+		break;
 	case IslandFaction::SIRENS:
 		return "siren";
+		break;
 	case IslandFaction::REPTILES:
 		return "reptile";
+		break;
 	default:
 		return "human";
 	}

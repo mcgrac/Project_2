@@ -116,7 +116,7 @@ SkillRegistry::SkillRegistry()
             "Grant your team 5 Durability and 10 Initiative",
             [](Character* caster, Character* target) {
                 //cambiar a modify bonusDurability
-                target->ModifyDurability(5);
+                target->ModifyBonusDurability(5);
                 target->AddInitiative(10);
             }
             });
