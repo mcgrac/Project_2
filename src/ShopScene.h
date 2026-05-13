@@ -33,7 +33,7 @@ public:
     void OnResume() override;
     void OnPause() override;
     void CreateUI();
-    void DeleteUI();
+   
 
    // Faction IslandFactionToFaction(IslandFaction fact);
 
@@ -43,11 +43,14 @@ private:
     void PushDialogue();
     void CreateItemButtons();
     void OpenUIChest();
-    void CloseUIChest();
+
+    void GiveReward();
+   
     void CreateCharacterSelectionUI();
 
     bool pendingDialogue = false;
     bool pendingPop = false;
+    bool animationPlaying = false;
 
     Shop* shop; 
     Party* alliedParty;
@@ -59,6 +62,7 @@ private:
     static constexpr int BACK_CHEST_BUTTON_ID = 5;
     static constexpr int OPEN_CHEST_ID = 6;
     static constexpr int CLOSE_CHEST_ID = 7;
+    static constexpr int OPEN_BUTTON_ID = 8;
     static constexpr int ITEMS_AVAILABLE_BASE = 100;
     static constexpr int CHARACTERS_AVAILABLE_BASE = 200;
 
@@ -71,6 +75,11 @@ private:
     SDL_Texture* potionButton;
     SDL_Texture* ownerSprite;
     SDL_Texture* chestButton;
+    SDL_Texture* chestBackground;
+    SDL_Texture* openButton;
+    SDL_Texture* moneyCounter;
+    SDL_Texture* otherCounter;
+    SDL_Texture* keyCounter;
     std::vector<SDL_Texture*> loadedItemTextures;
 #pragma endregion
 
@@ -97,6 +106,12 @@ private:
     static const SDL_Rect CROSS_BOUNDS;
 
 #pragma endregion
+
+#pragma endregion OpenButton
+
+    static const SDL_Rect OPEN_BUTTON_BOUNDS;
+
+#pragma endregion
 #pragma endregion
 
 
@@ -106,6 +121,7 @@ private:
     //audio variables
     int spendMoneyfx;
     int buttonPress;
+    bool chestOpen = 0;
     void LoadSound();
 
 };
