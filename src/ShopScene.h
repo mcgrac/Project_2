@@ -63,6 +63,7 @@ private:
     static constexpr int OPEN_CHEST_ID = 6;
     static constexpr int CLOSE_CHEST_ID = 7;
     static constexpr int OPEN_BUTTON_ID = 8;
+    static constexpr int CLOSE_SHOP_ID = 9;
     static constexpr int ITEMS_AVAILABLE_BASE = 100;
     static constexpr int CHARACTERS_AVAILABLE_BASE = 200;
 
@@ -80,6 +81,7 @@ private:
     SDL_Texture* moneyCounter;
     SDL_Texture* otherCounter;
     SDL_Texture* keyCounter;
+    SDL_Texture* characterSprite;
     std::vector<SDL_Texture*> loadedItemTextures;
 #pragma endregion
 
@@ -101,9 +103,22 @@ private:
     static const SDL_Rect REPTILE_CHARA_SELECT_BOUNDS;
 
 #pragma endregion
+#pragma endregion Sprite
+
+    static const SDL_Rect HUMAN_SPRITE_BOUNDS;
+    static const SDL_Rect BIRD_SPRITE_BOUNDS;
+    static const SDL_Rect SIREN_SPRITE_BOUNDS;
+    static const SDL_Rect REPTILE_SPRITE_BOUNDS;
+
+#pragma endregion
 #pragma endregion Cross
 
     static const SDL_Rect CROSS_BOUNDS;
+
+#pragma endregion
+#pragma endregion Cross2
+
+    static const SDL_Rect CROSS_BOUNDS2;
 
 #pragma endregion
 
@@ -122,6 +137,7 @@ private:
     int spendMoneyfx;
     int buttonPress;
     bool chestOpen = 0;
+    bool shopOpen = 0;
     void LoadSound();
 
 };
