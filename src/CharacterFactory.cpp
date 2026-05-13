@@ -109,14 +109,14 @@ Character* CharacterFactory::CreateDataOnly(const std::string& name)
         Upgrade optionA(
             nodeA.attribute("name").as_string(),
             nodeA.attribute("description").as_string(),
-            ParseUpgradeEffects(nodeA.attribute("effect").as_string(),
+            ParseUpgradeEffects(nodeA.attribute("effect1").as_string(),
                                 nodeA.attribute("effect2").as_string())
         );
 
         Upgrade optionB(
             nodeB.attribute("name").as_string(),
             nodeB.attribute("description").as_string(),
-            ParseUpgradeEffects(nodeB.attribute("effect").as_string(),
+            ParseUpgradeEffects(nodeB.attribute("effect1").as_string(),
                                 nodeB.attribute("effect2").as_string())
         );
 
@@ -168,20 +168,63 @@ void CharacterFactory::LoadVisualsFor(Character* character, const std::string& n
 //  "stat+value" (e.g.: "power+15", "maxHealth+20")
 std::function<void(Character&)> CharacterFactory::ParseUpgradeEffect(const std::string& effect)
 {
+    if (effect.empty() || effect.find_first_not_of(' ') == std::string::npos)
+    {
+        return [](Character&) {};
+    }
+
+    // Buscar + o - (ignorando un posible - al inicio que no existe aquí)
     size_t plusPos = effect.find('+');
-    if (plusPos == std::string::npos)
+    size_t minusPos = effect.find('-');
+
+    bool hasPlus = (plusPos != std::string::npos);
+    bool hasMinus = (minusPos != std::string::npos);
+
+    if (!hasPlus && !hasMinus)
     {
         LOG("CharacterFactory: efecto de upgrade no reconocido: '%s'", effect.c_str());
         return [](Character&) {};
     }
 
-    std::string stat = effect.substr(0, plusPos);
-    int value = std::stoi(effect.substr(plusPos + 1));
+    size_t opPos = 0;
+    int sign = 1;
+
+    if (hasPlus && hasMinus)
+    {
+        // Toma el que aparece primero
+        if (plusPos < minusPos)
+        {
+            opPos = plusPos;
+            sign = 1;
+        }
+        else
+        {
+            opPos = minusPos;
+            sign = -1;
+        }
+    }
+    else if (hasPlus)
+    {
+        opPos = plusPos;
+        sign = 1;
+    }
+    else
+    {
+        opPos = minusPos;
+        sign = -1;
+    }
+
+    std::string stat = effect.substr(0, opPos);
+    int value = sign * std::stoi(effect.substr(opPos + 1));
 
     if (stat == "power") return [value](Character& c) { c.ModifyBasePower(value); };
     if (stat == "maxHealth") return [value](Character& c) { c.ModifyMaxHealth(value); };
     if (stat == "speed") return [value](Character& c) { c.ModifyBaseSpeed(value); };
     if (stat == "healingPower") return [value](Character& c) { c.ModifyHealingPower(value); };
+    if (stat == "fireMod") return [value](Character& c) {c.ModifyFirePower(value); };
+    if (stat == "poisonMod") return [value](Character& c) {c.ModifyPoisonPower(value); };
+    if (stat == "lifesteal") return [value](Character& c) {c.ModifyLifesteal(value); };
+    if (stat == "maxDurability") return [value](Character& c) {c.ModifyMaxDurability(value); };
 
     LOG("CharacterFactory: stat de upgrade no reconocida: '%s'", stat.c_str());
     return [](Character&) {};
