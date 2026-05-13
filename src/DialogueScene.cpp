@@ -6,6 +6,7 @@
 #include "Textures.h"
 #include "Render.h"
 #include "Log.h"
+#include "SceneUtils.h"
 
 DialogueScene::DialogueScene(const std::string& dialogueId,
                              std::function<void()> onFinished)
@@ -63,12 +64,11 @@ void DialogueScene::PostUpdate(float dt)
     Engine::GetInstance().render->DrawTexture(panel, posPanel.x, posPanel.y);
 
     // Portrait — si cambió, recargarlo
-    UpdatePortrait(node->portrait);
+    //UpdatePortrait(node->portrait);
 
     if (portraitTexture != nullptr)
     {
-        SDL_Rect portraitRect = { 10, 540, 128, 170 };
-        Engine::GetInstance().render->DrawTexture(portraitTexture, 10, 540);
+        Engine::GetInstance().render->DrawTexture(portraitTexture, 800, 300);
     }
 
     // Nombre del personaje
@@ -109,7 +109,12 @@ void DialogueScene::LoadTextures()
     button = Engine::GetInstance().textures->Load("Assets/Textures/Pause/ButtonsPause.png");
     panel = Engine::GetInstance().textures->Load("Assets/Textures/Dialogues/TextBox.png");
     
-    //load spritesheet character portrait
+    std::string portraitPath = SceneUtils::GetPortraitPath(dialogueId);
+    if (!portraitPath.empty())
+    {
+        portraitTexture = Engine::GetInstance().textures->Load(portraitPath.c_str());
+        currentPortraitPath = portraitPath;
+    }
 }
 
 
@@ -189,23 +194,23 @@ void DialogueScene::ClearOptionButtons()
 }
 
 
-void DialogueScene::UpdatePortrait(const std::string& portraitPath)
-{
-    if (portraitPath == currentPortraitPath) return;
-
-    if (portraitTexture != nullptr)
-    {
-        Engine::GetInstance().textures->UnLoad(portraitTexture);
-        portraitTexture = nullptr;
-    }
-
-    if (!portraitPath.empty())
-    {
-        portraitTexture = Engine::GetInstance().textures->Load(portraitPath.c_str());
-    }
-
-    currentPortraitPath = portraitPath;
-}
+//void DialogueScene::UpdatePortrait(const std::string& portraitPath)
+//{
+//    if (portraitPath == currentPortraitPath) return;
+//
+//    if (portraitTexture != nullptr)
+//    {
+//        Engine::GetInstance().textures->UnLoad(portraitTexture);
+//        portraitTexture = nullptr;
+//    }
+//
+//    if (!portraitPath.empty())
+//    {
+//        portraitTexture = Engine::GetInstance().textures->Load(portraitPath.c_str());
+//    }
+//
+//    currentPortraitPath = portraitPath;
+//}
 
 //void DialogueScene::OnResume()
 //{

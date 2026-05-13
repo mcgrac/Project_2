@@ -44,7 +44,7 @@ private:
     void ClearOptionButtons();
 
     // Carga el portrait del nodo actual si cambió
-    void UpdatePortrait(const std::string& portraitPath);
+    //void UpdatePortrait(const std::string& portraitPath);
 
     // IDs de botones de opción: 10, 11, 12...
     static constexpr int OPTION_BTN_BASE = 10;

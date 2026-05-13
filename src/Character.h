@@ -190,6 +190,7 @@ public:
 	inline void ModifyPoisonPower(float amount) { poisonPower += amount; }
 	inline void AddXP(int amount) { experience += amount; }
 	inline void ModifyLifesteal(int amount) { lifesteal += amount; }
+	void ModifyMaxDurability(int amount);
 
 	inline void SetTotalPower() { totalPower = basePower + bonusPower; }
 	inline void SetTotalDurability() { totalDurability = baseDurability + bonusDurability; }
@@ -206,6 +207,7 @@ public:
 private:
 
 	float incomingDamageMultiplier = 0.0f;
-
 	bool pendingToDie = false;
+
+	static constexpr int MAX_DURABILITY_POSSIBLE = 70;
 };

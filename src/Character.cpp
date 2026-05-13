@@ -159,6 +159,10 @@ void Character::LevelUp()
 	health += maxHealthLevelScaling;
 	basePower += powerLevelScaling;
 	baseSpeed += speedLevelScaling;
+
+	SetTotalDurability();
+	SetTotalPower();
+	SetTotalSpeed();
 }
 
 void Character::Draw(float dt) 
@@ -217,6 +221,12 @@ void Character::AddInitiative(int amount)
 	initiative += amount;
 	if (initiative < 0) { initiative = 0; }
 	if (initiative > maxInitiative) { initiative = maxInitiative; }
+}
+
+void Character::ModifyMaxDurability(int amount)
+{
+	int newMaxDurability = maxDurability + amount;
+	maxDurability = std::min(MAX_DURABILITY_POSSIBLE, newMaxDurability);
 }
 
 void Character::SetBurned(bool state, int damage, Character* attacker)
