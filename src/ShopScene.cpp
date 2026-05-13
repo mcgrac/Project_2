@@ -89,15 +89,10 @@ void ShopScene::Update(float dt)
         Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
         Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
     }
-    if (shopOpen == 1) {
+    else if (shopOpen == 1) {
 
         IslandFaction faction = shop->GetIsland()->GetIslandFaction();
-        SDL_Rect CHARACTER_BOUNDS = HUMAN_SPRITE_BOUNDS;
-        if(faction == IslandFaction::HUMANS){ SDL_Rect CHARACTER_BOUNDS = HUMAN_SPRITE_BOUNDS; }
-        if (faction == IslandFaction::REPTILES) { SDL_Rect CHARACTER_BOUNDS = REPTILE_SPRITE_BOUNDS; }
-        if (faction == IslandFaction::SIRENS) { SDL_Rect CHARACTER_BOUNDS = SIREN_SPRITE_BOUNDS; }
-        if (faction == IslandFaction::BIRD) { SDL_Rect CHARACTER_BOUNDS = BIRD_SPRITE_BOUNDS; }
-        
+        SDL_Rect CHARACTER_BOUNDS = GetSpriteBounds();
 
         Engine::GetInstance().render->DrawTexture(fullBackground, 0, 0);
         Engine::GetInstance().render->DrawTexture(moneyCounter, 938, 296);
@@ -191,6 +186,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     case OPEN_SHOP_BUTTON:
     {
         Engine::GetInstance().audio->PlayFx(buttonPress);
+        Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
         PushDialogue();
         //NPC* npc = shop->GetOwner();
         //if (npc == nullptr)
@@ -349,6 +345,18 @@ SDL_Rect ShopScene::GetOwnerBounds() const
     }
 }
 
+SDL_Rect ShopScene::GetSpriteBounds() const
+{
+    switch (shop->GetIsland()->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:   return HUMAN_SPRITE_BOUNDS;
+    case IslandFaction::BIRD:     return BIRD_SPRITE_BOUNDS;
+    case IslandFaction::SIRENS:   return SIREN_SPRITE_BOUNDS;
+    case IslandFaction::REPTILES: return REPTILE_SPRITE_BOUNDS;
+    default:                      return HUMAN_SPRITE_BOUNDS;
+    }
+}
+
 void ShopScene::CreateUI()
 {
 
@@ -427,7 +435,8 @@ void ShopScene::PushDialogue()
                     shop->GenerateItems(factShop);
 
                     state = ShopState::SHOW_ITEMS;
-
+                    CreateItemButtons();
+                    shopOpen = 1;
                     Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
 
                     SDL_Rect crossBounds2 = CROSS_BOUNDS2;
@@ -436,7 +445,7 @@ void ShopScene::PushDialogue()
                         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, crossBounds2.w, crossBounds2.h
                     );
 
-                    CreateItemButtons();
+                    
                 }
                 else if (popOnLeave)
                 {

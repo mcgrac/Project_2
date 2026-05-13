@@ -87,6 +87,7 @@ private:
 
     SDL_Rect GetChestBoundsShop() const;
     SDL_Rect GetOwnerBounds() const;
+    SDL_Rect GetSpriteBounds() const;
 
 #pragma region POSITIONS
 #pragma region CHEST
