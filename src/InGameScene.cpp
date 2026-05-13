@@ -33,6 +33,7 @@ InGameScene::InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* 
     , spritesheet(nullptr)
     , islandHumanTex(nullptr)
     , islandReptileTex(nullptr)
+    , goldCounter(0, "Assets/Textures/Animations/coin.png", 400, 100)
 {
     sceneName = "InGameScene";
 }
@@ -134,6 +135,9 @@ void InGameScene::Update(float dt)
     //draw hp ship
     std::string text = "HP: " + std::to_string(ship->GetCurrentHp()) + "/" + std::to_string(ship->GetMaxHp());
     Engine::GetInstance().render->DrawText(text.c_str(), 600, 20, 0, 0, { 255,255,255,255 });
+
+    //gold counter
+    goldCounter.Update(alliedParty->GetGold(), dt);
     
 }
 

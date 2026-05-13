@@ -75,6 +75,7 @@ bool AnimationSet::LoadFromTSX(const char* tsxPath,
 {
     pugi::xml_document doc;
     pugi::xml_parse_result ok = doc.load_file(tsxPath);
+
     if (!ok) {
         std::fprintf(stderr, "TSX load failed (%s): %s\n", tsxPath, ok.description());
         return false;

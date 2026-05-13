@@ -3,19 +3,26 @@
 #include "Island.h"
 #include "SDL3/SDL.h"
 #include "Vector2D.h"
+#include "Animation.h"
 
 struct SDL_Texture;
 
-static struct GoldCounter {
+struct GoldCounter {
 
 	SDL_Texture* coinIcon = nullptr;
 	int amount;
-	static Vector2D position;
+	Vector2D position;
+	AnimationSet anims;
+
+	GoldCounter() = default;
 
 	GoldCounter(int _amount, std::string _path, int _positionX, int _positionY);
+	void Update(int currentGoldAmount, float dt);
 
-	void Update(int currentGoldAmount);
-	void RenderCounter();
+
+	void Draw(float dt);
+	void LoadAnimation();
+	void RenderCounter(int x, int y);
 	void UpdateAmount(int i);
 	void SetTextureCoin(std::string path);
 };

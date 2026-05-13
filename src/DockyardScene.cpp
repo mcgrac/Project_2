@@ -116,6 +116,7 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
     }
     case IMPROVE_SHIP:
         if (alliedParty->GetGold() >= COST_IMPROVE_SHIP) {
+            alliedParty->AddGold(-COST_IMPROVE_SHIP);
             levelBeforeImprove = dockyard->GetShip()->GetLevel();
             dockyard->ImproveShip();
             shipImproved = true;

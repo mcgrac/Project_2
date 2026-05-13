@@ -65,7 +65,6 @@ void ShopScene::Update(float dt)
     }
 
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
-    //lógica de compra de items
 
     //debug->add 1000 gold pressing F12
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_0) == KEY_DOWN)
