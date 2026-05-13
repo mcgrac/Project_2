@@ -98,6 +98,7 @@ void ShopScene::Unload()
     Engine::GetInstance().textures->UnLoad(keyButton);
     Engine::GetInstance().textures->UnLoad(ownerSprite);
     Engine::GetInstance().textures->UnLoad(chestButton);
+    Engine::GetInstance().textures->UnLoad(fullBackground);
 
     for (SDL_Texture* tex : loadedItemTextures)
     {
@@ -113,6 +114,7 @@ void ShopScene::LoadTextures()
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
     //background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/ShopBackground.png");
     emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
+    fullBackground = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/fullBackground.png");
     keyButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyKeyButton.png");
     potionButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BuyPotionButton.png");
 
@@ -133,6 +135,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case OPEN_CHEST_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
+        DeleteUI();
         OpenUIChest();
         CloseUIChest();
         break;
@@ -173,6 +176,8 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     }
     case CLOSE_CHEST_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
+        DeleteUI();
+        CreateUI();
         break;
     case 100:
     case 101:
@@ -317,6 +322,13 @@ void ShopScene::CreateUI()
 
 }
 
+void ShopScene::DeleteUI()
+{
+
+    Engine::GetInstance().uiManager->RemoveElementsByRange(0,300);
+
+}
+
 /*Faction ShopScene::IslandFactionToFaction(IslandFaction fact)
 {
     Faction tempFaction = Faction::UNDEFINED;
@@ -458,6 +470,10 @@ void ShopScene::CreateItemButtons()
 
 void ShopScene::CloseUIChest()
 {
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, CLOSE_CHEST_ID, "", crossBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, crossBounds, 0, crossBounds.w, crossBounds.h
+    );
 }
 
 void ShopScene::OpenUIChest()

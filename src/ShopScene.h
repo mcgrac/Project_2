@@ -33,6 +33,7 @@ public:
     void OnResume() override;
     void OnPause() override;
     void CreateUI();
+    void DeleteUI();
 
    // Faction IslandFactionToFaction(IslandFaction fact);
 
@@ -57,12 +58,14 @@ private:
     static constexpr int BUY_POTION = 4;
     static constexpr int BACK_CHEST_BUTTON_ID = 5;
     static constexpr int OPEN_CHEST_ID = 6;
+    static constexpr int CLOSE_CHEST_ID = 7;
     static constexpr int ITEMS_AVAILABLE_BASE = 100;
     static constexpr int CHARACTERS_AVAILABLE_BASE = 200;
 
 #pragma region TEXTURES
     SDL_Texture* exitButton;
     SDL_Texture* background;    
+    SDL_Texture* fullBackground;
     SDL_Texture* emptyButtons;
     SDL_Texture* keyButton;
     SDL_Texture* potionButton;
@@ -87,6 +90,11 @@ private:
     static const SDL_Rect BIRD_CHARA_SELECT_BOUNDS;
     static const SDL_Rect SIREN_CHARA_SELECT_BOUNDS;
     static const SDL_Rect REPTILE_CHARA_SELECT_BOUNDS;
+
+#pragma endregion
+#pragma endregion Cross
+
+    static const SDL_Rect CROSS_BOUNDS;
 
 #pragma endregion
 #pragma endregion
