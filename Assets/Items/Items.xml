@@ -45,12 +45,106 @@
 	</item>
 
 	<!--  ===============SIREN============================== -->
-
-
+	<item name="Pearled Promise" type ="equippable" faction="SIREN" price="25">
+		<stat type="HEALING_POWER" value="40"/>
+		<stat type="POWER" value="-20"/>
+	</item>
+	<item name="Charybdis Fang" type ="equippable" faction="SIREN" price="15">
+		<stat type="POWER" value="70"/>
+		<stat type="LIFESTEAL" value="-15"/>
+	</item>
+	<item name="Sunken Riches" type ="equippable" faction="SIREN" price="75">
+		<stat type="HEALTH" value="60"/>
+		<stat type="DURABILITY" value="10"/>
+		<stat type="SPEED" value="20"/>
+	</item>
+	<item name="Naxar Blade" type ="equippable" faction="SIREN" price="40">
+		<stat type="POWER" value="55"/>
+		<stat type="HEALTH" value="-30"/>
+		<stat type="SPEED" value="35"/>
+	</item>
+	<item name="Ill-fated Map" type ="equippable" faction="SIREN" price="20">
+		<stat type="HEALTH" value="100"/>
+		<stat type="SPEED" value="-30"/>
+	</item>
+	<item name="Eyeballse" type ="equippable" faction="SIREN" price="40">
+		<stat type="HEALING_POWER" value="-25"/>
+		<stat type="HEALTH" value="25"/>
+		<stat type="LIFESTEAL" value="30"/>
+	</item>
+	<item name="Heart of the Ocean" type ="equippable" faction="SIREN" price="99">
+		<stat type="POWER" value="170"/>
+		<stat type="DURABILITY" value="-25"/>
+		<stat type="SPEED" value="55"/>
+	</item>
+	
 	<!--  ===============REPTIL============================= -->
-
+	<item name="Mysterious Shroom 1" type ="equippable" faction="REPTILE" price="10">
+		<stat type="POISON_POWER" value="40"/>
+		<stat type="POWER" value="45"/>
+		<stat type="DURABILITY" value="-20"/>
+	</item>
+	<item name="Mysterious Shroom 2" type ="equippable" faction="REPTILE" price="10">
+		<stat type="POWER" value="-40"/>
+		<stat type="SPEED" value="30"/>
+		<stat type="DURABILITY" value="40"/>
+	</item>
+	<item name="Mysterious Shroom 3" type ="equippable" faction="REPTILE" price="10">
+		<stat type="HEALTH" value="-50"/>
+		<stat type="HEALING_POWER" value="30"/>
+		<stat type="LIFESTEAL" value="45"/>
+	</item>
+	<item name="Mysterious Shroom 4" type ="equippable" faction="REPTILE" price="10">
+		<stat type="FIRE_POWER" value="30"/>
+		<stat type="HEALTH" value="70"/>
+		<stat type="SPEED" value="-50"/>
+	</item>
+	<item name="Mysterious Shroom 5" type ="equippable" faction="REPTILE" price="10">
+		<stat type="FIRE_POWER" value="50"/>
+		<stat type="HEALTH" value="60"/>
+		<stat type="HEALING_POWER" value="-30"/>
+	</item>
+	<item name="Mysterious Shroom 6" type ="equippable" faction="REPTILE" price="10">
+		<stat type="POISON_POWER" value="45"/>
+		<stat type="FIRE_POWER" value="45"/>
+		<stat type="POWER" value="-50"/>
+	</item>
+	<item name="Heart of the Jungle" type ="equippable" faction="REPTILE" price="99">
+		<stat type="POWER" value="70"/>
+		<stat type="DURABILITY" value="20"/>
+		<stat type="LIFESTEAL" value="30"/>
+	</item>
 
 	<!--  ===============HUMAN============================== -->
+	<item name="Corrupted Calyx" type ="equippable" faction="HUMAN" price="15">
+		<stat type="HEALING_POWER" value="10"/>
+		<stat type="POISON_POWER" value="25"/>
+		<stat type="HEALTH" value="10"/>
+	</item>
+	<item name="Golden Facade" type ="equippable" faction="HUMAN" price="30">
+		<stat type="POWER" value="65"/>
+		<stat type="SPEED" value="-10"/>
+		<stat type="DURABILITY" value="10"/>
+	</item>
+	<item name="Longsword" type ="equippable" faction="HUMAN" price="35">
+		<stat type="POWER" value="60"/>
+	</item>
+	<item name="Dagger" type ="equippable" faction="HUMAN" price="35">
+		<stat type="POWER" value="40"/>
+		<stat type="SPEED" value="15"/>
+	</item>
+	<item name="Shield" type ="equippable" faction="HUMAN" price="15">
+		<stat type="DURABILITY" value="10"/>
+	</item>
+	<item name="Sinner's End" type ="equippable" faction="HUMAN" price="40">
+		<stat type="POWER" value="60"/>
+		<stat type="HEALTH" value="30"/>
+	</item>
+	<item name="Heart of the Heavens" type ="equippable" faction="HUMAN" price="99">
+		<stat type="POWER" value="100"/>
+		<stat type="DURABILITY" value="15"/>
+		<stat type="HEALTH" value="75"/>
+	</item>
 	
 	<!-- ═══════════════════════════════════════════════════ -->
 	<!--  CONSUMIBLE										 -->

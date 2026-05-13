@@ -180,7 +180,7 @@ public:
 	inline void ModifyBaseSpeed(int amount) { baseSpeed += amount; }
 	inline void ModifyBonusPower(int amount) { bonusPower += amount; }
 	inline void ModifyBonusSpeed(int amount) { bonusSpeed += amount; }
-	inline void ModifyMaxHealth(int amount) { maxHealth += amount; health += amount; }
+	void ModifyMaxHealth(int amount);
 	inline void ModifyCurrentHealth(int amount) { health += amount; }
 	inline void ModifyHealingPower(int amount) { healingPower += amount; }
 	void ModifyDurability(int amount);

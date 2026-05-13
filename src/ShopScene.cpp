@@ -350,7 +350,6 @@ void ShopScene::PushDialogue()
                 {
                     LOG("SHOP: buy");
 
-                    //Faction factShop = IslandFactionToFaction(shop->GetIsland()->GetIslandFaction());
                     Faction factShop = Faction::UNDEFINED;
                     if (shop->GetIsland()->GetIslandFaction() == IslandFaction::HUMANS) { factShop = Faction::HUMAN; }
                     else if (shop->GetIsland()->GetIslandFaction() == IslandFaction::BIRD) { factShop = Faction::BIRD; }
