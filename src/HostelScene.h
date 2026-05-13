@@ -32,6 +32,7 @@ public:
     //helpers
     SDL_Rect GetRestBounds() const;
     SDL_Rect GetMealBounds() const;
+    SDL_Rect GetOwnerBounds() const;
 
 private:
     void PushDialogue();
@@ -58,19 +59,17 @@ private:
 
 #pragma region POSITIONS
 #pragma region REST_BUTTON
-    static const SDL_Rect REST_HUMAN_BOUNDS;
-    static const SDL_Rect REST_BIRD_BOUNDS;
-    static const SDL_Rect REST_SIREN_BOUNDS;
-    static const SDL_Rect REST_REPTILE_BOUNDS;
+    static const SDL_Rect REST_BOUNDS;
 #pragma endregion
 #pragma region MEAL_BUTTON
-    static const SDL_Rect MEAL_HUMAN_BOUNDS;
-    static const SDL_Rect MEAL_BIRD_BOUNDS;
-    static const SDL_Rect MEAL_SIREN_BOUNDS;
-    static const SDL_Rect MEAL_REPTILE_BOUNDS;
+    static const SDL_Rect MEAL_BOUNDS;
 #pragma endregion
 
-    static const SDL_Rect CHARA_SELECT_BOUNDS;
+    static const SDL_Rect HUMAN_CHARA_SELECT_BOUNDS;
+    static const SDL_Rect BIRD_CHARA_SELECT_BOUNDS;
+    static const SDL_Rect SIREN_CHARA_SELECT_BOUNDS;
+    static const SDL_Rect REPTILE_CHARA_SELECT_BOUNDS;
+
 #pragma endregion
 
     bool showRestPanel;

@@ -14,18 +14,15 @@
 
 #pragma region POSITIONS
 #pragma region REST_BUTTON
-const SDL_Rect HostelScene::REST_HUMAN_BOUNDS = { 100, 50, 414, 414 };
-const SDL_Rect HostelScene::REST_BIRD_BOUNDS = { 100, 50, 414, 414 };
-const SDL_Rect HostelScene::REST_SIREN_BOUNDS = { 100, 50, 414, 414 };
-const SDL_Rect HostelScene::REST_REPTILE_BOUNDS = { 100, 50, 414, 414 };
+const SDL_Rect HostelScene::REST_BOUNDS = { 106, 80, 414, 414 };
 #pragma endregion
 #pragma region MEAL_BUTTON
-const SDL_Rect HostelScene::MEAL_HUMAN_BOUNDS = { 500, 50, 414, 414 };
-const SDL_Rect HostelScene::MEAL_BIRD_BOUNDS = { 500, 50, 414, 414 };
-const SDL_Rect HostelScene::MEAL_SIREN_BOUNDS = { 500, 50, 414, 414 };
-const SDL_Rect HostelScene::MEAL_REPTILE_BOUNDS = { 500, 50, 414, 414 };
-#pragma endregion
-const SDL_Rect HostelScene::CHARA_SELECT_BOUNDS = { 200, 500, 202, 63 };
+const SDL_Rect HostelScene::MEAL_BOUNDS = { 561, 80, 414, 414 };
+#pragma endregion NPC
+const SDL_Rect HostelScene::HUMAN_CHARA_SELECT_BOUNDS = { 604, 182, 190, 281 };
+const SDL_Rect HostelScene::BIRD_CHARA_SELECT_BOUNDS = { 241, 239, 214, 133 };
+const SDL_Rect HostelScene::SIREN_CHARA_SELECT_BOUNDS = { 516,  340, 174, 249 };
+const SDL_Rect HostelScene::REPTILE_CHARA_SELECT_BOUNDS = { 373, 301, 214, 230 };
 #pragma endregion
 
 HostelScene::HostelScene(Hostel* hostel, Party* allied)
@@ -244,7 +241,7 @@ void HostelScene::CreateUI()
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
         );
 
-        SDL_Rect talkBounds = { 500, 300, 168, 211 };
+        SDL_Rect talkBounds = GetOwnerBounds();
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, talkBounds.w, talkBounds.h
@@ -276,7 +273,7 @@ void HostelScene::OpenRestPanel()
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, mealButton, 0, xpBtn.w, xpBtn.h
     );
 
-    SDL_Rect backPanel = { 400, 440, 72, 72 };
+    SDL_Rect backPanel = { 589, 80, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 22, "", backPanel,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backPanel.w, backPanel.h
@@ -289,8 +286,9 @@ void HostelScene::OpenSelectCharaPanel()
 
     //character buttons
     for (int i = 0; i < alliedParty->GetMemberCount(); i++) {
-        SDL_Rect charaBtn = CHARA_SELECT_BOUNDS;
-        charaBtn.y += (70 * i);
+        SDL_Rect charaBtn = GetOwnerBounds();
+        charaBtn.y = 503 + (63 * i);
+        charaBtn.x = 112;
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, 30 + i, alliedParty->GetMembers()[i]->GetName().c_str(), charaBtn,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, emptyButtons, 0, charaBtn.w, charaBtn.h
@@ -298,7 +296,7 @@ void HostelScene::OpenSelectCharaPanel()
     }
 
 
-    SDL_Rect backPanel = { 400, 500, 72, 72 };
+    SDL_Rect backPanel = { 989, 80, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 33, "back", backPanel,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backPanel.w, backPanel.h
@@ -307,26 +305,27 @@ void HostelScene::OpenSelectCharaPanel()
 
 SDL_Rect HostelScene::GetRestBounds() const
 {
-    switch (hostel->GetIsland()->GetIslandFaction())
-    {
-    case IslandFaction::HUMANS:   return REST_HUMAN_BOUNDS;
-    case IslandFaction::BIRD:     return REST_BIRD_BOUNDS;
-    case IslandFaction::SIRENS:   return REST_SIREN_BOUNDS;
-    case IslandFaction::REPTILES: return REST_REPTILE_BOUNDS;
-    default:                      return REST_HUMAN_BOUNDS;
-    }
+    return REST_BOUNDS;
+    
 }
 
-SDL_Rect HostelScene::GetMealBounds() const
+SDL_Rect HostelScene::GetOwnerBounds() const
 {
     switch (hostel->GetIsland()->GetIslandFaction())
     {
-    case IslandFaction::HUMANS:   return MEAL_HUMAN_BOUNDS;
-    case IslandFaction::BIRD:     return MEAL_BIRD_BOUNDS;
-    case IslandFaction::SIRENS:   return MEAL_SIREN_BOUNDS;
-    case IslandFaction::REPTILES: return MEAL_REPTILE_BOUNDS;
-    default:                      return MEAL_HUMAN_BOUNDS;
+    case IslandFaction::HUMANS:   return HUMAN_CHARA_SELECT_BOUNDS;
+    case IslandFaction::BIRD:     return BIRD_CHARA_SELECT_BOUNDS;
+    case IslandFaction::SIRENS:   return SIREN_CHARA_SELECT_BOUNDS;
+    case IslandFaction::REPTILES: return REPTILE_CHARA_SELECT_BOUNDS;
+    default:                      return HUMAN_CHARA_SELECT_BOUNDS;
     }
+}
+
+
+SDL_Rect HostelScene::GetMealBounds() const
+{
+    return MEAL_BOUNDS;
+    
 }
 
 void HostelScene::PushDialogue()
