@@ -211,6 +211,16 @@ void Character::UseSkill(int index, Character* target)
 	}
 }
 
+void Character::ModifyMaxHealth(int amount)
+{
+	// Check in both cases that if the number is negative dont have negative healt or maxHealth
+	int newMaxHealth = maxHealth + amount;
+	maxHealth = std::max(0, newMaxHealth);
+
+	int newCurrentHealth = health + amount;
+	health = std::max(0, newCurrentHealth);
+}
+
 void Character::ModifyDurability(int amount)
 {
 	totalDurability = std::max(0, std::min(maxDurability, totalDurability + amount));

@@ -345,9 +345,10 @@ void HostelScene::PushDialogue()
             {
                 std::string action = DialogueManager::GetLastChoiceTag();
 
-                if (action == "leave")
+                if (action == "rest")
                 {
-                    Engine::GetInstance().scene->PopScene();
+                    LOG("Hostel: abrir panel de descanso");
+                    showRestPanel = true;
                 }
                 else if (popOnLeave)
                 {
