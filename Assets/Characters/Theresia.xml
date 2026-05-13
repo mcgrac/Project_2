@@ -50,16 +50,16 @@
 
 	<upgradeTree>
 		<tier requiredLevel="5">
-			<optionA name="Arcane Focus"  description="Power +15"       effect="power+15"      />
-			<optionB name="Vital Surge"   description="Max Health +20"  effect="maxHealth+20"  />
+			<optionA name="Heavy Armor"  description="Max health +20, Durability +15" effect1="durability+15" effect2="maxHealth+20"/>
+			<optionB name="Light Armor"   description="Speed +30, Durability +5"  effect1="speed+30" effect2="durability+5" />
 		</tier>
 		<tier requiredLevel="10">
-			<optionA name="Swift Cast"    description="Speed +8"        effect="speed+8"       />
-			<optionB name="Mending Light" description="Healing Power +1" effect="healingPower+1" />
+			<optionA name="Solar Cape"    description="Fire modifier +20, Durability +5" effect1="fireMod+20" effect2="durability+5"/>
+			<optionB name="Moonsilver Pendant" description="Healing power +150, Max health +20" effect1="healingPower+150" effect2="maxHealth+20"/>
 		</tier>
 		<tier requiredLevel="15">
-			<optionA name="Overload"      description="Power +25"       effect="power+25"      />
-			<optionB name="Inner Shield"  description="Max Health +40"  effect="maxHealth+40"  />
+			<optionA name="Immovable Object" description="Max Durability +20, Durability +30" effect1="maxDurability+20" effect2="durability+30"/>
+			<optionB name="Crown's Will"  description="Max health +40, Speed +10"  effect1="maxHealth+40" effect2="speed+10"  />
 		</tier>
 	</upgradeTree>
 

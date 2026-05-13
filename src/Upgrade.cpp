@@ -9,3 +9,8 @@ void Upgrade::Apply(Character& character)
 {
     apply(character);
 }
+
+std::string Upgrade::GetFullDescription() const
+{
+    return name + "\n" + description;
+}

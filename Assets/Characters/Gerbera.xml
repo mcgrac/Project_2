@@ -50,16 +50,16 @@
 
 	<upgradeTree>
 		<tier requiredLevel="5">
-			<optionA name="Arcane Focus"  description="Power +15"       effect="power+15"      />
-			<optionB name="Vital Surge"   description="Max Health +20"  effect="maxHealth+20"  />
+			<optionA name="Poisoned Points"  description="Poison modifier +40" effect1="poisonMod+40"/>
+			<optionB name="Serrated Points"   description="Power +20"  effect1="power+20"  />
 		</tier>
 		<tier requiredLevel="10">
-			<optionA name="Swift Cast"    description="Speed +8"        effect="speed+8"       />
-			<optionB name="Mending Light" description="Healing Power +1" effect="healingPower+1" />
+			<optionA name="Swift Shooting"    description="Speed +50, Power -20" effect1="speed+50"  effect2="power-20"     />
+			<optionB name="Steady Shooting" description="Speed -20, Power +50" effect1="speed-20" effect2="power+50" />
 		</tier>
 		<tier requiredLevel="15">
-			<optionA name="Overload"      description="Power +25"       effect="power+25"      />
-			<optionB name="Inner Shield"  description="Max Health +40"  effect="maxHealth+40"  />
+			<optionA name="Fire Lotus"      description="Speed +30, Fire modifier +40"  effect1="speed+30"  effect2="fireMod+40"     />
+			<optionB name="Thorned Rose"  description="Power +30, Lifesteal +20"  effect1="power+30"  effect2 ="lifesteal+20"/>
 		</tier>
 	</upgradeTree>
 
