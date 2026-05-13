@@ -16,7 +16,8 @@
 #include "ConsumableItem.h"
 #include "KeyItem.h"
 #include "Party.h"
-#include "SceneUtils.h"
+
+#include "Inventory.h"
 
 #pragma region POSITIONS
 #pragma region CHEST
@@ -49,9 +50,10 @@ const SDL_Rect ShopScene::OPEN_BUTTON_BOUNDS = { 990, 250, 202, 63 };
 #pragma endregion
 
 ShopScene::ShopScene(Shop* shop, Party* allied)
-    : shop(shop), alliedParty(allied), ownerSprite(nullptr)
+    : shop(shop), alliedParty(allied), ownerSprite(nullptr), goldCounter(0, "Assets/Textures/Animations/coin.png", 1000, 50)
 {
     sceneName = "ShopScene";
+    
 }
 
 ShopScene::~ShopScene() {}
@@ -72,6 +74,8 @@ void ShopScene::Load()
 
 void ShopScene::Update(float dt)
 {
+    goldCounter.Update(alliedParty->GetGold(), dt);
+
     if (pendingDialogue)
     {
         pendingDialogue = false;
@@ -84,12 +88,16 @@ void ShopScene::Update(float dt)
         Engine::GetInstance().scene->PopScene();
         return;
     }
-    if(chestOpen == 1){ 
+    if(chestOpen == true){ 
         Engine::GetInstance().render->DrawTexture(chestBackground, 0, 0); 
         Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
         Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
+
+        SDL_Color White = { 255, 255, 255 };
+        //int keys = Inventory::GetItemCount("keys");
+        Engine::GetInstance().render->DrawText("keys", 1114, 168, 49, 22, White);
     }
-    else if (shopOpen == 1) {
+    else if (shopOpen == true) {
 
         IslandFaction faction = shop->GetIsland()->GetIslandFaction();
         SDL_Rect CHARACTER_BOUNDS = GetSpriteBounds();
@@ -98,7 +106,14 @@ void ShopScene::Update(float dt)
         Engine::GetInstance().render->DrawTexture(moneyCounter, 938, 296);
         Engine::GetInstance().render->DrawTexture(otherCounter, 961, 135);
         Engine::GetInstance().render->DrawTexture(otherCounter, 961, 207);
-        Engine::GetInstance().render->DrawTexture(characterSprite, CHARACTER_BOUNDS.w, CHARACTER_BOUNDS.h);
+        Engine::GetInstance().render->DrawTexture(characterSprite, CHARACTER_BOUNDS.x, CHARACTER_BOUNDS.y);
+
+        SDL_Color White = { 255, 255, 255 };
+        //int consumable = Inventory::GetItemCount("consumable");
+        Engine::GetInstance().render->DrawText("consumable", 1087, 158, 49, 22, White);
+
+        //int keys = Inventory::GetItemCount("keys");
+        Engine::GetInstance().render->DrawText("keys", 1087, 229, 49, 22, White);
     }
     else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
 
@@ -165,6 +180,10 @@ void ShopScene::LoadTextures()
     moneyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/moneyCounter.png");
     otherCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BackpackCounter.png");
     keyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/keyCounter.png");
+    keyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/keyCounter.png");
+
+    
+    //GoldCounter goldCounter(0, "Assets/Textures/Animations/coin.png", 1000, 50);
 
     fullBackground = Engine::GetInstance().textures->Load((path + "/fullBack.png").c_str());
     characterSprite = Engine::GetInstance().textures->Load((path + "/NPC.png").c_str());
@@ -221,7 +240,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     }
     case CLOSE_CHEST_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
-        Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
+        Engine::GetInstance().uiManager->RemoveElementsByRange(0, 300);
         chestOpen = 0;
         shopOpen = 0;
         CreateUI();
@@ -325,7 +344,9 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
 }
 void ShopScene::OnResume()
 {
-    CreateUI();
+    //Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
+    //if(shopOpen!=1 || chestOpen!=1){ CreateUI(); }
+    
 }
 
 void ShopScene::OnPause()
@@ -379,7 +400,7 @@ void ShopScene::CreateUI()
     // BOTÓN ABRIR TIENDA
     SDL_Rect openBtn = GetOwnerBounds();
     Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, OPEN_SHOP_BUTTON, "OPEN SHOP", openBtn,
+        UIElementType::BUTTON, OPEN_SHOP_BUTTON, "", openBtn,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, openBtn.w, openBtn.h
     );
 
@@ -497,7 +518,7 @@ void ShopScene::CreateItemButtons()
             Engine::GetInstance().uiManager->CreateUIElement(
                 UIElementType::BUTTON,
                 ITEMS_AVAILABLE_BASE + i,
-                label.c_str(),
+                "",
                 rect,
                 [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, itemTexture, 0, rect.w, rect.h
             );

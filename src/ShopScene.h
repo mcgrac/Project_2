@@ -3,6 +3,7 @@
 #include "Shop.h"
 #include "SDL3/SDL.h"
 #include "EquippableItem.h"
+#include "SceneUtils.h"
 
 struct SDL_Texture;
 
@@ -54,6 +55,9 @@ private:
 
     Shop* shop; 
     Party* alliedParty;
+
+    //gold counter
+    GoldCounter goldCounter;
 
     static constexpr int BACK_BUTTON_ID = 1;
     static constexpr int OPEN_SHOP_BUTTON = 2;
