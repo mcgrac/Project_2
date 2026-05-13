@@ -6,7 +6,9 @@
 #include <string>
 #include "SaveLoad.h"
 #include "Ship.h"
+#include "SceneUtils.h"
 
+struct GoldCounter;
 struct SDL_Texture;
 class IslandScene;
 class Character;
@@ -35,6 +37,9 @@ public:
 
 private:
     std::vector<Character*> prebuiltCharacters;
+
+    //gold counter
+    SceneUtils::GoldCounter goldCounter;
 
     // InGameScene es owner de la party y los characters — los crea y destruye
     Party* alliedParty;
