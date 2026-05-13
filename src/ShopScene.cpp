@@ -133,6 +133,8 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case OPEN_CHEST_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
+        OpenUIChest();
+        CloseUIChest();
         break;
     case OPEN_SHOP_BUTTON:
     {
@@ -169,6 +171,9 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         //);
         break;
     }
+    case CLOSE_CHEST_ID:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
+        break;
     case 100:
     case 101:
     case 102:
@@ -449,6 +454,17 @@ void ShopScene::CreateItemButtons()
 #endif // _DEBUG
         }
     }
+}
+
+void ShopScene::CloseUIChest()
+{
+}
+
+void ShopScene::OpenUIChest()
+{
+    //Create Back
+    //Create Open Button
+    //create cross button
 }
 
 void ShopScene::CreateCharacterSelectionUI()

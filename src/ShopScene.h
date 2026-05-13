@@ -41,6 +41,8 @@ private:
 
     void PushDialogue();
     void CreateItemButtons();
+    void OpenUIChest();
+    void CloseUIChest();
     void CreateCharacterSelectionUI();
 
     bool pendingDialogue = false;
