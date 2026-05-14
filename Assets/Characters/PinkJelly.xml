@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<character name="Theresia">
+
+	<visuals
+	spritesheet="Assets/Textures/Animations/TheresiaSpritesheet.png"
+	tsx="Assets/Textures/Animations/TheresiaSpritesheet.tsx"
+    >
+
+		<animations>
+			<anim name="idle" tile="0" loop="true"/>
+			<anim name="dead" tile="112" loop="false"/>
+
+			<anim name="electric_shock" tile="9" loop="false"/>
+			<anim name="shield" tile="11" loop="false"/>
+
+
+		</animations>
+
+	</visuals>
+	
+	<stats
+        health="55"
+        maxHealth="55"
+        power="35"
+        durability="0"
+        maxDurability="80"
+        speed="25"
+        lifesteal="0"
+        healingPower="0"
+        poisonPower="0"
+        firePower="0"
+        maxInitiative="250"
+    />
+
+	<levelScaling
+        maxHealth="6"
+        power="5"
+		durability="1"
+        speed="8"
+		healingPower="2"
+    />
+
+	<skills>
+		<skill id="electric_shock" initiativeCost="110" />
+		<skill id="shield" initiativeCost="110" />
+
+	</skills>
+
+</character>

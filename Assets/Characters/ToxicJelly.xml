@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<character name="Theresia">
+
+	<visuals
+	spritesheet="Assets/Textures/Animations/TheresiaSpritesheet.png"
+	tsx="Assets/Textures/Animations/TheresiaSpritesheet.tsx"
+    >
+
+		<animations>
+			<anim name="idle" tile="0" loop="true"/>
+			<anim name="dead" tile="112" loop="false"/>
+
+			<anim name="toxic_bubbles" tile="9" loop="false"/>
+
+
+		</animations>
+
+	</visuals>
+	
+	<stats
+        health="100"
+        maxHealth="100"
+        power="20"
+        durability="0"
+        maxDurability="80"
+        speed="30"
+        lifesteal="0"
+        healingPower="0"
+        poisonPower="0"
+        firePower="0"
+        maxInitiative="250"
+    />
+
+	<levelScaling
+        maxHealth="8"
+        power="4"
+		durability="1"
+        speed="5"
+		poisonPower="5"
+    />
+
+	<skills>
+		<skill id="toxic_bubbles" initiativeCost="120" />
+	</skills>
+
+</character>

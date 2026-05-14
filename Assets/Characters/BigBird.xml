@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<character name="BigBird">
+
+	<visuals
+	spritesheet="Assets/Textures/Animations/BigBirdSpritesheet.png"
+	tsx="Assets/Textures/Animations/BigBirdSpritesheet.tsx"
+    >
+
+		<animations>
+			<anim name="idle" tile="0" loop="true"/>
+			<anim name="dead" tile="112" loop="false"/>
+
+			<anim name="encourage" tile="9" loop="false"/>
+			<anim name="battle_fury" tile="11" loop="false"/>
+			<anim name="slash" tile="5" loop="false"/>
+			<anim name="shield_bash" tile="3" loop="false"/>
+			<anim name="double_blade" tile="7" loop="false"/>
+
+		</animations>
+
+	</visuals>
+	
+	<stats
+        health="100"
+        maxHealth="100"
+        power="46"
+        durability="0"
+        maxDurability="80"
+        speed="30"
+        lifesteal="0"
+        healingPower="0"
+        poisonPower="0"
+        firePower="0"
+        maxInitiative="250"
+    />
+
+	<levelScaling
+        maxHealth="8"
+        power="7"
+        speed="3"
+    />
+
+	<skills>
+		<skill id="birds_flying" initiativeCost="100" />
+		<skill id="paper_bird_projectile" initiativeCost="130" />
+	</skills>
+
+</character>

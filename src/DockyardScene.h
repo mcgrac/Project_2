@@ -34,6 +34,8 @@ private:
     Dockyard* dockyard; 
     Party* alliedParty;  
 
+    //GoldCounter goldCounter;
+
     static constexpr int BACK_BUTTON_ID = 1;
     static constexpr int START_DIALOGUE = 2;
     static constexpr int IMPROVE_SHIP = 3;
@@ -45,6 +47,11 @@ private:
     SDL_Texture* chartImproved;
     SDL_Texture* improveShip;
     SDL_Texture* ownerSprite;
+
+    SDL_Texture* moneyCounter;
+    SDL_Texture* owner;
+    SDL_Texture* fullBack;
+
 #pragma endregion
 
     void CreateChartButtons();
@@ -56,38 +63,71 @@ private:
     static constexpr int COST_IMPROVE_SHIP = 50;
 
 #pragma region POSITIONS
-    // Posición del chart en pantalla
-    static constexpr int CHART_X = 50;
-    static constexpr int CHART_Y = 100;
 
-    // Offsets relativos al chart para cada stat
-    static constexpr int CHART_BACK_POWER_OFFSET_Y = 125; //35
-    static constexpr int CHART_SIDE_POWER_OFFSET_Y = 200;
-    static constexpr int CHART_SIDE_SPEED_OFFSET_Y = 238;
-    static constexpr int CHART_FRONT_SPEED_OFFSET_Y = 313;
-    static constexpr int CHART_FRONT_HP_OFFSET_Y = 348;
-    static constexpr int CHART_STAT_OFFSET_X_OLD = 300;
-    static constexpr int CHART_STAT_OFFSET_X_NEW = 600;
-    static constexpr int CHART_STAT_W = 40;
-    static constexpr int CHART_STAT_H = 20;
+#pragma endregion Chart
 
-    //offsets relativos al chart pora level
-    static constexpr int CHART_LEVEL_X = 250;
-    static constexpr int CHART_LEVEL_Y = 15;
-    static constexpr int CHART_LEVEL_W = 30;
-    static constexpr int CHART_LEVEL_H = 60;
-    static constexpr int CHART_LEVEL_NEW_X = 370;
+    static const SDL_Rect CHART_BOUNDS;
 
-    //buttons
-    static constexpr int IMPROVE_SHIP_X = 715;
-    static constexpr int IMPROVE_SHIP_Y = 200;
-    static constexpr int IMPROVE_SHIP_W = 183;
-    static constexpr int IMPROVE_SHIP_H = 63;
+#pragma endregion
+#pragma endregion LEVEL
 
-    static constexpr int NPC_X = 800;
-    static constexpr int NPC_Y = 20;
-    static constexpr int NPC_W = 549;
-    static constexpr int NPC_H = 616;
+    static const SDL_Rect LEVEL1_BOUNDS;
+    static const SDL_Rect LEVEL2_BOUNDS;
+
+#pragma endregion
+#pragma endregion STATS1
+
+    static const SDL_Rect BACK_POWER_BOUNDS;
+
+    static const SDL_Rect SIDE_POWER_BOUND;
+    static const SDL_Rect SIDE_SPEED_BOUND;
+
+    static const SDL_Rect FRONT_HEALTH_BOUND;
+    static const SDL_Rect FRONT_SPEED_BOUND;
+
+#pragma endregion
+#pragma endregion STATS2
+
+    static const SDL_Rect BACK_POWER_BOUNDS2;
+
+    static const SDL_Rect SIDE_POWER_BOUND2;
+    static const SDL_Rect SIDE_SPEED_BOUND2;
+
+    static const SDL_Rect FRONT_HEALTH_BOUND2;
+    static const SDL_Rect FRONT_SPEED_BOUND2;
+
+#pragma endregion
+#pragma endregion NPC
+
+    static const SDL_Rect HUMAN_NPC_BOUNDS;
+    static const SDL_Rect BIRD_NPC_BOUNDS;
+
+#pragma endregion
+#pragma endregion Sprite
+
+    static const SDL_Rect HUMAN_SPRITE_BOUNDS;
+    static const SDL_Rect BIRD_SPRITE_BOUNDS;
+    static const SDL_Rect SIREN_SPRITE_BOUNDS;
+    static const SDL_Rect REPTILE_SPRITE_BOUNDS;
+
+#pragma endregion
+#pragma endregion BackButton
+
+    static const SDL_Rect BACK_BOUNDS;
+    static const SDL_Rect BACK_BUTTON_BOUNDS;
+
+#pragma endregion
+#pragma endregion UpgradeButton
+
+    static const SDL_Rect UPGRADE_BUTTON_BOUNDS;
+
+#pragma endregion
+#pragma endregion Gold Counter
+
+    static const SDL_Rect GOLD_COUNTER_BOUNDS;
+    static const SDL_Rect GOLD_COUNTER2_BOUNDS;
+
+#pragma endregion
 #pragma endregion
 
     //audio variables

@@ -570,7 +570,7 @@ void InGameScene::CreateUI()
     //Botón de party
     SDL_Rect partyBtnBounds = { 20, 600, 72, 72 };
     auto partyButon = Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 2, "Party", partyBtnBounds,
+        UIElementType::BUTTON, 2, "", partyBtnBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, teamButton, 0, partyBtnBounds.w, partyBtnBounds.h
     );
     partyButon->isHUD = true; //fixed on screen
