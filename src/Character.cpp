@@ -88,7 +88,6 @@ void Character::ReceivePhysicalDamage(int damageReceived, Character* attacker)
 	float durabilityMultiplier = 1.0f - durabilityReduction;
 	if (durabilityMultiplier < 0.0f) { durabilityMultiplier = 0.0f; }
 
-	// --- LOG NUEVO ---
 	int damageAfterDurability = std::max(0, (int)(scaledDamage * durabilityMultiplier));
 
 	LOG("PHYSICAL DMG [%s]: incoming=%d | totalDurability=%d (base=%d, bonus=%d) | damageAfterDurability=%d | HP antes=%d | HP despues=%d",
@@ -160,6 +159,10 @@ void Character::LevelUp()
 	health += maxHealthLevelScaling;
 	basePower += powerLevelScaling;
 	baseSpeed += speedLevelScaling;
+
+	SetTotalDurability();
+	SetTotalPower();
+	SetTotalSpeed();
 }
 
 void Character::Draw(float dt) 
@@ -208,6 +211,16 @@ void Character::UseSkill(int index, Character* target)
 	}
 }
 
+void Character::ModifyMaxHealth(int amount)
+{
+	// Check in both cases that if the number is negative dont have negative healt or maxHealth
+	int newMaxHealth = maxHealth + amount;
+	maxHealth = std::max(0, newMaxHealth);
+
+	int newCurrentHealth = health + amount;
+	health = std::max(0, newCurrentHealth);
+}
+
 void Character::ModifyDurability(int amount)
 {
 	totalDurability = std::max(0, std::min(maxDurability, totalDurability + amount));
@@ -218,6 +231,12 @@ void Character::AddInitiative(int amount)
 	initiative += amount;
 	if (initiative < 0) { initiative = 0; }
 	if (initiative > maxInitiative) { initiative = maxInitiative; }
+}
+
+void Character::ModifyMaxDurability(int amount)
+{
+	int newMaxDurability = maxDurability + amount;
+	maxDurability = std::min(MAX_DURABILITY_POSSIBLE, newMaxDurability);
 }
 
 void Character::SetBurned(bool state, int damage, Character* attacker)

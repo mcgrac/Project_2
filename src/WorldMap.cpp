@@ -168,15 +168,6 @@ bool WorldMap::IsReachable(int islandId) const
     return false;
 }
 
-void WorldMap::LoadNPCTextures()
-{
-    for (auto& pair : islands)
-    {
-        Island* island = pair.second;
-        island->LoadNPCTextures();
-    }
-}
-
 void WorldMap::ConfirmTravel()
 {
     if (pendingIslandId == -1)

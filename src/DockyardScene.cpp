@@ -12,10 +12,10 @@
 #include "NPC.h"
 #include "Combat.h"
 #include "Ship.h"
-
+#include "SceneUtils.h"
 
 DockyardScene::DockyardScene(Dockyard* dockyard, Party* allied)
-    : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr)
+    : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr), ownerSprite(nullptr), showChart(false)
 {
     sceneName = "DockyardScene";
 }
@@ -27,19 +27,41 @@ void DockyardScene::Load()
     LOG("DockyardScene: cargando astillero.");
     LoadTextures();
     CreateUI();
+
+    IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
+    if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
+    {
+        pendingDialogue = true;
+    }
 }
 
 void DockyardScene::Update(float dt)
 {
+    if (pendingDialogue)
+    {
+        pendingDialogue = false;
+        PushDialogue();
+    }
+
+    if (pendingPop)
+    {
+        pendingPop = false;
+        Engine::GetInstance().scene->PopScene();
+        return;
+    }
+
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
 
-    if (shipImproved)
+    if(showChart)
     {
-        Engine::GetInstance().render->DrawTexture(chartImproved, 50, 100);
-    }
-    else
-    {
-        Engine::GetInstance().render->DrawTexture(chartNormal, 50, 100);
+        if (shipImproved)
+        {
+            Engine::GetInstance().render->DrawTexture(chartImproved, 50, 100);
+        }
+        else
+        {
+            Engine::GetInstance().render->DrawTexture(chartNormal, 50, 100);
+        }
     }
 }
 
@@ -49,7 +71,10 @@ void DockyardScene::PostUpdate(float dt)
         "ASTILLERO", 520, 50, 240, 40, { 255, 255, 255, 255 }
     );
 
-    DrawChartStats();
+    if(showChart)
+    {
+        DrawChartStats();
+    }
 }
 
 void DockyardScene::Unload()
@@ -59,6 +84,7 @@ void DockyardScene::Unload()
     Engine::GetInstance().textures->UnLoad(chartNormal);
     Engine::GetInstance().textures->UnLoad(chartImproved);
     Engine::GetInstance().textures->UnLoad(improveShip);
+    Engine::GetInstance().textures->UnLoad(ownerSprite);
 
     Engine::GetInstance().uiManager->CleanUp();
 }
@@ -66,10 +92,15 @@ void DockyardScene::Unload()
 void DockyardScene::LoadTextures()
 {
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
-    background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/DocksMennu.png");
+    //background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/DocksMennu.png");
     chartNormal = Engine::GetInstance().textures->Load("Assets/Textures/DockyardScene/Chart1.png");
     chartImproved = Engine::GetInstance().textures->Load("Assets/Textures/DockyardScene/Chart2.png");
     improveShip = Engine::GetInstance().textures->Load("Assets/Textures/DockyardScene/UpgradeBaotButton.png");
+
+    IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
+    std::string path = "Assets/Textures/DockyardScene/" + SceneUtils::GetFactionString(faction);
+    background = Engine::GetInstance().textures->Load((path + "/background.png").c_str());
+    ownerSprite = Engine::GetInstance().textures->Load((path + "/ownerSprite.png").c_str());
 }
 
 void DockyardScene::LoadSound() {
@@ -87,29 +118,13 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case START_DIALOGUE:
     {
-        NPC* npc = dockyard->GetOwner();
-        if (npc == nullptr)
-        {
-            LOG("Dockyard: NPC es nullptr");
-            break;
-        }
-        else {
-            LOG("Dockyard: NPC correcto");
-        }
-
-        LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
-        Engine::GetInstance().scene->PushScene(
-            new DialogueScene(npc->GetDialogueId(),
-                [this]()
-                {
-                }
-            )
-        );
+        PushDialogue();
         break;
     }
     case IMPROVE_SHIP:
         if (alliedParty->GetGold() >= COST_IMPROVE_SHIP) {
             Engine::GetInstance().audio->PlayFx(shipUpgrade);
+            alliedParty->AddGold(-COST_IMPROVE_SHIP);
             levelBeforeImprove = dockyard->GetShip()->GetLevel();
             dockyard->ImproveShip();
             shipImproved = true;
@@ -145,17 +160,69 @@ void DockyardScene::CreateUI()
         UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
     );
+    SDL_Rect talkBounds = { NPC_X, NPC_Y, NPC_W, NPC_H };
+    if (SceneUtils::GetFactionString(dockyard->GetIsland()->GetIslandFaction()) == "Bird") {
+        SDL_Rect talkBounds = { 215, 443, 102, 126 };
+    }
+   
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, talkBounds.w, talkBounds.h
+    );
 
+    //IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
+    //if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES) {
+    //    CreateChartButtons();
+    //    showChart = true;
+    //}
+    //else {
+    //    SDL_Rect talkBounds = { NPC_X, NPC_Y, NPC_W, NPC_H };
+    //    Engine::GetInstance().uiManager->CreateUIElement(
+    //        UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
+    //        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, talkBounds.w, talkBounds.h
+    //    );
+    //}
+}
+
+void DockyardScene::PushDialogue()
+{
+    NPC* npc = dockyard->GetOwner();
+    if (npc == nullptr)
+    {
+        LOG("Dockyard: NPC es nullptr");
+        return;
+    }
+    IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
+    bool popOnLeave = (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES);
+
+    Engine::GetInstance().scene->PushScene(
+        new DialogueScene(npc->GetDialogueId(),
+            [this, popOnLeave]()
+            {
+                std::string action = DialogueManager::GetLastChoiceTag();
+
+                if (action == "upgrade")
+                {
+                    LOG("DOCKYARD: upgrade");
+                    CreateChartButtons();
+                    showChart = true;
+                }
+                else if (popOnLeave)
+                {
+                    LOG("DOCK SCENE: Pop scene");
+                    pendingPop = true;
+                }
+            }
+        )
+    );
+}
+
+void DockyardScene::CreateChartButtons()
+{
     SDL_Rect improveBounds = { IMPROVE_SHIP_X, IMPROVE_SHIP_Y, IMPROVE_SHIP_W, IMPROVE_SHIP_H };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, IMPROVE_SHIP, "", improveBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, improveShip, 0, improveBounds.w, improveBounds.h
-    );
-
-    SDL_Rect talkBounds = { NPC_X, NPC_Y, NPC_W, NPC_H };
-    Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, dockyard->GetOwner()->GetTexture(), 0, talkBounds.w, talkBounds.h
     );
 }
 

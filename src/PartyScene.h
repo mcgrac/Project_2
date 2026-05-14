@@ -23,13 +23,20 @@ public:
 
 private:
     Party* alliedParty;
-    int      selectedMemberIndex = 0;   // 0-2, personaje actualmente mostrado
+    int selectedMemberIndex = 0;   // 0-2, personaje actualmente mostrado
 
     // -------------Texturas ----------
     SDL_Texture* background = nullptr;
     SDL_Texture* statsPanelTexture = nullptr;  // fondo del panel de stats
     SDL_Texture* portraitTexture = nullptr;  // portrait grande del personaje actual
     std::string loadedPortraitName = "";        // para saber si hay que recargar
+    SDL_Texture* abilityIconsTexture = nullptr;
+    SDL_Texture* nameTexture = nullptr;
+
+    // Texturas árbol de mejoras
+    SDL_Texture* upgradeIconsTexture = nullptr;  // spritesheet por personaje
+    SDL_Texture* gemsTexture = nullptr;  // spritesheet gemas estática
+    SDL_Texture* linesTexture = nullptr;  // imagen líneas estática
 
     void LoadBackground(Character* c);
     void LoadStatsTable();
@@ -70,8 +77,25 @@ private:
     void RefreshButtons();
     void ClearButtons();
 
+    //render character names
+    void RenderCharacterName();
+
     void LoadTextures();
     void UnloadTextures();
+
+    //tooltip
+    void DrawSkillTooltip();
+    void DrawColoredLine(const std::string& line, int x, int y);
+    std::vector<std::string> WrapText(const std::string& text, int maxCharsPerLine);
+    void DrawUpgradeTooltip();
+
+    //Color tint
+    void SetTextureTint(SDL_Texture* tex, Uint8 r, Uint8 g, Uint8 b);
+    void ResetTextureTint(SDL_Texture* tex);
+
+    //tooltip ascensions
+    int hoveredUpgradeT = -1;  // tier hovered
+    int hoveredUpgradeOption = -1;  // 0=A, 1=B
 
     // ----- IDs de botones ----------------------
     // Tabs de miembros: 1, 2, 3
@@ -81,44 +105,53 @@ private:
     // Ascensiones tier 2: 120 (optionA), 121 (optionB)
     static constexpr int MEMBER_TAB_BASE = 1;
     static constexpr int BACK_BTN = 9;
+    static constexpr int SKILL_BTN_BASE = 50;
     static constexpr int UPGRADE_BTN_BASE = 100;   // 100 + tier*10 + 0/1 para A/B
 
     //Layout constants
-    static constexpr int PORTRAIT_X = 20;
-    static constexpr int PORTRAIT_Y = 80;
-    static constexpr int PORTRAIT_W = 220;
-    static constexpr int PORTRAIT_H = 300;
+    static const SDL_Rect PORTRAIT_RECT;
+    static const SDL_Rect STATS_PANEL_RECT;
+    static const SDL_Rect INV_SLOT_RECT;       // posición base, Y se desplaza por índice
+    static const SDL_Rect SKILL_ICON_RECT;     // posición base, X se desplaza por índice
+    static const SDL_Rect UPGRADE_RECT;        // posición base, Y se desplaza por tier
+    static const SDL_Rect TAB_RECT;            // posición base, X se desplaza por índice
+    static const SDL_Rect NAME_RECT;           //letrero
 
-    static constexpr int STATS_PANEL_X = 20;
-    static constexpr int STATS_PANEL_Y = 420;
-    static constexpr int STATS_PANEL_W = 220;
-    static constexpr int STATS_PANEL_H = 250;
+    // ----------- Stats panel layout ------------
+    // Posición del primer stat dentro del panel
+    static constexpr int STAT_VALUE_X = 250;
+    static constexpr int STAT_START_Y = 100;
+    static constexpr int STAT_LINE_GAP = 45;
 
-    static constexpr int BAR_X = 20;
+    // Tamaño del texto
+    static constexpr int STAT_TEXT_W = 45;
+    static constexpr int STAT_TEXT_H = 30;
+    //-----------------------------
+
+    //--------- Layout árbol de mejoras
+    static constexpr int TREE_START_X = 400;
+    static constexpr int TREE_START_Y = 500;
+
+    static constexpr int GEM_W = 72;
+    static constexpr int GEM_H = 72;
+
+    static constexpr int UPGRADE_ICON_W = 72;
+    static constexpr int UPGRADE_ICON_H = 72;
+    static constexpr int UPGRADE_ICON_GAP = 10;   // gap vertical entre A y B
+
+    static constexpr int LINE_W = 114; //line ascension
+    static constexpr int LINE_H = 116; //line ascension
+    //---------------------------
+
     static constexpr int HP_BAR_Y = 390;
     static constexpr int EXP_BAR_Y = 405;
     static constexpr int BAR_W = 220;
     static constexpr int BAR_H = 12;
+    //-------------------------------
 
-    static constexpr int INV_SLOT_X = 250;
-    static constexpr int INV_SLOT_Y = 80;
-    static constexpr int INV_SLOT_SIZE = 64;
     static constexpr int INV_SLOT_GAP = 10;
-
-    static constexpr int SKILL_ICON_X = 640;
-    static constexpr int SKILL_ICON_Y = 80;
-    static constexpr int SKILL_ICON_SIZE = 60;
     static constexpr int SKILL_ICON_GAP = 10;
-
-    static constexpr int UPGRADE_X = 640;
-    static constexpr int UPGRADE_Y = 380;
-    static constexpr int UPGRADE_BTN_W = 280;
-    static constexpr int UPGRADE_BTN_H = 50;
     static constexpr int UPGRADE_BTN_GAP = 10;
-
-    static constexpr int TAB_X = 1050;
-    static constexpr int TAB_Y = 20;
-    static constexpr int TAB_SIZE = 60;
     static constexpr int TAB_GAP = 10;
 
     //audio variables

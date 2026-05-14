@@ -38,7 +38,7 @@ public:
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
     inline bool DidPlayerWin() const { return playerWon; }
-
+    
     //helpers
     void OnResume() override;
     void OnPause() override;
@@ -80,7 +80,6 @@ private:
 
     void UpdateNextRoundPause(float dt);
     void DrawNextRoundBanner();
-
 
     // ── Lane selection ───────────────────────────────────────────────────────
     // Tracks which lane each allied character has been assigned to.

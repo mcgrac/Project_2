@@ -10,6 +10,20 @@
 #include "DialogueScene.h"
 #include "DialogueManager.h"
 #include "Character.h"
+#include "SceneUtils.h"
+
+#pragma region POSITIONS
+#pragma region REST_BUTTON
+const SDL_Rect HostelScene::REST_BOUNDS = { 106, 80, 414, 414 };
+#pragma endregion
+#pragma region MEAL_BUTTON
+const SDL_Rect HostelScene::MEAL_BOUNDS = { 561, 80, 414, 414 };
+#pragma endregion NPC
+const SDL_Rect HostelScene::HUMAN_CHARA_SELECT_BOUNDS = { 604, 182, 190, 281 };
+const SDL_Rect HostelScene::BIRD_CHARA_SELECT_BOUNDS = { 241, 239, 214, 133 };
+const SDL_Rect HostelScene::SIREN_CHARA_SELECT_BOUNDS = { 516,  340, 174, 249 };
+const SDL_Rect HostelScene::REPTILE_CHARA_SELECT_BOUNDS = { 373, 301, 214, 230 };
+#pragma endregion
 
 HostelScene::HostelScene(Hostel* hostel, Party* allied)
     : hostel(hostel),
@@ -34,10 +48,29 @@ void HostelScene::Load()
     LoadTextures();
     LoadSound();
     CreateUI();
+
+    IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
+    if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES) {
+
+        pendingDialogue = true;
+    }
 }
 
 void HostelScene::Update(float dt)
 {
+    if (pendingDialogue)
+    {
+        pendingDialogue = false;
+        PushDialogue();
+    }
+
+    if (pendingPop)
+    {
+        pendingPop = false;
+        Engine::GetInstance().scene->PopScene();
+        return;
+    }
+
     if (pendingRefresh) //avoids double clicking buttons
     {
         pendingRefresh = false;
@@ -77,12 +110,16 @@ void HostelScene::Unload()
 
 void HostelScene::LoadTextures()
 {
+    //always the same
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
-    background = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/HostelBackground.png");
-    ownerSprite = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
     restButton = Engine::GetInstance().textures->Load("Assets/Textures/HostelScene/RestButton.png");
-    mealButton = Engine::GetInstance().textures->Load("Assets/Textures/HostelScene/BuyMealButtonHuman.png");
     emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
+
+    IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
+    std::string path = "Assets/Textures/HostelScene/" + SceneUtils::GetFactionString(faction) + "/";
+    background = Engine::GetInstance().textures->Load((path + "background.png").c_str());
+    ownerSprite = Engine::GetInstance().textures->Load((path + "ownerSprite.png").c_str());
+    mealButton = Engine::GetInstance().textures->Load((path + "mealButton.png").c_str());
 }
 
 void HostelScene::LoadSound() {
@@ -104,32 +141,32 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     case START_DIALOGUE:
     {
         //start dialogue
+        PushDialogue();
+        //NPC* npc = hostel->GetOwner();
+        //if (npc == nullptr)
+        //{
+        //    LOG("Hostel: NPC es nullptr");
+        //    break;
+        //}
+        //else {
+        //    LOG("Hostel: NPC correcto");
+        //}
 
-        NPC* npc = hostel->GetOwner();
-        if (npc == nullptr)
-        {
-            LOG("Hostel: NPC es nullptr");
-            break;
-        }
-        else {
-            LOG("Hostel: NPC correcto");
-        }
-
-        LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
-        Engine::GetInstance().scene->PushScene(
-            new DialogueScene(npc->GetDialogueId(),
-                [this]()
-                {
-                    std::string action = DialogueManager::GetLastChoiceTag();
-                    
-                    if (action == "rest")
-                    {
-                        LOG("Hostel: abrir panel de descanso");
-                        showRestPanel = true;
-                    }
-                }
-            )
-        );
+        //LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
+        //Engine::GetInstance().scene->PushScene(
+        //    new DialogueScene(npc->GetDialogueId(),
+        //        [this]()
+        //        {
+        //            std::string action = DialogueManager::GetLastChoiceTag();
+        //            
+        //            if (action == "rest")
+        //            {
+        //                LOG("Hostel: abrir panel de descanso");
+        //                showRestPanel = true;
+        //            }
+        //        }
+        //    )
+        //);
         break;
     }
     case 20:
@@ -204,10 +241,10 @@ void HostelScene::CreateUI()
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
         );
 
-        SDL_Rect talkBounds = { 500, 300, 168, 211 };
+        SDL_Rect talkBounds = GetOwnerBounds();
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, hostel->GetOwner()->GetTexture(), 0, talkBounds.w, talkBounds.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, talkBounds.w, talkBounds.h
         );
     }
     else if (showRestPanel && !showSelectCharaPanel) {
@@ -224,22 +261,22 @@ void HostelScene::OpenRestPanel()
 
     showRestPanel = true;
 
-    SDL_Rect restBtn = { REST_BUTTON_X, REST_BUTTON_Y, REST_BUTTON_W, REST_BUTTON_H };
+    SDL_Rect restBtn = GetRestBounds();
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 20, "", restBtn,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, restButton, 0, restBtn.w, restBtn.h
     );
 
-    SDL_Rect xpBtn = { MEAL_BUTTON_X, MEAL_BUTTON_Y, MEAL_BUTTON_W, MEAL_BUTTON_H };
+    SDL_Rect xpBtn = GetMealBounds();
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 21, "", xpBtn,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, mealButton, 0, xpBtn.w, xpBtn.h
     );
 
-    SDL_Rect backPanel = { 400, 440, 72, 72 };
+    SDL_Rect backPanel = { 589, 80, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 22, "", backPanel,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, backPanel.w, backPanel.h
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backPanel.w, backPanel.h
     );
 }
 
@@ -249,7 +286,9 @@ void HostelScene::OpenSelectCharaPanel()
 
     //character buttons
     for (int i = 0; i < alliedParty->GetMemberCount(); i++) {
-        SDL_Rect charaBtn = { CHARA_SELECT_X, CHARA_SELECT_Y + (70*i), CHARA_SELECT_BUTTON_W, CHARA_SELECT_BUTTON_H};
+        SDL_Rect charaBtn = GetOwnerBounds();
+        charaBtn.y = 503 + (63 * i);
+        charaBtn.x = 112;
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, 30 + i, alliedParty->GetMembers()[i]->GetName().c_str(), charaBtn,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, emptyButtons, 0, charaBtn.w, charaBtn.h
@@ -257,9 +296,66 @@ void HostelScene::OpenSelectCharaPanel()
     }
 
 
-    SDL_Rect backPanel = { 400, 500, 72, 72 };
+    SDL_Rect backPanel = { 989, 80, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 33, "back", backPanel,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backPanel.w, backPanel.h
+    );
+}
+
+SDL_Rect HostelScene::GetRestBounds() const
+{
+    return REST_BOUNDS;
+    
+}
+
+SDL_Rect HostelScene::GetOwnerBounds() const
+{
+    switch (hostel->GetIsland()->GetIslandFaction())
+    {
+    case IslandFaction::HUMANS:   return HUMAN_CHARA_SELECT_BOUNDS;
+    case IslandFaction::BIRD:     return BIRD_CHARA_SELECT_BOUNDS;
+    case IslandFaction::SIRENS:   return SIREN_CHARA_SELECT_BOUNDS;
+    case IslandFaction::REPTILES: return REPTILE_CHARA_SELECT_BOUNDS;
+    default:                      return HUMAN_CHARA_SELECT_BOUNDS;
+    }
+}
+
+
+SDL_Rect HostelScene::GetMealBounds() const
+{
+    return MEAL_BOUNDS;
+    
+}
+
+void HostelScene::PushDialogue()
+{
+    NPC* npc = hostel->GetOwner();
+    if (npc == nullptr)
+    {
+        LOG("Dockyard: NPC es nullptr");
+        return;
+    }
+    IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
+    bool popOnLeave = (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES);
+
+    Engine::GetInstance().scene->PushScene(
+        new DialogueScene(npc->GetDialogueId(),
+            [this, popOnLeave]()
+            {
+                std::string action = DialogueManager::GetLastChoiceTag();
+
+                if (action == "rest")
+                {
+                    LOG("Hostel: abrir panel de descanso");
+                    showRestPanel = true;
+                }
+                else if (popOnLeave)
+                {
+                    LOG("DOCK SCENE: Pop scene");
+                    pendingPop = true;
+                }
+            }
+        )
     );
 }

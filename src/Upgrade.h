@@ -14,4 +14,5 @@ public:
     ~Upgrade() = default;
 
     void Apply(Character& character);
+    std::string GetFullDescription() const;
 };

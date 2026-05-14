@@ -480,31 +480,6 @@ void CombatScene::UpdateSkillHover()
 
 void CombatScene::DrawSkillTooltip()
 {
-    //if (hoveredSkillIdx == -1) return;
-
-    //Character* actor = combat->GetCurrentActor();
-    //if (!actor) return;
-
-    //auto& skills = actor->GetSkills();
-
-    //if (hoveredSkillIdx >= skills.size()) return;
-
-    //std::string text = skills[hoveredSkillIdx].GetFullDescription();
-
-    //// fondo opcional
-    //SDL_Rect bg = { 600, 400, 300, 150 };
-    //Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200);
-
-    //// texto
-    //Engine::GetInstance().render->DrawText(
-    //    text.c_str(),
-    //    610,
-    //    410,
-    //    100,
-    //    80,
-    //    { 255,255,255,255 }
-    //);
-
     if (hoveredSkillIdx == -1) return;
 
     Character* actor = combat->GetCurrentActor();
@@ -586,65 +561,6 @@ std::vector<std::string> CombatScene :: WrapText(const std::string& text, int ma
 
 void CombatScene::DrawColoredLine(const std::string& line, int x, int y)
 {
-    //std::stringstream ss(line);
-    //std::string word;
-
-    //int offsetX = 0;
-
-    //while (ss >> word)
-    //{
-    //    SDL_Color color = { 255, 255, 255, 255 };
-
-    //    if (word.find("Heal") != std::string::npos)
-    //    {
-    //        color = { 0, 255, 0, 255 };
-    //    }
-
-    //    if (word.find("Damage") != std::string::npos)
-    //    {
-    //        color = { 255, 0, 0, 255 };
-    //    }
-
-    //    // dibujar palabra
-    //    Engine::GetInstance().render->DrawText(
-    //        word.c_str(),
-    //        x + offsetX,
-    //        y,
-    //        80,   // ancho
-    //        20,
-    //        color
-    //    );
-
-    //    offsetX += 60; // espacio horizontal
-    //}
-
-    // Determinar color de toda la línea según palabra clave
-    //SDL_Color color = { 255, 255, 255, 255 };
-
-    //if (line.find("Heal") != std::string::npos)
-    //{
-    //    color = { 0, 255, 0, 255 };
-    //}
-    //else if (line.find("Damage") != std::string::npos)
-    //{
-    //    color = { 255, 80, 80, 255 };
-    //}
-
-    //// Dibujar la línea completa de una vez con tamaño fijo de carácter
-    //int charWidth = 8;   // ajusta según tu fuente
-    //int charHeight = 16;
-
-    //int textW = (int)line.size() * charWidth;
-    //int textH = charHeight;
-
-    //Engine::GetInstance().render->DrawText(
-    //    line.c_str(),
-    //    x,
-    //    y,
-    //    textW,
-    //    textH,
-    //    color
-    //);
 
     std::stringstream ss(line);
     std::string word;
@@ -998,7 +914,7 @@ void CombatScene::ShowTargetPanel()
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON,
         20,
-        "< Back",
+        "",
         backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {},  abilityIcons, 0, backBounds.w, backBounds.h
     );

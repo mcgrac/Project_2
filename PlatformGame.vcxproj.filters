@@ -67,6 +67,12 @@
     <None Include="Assets\Textures\Animations\Boat.tsx">
       <Filter>Configuration FIles</Filter>
     </None>
+    <None Include="Assets\Textures\Animations\RexSpritesheet.tsx">
+      <Filter>Configuration FIles</Filter>
+    </None>
+    <None Include="Assets\Textures\Animations\coin.tsx">
+      <Filter>Configuration FIles</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Audio.cpp">

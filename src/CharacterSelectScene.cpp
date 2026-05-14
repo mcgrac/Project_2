@@ -13,6 +13,12 @@
 
 CharacterSelectScene::CharacterSelectScene() : 
     background(nullptr), 
+    backgroundGerbera(nullptr),
+    backgroundIgnis(nullptr),
+    backgroundFatuus(nullptr),
+    backgroundJochi(nullptr),
+    backgroundMarkus(nullptr),
+    backgroundTheresia(nullptr),
     spritesheetStartBtn(nullptr), 
     spritesheetCharacters(nullptr),
     backButtonSpritesheet(nullptr),
@@ -25,6 +31,9 @@ CharacterSelectScene::CharacterSelectScene() :
         { "Gerbera", "Gerbera", 1, 1, Vector2D(800, 100), Vector2D(800, 200)},
         { "Markus", "Markus", 2, 2, Vector2D(800, 100),Vector2D(800, 200)},
         { "Theresia", "Theresia", 3, 3, Vector2D(800, 100), Vector2D(800, 200)},
+        { "Jochi", "Jochi", 4, 4, Vector2D(800, 100), Vector2D(800, 200)},
+        { "Fatuus", "Fatuus", 5, 5, Vector2D(800, 100), Vector2D(800, 200)},
+        { "Ignis", "Ignis", 6, 6, Vector2D(800, 100), Vector2D(800, 200)},
     };
 
     sceneName = "CharacterSelection";
@@ -46,7 +55,16 @@ void CharacterSelectScene::Load()
 
 void CharacterSelectScene::Update(float dt)
 {
-    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+ 
+    if(backName == "Ignis") { Engine::GetInstance().render->DrawTexture(backgroundIgnis, 0, 0); }
+    else if(backName == "Gerbera"){ Engine::GetInstance().render->DrawTexture(backgroundGerbera, 0, 0); }
+    else if (backName == "Jochi") { Engine::GetInstance().render->DrawTexture(backgroundJochi, 0, 0); }
+    else if (backName == "Markus") { Engine::GetInstance().render->DrawTexture(backgroundMarkus, 0, 0); }
+    else if (backName == "Theresia") { Engine::GetInstance().render->DrawTexture(backgroundTheresia, 0, 0); }
+    else if (backName == "Fatuus") { Engine::GetInstance().render->DrawTexture(backgroundFatuus, 0, 0); }
+    else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
+   
+ 
 
     RenderSelection();
 }
@@ -78,6 +96,12 @@ void CharacterSelectScene::LoadTextures(){
 
     spritesheetStartBtn = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/StartButton.png");
     background = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackground.png");
+    backgroundGerbera = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundGerbera.png");
+    backgroundTheresia = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundTheresia.png");
+    backgroundMarkus = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundMarkus.png");
+    backgroundJochi = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundJochi.png");
+    backgroundFatuus = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundFatuus.png");
+    backgroundIgnis = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundIgnis.png");
     spritesheetCharacters = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterButtons.png");
     panelInformationSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/Panel.png");
     labelSpritesheets = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterNamePlate.png");
@@ -203,45 +227,17 @@ void CharacterSelectScene::RenderSelection()
     for (int i = 0; i < (int)availableCharacters.size(); ++i)
     {
         const SelectableCharacter& c = availableCharacters[i];
+        
 
         if (IsPortraitHoveredOrSelected(i))
         {
-            if (labelSpritesheets != nullptr)
-            {
-                SDL_Rect labelRect;
-                labelRect.x = 0;
-                labelRect.y = (c.labelRow - 1) * LABEL_FRAME_H;
-                labelRect.w = LABEL_FRAME_W;
-                labelRect.h = LABEL_FRAME_H;
+          
 
-                Engine::GetInstance().render->DrawTexture(
-                    labelSpritesheets,
-                    (int)c.labelPos.getX(),
-                    (int)c.labelPos.getY(),
-                    &labelRect
-                );
-            }
-
-            if (panelInformationSpritesheet != nullptr)
-            {
-                SDL_Rect panelRect;
-                panelRect.x = 0;
-                panelRect.y = (c.panelRow - 1) * PANEL_FRAME_H;
-                panelRect.w = PANEL_FRAME_W;
-                panelRect.h = PANEL_FRAME_H;
-
-                Engine::GetInstance().render->DrawTexture(
-                    panelInformationSpritesheet,
-                    (int)c.panelPos.getX(),
-                    (int)c.panelPos.getY(),
-                    &panelRect
-                );
-            }
+            backName = c.name;
         }
     }
 
-    std::string counter = "Seleccionados: " + std::to_string(selectedNames.size()) + " / 3";
-    Engine::GetInstance().render->DrawText(counter.c_str(), 400, 240, 280, 30, { 255, 255, 0, 255 });
+  
 }
 
 void CharacterSelectScene::ConfirmSelection()
@@ -279,42 +275,42 @@ void CharacterSelectScene::CreateCharactersButtons()
     //}
 
     //gerbera selection
-    SDL_Rect btPos1 = { 100, 50, 195, 306 };
+    SDL_Rect btPos1 = { 81, 60, 195, 306 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 2, "", btPos1,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 0, btPos1.w, btPos1.h
     );
 
     //Markus selection
-    SDL_Rect btPos2 = { 300, 50, 195, 306 };
+    SDL_Rect btPos2 = { 330, 60, 195, 306 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 3, "", btPos2,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 1, btPos2.w, btPos2.h
     );
 
     //theresia selection
-    SDL_Rect btPos3 = { 500, 50, 195, 306 };
+    SDL_Rect btPos3 = { 581, 60, 195, 306 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 4, "", btPos3,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 2, btPos3.w, btPos3.h
     );
 
     //joochi selection
-    SDL_Rect btPos4 = { 100, 400, 195, 306 };
+    SDL_Rect btPos4 = { 81, 391, 195, 306 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 5, "", btPos4,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 3, btPos4.w, btPos4.h
     );
 
     //fatuus selection
-    SDL_Rect btPos5 = { 300, 400, 195, 306 };
+    SDL_Rect btPos5 = { 330, 391, 195, 306 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 6, "", btPos5,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 4, btPos5.w, btPos5.h
     );
 
     //ignis selection
-    SDL_Rect btPos6 = { 500, 400, 195, 306 };
+    SDL_Rect btPos6 = { 581, 391, 195, 306 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 7, "", btPos6,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 5, btPos6.w, btPos6.h
@@ -323,13 +319,13 @@ void CharacterSelectScene::CreateCharactersButtons()
 
 void CharacterSelectScene::CreateInterfaceButtons()
 {
-    SDL_Rect confirmBounds = { 900, 600, 125, 72 };
+    SDL_Rect confirmBounds = { 1132, 643, 125, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "", confirmBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetStartBtn, 0, confirmBounds.w, confirmBounds.h
     );
 
-    SDL_Rect backButton = { 20, 20, 72, 72 };
+    SDL_Rect backButton = { 4, 5, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 8, "", backButton,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, backButtonSpritesheet, 0, backButton.w, backButton.h

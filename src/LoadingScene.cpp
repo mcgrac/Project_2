@@ -123,8 +123,6 @@ void LoadingScene::Update(float dt)
         CharacterFactory::LoadVisualsFor(c, c->GetName());
     }
 
-    loadedWorldMap->LoadNPCTextures();
-
     //worldMap
     SDL_Texture * humanTex = Engine::GetInstance().textures->Load("Assets/Textures/Islands/island_human.png");
     SDL_Texture* reptileTex = Engine::GetInstance().textures->Load("Assets/Textures/Islands/island_reptile.png");

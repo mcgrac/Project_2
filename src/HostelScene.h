@@ -2,6 +2,7 @@
 #include "BaseScene.h"
 #include "Hostel.h"
 #include "Party.h"
+#include <SDL3/SDL.h>
 
 struct SDL_Texture;
 
@@ -28,7 +29,18 @@ public:
     void OpenRestPanel();
     void OpenSelectCharaPanel();
 
+    //helpers
+    SDL_Rect GetRestBounds() const;
+    SDL_Rect GetMealBounds() const;
+    SDL_Rect GetOwnerBounds() const;
+
 private:
+    void PushDialogue();
+
+    bool pendingDialogue = false;
+    bool pendingPop = false;
+
+
     Hostel* hostel;         
     Party* alliedParty;   
 
@@ -46,20 +58,18 @@ private:
 
 
 #pragma region POSITIONS
-    static constexpr int REST_BUTTON_X = 100;
-    static constexpr int REST_BUTTON_Y = 50;    
-    static constexpr int REST_BUTTON_W = 414;
-    static constexpr int REST_BUTTON_H = 414;
+#pragma region REST_BUTTON
+    static const SDL_Rect REST_BOUNDS;
+#pragma endregion
+#pragma region MEAL_BUTTON
+    static const SDL_Rect MEAL_BOUNDS;
+#pragma endregion
 
-    static constexpr int MEAL_BUTTON_X = 500;
-    static constexpr int MEAL_BUTTON_Y = 50;
-    static constexpr int MEAL_BUTTON_W = 414;
-    static constexpr int MEAL_BUTTON_H = 414;
+    static const SDL_Rect HUMAN_CHARA_SELECT_BOUNDS;
+    static const SDL_Rect BIRD_CHARA_SELECT_BOUNDS;
+    static const SDL_Rect SIREN_CHARA_SELECT_BOUNDS;
+    static const SDL_Rect REPTILE_CHARA_SELECT_BOUNDS;
 
-    static constexpr int CHARA_SELECT_X = 200;
-    static constexpr int CHARA_SELECT_Y = 500;
-    static constexpr int CHARA_SELECT_BUTTON_W = 202;
-    static constexpr int CHARA_SELECT_BUTTON_H = 63;
 #pragma endregion
 
     bool showRestPanel;

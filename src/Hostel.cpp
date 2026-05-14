@@ -4,10 +4,12 @@
 #include "Character.h"
 #include "Log.h"
 #include "Island.h"
+#include "SceneUtils.h"
 
 Hostel::Hostel(Island* _island) : costRest(50), mealCost(30),island(_island)
 {
-	owner = new NPC("Hostel owner", "npc_hostel", island->GetIslandFaction(), "Hostel");
+	std::string dialogueId = "npc_hostel_" + SceneUtils::GetFactionString(island->GetIslandFaction());
+	owner = new NPC("Hostel owner", dialogueId, island->GetIslandFaction(), "Hostel");
 
 }
 

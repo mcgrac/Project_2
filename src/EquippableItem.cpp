@@ -48,8 +48,10 @@ void EquippableItem::Use(Character* character)
 	}
 
 	character->PrintDebugInfo();
+
 	character->SetTotalPower();
 	character->SetTotalSpeed();
 	character->SetTotalDurability();
+
 	character->PrintDebugInfo();
 }
