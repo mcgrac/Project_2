@@ -478,6 +478,12 @@ void ShopScene::CreateItemButtons()
 
     loadedItemTextures.clear();
 
+    SDL_Rect backBounds = { 118, 63, 72, 72 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, CLOSE_CHEST_ID, "", backBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
+    );
+
     for (int i = 0; i < shop->GetCurrentItems().size(); i++)
     {
         SDL_Rect rect = { startX + i * 256, 138, 229, 304};
