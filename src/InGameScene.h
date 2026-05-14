@@ -51,6 +51,17 @@ private:
     SDL_Texture* background;
     SDL_Texture* spritesheet;
     SDL_Texture* teamButton;
+    SDL_Texture* goldBack;
+
+    SDL_Texture* humanButton;
+    SDL_Texture* birdButton;
+    SDL_Texture* sirenButton;
+    SDL_Texture* reptileButton;
+
+    SDL_Texture* jellyButton;
+    SDL_Texture* fishButton;
+    SDL_Texture* bossButton;
+    SDL_Texture* tribalButton;
 
     // Island sprites — drawn below each island button
     SDL_Texture* islandHumanTex;

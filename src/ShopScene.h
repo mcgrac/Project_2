@@ -143,6 +143,13 @@ private:
     int buttonPress;
     bool chestOpen = 0;
     bool shopOpen = 0;
+
+    int potNum;
+    int keyNum;
+
+    //gold counter
+   
+
     void LoadSound();
 
 };

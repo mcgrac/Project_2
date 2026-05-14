@@ -74,11 +74,11 @@ void IslandInteriorScene::Update(float dt) {
 void IslandInteriorScene::PostUpdate(float dt)
 {
     // Nombre de la isla
-    Engine::GetInstance().render->DrawText(
+   /* Engine::GetInstance().render->DrawText(
         island->GetName().c_str(),
         440, 180, 400, 50,
         { 255, 255, 255, 255 }
-    );
+    );*/
 }
 
 void IslandInteriorScene::Unload()

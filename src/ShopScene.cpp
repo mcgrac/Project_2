@@ -50,7 +50,7 @@ const SDL_Rect ShopScene::OPEN_BUTTON_BOUNDS = { 990, 250, 202, 63 };
 #pragma endregion
 
 ShopScene::ShopScene(Shop* shop, Party* allied)
-    : shop(shop), alliedParty(allied), ownerSprite(nullptr), goldCounter(0, "Assets/Textures/Animations/coin.png", 1000, 50)
+    : shop(shop), alliedParty(allied), ownerSprite(nullptr), goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
 {
     sceneName = "ShopScene";
     
@@ -94,8 +94,12 @@ void ShopScene::Update(float dt)
         Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
 
         SDL_Color White = { 255, 255, 255 };
-        //int keys = Inventory::GetItemCount("keys");
-        Engine::GetInstance().render->DrawText("keys", 1114, 168, 49, 22, White);
+        int keys = alliedParty->GetInventory().GetItemCount("key");
+        std::string key = std::to_string(keys);
+        keyNum = 1;
+        if (keys >= 10) { keyNum += 1; }
+        Engine::GetInstance().render->DrawText((key).c_str(), 1114, 164, 19*keyNum, 33, White);
+     
     }
     else if (shopOpen == true) {
 
@@ -109,13 +113,23 @@ void ShopScene::Update(float dt)
         Engine::GetInstance().render->DrawTexture(characterSprite, CHARACTER_BOUNDS.x, CHARACTER_BOUNDS.y);
 
         SDL_Color White = { 255, 255, 255 };
-        //int consumable = Inventory::GetItemCount("consumable");
-        Engine::GetInstance().render->DrawText("consumable", 1087, 158, 49, 22, White);
+        int consumable = alliedParty->GetInventory().GetItemCount("consumable");
+        potNum = 1;
+        if(consumable>= 10){ potNum += 1; }
+       
+        std::string potions = std::to_string(consumable);
+        Engine::GetInstance().render->DrawText((potions).c_str(), 1087, 222, 19*potNum, 33, White);
 
-        //int keys = Inventory::GetItemCount("keys");
-        Engine::GetInstance().render->DrawText("keys", 1087, 229, 49, 22, White);
+        int keys = alliedParty->GetInventory().GetItemCount("key");
+        std::string key = std::to_string(keys);
+        keyNum = 1;
+        if (keys >= 10) { keyNum += 1; }
+        Engine::GetInstance().render->DrawText((key).c_str(), 1087, 151, 19*keyNum, 33, White);
     }
-    else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
+    else { 
+        Engine::GetInstance().render->DrawTexture(background, 0, 0); 
+        Engine::GetInstance().render->DrawTexture(moneyCounter, 1121, 30, nullptr, 0);
+    }
 
     //debug->add 1000 gold pressing F12
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_0) == KEY_DOWN)
@@ -128,9 +142,9 @@ void ShopScene::Update(float dt)
 
 void ShopScene::PostUpdate(float dt)
 {
-    Engine::GetInstance().render->DrawText(
+    /*Engine::GetInstance().render->DrawText(
         "TIENDA", 540, 50, 200, 40, { 255, 255, 255, 255 }
-    );
+    );*/
 }
 
 void ShopScene::Unload()

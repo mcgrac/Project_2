@@ -67,9 +67,9 @@ void DockyardScene::Update(float dt)
 
 void DockyardScene::PostUpdate(float dt)
 {
-    Engine::GetInstance().render->DrawText(
+   /* Engine::GetInstance().render->DrawText(
         "ASTILLERO", 520, 50, 240, 40, { 255, 255, 255, 255 }
-    );
+    );*/
 
     if(showChart)
     {
