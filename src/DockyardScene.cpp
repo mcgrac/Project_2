@@ -228,7 +228,7 @@ void DockyardScene::CreateUI()
     );
     SDL_Rect talkBounds = HUMAN_NPC_BOUNDS;
     if (SceneUtils::GetFactionString(dockyard->GetIsland()->GetIslandFaction()) == "Bird") {
-        SDL_Rect talkBounds = BIRD_NPC_BOUNDS;
+        talkBounds = BIRD_NPC_BOUNDS;
     }
    
     Engine::GetInstance().uiManager->CreateUIElement(
