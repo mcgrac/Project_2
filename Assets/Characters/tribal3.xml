@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<character name="Tribal3">
+
+	<visuals
+	spritesheet="Assets/Textures/Animations/Tribal3Spritesheet.png"
+	tsx="Assets/Textures/Animations/Tribal3Spritesheet.tsx"
+    >
+
+		<animations>
+			<anim name="idle" tile="0" loop="true"/>
+			<anim name="dead" tile="112" loop="false"/>
+
+			<anim name="hit_fire" tile="9" loop="false"/>
+
+
+		</animations>
+
+	</visuals>
+	
+	<stats
+        health="55"
+        maxHealth="55"
+        power="60"
+        durability="3"
+        maxDurability="80"
+        speed="50"
+        lifesteal="0"
+        healingPower="0"
+        poisonPower="0"
+        firePower="0"
+        maxInitiative="250"
+    />
+
+	<levelScaling
+        maxHealth="4"
+        power="8"
+		durability="1"
+        speed="3"
+		fireMPower="15"
+		lifesteal="1"
+    />
+
+	<skills>
+		<skill id="hit_fire" initiativeCost="160" />
+	</skills>
+
+
+</character>

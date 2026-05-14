@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<character name="Ubo">
+
+	<visuals
+	spritesheet="Assets/Textures/Animations/UboSpritesheet.png"
+	tsx="Assets/Textures/Animations/UboSpritesheet.tsx"
+    >
+
+		<animations>
+			<anim name="idle" tile="0" loop="true"/>
+			<anim name="dead" tile="112" loop="false"/>
+
+			<anim name="immolate" tile="9" loop="false"/>
+
+
+		</animations>
+
+	</visuals>
+	
+	<stats
+        health="40"
+        maxHealth="40"
+        power="50"
+        durability="5"
+        maxDurability="80"
+        speed="30"
+        lifesteal="0"
+        healingPower="0"
+        poisonPower="0"
+        firePower="0"
+        maxInitiative="250"
+    />
+
+	<levelScaling
+        maxHealth="5"
+        power="7"
+		durability="1"
+        speed="6"
+    />
+
+	<skills>
+		<skill id="immolate" initiativeCost="100" />
+	</skills>
+
+
+</character>

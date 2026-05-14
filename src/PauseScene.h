@@ -11,6 +11,7 @@ public:
     ~PauseScene();
 
     void Load() override;
+    void LoadSound();
     void Update(float dt) override;
     void PostUpdate(float dt) override;
     void Unload() override;
@@ -29,4 +30,9 @@ private:
 
     SDL_Texture* buttons;
     SDL_Texture* background;
+
+    //audio vatriables
+    int buttonPress;
+
+    const char* musicTrack;
 };

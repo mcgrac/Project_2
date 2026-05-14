@@ -28,7 +28,7 @@ const SDL_Rect IslandInteriorScene::SHOP_REPTILE_BOUNDS = { 297, 170, 201, 204 }
 #pragma endregion
 
 #pragma region HOSTEL
-const SDL_Rect IslandInteriorScene::HOSTEL_HUMAN_BOUNDS = { 200,  55,  492,  435 };
+const SDL_Rect IslandInteriorScene::HOSTEL_HUMAN_BOUNDS = { 206,  55,  492,  435 };
 const SDL_Rect IslandInteriorScene::HOSTEL_BIRD_BOUNDS = { 574,  8,  144,  150 };
 const SDL_Rect IslandInteriorScene::HOSTEL_SIREN_BOUNDS = { 516,  340, 174, 249 };
 const SDL_Rect IslandInteriorScene::HOSTEL_REPTILE_BOUNDS = { 373, 301, 214, 230 };
@@ -74,11 +74,11 @@ void IslandInteriorScene::Update(float dt) {
 void IslandInteriorScene::PostUpdate(float dt)
 {
     // Nombre de la isla
-    Engine::GetInstance().render->DrawText(
+   /* Engine::GetInstance().render->DrawText(
         island->GetName().c_str(),
         440, 180, 400, 50,
         { 255, 255, 255, 255 }
-    );
+    );*/
 }
 
 void IslandInteriorScene::Unload()
