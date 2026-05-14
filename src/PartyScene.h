@@ -14,6 +14,7 @@ public:
     ~PartyScene();
 
     void Load() override;
+    void LoadSound();
     void Update(float dt) override;
     void PostUpdate(float dt) override;
     void Unload() override;
@@ -152,5 +153,11 @@ private:
     static constexpr int SKILL_ICON_GAP = 10;
     static constexpr int UPGRADE_BTN_GAP = 10;
     static constexpr int TAB_GAP = 10;
+
+    //audio variables
+    int buttonPress;
+    int upgradefx;
+
+    const char* musicTrack;
 
 };

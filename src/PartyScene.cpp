@@ -1,5 +1,6 @@
 ﻿#include "PartyScene.h"
 #include "Engine.h"
+#include "Audio.h"
 #include "Scene.h"
 #include "UIManager.h"
 #include "Textures.h"
@@ -38,6 +39,10 @@ void PartyScene::Load()
     RefreshButtons();
 }
 
+void PartyScene::LoadSound() {
+    buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
+    upgradefx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/levelUp.wav");
+}
 
 void PartyScene::Update(float dt)
 {
@@ -166,6 +171,7 @@ bool PartyScene::OnUIMouseClickEvent(UIElement* uiElement)
                     if (applied)
                     {
                         LOG("PartyScene: mejora aplicada — tier %d opcion %d.", tierIdx, optionChoice);
+                        Engine::GetInstance().audio->PlayFx(upgradefx);
                         c->SetTotalPower();
                         c->SetTotalSpeed();
                         c->SetTotalDurability();

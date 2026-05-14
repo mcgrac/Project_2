@@ -2,6 +2,7 @@
 #include "MainMenuScene.h"
 #include "SaveLoad.h"
 #include "Engine.h"
+#include "Audio.h"
 #include "Scene.h"
 #include "UIManager.h"
 #include "Render.h"
@@ -27,6 +28,7 @@ void PauseScene::Load()
 
 void PauseScene::Update(float dt) 
 {
+    //play music
     //background
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
 
@@ -61,8 +63,13 @@ void PauseScene::LoadTextures()
     background = Engine::GetInstance().textures->Load("Assets/Textures/Pause/AlternativeBackground.png");
 }
 
+void PauseScene::LoadSound() {
+    buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
+}
+
 bool PauseScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    Engine::GetInstance().audio->PlayFx(buttonPress);
     switch (uiElement->id)
     {
     case 1:
