@@ -33,7 +33,7 @@ InGameScene::InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* 
     , spritesheet(nullptr)
     , islandHumanTex(nullptr)
     , islandReptileTex(nullptr)
-    , goldCounter(0, "Assets/Textures/Animations/coin.png", 400, 100)
+    , goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
 {
     sceneName = "InGameScene";
 }
@@ -118,6 +118,7 @@ void InGameScene::Update(float dt)
 
     //render background
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
 
     //detect pause menu
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
@@ -175,6 +176,17 @@ void InGameScene::LoadTextures(){
     background = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/WorldMap.png");
     spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/EmptyIslandLabel.png");
     teamButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/TeamButton.png");
+    goldBack = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/goldCount.png");
+
+    humanButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Human.png");
+    birdButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Bird.png");
+    sirenButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Siren.png");
+    reptileButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Reptile.png");
+
+    jellyButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Jellifish.png");
+    fishButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Fish.png");
+    tribalButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Tribal.png");
+    bossButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Boss.png");
 }
 
 void InGameScene::LoadAudio() {
@@ -423,45 +435,66 @@ void InGameScene::CreateIslandButtons()
         // Label: faction name
         std::string label;
         IslandFaction faction = island->GetIslandFaction();
+
+        int buttonId = ISLAND_BUTTON_ID_OFFSET + islandId;
+
         if (faction == IslandFaction::HUMANS)
         {
-            label = "Humans";
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON, buttonId, label.c_str(), bounds,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, humanButton, 0, bounds.w, bounds.h
+            );
         }
         else if (faction == IslandFaction::REPTILES)
         {
-            label = "Reptiles";
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON, buttonId, label.c_str(), bounds,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, reptileButton, 0, bounds.w, bounds.h
+            );
         }
         else if (faction == IslandFaction::BIRD)
         {
-            label = "Bird";
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON, buttonId, label.c_str(), bounds,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, birdButton, 0, bounds.w, bounds.h
+            );
         }
         else if (faction == IslandFaction::SIRENS)
         {
-            label = "Sirens";
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON, buttonId, label.c_str(), bounds,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, sirenButton, 0, bounds.w, bounds.h
+            );
         }
         else if (faction == IslandFaction::JELLYFISH)
         {
-            label = "Jellyfish";
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON, buttonId, label.c_str(), bounds,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, jellyButton, 0, bounds.w, bounds.h
+            );
         }
         else if (faction == IslandFaction::FISH)
         {
-            label = "Fish";
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON, buttonId, label.c_str(), bounds,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, fishButton, 0, bounds.w, bounds.h
+            );
         }
         else if (faction == IslandFaction::TRIBAL)
         {
-            label = "Tribal";
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON, buttonId, label.c_str(), bounds,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tribalButton, 0, bounds.w, bounds.h
+            );
         }
         else
         {
             label = island->GetName();
         }
 
-        int buttonId = ISLAND_BUTTON_ID_OFFSET + islandId;
+        
 
-        Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, buttonId, label.c_str(), bounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0, bounds.w, bounds.h
-        );
+ 
 
         LOG("InGameScene: island button created |id=%d label='%s' col=%d row=%d x=%d y=%d|",
             islandId, label.c_str(), col, row, btnX, btnY);

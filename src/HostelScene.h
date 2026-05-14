@@ -2,6 +2,7 @@
 #include "BaseScene.h"
 #include "Hostel.h"
 #include "Party.h"
+#include "SceneUtils.h"
 #include <SDL3/SDL.h>
 
 struct SDL_Texture;
@@ -40,6 +41,9 @@ private:
     bool pendingDialogue = false;
     bool pendingPop = false;
 
+    GoldCounter goldCounter;
+    int goldCounterx = 986;
+    int goldCountery = 201;
 
     Hostel* hostel;         
     Party* alliedParty;   
@@ -50,6 +54,7 @@ private:
 #pragma region TEXTURES
     SDL_Texture* exitButton;
     SDL_Texture* background;
+    SDL_Texture* fullBackground;
     SDL_Texture* ownerSprite;
     SDL_Texture* restButton;
     SDL_Texture* mealButton;
@@ -79,4 +84,5 @@ private:
     //audio variables
     int restfx;
     int buttonPress;
+    bool hostelOpen = false;
 };

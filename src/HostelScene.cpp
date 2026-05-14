@@ -10,14 +10,14 @@
 #include "DialogueScene.h"
 #include "DialogueManager.h"
 #include "Character.h"
-#include "SceneUtils.h"
+
 
 #pragma region POSITIONS
 #pragma region REST_BUTTON
-const SDL_Rect HostelScene::REST_BOUNDS = { 106, 80, 414, 414 };
+const SDL_Rect HostelScene::REST_BOUNDS = { 561, 80, 414, 414 };
 #pragma endregion
 #pragma region MEAL_BUTTON
-const SDL_Rect HostelScene::MEAL_BOUNDS = { 561, 80, 414, 414 };
+const SDL_Rect HostelScene::MEAL_BOUNDS = { 106, 80, 414, 414 };
 #pragma endregion NPC
 const SDL_Rect HostelScene::HUMAN_CHARA_SELECT_BOUNDS = { 604, 182, 190, 281 };
 const SDL_Rect HostelScene::BIRD_CHARA_SELECT_BOUNDS = { 241, 239, 214, 133 };
@@ -35,7 +35,8 @@ HostelScene::HostelScene(Hostel* hostel, Party* allied)
       mealButton(nullptr),
       showRestPanel(false),
       showSelectCharaPanel(false),
-      pendingRefresh(false)
+      pendingRefresh(false),
+    goldCounter(0, "Assets/Textures/Animations/coin.png", 1132, 46)
 {
     sceneName = "HostelScene";
 }
@@ -58,6 +59,9 @@ void HostelScene::Load()
 
 void HostelScene::Update(float dt)
 {
+
+    goldCounter.Update(alliedParty->GetGold(), dt);
+
     if (pendingDialogue)
     {
         pendingDialogue = false;
@@ -79,27 +83,24 @@ void HostelScene::Update(float dt)
         Engine::GetInstance().uiManager->CleanUp();
         CreateUI();
     }
-
-    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    if(hostelOpen == 1){ Engine::GetInstance().render->DrawTexture(fullBackground, 0, 0); }
+    else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
 }
 
 void HostelScene::PostUpdate(float dt)
 {
-    Engine::GetInstance().render->DrawText(
+   /* Engine::GetInstance().render->DrawText(
         "HOSTEL", 540, 50, 200, 40, { 255, 255, 255, 255 }
-    );
+    );*/
 
-    if (showRestPanel)
-    {
-        SDL_Rect panel = { 350, 250, 400, 200 };
-        Engine::GetInstance().render->DrawRectangle(panel, 0, 0, 0, 200, true, false);
-    }
+
 }
 
 void HostelScene::Unload()
 {
     Engine::GetInstance().textures->UnLoad(exitButton);
     Engine::GetInstance().textures->UnLoad(background);
+    Engine::GetInstance().textures->UnLoad(fullBackground);
     Engine::GetInstance().textures->UnLoad(ownerSprite);
     Engine::GetInstance().textures->UnLoad(restButton);
     Engine::GetInstance().textures->UnLoad(mealButton);
@@ -118,6 +119,7 @@ void HostelScene::LoadTextures()
     IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
     std::string path = "Assets/Textures/HostelScene/" + SceneUtils::GetFactionString(faction) + "/";
     background = Engine::GetInstance().textures->Load((path + "background.png").c_str());
+    fullBackground = Engine::GetInstance().textures->Load((path + "fullBack.png").c_str());
     ownerSprite = Engine::GetInstance().textures->Load((path + "ownerSprite.png").c_str());
     mealButton = Engine::GetInstance().textures->Load((path + "mealButton.png").c_str());
 }
@@ -135,6 +137,7 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     {
     case BACK_BUTTON_ID:
         //sound of basic button
+        //goldCounter.position();
         Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().scene->PopScene();
         break;
@@ -201,6 +204,7 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().audio->PlayFx(buttonPress);
         showRestPanel = false;
         showSelectCharaPanel = false;
+        hostelOpen = false;
         break;
 
     //characters selection panel
@@ -208,7 +212,7 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 31:
     case 32:
         hostel->GetADrink(alliedParty, uiElement->text);
-        showRestPanel = false;
+        //showRestPanel = false;
         showSelectCharaPanel = false;
         break;
     case 33:
@@ -260,6 +264,7 @@ void HostelScene::OpenRestPanel()
     LOG("Show rest panel");
 
     showRestPanel = true;
+    hostelOpen = true;
 
     SDL_Rect restBtn = GetRestBounds();
     Engine::GetInstance().uiManager->CreateUIElement(
@@ -273,7 +278,7 @@ void HostelScene::OpenRestPanel()
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, mealButton, 0, xpBtn.w, xpBtn.h
     );
 
-    SDL_Rect backPanel = { 589, 80, 72, 72 };
+    SDL_Rect backPanel = {989, 80, 72, 72};
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 22, "", backPanel,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backPanel.w, backPanel.h
@@ -283,20 +288,22 @@ void HostelScene::OpenRestPanel()
 void HostelScene::OpenSelectCharaPanel()
 {
     LOG("Show select chara panel");
+    hostelOpen = true;
 
     //character buttons
     for (int i = 0; i < alliedParty->GetMemberCount(); i++) {
+        SDL_Rect rect = { 112, 503 + i * 63, 202, 63 };
         SDL_Rect charaBtn = GetOwnerBounds();
         charaBtn.y = 503 + (63 * i);
         charaBtn.x = 112;
         Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, 30 + i, alliedParty->GetMembers()[i]->GetName().c_str(), charaBtn,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, emptyButtons, 0, charaBtn.w, charaBtn.h
+            UIElementType::BUTTON, 30 + i, alliedParty->GetMembers()[i]->GetName().c_str(), rect,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, emptyButtons, 0, rect.w, rect.h
         );
     }
 
 
-    SDL_Rect backPanel = { 989, 80, 72, 72 };
+   SDL_Rect backPanel = {989, 80, 72, 72};
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 33, "back", backPanel,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backPanel.w, backPanel.h
