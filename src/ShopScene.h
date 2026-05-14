@@ -5,7 +5,6 @@
 #include "EquippableItem.h"
 
 struct SDL_Texture;
-
 class Party;
 
 enum class ShopState

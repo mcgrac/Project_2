@@ -137,35 +137,6 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     {
         Engine::GetInstance().audio->PlayFx(buttonPress);
         PushDialogue();
-        //NPC* npc = shop->GetOwner();
-        //if (npc == nullptr)
-        //{
-        //    LOG("Hostel: NPC es nullptr");
-        //    break;
-        //}
-        //else {
-        //    LOG("Hostel: NPC correcto");
-        //}
-
-        //LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
-        //Engine::GetInstance().scene->PushScene(
-        //    new DialogueScene(npc->GetDialogueId(),
-        //        [this]()
-        //        {
-        //            std::string action = DialogueManager::GetLastChoiceTag();
-
-        //            if (action == "buy")
-        //            {
-        //                LOG("SHOP: buy");
-        //                shop->GenerateItems(Faction::BIRD);
-
-        //                state = ShopState::SHOW_ITEMS;
-
-        //                CreateItemButtons();
-        //            }
-        //        }
-        //    )
-        //);
         break;
     }
     case 100:
@@ -260,9 +231,16 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     }
     return true;
 }
+
 void ShopScene::OnResume()
 {
     CreateUI();
+
+    if (state == ShopState::SHOW_ITEMS)
+    {
+        Engine::GetInstance().uiManager->RemoveElementsByRange(OPEN_SHOP_BUTTON, OPEN_SHOP_BUTTON);
+        CreateItemButtons();
+    }
 }
 
 void ShopScene::OnPause()
@@ -323,8 +301,6 @@ void ShopScene::CreateUI()
     return tempFaction;
 }*/
 
-
-
 void ShopScene::PushDialogue()
 {
     NPC* npc = shop->GetOwner();
@@ -377,6 +353,7 @@ void ShopScene::CreateItemButtons()
 {
     // borrar items y characters anteriores
     Engine::GetInstance().uiManager->RemoveElementsByRange(ITEMS_AVAILABLE_BASE, CHARACTERS_AVAILABLE_BASE + 99);
+    Engine::GetInstance().uiManager->RemoveElementsByRange(OPEN_SHOP_BUTTON, OPEN_SHOP_BUTTON);
 
     int startX = 193;
 

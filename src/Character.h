@@ -65,10 +65,18 @@ protected:
 
 public:
 
-	//PreCombatValues
+#pragma region PRE-COMBAT VALUES
 	struct PreCombatValues {
 		int _health;
 		bool _isAlive;
+
+		int _basePower;
+		int _baseSpeed;
+		int _baseDurability;
+
+		float _healingPower;
+		float _firePower;
+		float _poisonPower;
 	};
 
 	PreCombatValues TakePreCombatValues() const {
@@ -76,6 +84,15 @@ public:
 		PreCombatValues snap;
 		snap._health = health;
 		snap._isAlive = isAlive;
+
+		snap._basePower = basePower;
+		snap._baseSpeed = baseSpeed;
+		snap._baseDurability = baseDurability;
+
+		snap._healingPower = healingPower;
+		snap._firePower = firePower;
+		snap._poisonPower = poisonPower;
+
 		return snap;
 	}
 
@@ -86,6 +103,24 @@ public:
 		ResetCurrentInitiative();
 
 	}
+
+	void RestoreBaseStats(const PreCombatValues& snap)
+	{
+		basePower = snap._basePower;
+		baseSpeed = snap._baseSpeed;
+		baseDurability = snap._baseDurability;
+
+		healingPower = snap._healingPower;
+		firePower = snap._firePower;
+		poisonPower = snap._poisonPower;
+
+		SetTotalPower();
+		SetTotalSpeed();
+		SetTotalDurability();
+	}
+#pragma endregion
+
+
 
 	Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 		      int _maxInitiative, int _basePower, int _bonusPower, int _totalPower, int _totalDurability,int _baseDurability, int _bonusDurability, int _maxDurability,

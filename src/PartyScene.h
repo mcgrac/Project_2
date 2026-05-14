@@ -4,6 +4,8 @@
 #include "Character.h"
 #include <vector>
 #include <string>
+#include "SceneUtils.h"
+#include "SDL3/SDL.h"
 
 struct SDL_Texture;
 
@@ -69,9 +71,6 @@ private:
     // Dibuja los botones de ascensiones
     void RenderUpgradeTree(Character* c);
 
-    // Dibuja el tooltip en la posición del ratón
-    void RenderTooltip(int mouseX, int mouseY);
-
     // Recrea los botones de la UI al cambiar de personaje
     void RefreshButtons();
     void ClearButtons();
@@ -84,9 +83,11 @@ private:
 
     //tooltip
     void DrawSkillTooltip();
-    void DrawColoredLine(const std::string& line, int x, int y);
-    std::vector<std::string> WrapText(const std::string& text, int maxCharsPerLine);
+    TooltipRenderer tooltipRenderer;
+    //void DrawColoredLine(const std::string& line, int x, int y);
+    //std::vector<std::string> WrapText(const std::string& text, int maxCharsPerLine);
     void DrawUpgradeTooltip();
+    void DrawInventoryTooltip();
 
     //Color tint
     void SetTextureTint(SDL_Texture* tex, Uint8 r, Uint8 g, Uint8 b);
@@ -95,6 +96,10 @@ private:
     //tooltip ascensions
     int hoveredUpgradeT = -1;  // tier hovered
     int hoveredUpgradeOption = -1;  // 0=A, 1=B
+
+    //tooltip inventory
+    int hoveredInventorySlot = -1;
+    std::string inventoryTooltipText = "";
 
     // ----- IDs de botones ----------------------
     // Tabs de miembros: 1, 2, 3

@@ -10,6 +10,7 @@ class Inventory
 public:
     Inventory() = default;
     ~Inventory();
+
     // --- Shared items ---
     void AddItem(const std::string& itemId, int amount = 1);
     bool ConsumeItem(const std::string& itemId, int amount = 1);
