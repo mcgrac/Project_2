@@ -221,35 +221,6 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
         PushDialogue();
-        //NPC* npc = shop->GetOwner();
-        //if (npc == nullptr)
-        //{
-        //    LOG("Hostel: NPC es nullptr");
-        //    break;
-        //}
-        //else {
-        //    LOG("Hostel: NPC correcto");
-        //}
-
-        //LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
-        //Engine::GetInstance().scene->PushScene(
-        //    new DialogueScene(npc->GetDialogueId(),
-        //        [this]()
-        //        {
-        //            std::string action = DialogueManager::GetLastChoiceTag();
-
-        //            if (action == "buy")
-        //            {
-        //                LOG("SHOP: buy");
-        //                shop->GenerateItems(Faction::BIRD);
-
-        //                state = ShopState::SHOW_ITEMS;
-
-        //                CreateItemButtons();
-        //            }
-        //        }
-        //    )
-        //);
         break;
     }
     case CLOSE_CHEST_ID:
@@ -356,11 +327,16 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     }
     return true;
 }
+
 void ShopScene::OnResume()
 {
-    //Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
-    //if(shopOpen!=1 || chestOpen!=1){ CreateUI(); }
-    
+    CreateUI();
+
+    if (state == ShopState::SHOW_ITEMS)
+    {
+        Engine::GetInstance().uiManager->RemoveElementsByRange(OPEN_SHOP_BUTTON, OPEN_SHOP_BUTTON);
+        CreateItemButtons();
+    }
 }
 
 void ShopScene::OnPause()
@@ -434,8 +410,6 @@ void ShopScene::CreateUI()
 
     return tempFaction;
 }*/
-
-
 
 void ShopScene::PushDialogue()
 {

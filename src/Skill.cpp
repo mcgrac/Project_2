@@ -28,6 +28,10 @@ void Skill::Use(Character* caster, Character* target)
     {
         statValue = caster->GetTotalDurability();
     }
+    else if (multiplierStat == MultiplierStat::LEVEL)
+    {
+        statValue = caster->GetLevel();
+    }
 
     int totalDamage = baseDamage + ((int)(statValue * powerMultiplier));
 

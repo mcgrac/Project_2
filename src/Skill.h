@@ -12,7 +12,8 @@ enum class MultiplierStat
 {
     POWER,
     SPEED,
-    DURABILITY
+    DURABILITY,
+    LEVEL
 };
 
 //Each effect contains a function that is applied to the caster or target

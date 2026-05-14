@@ -86,13 +86,7 @@ void PartyScene::PostUpdate(float dt)
 
     DrawSkillTooltip();
     DrawUpgradeTooltip();
-    // Tooltip al final para que quede encima de todo
-    //Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
-    //if (!tooltipText.empty())
-    //{
-    //    RenderTooltip((int)mousePos.getX(), (int)mousePos.getY());
-    //}
-    //tooltipText = "";
+    DrawInventoryTooltip();
 }
 
 #pragma region UNLOAD
@@ -403,9 +397,12 @@ void PartyScene::RenderStats(Character* c)
 
 void PartyScene::RenderInventorySlots(Character* c)
 {
-    Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
-    int mx = (int)mousePos.getX();
-    int my = (int)mousePos.getY();
+    hoveredInventorySlot = -1;
+    inventoryTooltipText = "";
+
+    SDL_Point mousePos = SceneUtils::GetMousePosition();
+    int mx = mousePos.x;
+    int my = mousePos.y;
 
     for (int i = 0; i < 3; ++i)
     {
@@ -420,12 +417,22 @@ void PartyScene::RenderInventorySlots(Character* c)
         // if (item != nullptr) { DrawTexture(item->GetSprite(), slot.x, slot.y); }
 
         // Tooltip hover
-        bool hovered = mx > slot.x && mx < slot.x + slot.w
-            && my > slot.y && my < slot.y + slot.h;
+        bool hovered = SceneUtils::PointInRect(mx, my, slot);
+
         if (hovered)
         {
-            // TODO: tooltipText = item->GetDescription() cuando Inventory esté listo
-            tooltipText = "Slot " + std::to_string(i + 1) + " (empty)";
+            hoveredInventorySlot = i;
+
+            std::vector<EquippableItem*>& equipped = alliedParty->GetInventory().GetEquipped(c->GetName());
+
+            if (i < (int)equipped.size() && equipped[i] != nullptr)
+            {
+                inventoryTooltipText = equipped[i]->GetName();
+            }
+            else
+            {
+                inventoryTooltipText = "Slot empty";
+            }
         }
     }
 }
@@ -434,9 +441,9 @@ void PartyScene::RenderSkillIcons(Character* c)
 {
     hoveredSkillIdx = -1;
 
-    Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
-    int mx = (int)mousePos.getX();
-    int my = (int)mousePos.getY();
+    SDL_Point mousePos = SceneUtils::GetMousePosition();
+    int mx = mousePos.x;
+    int my = mousePos.y;
 
     auto& skills = c->GetSkills();
 
@@ -444,16 +451,14 @@ void PartyScene::RenderSkillIcons(Character* c)
     {
         SDL_Rect icon = { SKILL_ICON_RECT.x + i * (SKILL_ICON_RECT.w + SKILL_ICON_GAP), SKILL_ICON_RECT.y, SKILL_ICON_RECT.w, SKILL_ICON_RECT.h };
 
-        bool hovered = mx > icon.x && mx < icon.x + icon.w
-            && my > icon.y && my < icon.y + icon.h;
+        bool hovered = SceneUtils::PointInRect(mx, my, icon);
+
 
         if (hovered)
         {
             hoveredSkillIdx = i;
         }
     }
-
-    //DrawSkillTooltip();
 }
 
 void PartyScene::RenderUpgradeTree(Character* c)
@@ -532,88 +537,27 @@ void PartyScene::RenderUpgradeTree(Character* c)
         );
         ResetTextureTint(upgradeIconsTexture);
 
-        // Opción A
-        //SDL_Rect iconASrc = { (t * 2) * UPGRADE_ICON_W, 0, UPGRADE_ICON_W, UPGRADE_ICON_H };
-        //if (unlocked)
-        //{
-        //    // fila 1 = pressed/seleccionada si esta fue la elegida
-        //    if (tiers[t].GetChosen() == &tiers[t].GetOptionA())
-        //    {
-        //        iconASrc.y = UPGRADE_ICON_H;
-        //    }
-        //}
-        //Engine::GetInstance().render->DrawTexture(
-        //    upgradeIconsTexture, iconX, TREE_START_Y, &iconASrc
-        //);
-
-        //// Opción B
-        //SDL_Rect iconBSrc = { (t * 2 + 1) * UPGRADE_ICON_W, 0, UPGRADE_ICON_W, UPGRADE_ICON_H };
-        //if (unlocked)
-        //{
-        //    if (tiers[t].GetChosen() == &tiers[t].GetOptionB())
-        //    {
-        //        iconBSrc.y = UPGRADE_ICON_H;
-        //    }
-        //}
-        //Engine::GetInstance().render->DrawTexture(
-        //    upgradeIconsTexture, iconX, TREE_START_Y + UPGRADE_ICON_H + UPGRADE_ICON_GAP, &iconBSrc
-        //);
-
-        // Nivel requerido encima de la gema
-        //std::string lvlText = std::to_string(tiers[t].GetRequiredLevel());
-        //Engine::GetInstance().render->DrawText(
-        //    lvlText.c_str(), gemX + 20, gemY - 20, 40, 18, { 255, 215, 0, 255 }
-        //);
-
         //hover detection
-        Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
-        int mx = (int)mousePos.getX();
-        int my = (int)mousePos.getY();
+        SDL_Point mousePos = SceneUtils::GetMousePosition();
+        int mx = mousePos.x;
+        int my = mousePos.y;
 
         SDL_Rect iconARect = { iconX, TREE_START_Y, UPGRADE_ICON_W, UPGRADE_ICON_H };
         SDL_Rect iconBRect = { iconX, TREE_START_Y + UPGRADE_ICON_H + UPGRADE_ICON_GAP, UPGRADE_ICON_W, UPGRADE_ICON_H };
 
-        if (mx > iconARect.x && mx < iconARect.x + iconARect.w &&
-            my > iconARect.y && my < iconARect.y + iconARect.h)
+        if (SceneUtils::PointInRect(mx, my, iconARect))
         {
             hoveredUpgradeT = t;
             hoveredUpgradeOption = 0;
         }
-        else if (mx > iconBRect.x && mx < iconBRect.x + iconBRect.w &&
-            my > iconBRect.y && my < iconBRect.y + iconBRect.h)
+        else if (SceneUtils::PointInRect(mx, my, iconBRect))
         {
             hoveredUpgradeT = t;
             hoveredUpgradeOption = 1;
         }
     }
 }
-
-void PartyScene::RenderTooltip(int mouseX, int mouseY)
-{
-    if (tooltipText.empty()) return;
-
-    int tooltipW = 250;
-    int tooltipH = 60;
-    int tooltipX = mouseX + 15;
-    int tooltipY = mouseY - tooltipH - 5;
-
-    // Ajustar para que no se salga de pantalla
-    if (tooltipX + tooltipW > 1280) tooltipX = mouseX - tooltipW - 5;
-    if (tooltipY < 0)               tooltipY = mouseY + 15;
-
-    SDL_Rect bg = { tooltipX, tooltipY, tooltipW, tooltipH };
-    Engine::GetInstance().render->DrawRectangle(bg, 10, 10, 20, 230, true, false);
-    Engine::GetInstance().render->DrawRectangle(bg, 150, 150, 150, 255, false, false);
-
-    Engine::GetInstance().render->DrawText(
-        tooltipText.c_str(),
-        tooltipX + 8, tooltipY + 8, tooltipW - 16, tooltipH - 16,
-        { 255, 255, 255, 255 }
-    );
-}
 #pragma endregion
-
-
 
 void PartyScene::RefreshButtons()
 {
@@ -763,74 +707,17 @@ void PartyScene::ClearButtons()
 #pragma region SKILL_HOVER
 void PartyScene::DrawSkillTooltip()
 {
-    if (hoveredSkillIdx == -1) return;
+    if (hoveredSkillIdx == -1) { return; }
 
     Character* c = alliedParty->GetMembers()[selectedMemberIndex];
     auto& skills = c->GetSkills();
-    if (hoveredSkillIdx >= (int)skills.size()) return;
+    if (hoveredSkillIdx >= (int)skills.size()) { return; }
 
-    std::string text = skills[hoveredSkillIdx].GetFullDescription();
-
-    int charWidth = 8;
-    int lineHeight = 20;
-    int padding = 10;
-    int maxCharsPerLine = 35;
-
-    auto lines = WrapText(text, maxCharsPerLine);
-
-    int maxLineLen = 0;
-    for (const auto& line : lines)
-    {
-        if ((int)line.size() > maxLineLen)
-        {
-            maxLineLen = (int)line.size();
-        }
-    }
-
-    int boxWidth = maxLineLen * charWidth + padding * 2;
-    int boxHeight = (int)lines.size() * lineHeight + padding * 2;
-
-    // Posición fija — ajusta estos valores a donde lo tenías antes
-    int startX = SKILL_ICON_RECT.x;
-    int startY = SKILL_ICON_RECT.y + SKILL_ICON_RECT.h + 10;
-
-    SDL_Rect bg = { startX, startY, boxWidth, boxHeight };
-    Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200, true, false);
-    Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
-
-    int yOffset = 0;
-    for (const auto& line : lines)
-    {
-        DrawColoredLine(line, startX + padding, startY + padding + yOffset);
-        yOffset += lineHeight;
-    }
-}
-
-std::vector<std::string> PartyScene::WrapText(const std::string& text, int maxCharsPerLine)
-{
-    std::vector<std::string> lines;
-    std::stringstream ss(text);
-    std::string word;
-    std::string currentLine;
-
-    while (ss >> word)
-    {
-        if (currentLine.length() + word.length() + 1 > maxCharsPerLine)
-        {
-            lines.push_back(currentLine);
-            currentLine = word;
-        }
-        else
-        {
-            if (!currentLine.empty()) { currentLine += " "; }
-            currentLine += word;
-        }
-    }
-    if (!currentLine.empty())
-    {
-        lines.push_back(currentLine);
-    }
-    return lines;
+    tooltipRenderer.Draw(
+        skills[hoveredSkillIdx].GetFullDescription(),
+        SKILL_ICON_RECT.x,
+        SKILL_ICON_RECT.y + SKILL_ICON_RECT.h + 10
+    );
 }
 
 void PartyScene::DrawUpgradeTooltip()
@@ -856,45 +743,34 @@ void PartyScene::DrawUpgradeTooltip()
 
     if (upgrade == nullptr) { return; }
 
-    std::string text = upgrade->GetFullDescription();
-
-    int charWidth = 8;
-    int lineHeight = 20;
-    int padding = 10;
-    int maxCharsPerLine = 35;
-
-    auto lines = WrapText(text, maxCharsPerLine);
-
-    int maxLineLen = 0;
-    for (const auto& line : lines)
-    {
-        if ((int)line.size() > maxLineLen)
-        {
-            maxLineLen = (int)line.size();
-        }
-    }
-
-    int boxWidth = maxLineLen * charWidth + padding * 2;
-    int boxHeight = (int)lines.size() * lineHeight + padding * 2;
-
-    // Posición fija debajo del árbol
-    int startX = TREE_START_X;
-    int startY = TREE_START_Y + GEM_H + UPGRADE_ICON_H + 20;
-
-    SDL_Rect bg = { startX, startY, boxWidth, boxHeight };
-    Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200, true, false);
-    Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
-
-    int yOffset = 0;
-    for (const auto& line : lines)
-    {
-        DrawColoredLine(line, startX + padding, startY + padding + yOffset);
-        yOffset += lineHeight;
-    }
+    tooltipRenderer.Draw(
+        upgrade->GetFullDescription(),
+        TREE_START_X,
+        TREE_START_Y + GEM_H + UPGRADE_ICON_H + 20
+    );
 
     hoveredUpgradeT = -1;
     hoveredUpgradeOption = -1;
 }
+
+void PartyScene::DrawInventoryTooltip()
+{
+    if (hoveredInventorySlot == -1)
+    {
+        return;
+    }
+
+    SDL_Point mousePos = SceneUtils::GetMousePosition();
+
+    tooltipRenderer.Draw(
+        inventoryTooltipText,
+        mousePos.x + 20,
+        mousePos.y + 20
+    );
+
+    hoveredInventorySlot = -1;
+}
+#pragma endregion
 
 #pragma region COLOR TINT
 void PartyScene::SetTextureTint(SDL_Texture* tex, Uint8 r, Uint8 g, Uint8 b)
@@ -907,38 +783,5 @@ void PartyScene::ResetTextureTint(SDL_Texture* tex)
 {
     if (tex == nullptr) { return; }
     SDL_SetTextureColorMod(tex, 255, 255, 255);
-}
-#pragma endregion
-
-
-
-void PartyScene::DrawColoredLine(const std::string& line, int x, int y)
-{
-
-    std::stringstream ss(line);
-    std::string word;
-    int offsetX = 0;
-    int charWidth = 8;
-    int charHeight = 16;
-
-    while (ss >> word)
-    {
-        SDL_Color color = { 255, 255, 255, 255 };
-        if (word.find("Heal") != std::string::npos)
-        {
-            color = { 0, 255, 0, 255 };
-        }
-        else if (word.find("Damage") != std::string::npos)
-        {
-            color = { 255, 80, 80, 255 };
-        }
-
-        int wordW = (int)word.size() * charWidth;
-        Engine::GetInstance().render->DrawText(
-            word.c_str(), x + offsetX, y, wordW, charHeight, color
-        );
-        offsetX += wordW + charWidth; //+ char width mas espacio entre palabras
-    }
-    
 }
 #pragma endregion

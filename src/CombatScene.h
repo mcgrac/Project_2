@@ -4,6 +4,7 @@
 #include "Party.h"
 #include "Engine.h"
 #include "Audio.h"
+#include "SceneUtils.h"
 
 struct SDL_Texture;
 
@@ -32,6 +33,7 @@ public:
     void Unload() override;
     void LoadTextures() override;
     void LoadSounds();
+    void LoadSoundsParty(Party* party);
 
     void ChooseSound(std::string id);
 
@@ -120,9 +122,9 @@ private:
     void DrawArrowCurrentActor();
     void DrawSkillTooltip();
     void UpdateSkillHover();
-    void DrawColoredLine(const std::string& line, int x, int y);
-    std::vector<std::string> WrapText(const std::string& text, int maxCharsPerLine);
 
+    //tooltip
+    TooltipRenderer tooltipRenderer;
 
     void LoadSound();
     //audio variables

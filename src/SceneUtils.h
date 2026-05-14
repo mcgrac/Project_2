@@ -7,7 +7,24 @@
 
 struct SDL_Texture;
 
-struct GoldCounter {
+struct TooltipRenderer
+{
+	// Estilo — puedes cambiar estos valores por escena si quieres
+	int charWidth = 8;
+	int lineHeight = 20;
+	int padding = 10;
+	int maxCharsPerLine = 35;
+
+	// Dibuja el tooltip completo en (x, y)
+	void Draw(const std::string& text, int x, int y) const;
+
+private:
+	std::vector<std::string> WrapText(const std::string& text) const;
+	void DrawColoredLine(const std::string& line, int x, int y) const;
+};
+
+struct GoldCounter 
+{
 
 	SDL_Texture* coinIcon = nullptr;
 	int amount;
@@ -34,4 +51,7 @@ public:
 	static std::string GetBuildingTexturePath(IslandFaction faction, const std::string& building);
 	static std::string GetIslandTexturePath(IslandFaction faction);
 	static std::string GetPortraitPath(const std::string& dialogueId);
+
+	static bool PointInRect(int x, int y, const SDL_Rect& r);
+	static SDL_Point GetMousePosition();
 };

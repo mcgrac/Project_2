@@ -2,9 +2,11 @@
 #include "Engine.h"
 #include "Textures.h"
 #include "Render.h"
+#include "Input.h"
 #include "Log.h"
 #include <cstdio>
 #include <direct.h>
+#include <sstream>
 
 std::string SceneUtils::GetFactionString(IslandFaction faction)
 {
@@ -53,6 +55,25 @@ std::string SceneUtils::GetPortraitPath(const std::string& dialogueId)
 	return "Assets/Textures/PortraitsDialogues/" + location + "/" + faction + ".png";
 }
 
+bool SceneUtils::PointInRect(int x, int y, const SDL_Rect& r)
+{
+	return x > r.x &&
+		x < r.x + r.w &&
+		y > r.y &&
+		y < r.y + r.h;
+}
+
+SDL_Point SceneUtils::GetMousePosition()
+{
+	Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
+
+	return
+	{
+		(int)mousePos.getX(),
+		(int)mousePos.getY()
+	};
+}
+
 #pragma region GOLD COUNTER
 GoldCounter::GoldCounter(int _amount, std::string _path, int _positionX, int _positionY) : amount(_amount)
 {
@@ -65,8 +86,6 @@ GoldCounter::GoldCounter(int _amount, std::string _path, int _positionX, int _po
 
 
 void GoldCounter::Update(int currentGoldAmount, float dt) {
-
-	LOG("UPDATE GOLD COUNTER");
 
 	UpdateAmount(currentGoldAmount);
 	Draw(dt);
@@ -81,8 +100,6 @@ void GoldCounter::Draw(float dt)
 	int drawX = (int)position.getX() - animFrame.w / 2;
 	int drawY = (int)position.getY() - animFrame.h / 2;
 
-	LOG("FRAME: ", animFrame.x, animFrame.y, animFrame.w, animFrame.h);
-
 	Engine::GetInstance().render->DrawTexture(
 		coinIcon,
 		drawX,
@@ -96,15 +113,10 @@ void GoldCounter::Draw(float dt)
 
 void GoldCounter::LoadAnimation()
 {
-
 	// load
 	std::unordered_map<int, std::string> aliases = { {0,"idle"} };
-	bool loaded = anims.LoadFromTSX("Assets/Textures/Animations/coin.tsx", aliases);
-	LOG("ANIMS LOADED, success: ", loaded);
-	LOG("Has idle: ", anims.Has("idle"));
+	anims.LoadFromTSX("Assets/Textures/Animations/coin.tsx", aliases);
 	anims.SetCurrent("idle");
-	const SDL_Rect& testFrame = anims.GetCurrentFrame();
-	LOG("FRAME AFTER LOAD: ", testFrame.x, testFrame.y, testFrame.w, testFrame.h);
 }
 
 void GoldCounter::RenderCounter(int x, int y)
@@ -122,6 +134,90 @@ void GoldCounter::UpdateAmount(int i)
 void GoldCounter::SetTextureCoin(std::string path)
 {
 	coinIcon = Engine::GetInstance().textures->Load(path.c_str());
+}
+#pragma endregion
+
+#pragma region TOOLTIP
+void TooltipRenderer::Draw(const std::string& text, int x, int y) const
+{
+	if (text.empty()) { return; }
+
+	std::vector<std::string> lines = WrapText(text);
+
+	int maxLineLen = 0;
+	for (const std::string& line : lines)
+	{
+		if ((int)line.size() > maxLineLen)
+		{
+			maxLineLen = (int)line.size();
+		}
+	}
+
+	int boxWidth = maxLineLen * charWidth + padding * 2;
+	int boxHeight = (int)lines.size() * lineHeight + padding * 2;
+
+	SDL_Rect bg = { x, y, boxWidth, boxHeight };
+	Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200, true, false);
+	Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
+
+	int yOffset = 0;
+	for (const std::string& line : lines)
+	{
+		DrawColoredLine(line, x + padding, y + padding + yOffset);
+		yOffset += lineHeight;
+	}
+}
+std::vector<std::string> TooltipRenderer::WrapText(const std::string& text) const
+{
+	std::vector<std::string> lines;
+	std::stringstream ss(text);
+	std::string word;
+	std::string currentLine;
+
+	while (ss >> word)
+	{
+		if ((int)(currentLine.length() + word.length() + 1) > maxCharsPerLine)
+		{
+			lines.push_back(currentLine);
+			currentLine = word;
+		}
+		else
+		{
+			if (!currentLine.empty()) { currentLine += " "; }
+			currentLine += word;
+		}
+	}
+
+	if (!currentLine.empty())
+	{
+		lines.push_back(currentLine);
+	}
+
+	return lines;
+}
+void TooltipRenderer::DrawColoredLine(const std::string& line, int x, int y) const
+{
+	std::stringstream ss(line);
+	std::string word;
+	int offsetX = 0;
+
+	while (ss >> word)
+	{
+		SDL_Color color = { 255, 255, 255, 255 };
+
+		if (word.find("Heal") != std::string::npos)
+		{
+			color = { 0, 255, 0, 255 };
+		}
+		else if (word.find("Damage") != std::string::npos)
+		{
+			color = { 255, 80, 80, 255 };
+		}
+
+		int wordW = (int)word.size() * charWidth;
+		Engine::GetInstance().render->DrawText(word.c_str(), x + offsetX, y, wordW, lineHeight, color);
+		offsetX += wordW + charWidth;
+	}
 }
 #pragma endregion
 

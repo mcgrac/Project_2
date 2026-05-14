@@ -644,6 +644,15 @@ void Combat::EndCombat()
         std::cout << "              VICTORY                \n";
         std::cout << "══════════════════════════════════════\n";
 
+        //reset base Values for every character
+        for (Character* c : alliedParty->GetMembers()) {
+            //reset base stats to original
+            auto it = preCombatValues.find(c);
+            if (it != preCombatValues.end()) {
+                c->RestoreBaseStats(it->second);
+            }
+        }
+        
         // Distribuir XP a los aliados vivos
         int totalXP = enemyParty->GetTotalXPReward();
         int totalGold = enemyParty->GetTotalGoldReward();
@@ -657,12 +666,6 @@ void Combat::EndCombat()
 
         alliedParty->AddGold(totalGold);
         std::cout << "Recompensa: " << totalGold << " de oro.\n";
-
-        //for (auto& item : lootItems)
-        //{
-        //    alliedParty->AddItem(item);
-        //    std::cout << "Item obtenido: " << item->GetName() << "\n";
-        //}
     }
     else // DEFEAT
     {

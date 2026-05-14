@@ -49,13 +49,43 @@ CombatScene::~CombatScene()
 
 void CombatScene::LoadSounds() {
 
-    for (Character* c : alliedParty->GetMembers()) {
+    //allied sounds
+    //for (Character* c : alliedParty->GetMembers()) {
+    //    for (int i = 0; i < c->GetSkills().size(); i++) {
+    //        Skill skill = c->GetSkills()[i];
+
+    //        AbilitiesSounds ability;
+
+    //        std::string path = "Assets/Audio/Fx/" + c->GetName() + "/" + skill.GetAnimationId() + ".wav";
+    //        ability.SetFxSound(path);
+    //        ability.SetIdSound(skill.GetAnimationId());
+
+    //        abilities.push_back(ability);
+    //    }
+    //}
+    LoadSoundsParty(alliedParty);
+    LoadSoundsParty(enemyParty);
+}
+
+void CombatScene::LoadSoundsParty(Party* party)
+{
+    for (Character* c : party->GetMembers()) {
+
+        //check if enemy
+        std::string folder;
+        if (c->GetIsAllied()) {
+            folder = "allies";
+        }
+        else {
+            folder = "enemies";
+        }
+
         for (int i = 0; i < c->GetSkills().size(); i++) {
             Skill skill = c->GetSkills()[i];
 
             AbilitiesSounds ability;
 
-            std::string path = "Assets/Audio/Fx/" + c->GetName() + "/" + skill.GetAnimationId() + ".wav";
+            std::string path = "Assets/Audio/Fx/" + folder + "/" + c->GetName() + "/" + skill.GetAnimationId() + ".wav";
             ability.SetFxSound(path);
             ability.SetIdSound(skill.GetAnimationId());
 
@@ -480,120 +510,19 @@ void CombatScene::UpdateSkillHover()
 
 void CombatScene::DrawSkillTooltip()
 {
-    if (hoveredSkillIdx == -1) return;
+    if (hoveredSkillIdx == -1) { return; }
 
     Character* actor = combat->GetCurrentActor();
-    if (!actor) return;
+    if (actor == nullptr) { return; }
 
     auto& skills = actor->GetSkills();
-    if (hoveredSkillIdx >= (int)skills.size()) return;
+    if (hoveredSkillIdx >= (int)skills.size()) { return; }
 
-    std::string text = skills[hoveredSkillIdx].GetFullDescription();
-
-    int charWidth = 8;
-    int lineHeight = 20;
-    int padding = 10;
-
-    int maxCharsPerLine = 35;
-    auto lines = WrapText(text, maxCharsPerLine);
-
-    // Calcular ancho del box según la línea más larga
-    int maxLineLen = 0;
-    for (const auto& line : lines)
-    {
-        if ((int)line.size() > maxLineLen)
-        {
-            maxLineLen = (int)line.size();
-        }
-    }
-
-    int boxWidth = maxLineLen * charWidth + padding * 2;
-    int boxHeight = (int)lines.size() * lineHeight + padding * 2;
-
-    int startX = (int)Engine::GetInstance().window->width/3;
-    int startY = 600;
-
-    SDL_Rect bg = { startX, startY, boxWidth, boxHeight };
-
-    // Fondo
-    Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200, true, false);
-
-    // Borde
-    Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
-
-    // Texto línea por línea
-    int yOffset = 0;
-    for (const auto& line : lines)
-    {
-        DrawColoredLine(line, startX + padding, startY + padding + yOffset);
-        yOffset += lineHeight;
-    }
-}
-
-std::vector<std::string> CombatScene :: WrapText(const std::string& text, int maxCharsPerLine)
-{
-    std::vector<std::string> lines;
-    std::stringstream ss(text);
-    std::string word;
-    std::string currentLine;
-
-    while (ss >> word)
-    {
-        if (currentLine.length() + word.length() + 1 > maxCharsPerLine)
-        {
-            lines.push_back(currentLine);
-            currentLine = word;
-        }
-        else
-        {
-            if (!currentLine.empty()) currentLine += " ";
-            currentLine += word;
-        }
-    }
-
-    if (!currentLine.empty())
-    {
-        lines.push_back(currentLine);
-    }
-
-    return lines;
-}
-
-void CombatScene::DrawColoredLine(const std::string& line, int x, int y)
-{
-
-    std::stringstream ss(line);
-    std::string word;
-    int offsetX = 0;
-    int charWidth = 8;
-    int charHeight = 16;
-
-    while (ss >> word)
-    {
-        SDL_Color color = { 255, 255, 255, 255 };
-
-        if (word.find("Heal") != std::string::npos)
-        {
-            color = { 0, 255, 0, 255 };
-        }
-        else if (word.find("Damage") != std::string::npos)
-        {
-            color = { 255, 80, 80, 255 };
-        }
-
-        int wordW = (int)word.size() * charWidth;
-
-        Engine::GetInstance().render->DrawText(
-            word.c_str(),
-            x + offsetX,
-            y,
-            wordW,
-            charHeight,
-            color
-        );
-
-        offsetX += wordW + charWidth; // +charWidth = espacio entre palabras
-    }
+    tooltipRenderer.Draw(
+        skills[hoveredSkillIdx].GetFullDescription(),
+        (int)Engine::GetInstance().window->width / 3,
+        600
+    );
 }
 #pragma endregion
 
@@ -813,6 +742,7 @@ void CombatScene::CreateEnemyParty()
         }
 
         CharacterFactory::LoadVisualsFor(c, c->GetName());
+        c->SetIsAllied(false);
     }
 
     // Recompensas del combate
