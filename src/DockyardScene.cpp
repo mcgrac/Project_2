@@ -1,5 +1,6 @@
 #include "DockyardScene.h"
 #include "Engine.h"
+#include "Audio.h"
 #include "Scene.h"
 #include "UIManager.h"
 #include "Render.h"
@@ -71,11 +72,17 @@ void DockyardScene::LoadTextures()
     improveShip = Engine::GetInstance().textures->Load("Assets/Textures/DockyardScene/UpgradeBaotButton.png");
 }
 
+void DockyardScene::LoadSound() {
+    buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
+    shipUpgrade = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/upgrading_ship.wav");
+}
+
 bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
     switch (uiElement->id)
     {
     case BACK_BUTTON_ID:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().scene->PopScene();
         break;
     case START_DIALOGUE:
@@ -102,6 +109,7 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
     }
     case IMPROVE_SHIP:
         if (alliedParty->GetGold() >= COST_IMPROVE_SHIP) {
+            Engine::GetInstance().audio->PlayFx(shipUpgrade);
             levelBeforeImprove = dockyard->GetShip()->GetLevel();
             dockyard->ImproveShip();
             shipImproved = true;

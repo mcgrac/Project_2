@@ -14,6 +14,7 @@ public:
     ~PartyScene();
 
     void Load() override;
+    void LoadSound();
     void Update(float dt) override;
     void PostUpdate(float dt) override;
     void Unload() override;
@@ -119,4 +120,11 @@ private:
     static constexpr int TAB_Y = 20;
     static constexpr int TAB_SIZE = 60;
     static constexpr int TAB_GAP = 10;
+
+    //audio variables
+    int buttonPress;
+    int upgradefx;
+
+    const char* musicTrack;
+
 };

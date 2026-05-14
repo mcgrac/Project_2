@@ -16,6 +16,7 @@ public:
     void PostUpdate(float dt) override;
     void Unload() override;
     void LoadTextures() override;
+    void LoadSound();
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
@@ -80,5 +81,7 @@ private:
     static constexpr int NPC_H = 616;
 #pragma endregion
 
-
+    //audio variables
+    int buttonPress;
+    int shipUpgrade;
 };
