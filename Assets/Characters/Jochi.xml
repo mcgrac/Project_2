@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<character name="Theresia">
+<character name="Jochi">
 
 	<visuals
-	spritesheet="Assets/Textures/Animations/TheresiaSpritesheet.png"
-	tsx="Assets/Textures/Animations/TheresiaSpritesheet.tsx"
+	spritesheet="Assets/Textures/Animations/JochiSpritesheet.png"
+	tsx="Assets/Textures/Animations/JochiSpritesheet.tsx"
     >
 
 		<animations>
-			<anim name="idle" tile="0" loop="true"/>
-			<anim name="dead" tile="112" loop="false"/>
+			<anim name="idle" tile="70" loop="true"/>
+			<anim name="dead" tile="91" loop="false"/>
 
-			<anim name="encourage" tile="9" loop="false"/>
-			<anim name="battle_fury" tile="11" loop="false"/>
-			<anim name="slash" tile="5" loop="false"/>
-			<anim name="shield_bash" tile="3" loop="false"/>
-			<anim name="double_blade" tile="7" loop="false"/>
+			<anim name="yellow_projectile" tile="99" loop="false"/>
+			<anim name="green_fire" tile="98" loop="false"/>
+			<anim name="green_orbs" tile="3" loop="false"/>
+			<anim name="yellow_tornado" tile="17" loop="false"/>
+			<anim name="yellow_explosion" tile="7" loop="false"/>
 
 		</animations>
 
 	</visuals>
 	
 	<stats
-        health="110"
-        maxHealth="110"
-        power="62"
-        durability="10"
-        maxDurability="40"
-        speed="30"
+        health="95"
+        maxHealth="95"
+        power="65"
+        durability="0"
+        maxDurability="70"
+        speed="35"
         lifesteal="0"
         healingPower="0"
         poisonPower="0"
@@ -35,31 +35,31 @@
     />
 
 	<levelScaling
-        maxHealth="6"
-        power="2"
-        speed="2"
+        maxHealth="3"
+        power="5"
+        speed="1"
     />
 
 	<skills>
-		<skill id="encourage" initiativeCost="155" />
-		<skill id="battle_fury" initiativeCost="130" />
-		<skill id="slash" initiativeCost="95" />
-		<skill id="shield_bash" initiativeCost="110" />
-		<skill id="double_blade" initiativeCost="105" />
+		<skill id="yellow_projectile" initiativeCost="65" />
+		<skill id="green_fire" initiativeCost="100" />
+		<skill id="green_orbs" initiativeCost="150" />
+		<skill id="yellow_tornado" initiativeCost="75" />
+		<skill id="yellow_explosion" initiativeCost="160" />
 	</skills>
 
 	<upgradeTree>
 		<tier requiredLevel="5">
-			<optionA name="Heavy Armor"  description="Max health +20, Durability +15" effect1="durability+15" effect2="maxHealth+20"/>
-			<optionB name="Light Armor"   description="Speed +30, Durability +5"  effect1="speed+30" effect2="durability+5" />
+			<optionA name="Artifact Studies"  description="Power +20, Speed +20, Durability +20, Current Health -20" effect1="power+20" effect2="speed+20" effect3="health-20" effect4="durability+20"/>
+			<optionB name="Alchemy Studies"   description="Fire modifier +20, Poison modifier +20"  effect1="firePower+20" effect2="poisonPower+20" />
 		</tier>
 		<tier requiredLevel="10">
-			<optionA name="Solar Cape"    description="Fire modifier +20, Durability +5" effect1="fireMod+20" effect2="durability+5"/>
-			<optionB name="Moonsilver Pendant" description="Healing power +150, Max health +20" effect1="healingPower+150" effect2="maxHealth+20"/>
+			<optionA name="Quick Spelling"    description="Speed +40, Power +20" effect1="speed+40" effect2="power+20"/>
+			<optionB name="Elemental Scepter" description="Fire modifier +50, Poison modifier +50, Speed +10"  effect1="firePower+50" effect2="poisonPower+50" effect3 ="speed+10" />
 		</tier>
 		<tier requiredLevel="15">
-			<optionA name="Immovable Object" description="Max Durability +20, Durability +30" effect1="maxDurability+20" effect2="durability+30"/>
-			<optionB name="Crown's Will"  description="Max health +40, Speed +10"  effect1="maxHealth+40" effect2="speed+10"  />
+			<optionA name="Immesurable Power" description="Power +50" effect1="Power+50"/>
+			<optionB name="Poisoned Blood"  description="Health -20, Posion modifier +130"  effect1="health-20" effect2="poisonpower+130"  />
 		</tier>
 	</upgradeTree>
 

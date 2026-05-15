@@ -109,6 +109,37 @@
    <frame tileid="80" duration="100"/>
   </animation>
  </tile>
+ <tile id="103">
+  <animation>
+   <frame tileid="103" duration="100"/>
+   <frame tileid="73" duration="100"/>
+   <frame tileid="63" duration="100"/>
+   <frame tileid="53" duration="100"/>
+   <frame tileid="43" duration="100"/>
+   <frame tileid="33" duration="100"/>
+   <frame tileid="23" duration="100"/>
+   <frame tileid="13" duration="100"/>
+   <frame tileid="3" duration="100"/>
+   <frame tileid="142" duration="100"/>
+   <frame tileid="132" duration="100"/>
+   <frame tileid="122" duration="100"/>
+   <frame tileid="112" duration="100"/>
+   <frame tileid="102" duration="100"/>
+   <frame tileid="92" duration="100"/>
+   <frame tileid="82" duration="100"/>
+   <frame tileid="72" duration="100"/>
+   <frame tileid="62" duration="100"/>
+   <frame tileid="52" duration="100"/>
+   <frame tileid="33" duration="100"/>
+   <frame tileid="43" duration="100"/>
+   <frame tileid="53" duration="100"/>
+   <frame tileid="63" duration="100"/>
+   <frame tileid="73" duration="100"/>
+   <frame tileid="83" duration="100"/>
+   <frame tileid="93" duration="100"/>
+   <frame tileid="103" duration="100"/>
+  </animation>
+ </tile>
  <tile id="135">
   <animation>
    <frame tileid="135" duration="100"/>

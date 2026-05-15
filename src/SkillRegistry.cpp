@@ -275,7 +275,7 @@ SkillRegistry::SkillRegistry()
         return s;
         });
 
-    Register("taunt ", [](int cost) {
+    Register("taunt", [](int cost) {
         Skill s("Taunt", DamageType::Physical, 0, 0.0f, cost, "taunt");
         s.SetDescription("Gain 5(+100/(MaxHealth/CurrentHealth) Power, 50 Initiative and 20 Lifesteal");
         s.AddEffect({
@@ -858,8 +858,8 @@ SkillRegistry::SkillRegistry()
         });
 
     //in-acabada
-    Register("idle", [](int cost) {
-        Skill s("Idle", DamageType::None, 0, 0.0f, cost, "idle");
+    Register("idles", [](int cost) {
+        Skill s("Idles", DamageType::None, 0, 0.0f, cost, "idles");
         s.AddEffect({
             "Remove all stat and status changes",
             [](Character* caster, Character* target) {
