@@ -2,8 +2,8 @@
 <character name="ToxicJelly">
 
 	<visuals
-	spritesheet="Assets/Textures/Animations/ToxicJelly.png"
-	tsx="Assets/Textures/Animations/ToxicJelly.tsx"
+	spritesheet="Assets/Textures/Animations/ToxicJellySpritesheet.png"
+	tsx="Assets/Textures/Animations/ToxicJellySpritesheet.tsx"
     >
 
 		<animations>

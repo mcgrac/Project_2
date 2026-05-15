@@ -12,7 +12,7 @@
 #include "NPC.h"
 #include "Combat.h"
 #include "Ship.h"
-#include "SceneUtils.h"
+
 
 
 #pragma endregion Chart
@@ -50,7 +50,7 @@ const SDL_Rect DockyardScene::FRONT_SPEED_BOUND2 = { 704, 423, 23, 19 };
 #pragma endregion
 #pragma endregion NPC
 
-const SDL_Rect DockyardScene::HUMAN_NPC_BOUNDS = { 534, 107, 549, 660 };
+const SDL_Rect DockyardScene::HUMAN_NPC_BOUNDS = { 534, 107, 549, 616 };
 const SDL_Rect DockyardScene::BIRD_NPC_BOUNDS = { 216, 444, 100, 124 };
 
 #pragma endregion
@@ -67,14 +67,14 @@ const SDL_Rect DockyardScene::UPGRADE_BUTTON_BOUNDS = { 860, 239, 183, 63 };
 #pragma endregion
 #pragma endregion Gold Counter
 
-const SDL_Rect DockyardScene::GOLD_COUNTER_BOUNDS = { 534, 107, 549, 660 };
+const SDL_Rect DockyardScene::GOLD_COUNTER_BOUNDS = { 1121, 30, 549, 660 };
 const SDL_Rect DockyardScene::GOLD_COUNTER2_BOUNDS = { 860, 164, 119, 64 };
 
 #pragma endregion
 #pragma endregion
 
 DockyardScene::DockyardScene(Dockyard* dockyard, Party* allied)
-    : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr), ownerSprite(nullptr), showChart(false)
+    : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr), ownerSprite(nullptr), showChart(false), goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
 {
     sceneName = "DockyardScene";
 }
@@ -125,6 +125,8 @@ void DockyardScene::Update(float dt)
             Engine::GetInstance().render->DrawTexture(chartNormal, CHART_BOUNDS.x, CHART_BOUNDS.y);
         }
     }
+
+    goldCounter.Update(alliedParty->GetGold(), dt);
 }
 
 void DockyardScene::PostUpdate(float dt)
@@ -180,7 +182,15 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
     case BACK_BUTTON_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
         showChart = false;
+        goldCounter.MoveCounter(1144, 62);
         Engine::GetInstance().scene->PopScene();
+        break;
+    case BACK_BUTTON_ID2:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
+        showChart = false;
+        goldCounter.MoveCounter(1144, 62);
+        Engine::GetInstance().uiManager->RemoveElementsByRange(0, 100);
+        CreateUI();
         break;
     case START_DIALOGUE:
     {
@@ -279,6 +289,7 @@ void DockyardScene::PushDialogue()
                 if (action == "upgrade")
                 {
                     LOG("DOCKYARD: upgrade");
+                    goldCounter.MoveCounter(GOLD_COUNTER2_BOUNDS.x+23, GOLD_COUNTER2_BOUNDS.y+32);
                     CreateChartButtons();
                     showChart = true;
                 }
@@ -302,7 +313,7 @@ void DockyardScene::CreateChartButtons()
 
     SDL_Rect backBounds = BACK_BUTTON_BOUNDS;
     Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
+        UIElementType::BUTTON, BACK_BUTTON_ID2, "", backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
     );
 }

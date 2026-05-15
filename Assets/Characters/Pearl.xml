@@ -2,8 +2,8 @@
 <character name="Pearl">
 
 	<visuals
-	spritesheet="Assets/Textures/Animations/Pearl.png"
-	tsx="Assets/Textures/Animations/Pearl.tsx"
+	spritesheet="Assets/Textures/Animations/PearlSpritesheet.png"
+	tsx="Assets/Textures/Animations/PearlSpritesheet.tsx"
     >
 
 		<animations>

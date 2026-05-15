@@ -2,8 +2,8 @@
 <character name="LilBuddy1">
 
 	<visuals
-	spritesheet="Assets/Textures/Animations/LilBuddy1.png"
-	tsx="Assets/Textures/Animations/LilBuddy1.tsx"
+	spritesheet="Assets/Textures/Animations/LilBuddy1Spritesheet.png"
+	tsx="Assets/Textures/Animations/LilBuddy1Spritesheet.tsx"
     >
 
 		<animations>
