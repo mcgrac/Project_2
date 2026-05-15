@@ -27,6 +27,8 @@ Shop::~Shop()
 
 void Shop::GenerateItems(Faction faction)
 {
+    if (!currentItems.empty()) { return; }
+
     ClearCurrentItems();
 
     //Faction islandFaction = island->GetIslandFaction();
