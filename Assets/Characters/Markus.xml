@@ -25,7 +25,7 @@
         maxHealth="90"
         power="70"
         durability="0"
-        maxDurability="40"
+        maxDurability="70"
         speed="38"
         lifesteal="0"
         healingPower="0"

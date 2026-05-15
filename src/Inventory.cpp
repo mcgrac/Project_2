@@ -54,19 +54,9 @@ int Inventory::GetItemCount(const std::string& itemId) const
 
 bool Inventory::EquipItem(const std::string& characterId, EquippableItem* item)
 {
-    if (item == nullptr) 
-    { 
-#if _DEBUG
-        LOG("EquipItem: item es nullptr");
-#endif // _DEBUG
-        return false; 
-    }
-
     std::vector<EquippableItem*>& slots = equippedItems[characterId];
     if (slots.size() >= 3) { return false; }
-
-    EquippableItem* owned = static_cast<EquippableItem*>(item->Clone());
-    slots.push_back(owned);
+    slots.push_back(item);
 
 #if _DEBUG
     LOG("--- [DEBUG] Item Equipped ---");

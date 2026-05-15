@@ -7,14 +7,11 @@
     >
 
 		<animations>
-			<anim name="idle" tile="0" loop="true"/>
-			<anim name="dead" tile="112" loop="false"/>
+			<anim name="idle" tile="2" loop="true"/>
+			<anim name="dead" tile="46" loop="false"/>
 
-			<anim name="encourage" tile="9" loop="false"/>
-			<anim name="battle_fury" tile="11" loop="false"/>
-			<anim name="slash" tile="5" loop="false"/>
-			<anim name="shield_bash" tile="3" loop="false"/>
-			<anim name="double_blade" tile="7" loop="false"/>
+			<anim name="bird_flying" tile="93" loop="false"/>
+			<anim name="paper_bird_projectile" tile="97" loop="false"/>
 
 		</animations>
 
@@ -25,7 +22,7 @@
         maxHealth="100"
         power="46"
         durability="0"
-        maxDurability="80"
+        maxDurability="70"
         speed="30"
         lifesteal="0"
         healingPower="0"

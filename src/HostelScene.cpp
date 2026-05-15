@@ -143,7 +143,33 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case START_DIALOGUE:
     {
+        //start dialogue
         PushDialogue();
+        //NPC* npc = hostel->GetOwner();
+        //if (npc == nullptr)
+        //{
+        //    LOG("Hostel: NPC es nullptr");
+        //    break;
+        //}
+        //else {
+        //    LOG("Hostel: NPC correcto");
+        //}
+
+        //LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
+        //Engine::GetInstance().scene->PushScene(
+        //    new DialogueScene(npc->GetDialogueId(),
+        //        [this]()
+        //        {
+        //            std::string action = DialogueManager::GetLastChoiceTag();
+        //            
+        //            if (action == "rest")
+        //            {
+        //                LOG("Hostel: abrir panel de descanso");
+        //                showRestPanel = true;
+        //            }
+        //        }
+        //    )
+        //);
         break;
     }
     case 20:
@@ -152,20 +178,11 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
             Engine::GetInstance().audio->PlayFx(restfx);
             hostel->Rest(alliedParty);
             showRestPanel = false;
-            hostelOpen = false; 
         }
         else {
 #if _DEBUG
             LOG("Not enough gold for resting");
 #endif // _DEBUG
-        }
-
-        {
-            IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
-            if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
-            {
-                Engine::GetInstance().scene->PopScene();
-            }
         }
 
         break;
@@ -188,14 +205,6 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
         showRestPanel = false;
         showSelectCharaPanel = false;
         hostelOpen = false;
-
-        {
-            IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
-            if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
-            {
-                Engine::GetInstance().scene->PopScene();
-            }
-        }
         break;
 
     //characters selection panel
@@ -205,15 +214,6 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
         hostel->GetADrink(alliedParty, uiElement->text);
         //showRestPanel = false;
         showSelectCharaPanel = false;
-        hostelOpen = false;
-        {
-            IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
-            if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
-            {
-                Engine::GetInstance().scene->PopScene();
-            }
-        }
-
         break;
     case 33:
         showSelectCharaPanel = false;
@@ -227,8 +227,6 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
 }
 void HostelScene::OnResume()
 {
-    if (pendingPop) { return; }
-
     CreateUI();
 }
 

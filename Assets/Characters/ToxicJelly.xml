@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<character name="Theresia">
+<character name="ToxicJelly">
 
 	<visuals
-	spritesheet="Assets/Textures/Animations/TheresiaSpritesheet.png"
-	tsx="Assets/Textures/Animations/TheresiaSpritesheet.tsx"
+	spritesheet="Assets/Textures/Animations/ToxicJelly.png"
+	tsx="Assets/Textures/Animations/ToxicJelly.tsx"
     >
 
 		<animations>
 			<anim name="idle" tile="0" loop="true"/>
-			<anim name="dead" tile="112" loop="false"/>
+			<anim name="dead" tile="2" loop="false"/>
 
-			<anim name="toxic_bubbles" tile="9" loop="false"/>
+			<anim name="toxic_bubbles" tile="1" loop="false"/>
 
 
 		</animations>
@@ -22,7 +22,7 @@
         maxHealth="100"
         power="20"
         durability="0"
-        maxDurability="80"
+        maxDurability="70"
         speed="30"
         lifesteal="0"
         healingPower="0"

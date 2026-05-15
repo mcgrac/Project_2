@@ -163,11 +163,6 @@ void Character::LevelUp()
 	SetTotalDurability();
 	SetTotalPower();
 	SetTotalSpeed();
-
-#if _DEBUG
-	LOG("Character %s LEVEL UP", name.c_str());
-#endif // _DEBUG
-
 }
 
 void Character::Draw(float dt) 
