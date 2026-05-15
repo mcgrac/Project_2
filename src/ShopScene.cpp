@@ -202,7 +202,9 @@ void ShopScene::LoadTextures()
     keyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/keyCounter.png");
 
     
-    //GoldCounter goldCounter(0, "Assets/Textures/Animations/coin.png", 1000, 50);
+    std::unordered_map<int, std::string> aliases = { {0,"idle"} };
+    anims.LoadFromTSX("Assets/Textures/Animations/chestAnimated.tsx", aliases);
+    anims.SetLoop("idle", false);
 
     fullBackground = Engine::GetInstance().textures->Load((path + "/fullBack.png").c_str());
     characterSprite = Engine::GetInstance().textures->Load((path + "/NPC.png").c_str());
@@ -241,6 +243,11 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case OPEN_BUTTON_ID:
         //if money and animationPlaying 0, take money. else break
+        if (alliedParty->GetInventory().GetItemCount("key") < 1) { break; }
+        alliedParty->GetInventory().ConsumeItem("key");
+        chestPopped = true;
+        anims.SetCurrent("idle");
+        CreateItemButtons();
         //playAnimation
         //put animationPlaying to 1
         break;

@@ -4,6 +4,7 @@
 #include "SDL3/SDL.h"
 #include "EquippableItem.h"
 #include "SceneUtils.h"
+#include "Animation.h"
 
 struct SDL_Texture;
 class Party;
@@ -58,7 +59,7 @@ private:
     //gold counter
     GoldCounter goldCounter;
 
-    AnimationSet anims;
+    
 
     static constexpr int BACK_BUTTON_ID = 1;
     static constexpr int OPEN_SHOP_BUTTON = 2;
@@ -152,6 +153,10 @@ private:
     int buttonPress;
     bool chestOpen = 0;
     bool shopOpen = 0;
+    bool chestPopped = 0;
+
+    SDL_Texture* chestTexture = nullptr;
+    AnimationSet anims;
 
     int potNum;
     int keyNum;

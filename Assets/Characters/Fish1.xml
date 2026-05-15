@@ -3,7 +3,7 @@
 
 	<visuals
 	spritesheet="Assets/Textures/Animations/Fish1Spritesheet.png"
-	tsx="Assets/Textures/Animations/Fisj1Spritesheet.tsx"
+	tsx="Assets/Textures/Animations/Fish1Spritesheet.tsx"
     >
 
 		<animations>

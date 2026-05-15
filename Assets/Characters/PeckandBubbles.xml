@@ -2,8 +2,8 @@
 <character name="PecksandBubbles">
 
 	<visuals
-	spritesheet="Assets/Textures/Animations/PecksandBubbles.png"
-	tsx="Assets/Textures/Animations/PecksandBubbles.tsx"
+	spritesheet="Assets/Textures/Animations/PecksandBubblesSpritesheet.png"
+	tsx="Assets/Textures/Animations/PecksandBubblesSpritesheet.tsx"
     >
 
 		<animations>

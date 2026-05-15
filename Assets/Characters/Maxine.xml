@@ -2,8 +2,8 @@
 <character name="Maxine">
 
 	<visuals
-	spritesheet="Assets/Textures/Animations/Maxine.png"
-	tsx="Assets/Textures/Animations/Maxine.tsx"
+	spritesheet="Assets/Textures/Animations/MaxineSpritesheet.png"
+	tsx="Assets/Textures/Animations/MaxineSpritesheet.tsx"
     >
 
 		<animations>
