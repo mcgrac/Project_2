@@ -51,7 +51,7 @@ IslandInteriorScene::IslandInteriorScene(Island* island, Party* allied, Ship* _s
     , hostelButton(nullptr)
     , chestButton(nullptr)
     , exitButton(nullptr)
-    ,goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
+    ,goldCounter(0, "Assets/Textures/Animations/coin.png", 1160, 62)
 {
     sceneName = "islandInterior";
 }
@@ -68,6 +68,16 @@ void IslandInteriorScene::Load()
 
 void IslandInteriorScene::Update(float dt) {
    
+    //check if music is playing
+  if(isMusicChanged==false){ Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Island" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".wav").c_str()); }
+   
+    isMusicChanged = true;
+    if (!Engine::GetInstance().audio->IsMusicPlaying()) {
+        LOG("Play music again!");
+        //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
+        Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Island" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".wav").c_str());
+    }
+ 
 
     if (island->GetIslandFaction() == IslandFaction::BIRD || island->GetIslandFaction() == IslandFaction::SIRENS) {
         anims.Update(dt);
@@ -83,6 +93,7 @@ void IslandInteriorScene::Update(float dt) {
     else{ Engine::GetInstance().render->DrawTexture(background, 0, 0); }
 
     UpdateSound();
+    
     goldCounter.Update(alliedParty->GetGold(), dt);
 
 }
@@ -167,6 +178,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
 
     case LEAVE_BUTTON_ID:
         // Volver al mapa (IslandScene → InGameScene)
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Start.wav");
         Engine::GetInstance().scene->PopScene();
         break;
 

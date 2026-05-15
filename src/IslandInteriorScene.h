@@ -95,6 +95,7 @@ private:
 
     //audio variables
     int ambiance;
+    bool isMusicChanged = false;
     void LoadSound();
     void unloadSound();
     void UpdateSound();
