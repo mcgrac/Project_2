@@ -36,7 +36,7 @@ HostelScene::HostelScene(Hostel* hostel, Party* allied)
       showRestPanel(false),
       showSelectCharaPanel(false),
       pendingRefresh(false),
-    goldCounter(0, "Assets/Textures/Animations/coin.png", 1132, 46)
+    goldCounter(0, "Assets/Textures/Animations/coin.png", 1160, 62)
 {
     sceneName = "HostelScene";
 }
@@ -84,7 +84,8 @@ void HostelScene::Update(float dt)
         CreateUI();
     }
     if(hostelOpen == 1){ Engine::GetInstance().render->DrawTexture(fullBackground, 0, 0); }
-    else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
+    else { Engine::GetInstance().render->DrawTexture(background, 0, 0); Engine::GetInstance().render->DrawTexture(moneyCounter, 1121, 30, nullptr, 0);
+    }
 
     goldCounter.Update(alliedParty->GetGold(), dt);
 }
@@ -117,6 +118,7 @@ void HostelScene::LoadTextures()
     exitButton = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
     restButton = Engine::GetInstance().textures->Load("Assets/Textures/HostelScene/RestButton.png");
     emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
+    moneyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/moneyCounter.png");
 
     IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
     std::string path = "Assets/Textures/HostelScene/" + SceneUtils::GetFactionString(faction) + "/";

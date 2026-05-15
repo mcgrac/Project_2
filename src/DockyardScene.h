@@ -2,6 +2,7 @@
 #include "BaseScene.h"
 #include "Dockyard.h"
 #include "Party.h"
+#include "SceneUtils.h"
 #include <SDL3/SDL.h>
 
 struct SDL_Texture;
@@ -34,9 +35,12 @@ private:
     Dockyard* dockyard; 
     Party* alliedParty;  
 
+    GoldCounter goldCounter;
+
     //GoldCounter goldCounter;
 
     static constexpr int BACK_BUTTON_ID = 1;
+    static constexpr int BACK_BUTTON_ID2 = 4;
     static constexpr int START_DIALOGUE = 2;
     static constexpr int IMPROVE_SHIP = 3;
 
