@@ -67,7 +67,7 @@
 		<stat type="HEALTH" value="100"/>
 		<stat type="SPEED" value="-30"/>
 	</item>
-	<item name="Eyeballse" type ="equippable" faction="SIREN" price="40">
+	<item name="Eyeballs" type ="equippable" faction="SIREN" price="40">
 		<stat type="HEALING_POWER" value="-25"/>
 		<stat type="HEALTH" value="25"/>
 		<stat type="LIFESTEAL" value="30"/>
