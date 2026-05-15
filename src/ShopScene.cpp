@@ -47,6 +47,9 @@ const SDL_Rect ShopScene::CROSS_BOUNDS2 = { 118, 63, 72, 72 };
 #pragma endregion OPEN_BUTTON
 const SDL_Rect ShopScene::OPEN_BUTTON_BOUNDS = { 990, 250, 202, 63 };
 #pragma endregion
+#pragma endregion CHEST_ITEM_POSITION
+const SDL_Rect ShopScene::CHEST_ITEM_POSITIONS = { 526, 185, 229, 304 };
+#pragma endregion
 #pragma endregion
 
 ShopScene::ShopScene(Shop* shop, Party* allied)
@@ -74,7 +77,7 @@ void ShopScene::Load()
 
 void ShopScene::Update(float dt)
 {
-    goldCounter.Update(alliedParty->GetGold(), dt);
+    
 
     if (pendingDialogue)
     {
@@ -138,6 +141,8 @@ void ShopScene::Update(float dt)
         alliedParty->AddGold(1000);
         LOG("Party Gold is: %d", alliedParty->GetGold());
     }
+
+    goldCounter.Update(alliedParty->GetGold(), dt);
 }
 
 void ShopScene::PostUpdate(float dt)
@@ -210,17 +215,20 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     case BACK_BUTTON_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().scene->PopScene();
+        goldCounter.MoveCounter( 1144, 62);
         break;
     case OPEN_CHEST_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
         OpenUIChest();
+        goldCounter.MoveCounter(1016, 101);
         break;
     case OPEN_SHOP_BUTTON:
     {
         Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
         PushDialogue();
+        goldCounter.MoveCounter(965, 328);
         break;
     }
     case CLOSE_CHEST_ID:
@@ -228,6 +236,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 300);
         chestOpen = 0;
         shopOpen = 0;
+        goldCounter.MoveCounter(1144, 62);
         CreateUI();
         break;
     case OPEN_BUTTON_ID:

@@ -725,6 +725,8 @@ void CombatScene::CreateEnemyParty()
 {
     enemyParty = new Party("Enemigos");
 
+    
+
     //names of the enemies
     const char* enemyNames[] = { "Raptor", "Rex", "Chaman" };
 

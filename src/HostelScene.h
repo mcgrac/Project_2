@@ -35,6 +35,8 @@ public:
     SDL_Rect GetMealBounds() const;
     SDL_Rect GetOwnerBounds() const;
 
+
+
 private:
     void PushDialogue();
 

@@ -85,6 +85,8 @@ void HostelScene::Update(float dt)
     }
     if(hostelOpen == 1){ Engine::GetInstance().render->DrawTexture(fullBackground, 0, 0); }
     else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
+
+    goldCounter.Update(alliedParty->GetGold(), dt);
 }
 
 void HostelScene::PostUpdate(float dt)
@@ -139,6 +141,7 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
         //sound of basic button
         //goldCounter.position();
         Engine::GetInstance().audio->PlayFx(buttonPress);
+        goldCounter.MoveCounter(1144, 62);
         Engine::GetInstance().scene->PopScene();
         break;
     case START_DIALOGUE:
@@ -202,6 +205,7 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 22:
         //back panel
         Engine::GetInstance().audio->PlayFx(buttonPress);
+        goldCounter.MoveCounter(1144, 62);
         showRestPanel = false;
         showSelectCharaPanel = false;
         hostelOpen = false;
@@ -356,6 +360,7 @@ void HostelScene::PushDialogue()
                 {
                     LOG("Hostel: abrir panel de descanso");
                     showRestPanel = true;
+                    goldCounter.MoveCounter(goldCounterx+16, goldCountery+16);
                 }
                 else if (popOnLeave)
                 {

@@ -58,6 +58,8 @@ private:
     //gold counter
     GoldCounter goldCounter;
 
+    AnimationSet anims;
+
     static constexpr int BACK_BUTTON_ID = 1;
     static constexpr int OPEN_SHOP_BUTTON = 2;
     static constexpr int BUY_KEY = 3;
@@ -78,13 +80,15 @@ private:
     SDL_Texture* keyButton;
     SDL_Texture* potionButton;
     SDL_Texture* ownerSprite;
-    SDL_Texture* chestButton;
-    SDL_Texture* chestBackground;
-    SDL_Texture* openButton;
     SDL_Texture* moneyCounter;
     SDL_Texture* otherCounter;
     SDL_Texture* keyCounter;
     SDL_Texture* characterSprite;
+
+    SDL_Texture* chestButton;
+    SDL_Texture* chestBackground;
+    SDL_Texture* openButton;
+    SDL_Texture* chestSpritesheet;
     std::vector<SDL_Texture*> loadedItemTextures;
 #pragma endregion
 
@@ -129,6 +133,12 @@ private:
 #pragma endregion OpenButton
 
     static const SDL_Rect OPEN_BUTTON_BOUNDS;
+
+#pragma endregion
+
+#pragma endregion CHEST_ITEM_POSITIONS
+
+    static const SDL_Rect CHEST_ITEM_POSITIONS;
 
 #pragma endregion
 #pragma endregion
