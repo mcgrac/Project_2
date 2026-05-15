@@ -285,7 +285,10 @@
   </ItemGroup>
   <ItemGroup>
     <Xml Include="Assets\Characters\Chaman.xml" />
+    <Xml Include="Assets\Characters\Fatuus.xml" />
     <Xml Include="Assets\Characters\Gerbera.xml" />
+    <Xml Include="Assets\Characters\Ignis.xml" />
+    <Xml Include="Assets\Characters\Jochi.xml" />
     <Xml Include="Assets\Characters\Markus.xml" />
     <Xml Include="Assets\Characters\Raptor.xml" />
     <Xml Include="Assets\Characters\Rex.xml" />

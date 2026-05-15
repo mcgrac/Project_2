@@ -211,7 +211,16 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
 
 void DockyardScene::OnResume()
 {
-    //CreateUI();
+    if (pendingPop) { return; }
+
+    if (showChart)
+    {
+        CreateChartButtons();
+    }
+    else
+    {
+        CreateUI();
+    }
 }
 
 void DockyardScene::OnPause()
