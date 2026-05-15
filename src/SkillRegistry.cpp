@@ -762,7 +762,7 @@ SkillRegistry::SkillRegistry()
                 int damage = (int)target->GetPoisonDamage() * poisonDamageIncrease;
                 target->SetPoisoned(true, damage, caster);
 #if _DEBUG
-                LOG("ABILITY TOXIC BUBBLES BY  TOXIC JELLY| Poison stat mod of %s(target) before was: %d, and now is: %d, and Poison Debug %d", target->GetName().c_str(), poisonDamage, target->GetPoisonDamage(), poisonDamageDebug);
+                LOG("ABILITY TOXIC BUBBLES BY  TOXIC JELLY| Poison stat mod of %s(target) before was: %d, and now is: %d", target->GetName().c_str(), poisonDamageDebug, target->GetPoisonDamage());
 #endif // _DEBUG
 
                 //reduce healing power

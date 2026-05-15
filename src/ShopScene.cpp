@@ -229,6 +229,15 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         chestOpen = 0;
         shopOpen = 0;
         CreateUI();
+
+        {
+            IslandFaction faction = shop->GetIsland()->GetIslandFaction();
+            if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
+            {
+                Engine::GetInstance().scene->PopScene();
+            }
+        }
+
         break;
     case OPEN_BUTTON_ID:
         //if money and animationPlaying 0, take money. else break
@@ -330,6 +339,8 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
 
 void ShopScene::OnResume()
 {
+    if (pendingPop) { return; }
+
     CreateUI();
 
     if (state == ShopState::SHOW_ITEMS)
@@ -397,20 +408,6 @@ void ShopScene::CreateUI()
 
 }
 
-
-
-/*Faction ShopScene::IslandFactionToFaction(IslandFaction fact)
-{
-    Faction tempFaction = Faction::UNDEFINED;
-
-    if (fact == IslandFaction::HUMANS) { tempFaction = Faction::HUMAN; }
-    else if (fact == IslandFaction::BIRD) { tempFaction = Faction::BIRD; }
-    else if (fact == IslandFaction::SIRENS) { tempFaction = Faction::SIREN; }
-    else if (fact == IslandFaction::REPTILES) { tempFaction = Faction::REPTILE; }
-
-    return tempFaction;
-}*/
-
 void ShopScene::PushDialogue()
 {
     NPC* npc = shop->GetOwner();
@@ -465,8 +462,6 @@ void ShopScene::PushDialogue()
         )
     );
 }
-
- 
 
 void ShopScene::CreateItemButtons()
 {
@@ -550,8 +545,6 @@ void ShopScene::CreateItemButtons()
         }
     }
 }
-
-
 
 void ShopScene::OpenUIChest()
 {

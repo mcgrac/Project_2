@@ -27,12 +27,10 @@ Shop::~Shop()
 
 void Shop::GenerateItems(Faction faction)
 {
+    if (!currentItems.empty()) { return; }
+
     ClearCurrentItems();
 
-    //Faction islandFaction = island->GetIslandFaction();
-
-    //Faction islandFaction = island->GetIslandFaction();
-    //auto items = Engine::GetInstance().itemManager->GetItemsByFaction(faction);
     std::vector<EquippableItem*> equippables = Engine::GetInstance().itemManager->GetEquippablesByFaction(faction);
     std::vector<ConsumableItem*> consumables;
     std::vector<KeyItem*> keys;
@@ -52,8 +50,6 @@ void Shop::GenerateItems(Faction faction)
             keys.push_back(key);
         }
     }
-
-    //std::shuffle(items.begin(), items.end(), std::mt19937(std::random_device()()));
 
     std::mt19937 rng(std::random_device{}());
 
