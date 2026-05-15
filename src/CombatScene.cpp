@@ -154,6 +154,9 @@ void CombatScene::Update(float dt)
         c->Update(dt);
     }
 
+    //draw status icons
+    DrawStatusIcons();
+
     //------Draw panels--------------------
     DrawAlliedPanels();
     DrawEnemyPanels();
@@ -222,6 +225,7 @@ void CombatScene::Unload()
     Engine::GetInstance().textures->UnLoad(arrow);
     Engine::GetInstance().textures->UnLoad(poisonIcon);
     Engine::GetInstance().textures->UnLoad(burnIcon);
+    Engine::GetInstance().textures->UnLoad(potionIcon);
 
     for (auto& pair : characterIcons)
     {
@@ -245,6 +249,7 @@ void CombatScene::LoadTextures()
     arrow = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/ArrowMarker.png");
     poisonIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/PoisonIndicator.png");
     burnIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/FireIndicator.png");
+    potionIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/FireIndicator.png");
 
     // Cargar icono de cada personaje dinámicamente desde las parties
     auto loadIconForParty = [&](Party* party)
@@ -364,6 +369,35 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
         combat->SubmitPlayerChoice(-1, 0);
         HideCombatUI();
         selectedSkillIdx = -1;
+        break;
+    }
+    case 50: // POCIÓN
+    {
+        if (combatInputConsumed) { break; }
+        combatInputConsumed = true;
+
+        int potions = alliedParty->GetInventory().GetItemCount("consumable");
+        if (potions <= 0)
+        {
+            LOG("CombatScene: no hay pociones.");
+            break;
+        }
+
+        Character* actor = combat->GetCurrentActor();
+        if (actor == nullptr) { break; }
+
+        alliedParty->GetInventory().ConsumeItem("consumable");
+        actor->Heal(POTION_HEAL_AMOUNT);
+
+        LOG("CombatScene: %s usa poción — cura %d HP. HP ahora: %d/%d",
+            actor->GetName().c_str(), POTION_HEAL_AMOUNT,
+            actor->GetCurrentHP(), actor->GetMaxHP());
+
+        HideCombatUI();
+        selectedSkillIdx = -1;
+
+        // Consumir turno igual que el pass
+        combat->SubmitPlayerChoice(-1, 0);
         break;
     }
     default:
@@ -565,24 +599,7 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
         }
         int iconY = panelY + ICON_OFFSET_Y;
         Engine::GetInstance().render->DrawTexture(it->second, iconX, iconY, nullptr, false);
-
-        //int iconX = panelX + ICON_OFFSET_X;
-        //int iconY = panelY + ICON_OFFSET_Y;
-        //SDL_Rect iconDest = { iconX, iconY, ICON_W, ICON_H };
-        //Engine::GetInstance().render->DrawTexture(it->second, iconX, iconY, nullptr, false);
     }
-
-    // 3 — barra de vida
-    //int hpBarX = panelX + HP_BAR_OFFSET_X;
-    //int hpBarY = panelY + HP_BAR_OFFSET_Y;
-
-
-    //DrawHealthBar(hpBarX, hpBarY, c->GetCurrentHP(), c->GetMaxHP());
-
-    //// 4 — barra de iniciativa
-    //int initBarX = panelX + INIT_BAR_OFFSET_X;
-    //int initBarY = panelY + INIT_BAR_OFFSET_Y;
-    //DrawInitiativeBar(initBarX, initBarY, c->GetCurrentInitiative());
 
     int hpBarX;
     int initBarX;
@@ -606,20 +623,6 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
 
 void CombatScene::DrawHealthBar(int x, int y, int currentHP, int maxHP, bool leftToRight)
 {
-    //if (maxHP <= 0) return;
-
-    //// Cada cuadradito es el 10% de la vida máxima del personaje
-    //float hpPerChunk = maxHP / (float)HP_MAX_CHUNKS;
-    //int filledChunks = (int)(currentHP / hpPerChunk);
-    //filledChunks = std::min(filledChunks, HP_MAX_CHUNKS);
-    //filledChunks = std::max(filledChunks, 0);
-
-    //for (int i = 0; i < filledChunks; i++)
-    //{
-    //    int chunkX = x + i * (HP_CHUNK_W);
-    //    Engine::GetInstance().render->DrawTexture(hpBarChunkTexture, chunkX, y, nullptr, false);
-    //}
-
     if (maxHP <= 0) { return; }
 
     float hpPerChunk = maxHP / (float)HP_MAX_CHUNKS;
@@ -643,18 +646,6 @@ void CombatScene::DrawHealthBar(int x, int y, int currentHP, int maxHP, bool lef
 
 void CombatScene::DrawInitiativeBar(int x, int y, int currentInitiative, bool leftToRight)
 {
-    // Cada cuadradito es el 10% de 250 (= 25 puntos de iniciativa)
-    //int maxInitiative = 250;
-    //int clampedInit = std::min(currentInitiative, maxInitiative);
-    //clampedInit = std::max(clampedInit, 0);
-    //int filledChunks = (int)(clampedInit / (maxInitiative / (float)INIT_MAX_CHUNKS));
-    //filledChunks = std::min(filledChunks, INIT_MAX_CHUNKS);
-
-    //for (int i = 0; i < filledChunks; i++)
-    //{
-    //    int chunkX = x + i * (INIT_CHUNK_W - 2);
-    //    Engine::GetInstance().render->DrawTexture(initiativeBarChunkTexture, chunkX, y, nullptr, false);
-    //}
 
     int clampedInit = std::max(std::min(currentInitiative, MAX_INITIATIVE), 0);
     int filledChunks = std::min((int)(clampedInit / (MAX_INITIATIVE / (float)INIT_MAX_CHUNKS)), INIT_MAX_CHUNKS);
@@ -820,6 +811,17 @@ void CombatScene::ShowSkillButtons()
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
         {}, abilityIcons, 0, passBounds.w, passBounds.h
     );
+
+    // Botón de poción — justo a la derecha de las skills
+    int potionX = (int)(Engine::GetInstance().window->width / 3) + 5 * 70;
+
+    SDL_Rect potionBounds = { potionX, 500, 64, 64 };
+
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 50, "Potion", potionBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+        {}, abilityIcons, 0, potionBounds.w, potionBounds.h
+    );
 }
 
 void CombatScene::ShowTargetPanel()
@@ -963,6 +965,28 @@ void CombatScene::DrawNextRoundBanner()
 {
     Vector2D position{ 0.0f, Engine::GetInstance().window->height / 2.0f };
     Engine::GetInstance().render->DrawTexture(nextRound, (int)position.getX(), (int)position.getY());
+}
+
+void CombatScene::DrawStatusIcons()
+{
+    for (Character* c : combat->GetAllCombatants())
+    {
+        if (!c->GetIsAlive()) { continue; }
+
+        int iconX = (int)c->GetPosition().getX() + STATUS_ICON_OFFSET_X;
+        int iconY = (int)c->GetPosition().getY() - STATUS_ICON_Y_OFFSET;
+
+        if (c->IsPoisoned())
+        {
+            Engine::GetInstance().render->DrawTexture(poisonIcon, iconX, iconY, nullptr, false);
+            iconX += STATUS_ICON_SIZE + STATUS_ICON_GAP;
+        }
+
+        if (c->IsBurning())
+        {
+            Engine::GetInstance().render->DrawTexture(burnIcon, iconX, iconY, nullptr, false);
+        }
+    }
 }
 
 void CombatScene::OnResume()
