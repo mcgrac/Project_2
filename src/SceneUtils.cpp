@@ -12,20 +12,14 @@ std::string SceneUtils::GetFactionString(IslandFaction faction)
 {
 	switch (faction)
 	{
-	case IslandFaction::HUMANS:
-		return "human";
-		break;
-	case IslandFaction::BIRD:
-		return "bird";
-		break;
-	case IslandFaction::SIRENS:
-		return "siren";
-		break;
-	case IslandFaction::REPTILES:
-		return "reptile";
-		break;
-	default:
-		return "human";
+	case IslandFaction::HUMANS:    return "human";
+	case IslandFaction::BIRD:      return "bird";
+	case IslandFaction::SIRENS:    return "siren";
+	case IslandFaction::REPTILES:  return "reptile";
+	case IslandFaction::FISH:      return "fish";
+	case IslandFaction::JELLYFISH: return "jellyfish";
+	case IslandFaction::TRIBAL:    return "tribal";
+	default:                       return "human"; // fallback
 	}
 }
 

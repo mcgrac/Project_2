@@ -24,10 +24,13 @@ public:
     // Travel to a specific island by id and fire arrivalIsland callback
     void TravelTo(int islandId);
 
+    Island* GetIslandById(int id) const;
     inline const Island* GetCurrentIsland() const{ return islands.at(currentIslandId); }
     inline int GetCurrentIslandId() const { return currentIslandId; }
     inline const std::unordered_map<int, Island*>& GetAllIslands() const { return islands; }
     inline const std::unordered_map<int, std::vector<int>>& GetTree() const { return tree; }
+    Vector2D GetIslandShipPosition(int islandId) const;
+
     // return id's from the next two childs islands
     const std::vector<int>& GetNextIds(int islandId) const;
 
@@ -40,6 +43,7 @@ public:
     //callback
     std::function<void(Island*)> arrivalIsland;
 
+    inline void SetIslandShipPosition(int islandId, Vector2D pos) { islandShipPositions[islandId] = pos; }
     void SetPendingIsland(int islandId) { pendingIslandId = islandId; }
     int GetPendingIslandId() const { return pendingIslandId; }
     void ConfirmTravel();   // confirma el viaje al pendingIslandId
@@ -52,6 +56,7 @@ private:
     //void UpdateWorld();
     //
 
+    std::unordered_map<int, Vector2D> islandShipPositions;
 
     void RenderWorld(float dt);
 

@@ -683,6 +683,18 @@ void Combat::EndCombat()
         //add damage to the ship
     }
 
+    // Revivir aliados muertos con 1 HP para el siguiente combate
+    for (Character* c : alliedParty->GetMembers())
+    {
+        if (!c->GetIsAlive())
+        {
+            c->ModifyCurrentHealth(1);
+            // Forzar isAlive a true
+            c->RestorePreCombatValues({ 1, true });
+            LOG("Combat: %s revive con 1 HP para el siguiente combate.", c->GetName().c_str());
+        }
+    }
+
     preCombatValues.clear();
     runningCombat = false;
 }

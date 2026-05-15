@@ -174,8 +174,7 @@ void Character::Draw(float dt)
 	int drawX = (int)position.getX() - animFrame.w / 2;
 	int drawY = (int)position.getY() - animFrame.h / 2;
 	
-	double rotation = 0.0f;
-	if (!isAllied) { rotation = -1.0; }
+	bool flipHorizontal = !isAllied;
 
 	float speed = 1.0f;
 
@@ -185,7 +184,10 @@ void Character::Draw(float dt)
 		drawY,
 		&animFrame,
 		speed,
-		rotation
+		0.0f,
+		INT_MAX,
+		INT_MAX,
+		flipHorizontal
 	);
 }
 
