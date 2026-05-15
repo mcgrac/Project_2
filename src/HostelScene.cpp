@@ -183,6 +183,13 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
             Engine::GetInstance().audio->PlayFx(restfx);
             hostel->Rest(alliedParty);
             showRestPanel = false;
+            hostelOpen = false;
+
+            IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
+            if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
+            {
+                Engine::GetInstance().scene->PopScene();
+            }
         }
         else {
 #if _DEBUG
@@ -211,6 +218,13 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
         showRestPanel = false;
         showSelectCharaPanel = false;
         hostelOpen = false;
+        {
+            IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
+            if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
+            {
+                Engine::GetInstance().scene->PopScene();
+            }
+        }
         break;
 
     //characters selection panel
@@ -220,6 +234,14 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
         hostel->GetADrink(alliedParty, uiElement->text);
         //showRestPanel = false;
         showSelectCharaPanel = false;
+        hostelOpen = false;
+        {
+            IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
+            if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
+            {
+                Engine::GetInstance().scene->PopScene();
+            }
+        }
         break;
     case 33:
         showSelectCharaPanel = false;
@@ -233,6 +255,8 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
 }
 void HostelScene::OnResume()
 {
+    if (pendingPop) { return; }
+
     CreateUI();
 }
 
