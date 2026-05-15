@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.12.1" name="CoralSpritesheet" tilewidth="303" tileheight="303" tilecount="30" columns="3">
- <image source="../../../../../../../Desktop/Project II/ProcessFiles/Screens/Combat/Sirens/CoralSpritesheet.png" width="909" height="3030"/>
+ <image source="CoralSpritesheet.png" width="909" height="3030"/>
  <tile id="0">
   <animation>
    <frame tileid="0" duration="100"/>
