@@ -94,6 +94,7 @@ void IslandInteriorScene::Update(float dt) {
 
     UpdateSound();
     
+    Engine::GetInstance().render->DrawTexture(moneyCounter, 1121, 30, nullptr, 0);
     goldCounter.Update(alliedParty->GetGold(), dt);
 
 }
@@ -141,7 +142,7 @@ void IslandInteriorScene::LoadTextures()
     hostelButton = Engine::GetInstance().textures->Load(hostelPath.c_str());
 
     chestButton = Engine::GetInstance().textures->Load(("Assets/Textures/ShopScene/chest" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".png").c_str());
-
+    moneyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/moneyCounter.png");
     if(island->GetIslandFaction()==IslandFaction::BIRD){ backgroundSpritesheet = Engine::GetInstance().textures->Load(("Assets/Textures/Animations/BirdAnimatedBack.png")); }
     else if (island->GetIslandFaction() == IslandFaction::SIRENS) { backgroundSpritesheet = Engine::GetInstance().textures->Load(("Assets/Textures/Animations/SirenAnimatedBack.png")); }
     

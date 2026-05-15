@@ -91,6 +91,7 @@ private:
     SDL_Texture* hostelButton;
     SDL_Texture* chestButton;
     SDL_Texture* exitButton;
+    SDL_Texture* moneyCounter;
 #pragma endregion
 
     //audio variables

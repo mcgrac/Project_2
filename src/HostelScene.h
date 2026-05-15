@@ -61,6 +61,7 @@ private:
     SDL_Texture* restButton;
     SDL_Texture* mealButton;
     SDL_Texture* emptyButtons;
+    SDL_Texture* moneyCounter;
 #pragma endregion
 
 
