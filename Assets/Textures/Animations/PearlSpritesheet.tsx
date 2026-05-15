@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.12.1" name="PearlSpritesheet" tilewidth="303" tileheight="303" tilecount="30" columns="3">
- <image source="../../../../../../../Desktop/Project II/ProcessFiles/Screens/Combat/Sirens/PearlSpritesheet.png" width="909" height="3030"/>
+ <image source="PearlSpritesheet.png" width="909" height="3030"/>
  <tile id="0">
   <animation>
    <frame tileid="0" duration="100"/>
@@ -11,8 +11,6 @@
    <frame tileid="15" duration="100"/>
    <frame tileid="18" duration="100"/>
    <frame tileid="21" duration="100"/>
-   <frame tileid="24" duration="100"/>
-   <frame tileid="27" duration="100"/>
   </animation>
  </tile>
  <tile id="1">
@@ -39,6 +37,8 @@
    <frame tileid="17" duration="100"/>
    <frame tileid="20" duration="100"/>
    <frame tileid="23" duration="100"/>
+   <frame tileid="26" duration="100"/>
+   <frame tileid="29" duration="100"/>
   </animation>
  </tile>
 </tileset>

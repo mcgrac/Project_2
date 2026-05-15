@@ -7,10 +7,10 @@
     >
 
 		<animations>
-			<anim name="idle" tile="0" loop="true"/>
+			<anim name="idle" tile="2" loop="true"/>
 			<anim name="dead" tile="1" loop="false"/>
 
-			<anim name="water_surge" tile="2" loop="false"/>
+			<anim name="water_surge" tile="0" loop="false"/>
 
 
 		</animations>
