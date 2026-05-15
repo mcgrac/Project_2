@@ -505,5 +505,14 @@
     <Xml Include="Assets\Items\Items.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
+    <Xml Include="Assets\Characters\Jochi.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
+    <Xml Include="Assets\Characters\Fatuus.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
+    <Xml Include="Assets\Characters\Ignis.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
