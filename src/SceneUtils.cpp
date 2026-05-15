@@ -135,6 +135,11 @@ void GoldCounter::SetTextureCoin(std::string path)
 {
 	coinIcon = Engine::GetInstance().textures->Load(path.c_str());
 }
+void GoldCounter::MoveCounter(int positionX, int positionY)
+{
+	GoldCounter::position.setX(positionX);
+	GoldCounter::position.setY(positionY);
+}
 #pragma endregion
 
 #pragma region TOOLTIP

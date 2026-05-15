@@ -10,7 +10,7 @@
 #include "Render.h"
 #include "Log.h"
 #include "Ship.h"
-#include "SceneUtils.h"
+
 
 #pragma region POSITIONS
 #pragma region DOCK
@@ -51,6 +51,7 @@ IslandInteriorScene::IslandInteriorScene(Island* island, Party* allied, Ship* _s
     , hostelButton(nullptr)
     , chestButton(nullptr)
     , exitButton(nullptr)
+    ,goldCounter(0, "Assets/Textures/Animations/coin.png", 1160, 62)
 {
     sceneName = "islandInterior";
 }
@@ -66,8 +67,34 @@ void IslandInteriorScene::Load()
 }
 
 void IslandInteriorScene::Update(float dt) {
-    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+   
+    //check if music is playing
+  if(isMusicChanged==false){ Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Island" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".wav").c_str()); }
+   
+    isMusicChanged = true;
+    if (!Engine::GetInstance().audio->IsMusicPlaying()) {
+        LOG("Play music again!");
+        //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
+        Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Island" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".wav").c_str());
+    }
+ 
+
+    if (island->GetIslandFaction() == IslandFaction::BIRD || island->GetIslandFaction() == IslandFaction::SIRENS) {
+        anims.Update(dt);
+        const SDL_Rect& animFrame = anims.GetCurrentFrame();
+
+        Engine::GetInstance().render->DrawTexture(
+            backgroundSpritesheet,
+            0,
+            0,
+            &animFrame
+        );
+    }
+    else{ Engine::GetInstance().render->DrawTexture(background, 0, 0); }
+
     UpdateSound();
+    
+    goldCounter.Update(alliedParty->GetGold(), dt);
 
 }
 
@@ -114,6 +141,10 @@ void IslandInteriorScene::LoadTextures()
     hostelButton = Engine::GetInstance().textures->Load(hostelPath.c_str());
 
     chestButton = Engine::GetInstance().textures->Load(("Assets/Textures/ShopScene/chest" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".png").c_str());
+
+    if(island->GetIslandFaction()==IslandFaction::BIRD){ backgroundSpritesheet = Engine::GetInstance().textures->Load(("Assets/Textures/Animations/BirdAnimatedBack.png")); }
+    else if (island->GetIslandFaction() == IslandFaction::SIRENS) { backgroundSpritesheet = Engine::GetInstance().textures->Load(("Assets/Textures/Animations/SirenAnimatedBack.png")); }
+    
 }
 
 
@@ -147,6 +178,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
 
     case LEAVE_BUTTON_ID:
         // Volver al mapa (IslandScene → InGameScene)
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Start.wav");
         Engine::GetInstance().scene->PopScene();
         break;
 
@@ -203,6 +235,22 @@ void IslandInteriorScene::CreateUI()
         UIElementType::BUTTON, LEAVE_BUTTON_ID, "", leaveBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, leaveBounds.w, leaveBounds.h
     );
+}
+
+void IslandInteriorScene::LoadAnimation()
+{
+    // load
+    if(island->GetIslandFaction()==IslandFaction::BIRD){
+        std::unordered_map<int, std::string> aliases = { {0,"idle"} };
+        anims.LoadFromTSX("Assets/Textures/Animations/BirdAnimatedBack.tsx", aliases);
+        anims.SetCurrent("idle");
+    }
+    else if (island->GetIslandFaction() == IslandFaction::SIRENS) {
+        std::unordered_map<int, std::string> aliases = { {0,"idle"} };
+        anims.LoadFromTSX("Assets/Textures/Animations/SirenAnimatedBack.tsx", aliases);
+        anims.SetCurrent("idle");
+    }
+
 }
 
 //helpers

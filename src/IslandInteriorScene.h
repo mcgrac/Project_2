@@ -2,6 +2,8 @@
 #include "BaseScene.h"
 #include "Island.h"
 #include "Party.h"
+#include "Animation.h"
+#include "SceneUtils.h"
 
 struct SDL_Texture;
 struct SDL_Rect;
@@ -26,6 +28,14 @@ public:
     void OnResume() override;
     void OnPause() override;
     void CreateUI();
+
+    void LoadAnimation();
+    SDL_Texture* backgroundSpritesheet = nullptr;
+    AnimationSet anims;
+
+    //gold counter
+    GoldCounter goldCounter;
+
 
 private:
     Island* island;
@@ -85,6 +95,7 @@ private:
 
     //audio variables
     int ambiance;
+    bool isMusicChanged = false;
     void LoadSound();
     void unloadSound();
     void UpdateSound();
