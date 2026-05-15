@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.12.1" name="LilBuddy1" tilewidth="303" tileheight="303" tilecount="70" columns="7">
- <image source="../../../../../../../Desktop/Project II/ProcessFiles/Screens/Combat/Boss/LilBuddy1.png" width="2121" height="3030"/>
+ <image source="LilBuddy1Spritesheet.png" width="2121" height="3030"/>
  <tile id="2">
   <animation>
    <frame tileid="57" duration="100"/>

@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<character name="Theresia">
+<character name="Fatuus">
 
 	<visuals
-	spritesheet="Assets/Textures/Animations/TheresiaSpritesheet.png"
-	tsx="Assets/Textures/Animations/TheresiaSpritesheet.tsx"
+	spritesheet="Assets/Textures/Animations/FatuusSpritesheet.png"
+	tsx="Assets/Textures/Animations/FatuusSpritesheet.tsx"
     >
 
 		<animations>
-			<anim name="idle" tile="0" loop="true"/>
-			<anim name="dead" tile="112" loop="false"/>
+			<anim name="idle" tile="74" loop="true"/>
+			<anim name="dead" tile="93" loop="false"/>
 
-			<anim name="encourage" tile="9" loop="false"/>
-			<anim name="battle_fury" tile="11" loop="false"/>
-			<anim name="slash" tile="5" loop="false"/>
-			<anim name="shield_bash" tile="3" loop="false"/>
-			<anim name="double_blade" tile="7" loop="false"/>
+			<anim name="tail_slap" tile="135" loop="false"/>
+			<anim name="poison_orb" tile="67" loop="false"/>
+			<anim name="explosion" tile="103" loop="false"/>
+			<anim name="projectile" tile="101" loop="false"/>
+			<anim name="laser" tile="69" loop="false"/>
 
 		</animations>
 
 	</visuals>
 	
 	<stats
-        health="110"
-        maxHealth="110"
-        power="62"
-        durability="10"
-        maxDurability="40"
-        speed="30"
+        health="100"
+        maxHealth="100"
+        power="68"
+        durability="0"
+        maxDurability="70"
+        speed="50"
         lifesteal="0"
         healingPower="0"
         poisonPower="0"
@@ -35,31 +35,31 @@
     />
 
 	<levelScaling
-        maxHealth="6"
-        power="2"
+        maxHealth="3"
+        power="5"
         speed="2"
     />
 
 	<skills>
-		<skill id="encourage" initiativeCost="155" />
-		<skill id="battle_fury" initiativeCost="130" />
-		<skill id="slash" initiativeCost="95" />
-		<skill id="shield_bash" initiativeCost="110" />
-		<skill id="double_blade" initiativeCost="105" />
+		<skill id="tail_slap" initiativeCost="155" />
+		<skill id="poison_orb" initiativeCost="130" />
+		<skill id="explosion" initiativeCost="95" />
+		<skill id="projectile" initiativeCost="110" />
+		<skill id="laser" initiativeCost="105" />
 	</skills>
 
 	<upgradeTree>
 		<tier requiredLevel="5">
-			<optionA name="Heavy Armor"  description="Max health +20, Durability +15" effect1="durability+15" effect2="maxHealth+20"/>
-			<optionB name="Light Armor"   description="Speed +30, Durability +5"  effect1="speed+30" effect2="durability+5" />
+			<optionA name="Sharp-Ended Scales"  description="Power +20, Lifesteal +10" effect1="power+20" effect2="lifesteal+10"/>
+			<optionB name="Reinforced Scales"   description="Durability +15, Lifesteal +20"  effect1="durability+15" effect2="lifesteal+20" />
 		</tier>
 		<tier requiredLevel="10">
-			<optionA name="Solar Cape"    description="Fire modifier +20, Durability +5" effect1="fireMod+20" effect2="durability+5"/>
-			<optionB name="Moonsilver Pendant" description="Healing power +150, Max health +20" effect1="healingPower+150" effect2="maxHealth+20"/>
+			<optionA name="Apex Predator"    description="Power +20, Speed +10" effect1="power+20" effect2="speed+10"/>
+			<optionB name="Elementalist" description="Fire modifier +15, Posion Modifier +15" effect1="firePower+15" effect2="poisonPower+15"/>
 		</tier>
 		<tier requiredLevel="15">
-			<optionA name="Immovable Object" description="Max Durability +20, Durability +30" effect1="maxDurability+20" effect2="durability+30"/>
-			<optionB name="Crown's Will"  description="Max health +40, Speed +10"  effect1="maxHealth+40" effect2="speed+10"  />
+			<optionA name="Specialization" description="Fire Modifier +20, Power+30" effect1="firePower+20" effect2="power+30"/>
+			<optionB name="Adaptability"  description="Fire modifier +10, Posion modifier +15, Speed +10, Lifesteal +15"  effect1="firePower+10" effect2="posionPower+15" effect3="speed+10" effect4="lifesteal+15" />
 		</tier>
 	</upgradeTree>
 

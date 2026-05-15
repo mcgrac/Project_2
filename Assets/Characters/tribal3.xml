@@ -7,10 +7,10 @@
     >
 
 		<animations>
-			<anim name="idle" tile="0" loop="true"/>
-			<anim name="dead" tile="112" loop="false"/>
+			<anim name="idle" tile="9" loop="true"/>
+			<anim name="dead" tile="58" loop="false"/>
 
-			<anim name="hit_fire" tile="9" loop="false"/>
+			<anim name="hit_fire" tile="30" loop="false"/>
 
 
 		</animations>
@@ -22,7 +22,7 @@
         maxHealth="55"
         power="60"
         durability="3"
-        maxDurability="80"
+        maxDurability="70"
         speed="50"
         lifesteal="0"
         healingPower="0"

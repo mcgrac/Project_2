@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.12.1" name="ToxicJelly" tilewidth="303" tileheight="303" tilecount="30" columns="3">
- <image source="../../../../../../../Desktop/Project II/ProcessFiles/Screens/Combat/ToxicJelly/ToxicJelly.png" width="909" height="3030"/>
+ <image source="ToxicJellySpritesheet.png" width="909" height="3030"/>
  <tile id="0">
   <animation>
    <frame tileid="0" duration="100"/>
