@@ -22,6 +22,8 @@ public:
     void Unload() override;
     void LoadTextures() override;
 
+    void Draw(float dt);
+
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
     //helpers

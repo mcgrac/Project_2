@@ -24,7 +24,7 @@ class CombatScene : public BaseScene
 {
 public:
 
-    CombatScene(Party* allied, int _shipLevel);
+    CombatScene(Party* allied, int _shipLevel, IslandFaction _faction);
     ~CombatScene();
 
     void Load() override;
@@ -56,8 +56,11 @@ private:
     bool combatFinished;
     bool playerWon;
 
+    //get enemy names by faction
+    std::vector<std::string> GetEnemyNamesForFaction(IslandFaction faction) const;
     void CreateEnemyParty();
     void DestroyEnemyParty();
+    IslandFaction currentIslandFaction;
 
     SDL_Texture* background;
 
@@ -82,6 +85,8 @@ private:
 
     void UpdateNextRoundPause(float dt);
     void DrawNextRoundBanner();
+
+
 
     // ── Lane selection ───────────────────────────────────────────────────────
     // Tracks which lane each allied character has been assigned to.

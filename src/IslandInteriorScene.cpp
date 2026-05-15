@@ -62,6 +62,7 @@ IslandInteriorScene::~IslandInteriorScene() {}
 void IslandInteriorScene::Load()
 {
     LoadTextures();
+    LoadAnimation();
     LoadSound();
     CreateUI();
 }
@@ -79,18 +80,7 @@ void IslandInteriorScene::Update(float dt) {
     }
  
 
-    if (island->GetIslandFaction() == IslandFaction::BIRD || island->GetIslandFaction() == IslandFaction::SIRENS) {
-        anims.Update(dt);
-        const SDL_Rect& animFrame = anims.GetCurrentFrame();
-
-        Engine::GetInstance().render->DrawTexture(
-            backgroundSpritesheet,
-            0,
-            0,
-            &animFrame
-        );
-    }
-    else{ Engine::GetInstance().render->DrawTexture(background, 0, 0); }
+    Draw(dt);
 
     UpdateSound();
     
@@ -145,6 +135,27 @@ void IslandInteriorScene::LoadTextures()
     if(island->GetIslandFaction()==IslandFaction::BIRD){ backgroundSpritesheet = Engine::GetInstance().textures->Load(("Assets/Textures/Animations/BirdAnimatedBack.png")); }
     else if (island->GetIslandFaction() == IslandFaction::SIRENS) { backgroundSpritesheet = Engine::GetInstance().textures->Load(("Assets/Textures/Animations/SirenAnimatedBack.png")); }
     
+}
+
+void IslandInteriorScene::Draw(float dt)
+{
+    IslandFaction faction = island->GetIslandFaction();
+    if (faction == IslandFaction::SIRENS || faction == IslandFaction::BIRD) {
+        anims.Update(dt);
+
+        const SDL_Rect& animFrame = anims.GetCurrentFrame();
+
+        Engine::GetInstance().render->DrawTexture(
+            backgroundSpritesheet,
+            0,
+            0,
+            &animFrame
+        );
+    }
+    else {
+
+        Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    }
 }
 
 

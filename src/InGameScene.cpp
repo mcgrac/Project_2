@@ -34,6 +34,7 @@ InGameScene::InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* 
     , islandHumanTex(nullptr)
     , islandReptileTex(nullptr)
     , goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
+    , pendingStartIsland(false)
 {
     sceneName = "InGameScene";
 }
@@ -87,7 +88,9 @@ void InGameScene::Load()
     int island0CenterX = 224;
     int islandOffsetX = 125;
     int island0CenterY = 189;
-    ship->SetPosition(Vector2D((float)(island0CenterX + islandOffsetX), (float)(island0CenterY)));
+    Vector2D startPos = Vector2D((float)(island0CenterX + islandOffsetX), (float)(island0CenterY));
+    ship->SetPosition(startPos);
+    worldMap->SetIslandShipPosition(0, startPos);
 
     CreateUI();
 
@@ -111,9 +114,24 @@ void InGameScene::Update(float dt)
     {
         firstFrame = false;
         PushSceneFromInGame(new DialogueScene("intro_boss", [this]() {
-            LOG("Intro terminada");
+            LOG("Intro terminada - lanzando llegada a isla 0");
+            pendingStartIsland = true;  // flag nuevo, no llamar PushScene aquí directamente
             }));
         return;
+    }
+
+    // Procesar el flag en el mismo Update, fuera del firstFrame
+    if (pendingStartIsland)
+    {
+        pendingStartIsland = false;
+        Island* startIsland = worldMap->GetIslandById(0);
+        if (startIsland != nullptr)
+        {
+            worldMap->SetCurrentIsland(0);
+            Engine::GetInstance().scene->PushScene(
+                new IslandScene(startIsland, worldMap, alliedParty, ship)
+            );
+        }
     }
 
     //render background
@@ -206,7 +224,7 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
         // PushScene — InGameScene queda suspendida con todo su estado
         //Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty, ship->GetLevel()));
         Engine::GetInstance().audio->PlayFx(startCombat);
-        PushSceneFromInGame(new CombatScene(alliedParty, ship->GetLevel()));
+        PushSceneFromInGame(new CombatScene(alliedParty, ship->GetLevel(), worldMap->GetCurrentIsland()->GetIslandFaction()));
         break;
     case 2:
         //Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
@@ -282,13 +300,13 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
                     // Reposition ship to the right offset of the destination island
                     // so the next departure starts correctly
                     int destCenterX = 224.0f + 448.0f * (float)destCol;
-                    ship->SetPosition(Vector2D(destCenterX + 125.0f, (float)toCY));
+                    Vector2D destPos = Vector2D(destCenterX + 125.0f, (float)toCY);
+                    ship->SetPosition(destPos);
+                    worldMap->SetIslandShipPosition(islandId, destPos); // guardar posición
 
                     Engine::GetInstance().render->camera.x = 0;
-
                     // Guardar posición de origen en WorldMap para restaurarla si hay derrota
                     worldMap->SetShipReturnPosition(posBeforeMove);
-
                     worldMap->TravelTo(islandId);
                     //worldMap.TravelTo(islandId);
             });
@@ -485,6 +503,13 @@ void InGameScene::CreateIslandButtons()
             Engine::GetInstance().uiManager->CreateUIElement(
                 UIElementType::BUTTON, buttonId, label.c_str(), bounds,
                 [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tribalButton, 0, bounds.w, bounds.h
+            );
+        }
+        else if (faction == IslandFaction::BOSS)
+        {
+            Engine::GetInstance().uiManager->CreateUIElement(
+                UIElementType::BUTTON, buttonId, label.c_str(), bounds,
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, bossButton, 0, bounds.w, bounds.h
             );
         }
         else

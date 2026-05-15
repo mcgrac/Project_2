@@ -70,6 +70,10 @@ bool WorldMap::LoadWorldData(const std::string& xmlPath)
 
             islandFaction = IslandFaction::FISH;
         }
+        else if (faction == "boss") {
+
+            islandFaction = IslandFaction::BOSS;
+        }
         else {
 
             islandFaction = IslandFaction::UNDEFINED;
@@ -143,6 +147,13 @@ void WorldMap::ConnectVisuals(SDL_Texture* humanTex, SDL_Texture* reptileTex, SD
 
         island->SetSkullSprite(skullTex);
     }
+}
+
+Vector2D WorldMap::GetIslandShipPosition(int islandId) const
+{
+    auto it = islandShipPositions.find(islandId);
+    if (it != islandShipPositions.end()) { return it->second; }
+    return Vector2D(0, 0);
 }
 
 const std::vector<int>& WorldMap::GetNextIds(int islandId) const
@@ -479,6 +490,13 @@ void WorldMap::TravelTo(int islandId)
         //arrivalIsland(islands.at(currentIslandId));
         arrivalIsland(islands.at(pendingIslandId));
     }
+}
+
+Island* WorldMap::GetIslandById(int id) const
+{
+    auto it = islands.find(id);
+    if (it != islands.end()) { return it->second; }
+    return nullptr;
 }
 
 bool WorldMap::Update(float dt)

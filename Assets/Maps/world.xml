@@ -30,7 +30,7 @@
 	<island id="27"  name="Isla Rayo"      type="hostile"    faction="jellyfish"  />
 	<island id="28"  name="Isla Final"     type="hostile"    faction="tribal"/>
 	<island id="29"  name="Isla Rayo"      type="friendly"   faction="bird"  />
-	<island id="30"  name="Isla Final"     type="hostile"    faction="crab" boss ="true"/>
+	<island id="30"  name="Isla Final"     type="hostile"    faction="boss" boss ="true"/>
 
     <node islandId="0">
         <next>1</next>

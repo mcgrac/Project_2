@@ -142,7 +142,7 @@ void IslandScene::EnterIsland()
     //save data
     SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId());
 
-    Engine::GetInstance().scene->PushScene(new IslandInteriorScene(island, alliedParty, ship));
+    PushSceneFromIsland(new IslandInteriorScene(island, alliedParty, ship));
 }
 
 void IslandScene::AttackIsland()
@@ -162,29 +162,23 @@ void IslandScene::AttackIsland()
         worldMap->MakeAllIslandsHostile(island->GetIslandFaction());
     }
 
-    //Party* allied = alliedParty;
-    //int levelShip = ship->GetLevel();
-    //lastCombat = new CombatScene(alliedParty, ship->GetLevel());
-    //eliminate island scene from stack 
-    //Engine::GetInstance().scene->PopScene();
-
     combatPending = true;
     lastCombatWon = false;
 
-    CombatScene* combat = new CombatScene(alliedParty, ship->GetLevel());
+    CombatScene* combat = new CombatScene(alliedParty, ship->GetLevel(), island->GetIslandFaction());
 
     combat->onCombatEnd = [this](bool won)
     {
             lastCombatWon = won;
     };
 
-    Engine::GetInstance().scene->PushScene(combat);
-    //Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty, ship->GetLevel()));
+    PushSceneFromIsland(combat);
+}
 
-    //push adds combat scene at the top of the stack (inGameScene is still alive)
-    //Engine::GetInstance().scene->PushScene(new CombatScene(allied, levelShip));
-    //LOG("AttackIsland: PushScene sin PopScene — lastCombat: %p", lastCombat);
-    //Engine::GetInstance().scene->PushScene(lastCombat);
+void IslandScene::PushSceneFromIsland(BaseScene* scene)
+{
+    Engine::GetInstance().render->camera.x = 0;
+    Engine::GetInstance().scene->PushScene(scene);
 }
 
 void IslandScene::OnResume()
@@ -197,15 +191,17 @@ void IslandScene::OnResume()
         LOG("IslandScene::OnResume — lastCombatWon: %d — currentIslandId: %d — pendingIslandId: %d",
             (int)lastCombatWon, worldMap->GetCurrentIslandId(), worldMap->GetPendingIslandId());
 
-        if (lastCombatWon)
+        // Siempre confirmar el viaje, ganes o pierdas
+        worldMap->ConfirmTravel();
+        ship->SetPosition(worldMap->GetIslandShipPosition(worldMap->GetCurrentIslandId()));
+
+        if (!lastCombatWon)
         {
-            worldMap->ConfirmTravel();
+            // Penalización por derrota: daño al barco, sin recompensas
+            ship->LoseBattle();
+            LOG("IslandScene: derrota — barco recibe daño. HP: %d/%d", ship->GetCurrentHp(), ship->GetMaxHp());
         }
-        else 
-        {
-            // Derrota: devolver el barco a la isla anterior
-            ship->SetPosition(worldMap->GetShipReturnPosition());
-        }
+
 
         // Defeat, Pop scene and don't confirm the travel, player remains in that island
         Engine::GetInstance().scene->PopScene();

@@ -21,6 +21,7 @@ enum class IslandFaction {
     TRIBAL,
     BIRD,
     FISH,
+    BOSS,
     UNDEFINED
 };
 

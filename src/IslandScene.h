@@ -53,4 +53,6 @@ private:
 
     //audio variables
     int startCombat;
+
+    void PushSceneFromIsland(BaseScene* scene);
 };

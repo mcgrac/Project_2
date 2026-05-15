@@ -23,7 +23,7 @@ void AbilitiesSounds::SetFxSound(std::string path)
 }
 #pragma endregion
 
-CombatScene::CombatScene(Party* _allied, int _shipLevel)
+CombatScene::CombatScene(Party* _allied, int _shipLevel, IslandFaction _faction)
     : alliedParty(_allied)
     , enemyParty(nullptr)
     , combat(nullptr)
@@ -38,6 +38,7 @@ CombatScene::CombatScene(Party* _allied, int _shipLevel)
     , laneInputConsumed (false)
     , shipLevel (_shipLevel)
     , playerWon(false)
+    , currentIslandFaction(_faction)
 {
     sceneName = "CombatScene";
 }
@@ -49,20 +50,6 @@ CombatScene::~CombatScene()
 
 void CombatScene::LoadSounds() {
 
-    //allied sounds
-    //for (Character* c : alliedParty->GetMembers()) {
-    //    for (int i = 0; i < c->GetSkills().size(); i++) {
-    //        Skill skill = c->GetSkills()[i];
-
-    //        AbilitiesSounds ability;
-
-    //        std::string path = "Assets/Audio/Fx/" + c->GetName() + "/" + skill.GetAnimationId() + ".wav";
-    //        ability.SetFxSound(path);
-    //        ability.SetIdSound(skill.GetAnimationId());
-
-    //        abilities.push_back(ability);
-    //    }
-    //}
     LoadSoundsParty(alliedParty);
     LoadSoundsParty(enemyParty);
 }
@@ -720,15 +707,35 @@ void CombatScene::CreateSkillButtons(Character* c)
     }
 }
 
+std::vector<std::string> CombatScene::GetEnemyNamesForFaction(IslandFaction faction) const
+{
+    switch (faction)
+    {
+    case IslandFaction::FISH:
+        return { "Buck", "Fish1", "PeckandBubbles" };
+    case IslandFaction::JELLYFISH:
+        return { "ToxicJelly", "PinkJelly", "BlueJelly" };
+    case IslandFaction::HUMANS:
+        return { "Theresia", "Markus", "Gerbera" };
+    case IslandFaction::BIRD:
+        return { "Jochi", "Ubo", "BigBird" };
+    case IslandFaction::SIRENS:
+        return { "Coral", "Maxine", "Pearl" };
+    case IslandFaction::REPTILES:
+        return { "Raptor", "Rex", "Chaman" };
+    case IslandFaction::TRIBAL:
+        return { "tribal3", "Ignis", "Gerbera" };
+    default: // ELDRITCH / boss
+        return { "Boss", "LilBuddy1", "LilBuddy2" };
+    }
+}
+
 //  CreateEnemyParty
 void CombatScene::CreateEnemyParty()
 {
     enemyParty = new Party("Enemigos");
 
-    
-
-    //names of the enemies
-    const char* enemyNames[] = { "Raptor", "Rex", "Chaman" };
+    std::vector<std::string> enemyNames = GetEnemyNamesForFaction(currentIslandFaction);
 
     for (int i = 0; i < 3; ++i)
     {
