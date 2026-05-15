@@ -716,7 +716,7 @@ std::vector<std::string> CombatScene::GetEnemyNamesForFaction(IslandFaction fact
     case IslandFaction::JELLYFISH:
         return { "ToxicJelly", "PinkJelly", "BlueJelly" };
     case IslandFaction::HUMANS:
-        return { "Theresia", "Markus", "Gerbera" };
+        return { "Theresia", "Markus", "human3" };
     case IslandFaction::BIRD:
         return { "Jochi", "Ubo", "BigBird" };
     case IslandFaction::SIRENS:
