@@ -37,7 +37,7 @@ void Hostel::BuyXP(Party* party, int amount)
 	for (auto member : party->GetMembers()) {
 
 		LOG("Character: %s | Previous xp: %d", member->GetName(), member->GetXP());
-		member->AddXP(amount);
+		member->GainExperience(amount);
 		LOG("Current experience: %d", member->GetXP());
 	}
 }
@@ -55,8 +55,11 @@ void Hostel::GetADrink(Party* party, std::string id)
 			LOG("Current health: %d", member->GetCurrentHP());
 
 			LOG("Character: %s | Previous xp: %d", member->GetName(), member->GetXP());
-			member->AddXP(80);
+			member->GainExperience(80);
 			LOG("Current experience: %d", member->GetXP());
+
+			//check if character can level Up
+
 		}
 	}
 

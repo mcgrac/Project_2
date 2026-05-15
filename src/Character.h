@@ -223,7 +223,6 @@ public:
 	void AddInitiative(int amount);
 	inline void ModifyFirePower(float amount) { firePower += amount; }
 	inline void ModifyPoisonPower(float amount) { poisonPower += amount; }
-	inline void AddXP(int amount) { experience += amount; }
 	inline void ModifyLifesteal(int amount) { lifesteal += amount; }
 	void ModifyMaxDurability(int amount);
 
