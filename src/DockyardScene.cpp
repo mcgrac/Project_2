@@ -254,19 +254,6 @@ void DockyardScene::CreateUI()
         UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, talkBounds.w, talkBounds.h
     );
-
-    //IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
-    //if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES) {
-    //    CreateChartButtons();
-    //    showChart = true;
-    //}
-    //else {
-    //    SDL_Rect talkBounds = { NPC_X, NPC_Y, NPC_W, NPC_H };
-    //    Engine::GetInstance().uiManager->CreateUIElement(
-    //        UIElementType::BUTTON, START_DIALOGUE, "", talkBounds,
-    //        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, ownerSprite, 0, talkBounds.w, talkBounds.h
-    //    );
-    //}
 }
 
 void DockyardScene::PushDialogue()
