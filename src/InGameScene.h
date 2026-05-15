@@ -85,6 +85,7 @@ private:
     int buttonPress;
     int startCombat;
     bool pendingStartIsland;
+    bool isMusicPlayed = false;
 
     const char* mapMusic = "Assets/Audio/Music/8bitMusic/Shipwreck.wav";
 };

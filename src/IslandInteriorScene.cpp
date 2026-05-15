@@ -190,7 +190,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
 
     case LEAVE_BUTTON_ID:
         // Volver al mapa (IslandScene → InGameScene)
-        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Start.wav");
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Map.wav");
         Engine::GetInstance().scene->PopScene();
         break;
 
