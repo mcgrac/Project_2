@@ -346,6 +346,8 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
 
 void ShopScene::OnResume()
 {
+    if (pendingPop) { return; }
+
     CreateUI();
 
     if (state == ShopState::SHOW_ITEMS)

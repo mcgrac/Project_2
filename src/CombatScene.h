@@ -118,6 +118,7 @@ private:
     SDL_Texture* arrow;
     SDL_Texture* poisonIcon;
     SDL_Texture* burnIcon;
+    SDL_Texture* potionIcon;
 
     // icono por personaje: cargados dinámicamente por nombre
     std::unordered_map<std::string, SDL_Texture*> characterIcons;
@@ -127,7 +128,7 @@ private:
     void DrawArrowCurrentActor();
     void DrawSkillTooltip();
     void UpdateSkillHover();
-
+    void DrawStatusIcons();
     //tooltip
     TooltipRenderer tooltipRenderer;
 
@@ -151,6 +152,9 @@ private:
 
     //---------Timer-----------
     static constexpr float NEXT_ROUND_PAUSE_DURATION = 3000.0f; // segundos
+
+    //Health Potion
+    static constexpr int POTION_HEAL_AMOUNT = 30;
 
     // -------- Panel layout constants ------------------
     static constexpr int PANEL_W = 200;
@@ -190,4 +194,11 @@ private:
     static constexpr int SKILL_BTN_H = 64;
     static constexpr int SKILL_BTN_Y = 500;
     static constexpr int SKILL_BTN_SPACING = 70;
+
+    //modifirs icons
+    static constexpr int STATUS_ICON_SIZE = 31;
+    static constexpr int STATUS_ICON_GAP = 4;
+    static constexpr int STATUS_ICON_OFFSET_X = -15; // centrado respecto al sprite
+    static constexpr int STATUS_ICON_Y_OFFSET = 80;  // píxeles por encima del personaje
+
 };
