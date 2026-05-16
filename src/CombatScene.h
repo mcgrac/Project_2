@@ -56,6 +56,8 @@ private:
     bool combatFinished;
     bool playerWon;
 
+    std::string currentSelecting;
+
     //get enemy names by faction
     std::vector<std::string> GetEnemyNamesForFaction(IslandFaction faction) const;
     void CreateEnemyParty();
@@ -109,6 +111,26 @@ private:
 
     void CreateSkillButtons(Character* c);
 
+#pragma region Continue
+
+    static const SDL_Rect CONTINUE_BOUNDS;
+
+#pragma endregion
+
+#pragma region Extra Buttons
+
+    static const SDL_Rect POTION_BOUNDS;
+    static const SDL_Rect SKIP_BOUNDS;
+
+#pragma endregion
+
+#pragma region Potions
+
+    static const SDL_Rect TEXT1_BOUNDS;
+    static const SDL_Rect TEXT2_BOUNDS;
+
+#pragma endregion
+
     SDL_Texture* abilityIcons;
     SDL_Texture* abilityIcons2;
     SDL_Texture* panelBaseTexture;     
@@ -119,6 +141,19 @@ private:
     SDL_Texture* poisonIcon;
     SDL_Texture* burnIcon;
     SDL_Texture* potionIcon;
+    SDL_Texture* continueWin;
+    SDL_Texture* continueLose;
+    SDL_Texture* backWin;
+    SDL_Texture* backLose;
+    SDL_Texture* emptyButton;
+    SDL_Texture* potionEmpty;
+    SDL_Texture* laneGerbera;
+    SDL_Texture* laneJochi;
+    SDL_Texture* laneMarkus;
+    SDL_Texture* laneTheresia;
+    SDL_Texture* laneFatuus;
+    SDL_Texture* laneIgnis;
+
 
     // icono por personaje: cargados dinámicamente por nombre
     std::unordered_map<std::string, SDL_Texture*> characterIcons;
@@ -129,6 +164,7 @@ private:
     void DrawSkillTooltip();
     void UpdateSkillHover();
     void DrawStatusIcons();
+    void DrawUILaneSelection(std::string charName);
     //tooltip
     TooltipRenderer tooltipRenderer;
 
@@ -156,6 +192,7 @@ private:
     bool resultPanelIsVictory = false;
     int goldGained = 0;
     int shipDamage = 0;
+    int potionCount;
     std::vector<CharXPSnapshot> xpSnapshots;
 
     void ShowResultPanel(bool victory);
