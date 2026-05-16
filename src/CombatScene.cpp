@@ -196,13 +196,13 @@ void CombatScene::Update(float dt)
     // Al acabar el combate volvemos a InGameScene (que quedó suspendida)
     if(combat->CombatIsFinished())
     {
-        HideCombatUI();
-        bool won = (combat->GetResult() == CombatResult::VICTORY);
-        if (onCombatEnd)
+        if (!resultPanelActive)
         {
-            onCombatEnd(won);
+            HideCombatUI();
+            bool won = (combat->GetResult() == CombatResult::VICTORY);
+            ShowResultPanel(won);
         }
-        Engine::GetInstance().scene->PopScene();
+        DrawResultPanel();
     }
 }
 
@@ -401,6 +401,17 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
         combat->SubmitPlayerChoice(-1, 0);
         break;
     }
+    case 60: // Continue — cerrar panel de resultado
+    {
+        resultPanelActive = false;
+        bool won = (combat->GetResult() == CombatResult::VICTORY);
+        if (onCombatEnd)
+        {
+            onCombatEnd(won);
+        }
+        Engine::GetInstance().scene->PopScene();
+        break;
+    }
     default:
         break;
     }
@@ -558,6 +569,103 @@ void CombatScene::ChooseSound(std::string id)
 }
 
 #pragma region CHARACTER PANELS
+
+void CombatScene::ShowResultPanel(bool victory)
+{
+    resultPanelActive = true;
+    resultPanelIsVictory = victory;
+
+    if (victory)
+    {
+        ApplyPostCombatRewards();
+    }
+    else
+    {
+        // Daño al barco — puedes ajustar la fórmula
+        shipDamage = 25;
+    }
+
+    // Crear botón Continue (id 60)
+    SDL_Rect btnBounds = { 540, 520, 200, 60 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 60, "Continue",
+        btnBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+        {}, abilityIcons, 0, btnBounds.w, btnBounds.h
+    );
+}
+
+void CombatScene::DrawResultPanel()
+{
+    if (!resultPanelActive) { return; }
+
+    // Fondo semitransparente
+    SDL_Rect overlay = { 340, 150, 600, 430 };
+    Engine::GetInstance().render->DrawRectangle(overlay, 0, 0, 0, 180, true, false);
+
+    SDL_Color white = { 255, 255, 255, 255 };
+    SDL_Color yellow = { 255, 220,   0, 255 };
+    SDL_Color green = { 80, 255,  80, 255 };
+
+    if (resultPanelIsVictory)
+    {
+        Engine::GetInstance().render->DrawText("VICTORY", 460, 170, 220, 50, yellow);
+
+        // Oro ganado
+        std::string goldText = "Gold gained: " + std::to_string(goldGained);
+        Engine::GetInstance().render->DrawText(goldText.c_str(), 400, 240, 300, 30, white);
+
+        // XP por personaje
+        int lineY = 285;
+        for (const CharXPSnapshot& snap : xpSnapshots)
+        {
+            std::string line = snap.name + ":  "
+                + std::to_string(snap.xpBefore) + "  -  "
+                + std::to_string(snap.xpAfter);
+
+            if (snap.leveledUp)
+            {
+                line += "  [LEVEL UP]";
+            }
+
+            Engine::GetInstance().render->DrawText(line.c_str(), 380, lineY, 520, 28, snap.leveledUp ? green : white);
+            lineY += 40;
+        }
+    }
+    else
+    {
+        Engine::GetInstance().render->DrawText("DEFEAT", 470, 170, 200, 50, { 255, 60, 60, 255 });
+
+        std::string dmgText = "Ship damage: -" + std::to_string(shipDamage);
+        Engine::GetInstance().render->DrawText(dmgText.c_str(), 420, 260, 300, 30, white);
+    }
+}
+
+void CombatScene::ApplyPostCombatRewards()
+{
+    xpSnapshots.clear();
+
+    int xpReward = enemyParty->GetTotalXPReward();
+    goldGained = enemyParty->GetTotalGoldReward();
+
+    for (Character* c : alliedParty->GetMembers())
+    {
+        CharXPSnapshot snap;
+        snap.name = c->GetName();
+        snap.xpBefore = c->GetXP();
+
+        int levelBefore = c->GetLevel();
+        c->GainExperience(xpReward);
+        int levelAfter = c->GetLevel();
+
+        snap.xpAfter = c->GetXP();
+        snap.leveledUp = (levelAfter > levelBefore);
+
+        xpSnapshots.push_back(snap);
+    }
+
+    alliedParty->AddGold(goldGained);
+}
 
 void CombatScene::DrawAlliedPanels()
 {
@@ -1084,8 +1192,6 @@ void CombatScene::CreateUI()
         ShowLaneSelectionFor(laneAssignmentCursor);
     }
 }
-
-
 
 void CombatScene::LoadSound() {
     buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");

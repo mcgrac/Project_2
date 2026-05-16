@@ -653,19 +653,19 @@ void Combat::EndCombat()
             }
         }
         
-        // Distribuir XP a los aliados vivos
-        int totalXP = enemyParty->GetTotalXPReward();
-        int totalGold = enemyParty->GetTotalGoldReward();
-        auto lootItems = enemyParty->GetLootItems();
+        //// Distribuir XP a los aliados vivos
+        //int totalXP = enemyParty->GetTotalXPReward();
+        //int totalGold = enemyParty->GetTotalGoldReward();
+        //auto lootItems = enemyParty->GetLootItems();
 
-        for (Character* ally : GetAliveMembers(alliedParty))
-        {
-            ally->GainExperience(totalXP);
-            std::cout << ally->GetName() << " gana " << totalXP << " XP.\n";
-        }
+        //for (Character* ally : GetAliveMembers(alliedParty))
+        //{
+        //    ally->GainExperience(totalXP);
+        //    std::cout << ally->GetName() << " gana " << totalXP << " XP.\n";
+        //}
 
-        alliedParty->AddGold(totalGold);
-        std::cout << "Recompensa: " << totalGold << " de oro.\n";
+        //alliedParty->AddGold(totalGold);
+        //std::cout << "Recompensa: " << totalGold << " de oro.\n";
     }
     else // DEFEAT
     {
@@ -680,7 +680,6 @@ void Combat::EndCombat()
                 c->RestorePreCombatValues(it->second);
             }
         }
-        //add damage to the ship
     }
 
     // Revivir aliados muertos con 1 HP para el siguiente combate

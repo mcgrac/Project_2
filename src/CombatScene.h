@@ -143,6 +143,25 @@ private:
 
     std::vector<AbilitiesSounds> abilities;
 
+    //Results panel
+    struct CharXPSnapshot
+    {
+        std::string name;
+        int xpBefore;
+        int xpAfter;
+        bool leveledUp;
+    };
+
+    bool resultPanelActive = false;
+    bool resultPanelIsVictory = false;
+    int goldGained = 0;
+    int shipDamage = 0;
+    std::vector<CharXPSnapshot> xpSnapshots;
+
+    void ShowResultPanel(bool victory);
+    void DrawResultPanel();
+    void ApplyPostCombatRewards();
+
     // ---Character Panels ---------------------------
     void DrawAlliedPanels();
     void DrawEnemyPanels();
