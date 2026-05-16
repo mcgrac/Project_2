@@ -11,6 +11,19 @@
 #include <sstream>
 #include "Window.h"
 
+#pragma region Continue
+const SDL_Rect CombatScene::CONTINUE_BOUNDS = { 473, 540, 335, 105 };
+#pragma endregion
+
+#pragma region Extra Buttons
+const SDL_Rect CombatScene::POTION_BOUNDS = { 852, 501, 64, 64 };
+const SDL_Rect CombatScene::SKIP_BOUNDS = { 922, 501, 64, 64 };
+#pragma endregion
+
+#pragma region Potions
+const SDL_Rect CombatScene::TEXT1_BOUNDS = { 879, 570, 11, 19 };
+const SDL_Rect CombatScene::TEXT2_BOUNDS = { 874, 570, 22, 19 };
+#pragma endregion
 
 #pragma region ABILITIES_SOUND
 void AbilitiesSounds::SetIdSound(std::string id)
@@ -119,6 +132,8 @@ void CombatScene::Load()
 
 void CombatScene::Update(float dt)
 {
+    potionCount = alliedParty->GetInventory().GetItemCount("consumable");
+
     // Dibujar background cada frame
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
 
@@ -135,6 +150,7 @@ void CombatScene::Update(float dt)
     // Lane selection is still ongoing — don't run combat yet
     if (uiState == CombatUIState::SELECTING_LANE)
     {
+        DrawUILaneSelection(currentSelecting);
         return;
     }
 
@@ -193,6 +209,18 @@ void CombatScene::Update(float dt)
         //combat->Run();
     }
 
+    //Draw Potions UI
+    if(potionCount==0){ Engine::GetInstance().render->DrawTexture(potionEmpty, POTION_BOUNDS.x, POTION_BOUNDS.y); }
+
+    SDL_Color White = { 255, 255, 255 };
+    SDL_Color Red = { 255, 0, 0 };
+
+    std::string potions = std::to_string(potionCount);
+    if(potionCount>=10){ Engine::GetInstance().render->DrawText((potions).c_str(), TEXT1_BOUNDS.x, TEXT1_BOUNDS.y, TEXT1_BOUNDS.w, TEXT1_BOUNDS.h, White); }
+    else if(potionCount>0){ Engine::GetInstance().render->DrawText((potions).c_str(), TEXT1_BOUNDS.x, TEXT1_BOUNDS.y, TEXT1_BOUNDS.w, TEXT1_BOUNDS.h, White); }
+    else{ Engine::GetInstance().render->DrawText((potions).c_str(), TEXT1_BOUNDS.x, TEXT1_BOUNDS.y, TEXT1_BOUNDS.w, TEXT1_BOUNDS.h, Red); }
+    
+
     // Al acabar el combate volvemos a InGameScene (que quedó suspendida)
     if(combat->CombatIsFinished())
     {
@@ -228,6 +256,12 @@ void CombatScene::Unload()
     Engine::GetInstance().textures->UnLoad(burnIcon);
     Engine::GetInstance().textures->UnLoad(potionIcon);
 
+    Engine::GetInstance().textures->UnLoad(backLose);
+    Engine::GetInstance().textures->UnLoad(backWin);
+    Engine::GetInstance().textures->UnLoad(continueLose);
+    Engine::GetInstance().textures->UnLoad(continueWin);
+    Engine::GetInstance().textures->UnLoad(potionEmpty);
+
     for (auto& pair : characterIcons)
     {
         Engine::GetInstance().textures->UnLoad(pair.second);
@@ -251,6 +285,19 @@ void CombatScene::LoadTextures()
     poisonIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/PoisonIndicator.png");
     burnIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/FireIndicator.png");
     potionIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/potionIcon.png");
+
+    continueLose = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/continueLose.png");
+    continueWin = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/continueWin.png");
+    backLose = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/lose.png");
+    backWin = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/win.png");
+    potionEmpty = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/potionEmpty.png");
+    emptyButton = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/emptyButton.png");
+    laneMarkus = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneMarkus.png");
+    laneTheresia = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneTheresia.png");
+    laneGerbera = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneGerbera.png");
+    laneFatuus = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneFatuus.png");
+    laneJochi = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneMarkus.png");
+    laneIgnis = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneIgnis.png");
 
     // Cargar icono de cada personaje dinámicamente desde las parties
     auto loadIconForParty = [&](Party* party)
@@ -388,6 +435,7 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
         if (actor == nullptr) { break; }
 
         alliedParty->GetInventory().ConsumeItem("consumable");
+        
         actor->Heal(POTION_HEAL_AMOUNT);
 
         LOG("CombatScene: %s usa poción — cura %d HP. HP ahora: %d/%d",
@@ -399,6 +447,8 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
 
         // Consumir turno igual que el pass
         combat->SubmitPlayerChoice(-1, 0);
+
+        if (alliedParty->GetInventory().GetItemCount("consumable") == 0) { Engine::GetInstance().uiManager->RemoveElementsByRange(49, 51); }
         break;
     }
     case 60: // Continue — cerrar panel de resultado
@@ -409,6 +459,7 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
         {
             onCombatEnd(won);
         }
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Map.wav");
         Engine::GetInstance().scene->PopScene();
         break;
     }
@@ -430,8 +481,12 @@ void CombatScene::ShowLaneSelectionFor(int characterIndex)
 
     LOG("CombatScene: selecting lane for %s", c->GetName().c_str());
 
+    currentSelecting = c->GetName();
+
     // Three lane buttons stacked vertically in the center of the screen
     // Label shows the lane name and its bonus so the player can make an informed choice
+
+
     struct LaneOption
     {
         int id;
@@ -440,9 +495,10 @@ void CombatScene::ShowLaneSelectionFor(int characterIndex)
     };
 
     LaneOption options[3] = {
-        { 30, LaneType::BACK,  "Back  (+15 Power)" },
-        { 31, LaneType::SIDE,  "Side  (+10 Power +10 Speed)" },
-        { 32, LaneType::FRONT, "Front (+10 Speed +10 HP)"   }
+
+        { 30, LaneType::BACK,  "+15 Power" },
+        { 31, LaneType::SIDE,  "+10 Power +10 Speed" },
+        { 32, LaneType::FRONT, "+10 Speed +10 HP"   }
     };
 
     for (int i = 0; i < 3; i++)
@@ -454,10 +510,10 @@ void CombatScene::ShowLaneSelectionFor(int characterIndex)
         }
 
         SDL_Rect bounds;
-        bounds.x = 540;
-        bounds.y = 220 + i * 80;
-        bounds.w = 200;
-        bounds.h = 60;
+        bounds.x = 539;
+        bounds.y = 360 + i * 71;
+        bounds.w = 202;
+        bounds.h = 63;
 
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,
@@ -465,7 +521,7 @@ void CombatScene::ShowLaneSelectionFor(int characterIndex)
             options[i].label,
             bounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
-            {}, abilityIcons, 0, bounds.w, bounds.h
+            {}, emptyButton, 0, bounds.w, bounds.h
         );
     }
 }
@@ -575,24 +631,37 @@ void CombatScene::ShowResultPanel(bool victory)
     resultPanelActive = true;
     resultPanelIsVictory = victory;
 
+    if(victory){ Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/EndCombatWin.wav"); }
+    else{ Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/EndCombatLose.wav"); }
+
     if (victory)
     {
         ApplyPostCombatRewards();
+        // Crear botón Continue (id 60)
+        SDL_Rect btnBounds = CONTINUE_BOUNDS;
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 60, "",
+            btnBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+            {}, continueWin, 0, btnBounds.w, btnBounds.h);
     }
     else
     {
         // Daño al barco — puedes ajustar la fórmula
         shipDamage = 25;
+
+        ApplyPostCombatRewards();
+        // Crear botón Continue (id 60)
+        SDL_Rect btnBounds = CONTINUE_BOUNDS;
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 60, "",
+            btnBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+            {}, continueLose, 0, btnBounds.w, btnBounds.h);
     }
 
-    // Crear botón Continue (id 60)
-    SDL_Rect btnBounds = { 540, 520, 200, 60 };
-    Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 60, "Continue",
-        btnBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
-        {}, abilityIcons, 0, btnBounds.w, btnBounds.h
-    );
+
+    
 }
 
 void CombatScene::DrawResultPanel()
@@ -609,8 +678,8 @@ void CombatScene::DrawResultPanel()
 
     if (resultPanelIsVictory)
     {
-        Engine::GetInstance().render->DrawText("VICTORY", 460, 170, 220, 50, yellow);
-
+        //Engine::GetInstance().render->DrawText("VICTORY", 460, 170, 220, 50, yellow);
+        Engine::GetInstance().render->DrawTexture(backWin, 0, 0);
         // Oro ganado
         std::string goldText = "Gold gained: " + std::to_string(goldGained);
         Engine::GetInstance().render->DrawText(goldText.c_str(), 400, 240, 300, 30, white);
@@ -634,7 +703,8 @@ void CombatScene::DrawResultPanel()
     }
     else
     {
-        Engine::GetInstance().render->DrawText("DEFEAT", 470, 170, 200, 50, { 255, 60, 60, 255 });
+        Engine::GetInstance().render->DrawTexture(backLose, 0, 0);
+        //Engine::GetInstance().render->DrawText("DEFEAT", 470, 170, 200, 50, { 255, 60, 60, 255 });
 
         std::string dmgText = "Ship damage: -" + std::to_string(shipDamage);
         Engine::GetInstance().render->DrawText(dmgText.c_str(), 420, 260, 300, 30, white);
@@ -799,8 +869,7 @@ void CombatScene::CreateSkillButtons(Character* c)
 
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,
-            i + 1, // IDs 1..5
-            label.c_str(),
+            i + 1, "",
             bounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons2, 0 + i, bounds.w, bounds.h
         );
@@ -906,11 +975,7 @@ void CombatScene::ShowSkillButtons()
     CreateSkillButtons(actor);
 
     // Botón de pasar turno — sin coste de iniciativa
-    SDL_Rect passBounds;
-    passBounds.x = 20;
-    passBounds.y = 550;   // debajo de los botones de skill
-    passBounds.w = 64;
-    passBounds.h = 64;
+    SDL_Rect passBounds = SKIP_BOUNDS;
 
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON,
@@ -921,16 +986,18 @@ void CombatScene::ShowSkillButtons()
         {}, abilityIcons, 0, passBounds.w, passBounds.h
     );
 
-    // Botón de poción — justo a la derecha de las skills
-    int potionX = (int)(Engine::GetInstance().window->width / 3) + 5 * 70;
 
-    SDL_Rect potionBounds = { potionX, 500, 64, 64 };
 
-    Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 50, "Potion", potionBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
-        {}, potionIcon, 0, potionBounds.w, potionBounds.h
-    );
+    SDL_Rect potionBounds = POTION_BOUNDS;
+
+    if(alliedParty->GetInventory().GetItemCount("consumable")!=0){
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 50, "", potionBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+            {}, potionIcon, 0, potionBounds.w, potionBounds.h
+        );
+    }
+
 }
 
 void CombatScene::ShowTargetPanel()
@@ -1096,6 +1163,18 @@ void CombatScene::DrawStatusIcons()
             Engine::GetInstance().render->DrawTexture(burnIcon, iconX, iconY, nullptr, false);
         }
     }
+}
+
+void CombatScene::DrawUILaneSelection(std::string charName)
+{
+    if(charName=="Gerbera"){ Engine::GetInstance().render->DrawTexture(laneGerbera, 0, 0); }
+    else if (charName == "Markus") { Engine::GetInstance().render->DrawTexture(laneMarkus, 0, 0); }
+    else if (charName == "Theresia") { Engine::GetInstance().render->DrawTexture(laneTheresia, 0, 0); }
+    else if (charName == "Jochi") { Engine::GetInstance().render->DrawTexture(laneJochi, 0, 0); }
+    else if (charName == "Fatuus") { Engine::GetInstance().render->DrawTexture(laneFatuus, 0, 0); }
+    else if (charName == "Ignis") { Engine::GetInstance().render->DrawTexture(laneIgnis, 0, 0); }
+   
+ 
 }
 
 void CombatScene::OnResume()
