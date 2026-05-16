@@ -296,7 +296,7 @@ void CombatScene::LoadTextures()
     laneTheresia = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneTheresia.png");
     laneGerbera = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneGerbera.png");
     laneFatuus = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneFatuus.png");
-    laneJochi = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneMarkus.png");
+    laneJochi = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneJochi.png");
     laneIgnis = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneIgnis.png");
 
     // Cargar icono de cada personaje dinámicamente desde las parties
