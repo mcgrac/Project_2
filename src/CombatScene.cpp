@@ -307,7 +307,14 @@ void CombatScene::LoadTextures()
                 const std::string& name = c->GetName();
                 if (characterIcons.find(name) != characterIcons.end()) { continue; } // ya cargado
 
-                std::string path = "Assets/Textures/CombatScene/Icons/" + name + "_icon.png";
+                std::string folder;
+                if (party->GetMembers()[0]->GetIsAllied()) {
+                    folder = "allied";
+                }
+                else {
+                    folder = "enemy";
+                }
+                std::string path = "Assets/Textures/CombatScene/Icons/" + folder + "/" + name + "Icon.png";
                 characterIcons[name] = Engine::GetInstance().textures->Load(path.c_str());
             }
         };

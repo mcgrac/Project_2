@@ -10,7 +10,7 @@
 	<island id="7"   name="Isla Rayo"      type="friendly"   faction="human"  />
 	<island id="8"   name="Isla Final"     type="hostile"    faction="fish"/>
 	<island id="9"   name="Isla Rayo"      type="friendly"   faction="reptile"  />
-	<island id="10"  name="Isla Final"     type="hostile"    faction="siren"/>
+	<island id="10"  name="Isla Final"     type="hostile"    faction="tribal"/>
 	<island id="11"  name="Puerto Inicio"  type="friendly"   faction="bird"  />
 	<island id="12"  name="Isla Coral"     type="friendly"   faction="reptile"  />
 	<island id="13"  name="Isla Calavera"  type="friendly"   faction="human"  />
