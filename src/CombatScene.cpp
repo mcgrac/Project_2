@@ -89,6 +89,7 @@ void CombatScene::Load()
     LoadTextures();
     LoadSounds();
     LoadSound();
+    Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Combat" + SceneUtils::GetFactionString(currentIslandFaction) + ".wav").c_str());
 
     // ---------Testing------------
     for (Character* c : alliedParty->GetMembers())

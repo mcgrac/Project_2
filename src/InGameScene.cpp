@@ -97,6 +97,8 @@ void InGameScene::Load()
     //audio loading
     LoadAudio();
     //audio ambiance playing
+   
+  
     Engine::GetInstance().audio->PlayFx(islandAmbiance);
 }
 
@@ -105,10 +107,8 @@ void InGameScene::Update(float dt)
     // in first frame launch initial dialogue
     static bool firstFrame = true;
 
-    if (!Engine::GetInstance().audio->IsMusicPlaying()) {
-        LOG("Play music again!");
-        Engine::GetInstance().audio->PlayMusic(mapMusic);
-    }
+  //  if (isMusicPlayed == false) { Engine::GetInstance().audio->PlayMusic("Assets\Audio\Music\Map.wav"); isMusicPlayed = true; }
+
 
     if (firstFrame && !isContinue)
     {
