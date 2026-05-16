@@ -155,7 +155,8 @@ private:
     static const SDL_Rect CHEST_ITEM_POSITIONS;
 
 #pragma endregion
-#pragma endregion Rewards
+
+#pragma region Rewards
 
     static const SDL_Rect REWARD_BOUNDS;
 
