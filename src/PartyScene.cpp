@@ -404,6 +404,9 @@ void PartyScene::RenderInventorySlots(Character* c)
     int mx = mousePos.x;
     int my = mousePos.y;
 
+    std::vector<EquippableItem*>& equipped = alliedParty->GetInventory().GetEquipped(c->GetName());
+
+
     for (int i = 0; i < 3; ++i)
     {
         SDL_Rect slot = { INV_SLOT_RECT.x, INV_SLOT_RECT.y + i * (INV_SLOT_RECT.h + INV_SLOT_GAP), INV_SLOT_RECT.w, INV_SLOT_RECT.h };
@@ -412,9 +415,18 @@ void PartyScene::RenderInventorySlots(Character* c)
         Engine::GetInstance().render->DrawRectangle(slot, 40, 40, 40, 255, true, false);
         Engine::GetInstance().render->DrawRectangle(slot, 80, 80, 80, 255, false, false);
 
-        // TODO: cuando Inventory esté implementado, dibujar el sprite del item
-        // Item* item = c->GetInventory()->GetSlot(i);
-        // if (item != nullptr) { DrawTexture(item->GetSprite(), slot.x, slot.y); }
+        // Dibujar textura del item si el slot está ocupado
+        if (i < (int)equipped.size() && equipped[i] != nullptr)
+        {
+            std::string texPath = "Assets/Textures/Teams/ItemsIcons/" + equipped[i]->GetName() + ".png";
+            SDL_Texture* itemTex = Engine::GetInstance().textures->Load(texPath.c_str());
+
+            if (itemTex != nullptr)
+            {
+                Engine::GetInstance().render->DrawTexture(itemTex, slot.x, slot.y, nullptr, false);
+                Engine::GetInstance().textures->UnLoad(itemTex);
+            }
+        }
 
         // Tooltip hover
         bool hovered = SceneUtils::PointInRect(mx, my, slot);
@@ -422,8 +434,6 @@ void PartyScene::RenderInventorySlots(Character* c)
         if (hovered)
         {
             hoveredInventorySlot = i;
-
-            std::vector<EquippableItem*>& equipped = alliedParty->GetInventory().GetEquipped(c->GetName());
 
             if (i < (int)equipped.size() && equipped[i] != nullptr)
             {
