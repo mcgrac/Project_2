@@ -10,7 +10,11 @@
 #include "Render.h"
 #include "Log.h"
 #include "Ship.h"
-
+#include <algorithm>
+#include <random>
+#include "ItemManager.h"
+#include "Party.h"
+#include "Character.h"
 
 #pragma region POSITIONS
 #pragma region DOCK
@@ -32,12 +36,15 @@ const SDL_Rect IslandInteriorScene::HOSTEL_HUMAN_BOUNDS = { 206,  55,  492,  435
 const SDL_Rect IslandInteriorScene::HOSTEL_BIRD_BOUNDS = { 574,  8,  144,  150 };
 const SDL_Rect IslandInteriorScene::HOSTEL_SIREN_BOUNDS = { 516,  340, 174, 249 };
 const SDL_Rect IslandInteriorScene::HOSTEL_REPTILE_BOUNDS = { 373, 301, 214, 230 };
+#pragma endregion
 
 #pragma region CHEST
 const SDL_Rect IslandInteriorScene::CHEST_HUMAN_BOUNDS = { 784,  154,  93,  90 };
 const SDL_Rect IslandInteriorScene::CHEST_BIRD_BOUNDS = { 112,  412,  102,  142 };
 const SDL_Rect IslandInteriorScene::CHEST_SIREN_BOUNDS = { 228,  468,  102,  117 };
 const SDL_Rect IslandInteriorScene::CHEST_REPTILE_BOUNDS = { 626,  486,  54,  42 };
+
+const SDL_Rect IslandInteriorScene::CHEST_ITEM_POSITIONS = { 549, 507, 182, 72 };
 #pragma endregion
 #pragma endregion
 
@@ -51,7 +58,11 @@ IslandInteriorScene::IslandInteriorScene(Island* island, Party* allied, Ship* _s
     , hostelButton(nullptr)
     , chestButton(nullptr)
     , exitButton(nullptr)
-    ,goldCounter(0, "Assets/Textures/Animations/coin.png", 1160, 62)
+    , showChest(false)
+    , goldCounter(0, "Assets/Textures/Animations/coin.png", 1160, 62)
+    , chestSpritesheet(nullptr)
+    , chestOpened(false)
+    , chestPopped(false)
 {
     sceneName = "islandInterior";
 }
@@ -70,7 +81,7 @@ void IslandInteriorScene::Load()
 void IslandInteriorScene::Update(float dt) {
    
     //check if music is playing
-  if(isMusicChanged==false){ Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Island" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".wav").c_str()); }
+    if(isMusicChanged==false){ Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Island" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".wav").c_str()); }
    
     isMusicChanged = true;
     if (!Engine::GetInstance().audio->IsMusicPlaying()) {
@@ -79,7 +90,6 @@ void IslandInteriorScene::Update(float dt) {
         Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Island" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".wav").c_str());
     }
  
-
     Draw(dt);
 
     UpdateSound();
@@ -107,8 +117,17 @@ void IslandInteriorScene::Unload()
     Engine::GetInstance().textures->UnLoad(hostelButton);
     Engine::GetInstance().textures->UnLoad(chestButton);
     Engine::GetInstance().textures->UnLoad(exitButton);
+    Engine::GetInstance().textures->UnLoad(chestBackground);
 
     Engine::GetInstance().uiManager->CleanUp();
+
+    if (chestItemTexture != nullptr)
+    {
+        Engine::GetInstance().textures->UnLoad(chestItemTexture);
+        chestItemTexture = nullptr;
+    }
+    Engine::GetInstance().textures->UnLoad(claimButton);
+    Engine::GetInstance().textures->UnLoad(emptyButtons);
 }
 
 void IslandInteriorScene::unloadSound() {
@@ -136,12 +155,25 @@ void IslandInteriorScene::LoadTextures()
     if(island->GetIslandFaction()==IslandFaction::BIRD){ backgroundSpritesheet = Engine::GetInstance().textures->Load(("Assets/Textures/Animations/BirdAnimatedBack.png")); }
     else if (island->GetIslandFaction() == IslandFaction::SIRENS) { backgroundSpritesheet = Engine::GetInstance().textures->Load(("Assets/Textures/Animations/SirenAnimatedBack.png")); }
     
+    chestSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/Animations/chestAnimated.png");
+    claimButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/claimButton.png");
+    emptyButtons = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
+    chestBackground = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/chestBackground.png");
+    keyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/keyCounter.png");
+    emptyCard = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/emptyCard.png");
+    moneyCard = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/moneyCard.png");
 }
 
 void IslandInteriorScene::Draw(float dt)
 {
     IslandFaction faction = island->GetIslandFaction();
-    if (faction == IslandFaction::SIRENS || faction == IslandFaction::BIRD) {
+
+    if (chestOpened || chestPopped || showChest)
+    {
+        Engine::GetInstance().render->DrawTexture(chestBackground, 0, 0);
+    }
+    else if (faction == IslandFaction::SIRENS || faction == IslandFaction::BIRD) {
+
         anims.Update(dt);
 
         const SDL_Rect& animFrame = anims.GetCurrentFrame();
@@ -156,6 +188,70 @@ void IslandInteriorScene::Draw(float dt)
     else {
 
         Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    }
+
+    DrawChest(dt);
+}
+
+void IslandInteriorScene::DrawChest(float dt)
+{
+    IslandFaction faction = island->GetIslandFaction();
+
+
+    if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES) {
+
+        Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
+        Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
+
+        //chest animation
+        if (chestOpened) {
+            //play animation chest
+            animsChest.Update(dt);
+
+            const SDL_Rect& animFrame = animsChest.GetCurrentFrame();
+
+            Engine::GetInstance().render->DrawTexture(
+                chestSpritesheet,
+                0,
+                0,
+                &animFrame
+            );
+
+            if (animsChest.IsCurrentFinished()) {
+                chestOpened = false;
+                chestPopped = true;
+                GiveReward();
+            };
+        }
+
+        //chest render items
+        if (chestPopped)
+        {
+            if (rewardAmount > 40)
+            {
+                // nada, emptyCard
+            }
+            else if (rewardAmount < 21)
+            {
+                // moneyCard — si tienes esa textura aquí también
+            }
+            else
+            {
+                if (chestItemTexture != nullptr)
+                {
+                    float texW, texH;
+                    SDL_GetTextureSize(chestItemTexture, &texW, &texH);
+
+                    SDL_Rect firstFrame;
+                    firstFrame.x = 0;
+                    firstFrame.y = 0;
+                    firstFrame.w = (int)texW;
+                    firstFrame.h = (int)texH / 3;
+
+                    Engine::GetInstance().render->DrawTexture(chestItemTexture, 526, 185, &firstFrame);
+                }
+            }
+        }
     }
 }
 
@@ -194,6 +290,90 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().scene->PopScene();
         break;
 
+    case CHEST_BUTTON_ID :
+        //open chest
+        Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
+        OpenUIChest();
+        break;
+
+    case OPEN_BUTTON_ID:
+        if (chestPopped) { break; }
+        if (alliedParty->GetInventory().GetItemCount("key") < 1) { break; }
+        alliedParty->GetInventory().ConsumeItem("key");
+        chestOpened = true;
+        animsChest.SetCurrent("idle");
+        animsChest.SetLoop("idle", false);
+        break;
+
+    case CLOSE_CHEST_BUTTON_ID:
+        //close chest
+        if (chestPopped) { break; }
+        if (selectedItem != nullptr && !selectedItem->IsPurchased())
+        {
+            delete selectedItem;
+            selectedItem = nullptr;
+        }
+        if (chestItemTexture != nullptr)
+        {
+            Engine::GetInstance().textures->UnLoad(chestItemTexture);
+            chestItemTexture = nullptr;
+        }
+        Engine::GetInstance().uiManager->RemoveElementsByRange(0, 300);
+        chestOpened = false;
+        chestPopped = false;
+        showChest = false;
+        CreateUI();
+        break;
+
+    case REWARD_GOLD:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
+        alliedParty->AddGold(rewardAmount);
+        rewardAmount = 0;
+        chestPopped = false;
+        Engine::GetInstance().uiManager->RemoveElementsByRange(10, 11);
+        break;
+
+    case REWARD_EMPTY:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
+        chestPopped = false;
+        Engine::GetInstance().uiManager->RemoveElementsByRange(10, 11);
+        break;
+
+    case 200:
+    case 201:
+    case 202:
+    {
+        int index = uiElement->id - CHARACTERS_AVAILABLE_BASE;
+        Character* character = alliedParty->GetMembers()[index];
+
+        EquippableItem* equippable = dynamic_cast<EquippableItem*>(selectedItem);
+        if (!equippable) { return false; }
+
+        if (alliedParty->GetInventory().EquipItem(character->GetName(), equippable))
+        {
+            selectedItem->SetPurchased(true);
+            chestPopped = false;
+            rewardAmount = 0;
+
+            if (chestItemTexture != nullptr)
+            {
+                Engine::GetInstance().textures->UnLoad(chestItemTexture);
+                chestItemTexture = nullptr;
+            }
+
+            LOG("Item equipado desde chest IslandInterior");
+        }
+        else
+        {
+            alliedParty->AddGold(10);
+            chestPopped = false;
+            rewardAmount = 0;
+            LOG("No hay espacio, ganar 10 gold");
+        }
+
+        Engine::GetInstance().uiManager->RemoveElementsByRange(CHARACTERS_AVAILABLE_BASE, CHARACTERS_AVAILABLE_BASE + 99);
+        break;
+    }
     default:
         break;
     }
@@ -251,7 +431,7 @@ void IslandInteriorScene::CreateUI()
 
 void IslandInteriorScene::LoadAnimation()
 {
-    // load
+    // load animation backgrounds
     if(island->GetIslandFaction()==IslandFaction::BIRD){
         std::unordered_map<int, std::string> aliases = { {0,"idle"} };
         anims.LoadFromTSX("Assets/Textures/Animations/BirdAnimatedBack.tsx", aliases);
@@ -263,6 +443,13 @@ void IslandInteriorScene::LoadAnimation()
         anims.SetCurrent("idle");
     }
 
+    //chest
+    if (island->GetIslandFaction() == IslandFaction::REPTILES || island->GetIslandFaction() == IslandFaction::SIRENS) {
+
+        std::unordered_map<int, std::string> aliases = { {0,"idle"} };
+        animsChest.LoadFromTSX("Assets/Textures/Animations/chestAnimated.tsx", aliases);
+        animsChest.SetLoop("idle", false);
+    }
 }
 
 //helpers
@@ -338,3 +525,90 @@ void IslandInteriorScene::UpdateSound() {
         }
     }
 }
+void IslandInteriorScene::GiveReward()
+{
+    srand(time(NULL));
+    rewardAmount = rand() % 50;
+
+    LOG("reward Amount: %d", rewardAmount);
+    SDL_Rect claimBounds = CHEST_ITEM_POSITIONS;
+
+    if (rewardAmount > 40) {
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, REWARD_EMPTY, "", claimBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, claimButton, 0, claimBounds.w, claimBounds.h
+        );
+    }
+    else if (rewardAmount < 21) {
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, REWARD_GOLD, "", claimBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, claimButton, 0, claimBounds.w, claimBounds.h
+        );
+    }
+    else {
+
+        Faction faction = Faction::UNDEFINED;
+        IslandFaction islandFaction = island->GetIslandFaction();
+        if (islandFaction == IslandFaction::HUMANS) { faction = Faction::HUMAN; }
+        else if (islandFaction == IslandFaction::BIRD) { faction = Faction::BIRD; }
+        else if (islandFaction == IslandFaction::SIRENS) { faction = Faction::SIREN; }
+        else if (islandFaction == IslandFaction::REPTILES) { faction = Faction::REPTILE; }
+
+        std::vector<EquippableItem*> equippables = Engine::GetInstance().itemManager->GetEquippablesByFaction(faction);
+
+        if (!equippables.empty())
+        {
+            //random item
+            std::mt19937 rng(std::random_device{}());
+            std::uniform_int_distribution<int> dist(0, (int)equippables.size() - 1);
+            EquippableItem* chosen = equippables[dist(rng)];
+
+            selectedItem = chosen->Clone();
+
+            //load texture item
+            std::string factionFolder = SceneUtils::GetFactionString(islandFaction);
+            std::string texturePath = "Assets/Textures/ShopScene/Items/" + factionFolder + "/" + chosen->GetName() + ".png";
+            chestItemTexture = Engine::GetInstance().textures->Load(texturePath.c_str());
+
+            LOG("Chest reward: item equippable -> %s", chosen->GetName().c_str());
+            CreateCharacterSelectionUI();
+        }
+    }
+}
+
+void IslandInteriorScene::CreateCharacterSelectionUI()
+{
+    Engine::GetInstance().uiManager->RemoveElementsByRange(CHARACTERS_AVAILABLE_BASE, CHARACTERS_AVAILABLE_BASE + 99);
+
+    for (int i = 0; i < alliedParty->GetMemberCount(); i++)
+    {
+        SDL_Rect rect = { 190, 455 + i * 63, 202, 63 };
+
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON,
+            CHARACTERS_AVAILABLE_BASE + i,
+            alliedParty->GetMembers()[i]->GetName().c_str(),
+            rect,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, emptyButtons, 0, rect.w, rect.h
+        );
+    }
+}
+void IslandInteriorScene::OpenUIChest()
+{
+    chestOpened = false;
+    chestPopped = false;
+    showChest = true;
+
+    SDL_Rect crossBounds = { 45, 45, 72, 72 };
+    SDL_Rect openBounds = { 990, 250, 202, 63 };
+
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, CLOSE_CHEST_BUTTON_ID, "", crossBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, crossBounds.w, crossBounds.h
+    );
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, OPEN_BUTTON_ID, "", openBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, claimButton, 0, openBounds.w, openBounds.h
+    );
+}
+

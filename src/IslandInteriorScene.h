@@ -23,6 +23,7 @@ public:
     void LoadTextures() override;
 
     void Draw(float dt);
+    void DrawChest(float dt);
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
@@ -30,10 +31,17 @@ public:
     void OnResume() override;
     void OnPause() override;
     void CreateUI();
-
+    void OpenUIChest();
+    void GiveReward();
+    void CreateCharacterSelectionUI();
     void LoadAnimation();
+
     SDL_Texture* backgroundSpritesheet = nullptr;
+    SDL_Texture* chestSpritesheet;
     AnimationSet anims;
+    AnimationSet animsChest;
+    Item* selectedItem = nullptr;
+    SDL_Texture* chestItemTexture = nullptr;
 
     //gold counter
     GoldCounter goldCounter;
@@ -49,6 +57,14 @@ private:
     static constexpr int DOCKYARD_BUTTON_ID = 3;
     static constexpr int LEAVE_BUTTON_ID = 4;
     static constexpr int CHEST_BUTTON_ID = 5;
+    static constexpr int CLOSE_CHEST_BUTTON_ID = 6;
+    static constexpr int OPEN_BUTTON_ID = 8;
+    static constexpr int REWARD_GOLD = 10;
+    static constexpr int REWARD_EMPTY = 11;
+    static constexpr int CHARACTERS_AVAILABLE_BASE = 200;
+
+    int rewardAmount = 1;
+
 
      //helper
     SDL_Rect GetDockBounds() const;
@@ -83,6 +99,9 @@ private:
     static const SDL_Rect CHEST_BIRD_BOUNDS;
     static const SDL_Rect CHEST_SIREN_BOUNDS;
     static const SDL_Rect CHEST_REPTILE_BOUNDS;
+
+    static const SDL_Rect CHEST_ITEM_POSITIONS;
+
 #pragma endregion
 #pragma endregion
 
@@ -93,7 +112,13 @@ private:
     SDL_Texture* hostelButton;
     SDL_Texture* chestButton;
     SDL_Texture* exitButton;
-    SDL_Texture* moneyCounter;
+    SDL_Texture* emptyButtons = nullptr;
+    SDL_Texture* claimButton = nullptr;
+    SDL_Texture* chestBackground = nullptr; 
+    SDL_Texture* keyCounter = nullptr;
+    SDL_Texture* moneyCounter = nullptr;
+    SDL_Texture* moneyCard = nullptr;
+    SDL_Texture* emptyCard = nullptr;
 #pragma endregion
 
     //audio variables
@@ -112,4 +137,8 @@ private:
 
     //fx variables
     int buttonPress;
+
+    bool showChest;
+    bool chestOpened;
+    bool chestPopped;
 };
