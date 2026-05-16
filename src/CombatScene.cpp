@@ -491,15 +491,21 @@ void CombatScene::ShowLaneSelectionFor(int characterIndex)
     {
         int id;
         LaneType type;
-        const char* label;
     };
 
     LaneOption options[3] = {
 
-        { 30, LaneType::BACK,  "+15 Power" },
-        { 31, LaneType::SIDE,  "+10 Power +10 Speed" },
-        { 32, LaneType::FRONT, "+10 Speed +10 HP"   }
+        { 30, LaneType::BACK },
+        { 31, LaneType::SIDE },
+        { 32, LaneType::FRONT }
     };
+
+    std::string labels[3] = {
+    "+" + std::to_string(15 * shipLevel) + " Power",
+    "+" + std::to_string(10 * shipLevel) + " Power  +" + std::to_string(10 * shipLevel) + " Speed",
+    "+" + std::to_string(10 * shipLevel) + " Speed  +" + std::to_string(10 * shipLevel) + " HP"
+    };
+
 
     for (int i = 0; i < 3; i++)
     {
@@ -518,7 +524,7 @@ void CombatScene::ShowLaneSelectionFor(int characterIndex)
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,
             options[i].id,
-            options[i].label,
+            labels[i].c_str(),
             bounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
             {}, emptyButton, 0, bounds.w, bounds.h
