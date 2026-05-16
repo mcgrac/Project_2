@@ -308,6 +308,18 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         }
         Engine::GetInstance().audio->PlayFx(buttonPress);
         if (chestPopped) { break; }
+        if (shopOpen)
+        {
+            IslandFaction faction = shop->GetIsland()->GetIslandFaction();
+            if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
+            {
+                Engine::GetInstance().scene->PopScene();
+                break;
+            }
+        }
+
+
+
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 300);
         chestOpen = 0;
         shopOpen = 0;
