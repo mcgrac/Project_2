@@ -97,6 +97,7 @@ private:
     SDL_Texture* moneyCard;
     SDL_Texture* emptyCard;
     SDL_Texture* claimButton;
+    SDL_Texture* chestItemTexture;
     std::vector<SDL_Texture*> loadedItemTextures;
 #pragma endregion
 

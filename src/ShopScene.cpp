@@ -16,6 +16,9 @@
 #include "ConsumableItem.h"
 #include "KeyItem.h"
 #include "Party.h"
+#include "ItemManager.h"
+#include <algorithm>
+#include <random>
 
 #include "Inventory.h"
 
@@ -26,37 +29,41 @@ const SDL_Rect ShopScene::CHEST_BIRD_BOUNDS = { 112,  405,  192,  210 };
 const SDL_Rect ShopScene::CHEST_SIREN_BOUNDS = { 228,  468,  102,  117 };
 const SDL_Rect ShopScene::CHEST_REPTILE_BOUNDS = { 626,  486,  54,  42 };
 #pragma endregion
-#pragma endregion NPC
+#pragma region NPC
 const SDL_Rect ShopScene::HUMAN_CHARA_SELECT_BOUNDS = { 484, 256, 315, 192 };
 const SDL_Rect ShopScene::BIRD_CHARA_SELECT_BOUNDS = { 308, 257, 241, 270 };
 const SDL_Rect ShopScene::SIREN_CHARA_SELECT_BOUNDS = { 903,  312, 292, 265 };
 const SDL_Rect ShopScene::REPTILE_CHARA_SELECT_BOUNDS = { 297, 170, 201, 204 };
 #pragma endregion
-#pragma endregion Sprite
+#pragma region Sprite
 const SDL_Rect ShopScene::HUMAN_SPRITE_BOUNDS = { 424, 380, 764, 276 };
 const SDL_Rect ShopScene::BIRD_SPRITE_BOUNDS = { 424, 364, 790, 312 };
 const SDL_Rect ShopScene::SIREN_SPRITE_BOUNDS = { 424, 293, 931, 663 };
 const SDL_Rect ShopScene::REPTILE_SPRITE_BOUNDS = { 424, 290, 856, 366 };
 #pragma endregion
-#pragma endregion CROSS
+#pragma region CROSS
 const SDL_Rect ShopScene::CROSS_BOUNDS = { 45, 45, 72, 72 };
 #pragma endregion
-#pragma endregion CROSS2
+#pragma region CROSS2
 const SDL_Rect ShopScene::CROSS_BOUNDS2 = { 118, 63, 72, 72 };
 #pragma endregion
-#pragma endregion OPEN_BUTTON
+#pragma region OPEN_BUTTON
 const SDL_Rect ShopScene::OPEN_BUTTON_BOUNDS = { 990, 250, 202, 63 };
 #pragma endregion
-#pragma endregion CHEST_ITEM_POSITION
+#pragma region CHEST_ITEM_POSITION
 const SDL_Rect ShopScene::CHEST_ITEM_POSITIONS = { 549, 507, 182, 72 };
 #pragma endregion
-#pragma endregion Rewards
+#pragma region Rewards
 const SDL_Rect ShopScene::REWARD_BOUNDS = { 526, 185, 229, 304 };
 #pragma endregion
 #pragma endregion
 
 ShopScene::ShopScene(Shop* shop, Party* allied)
-    : shop(shop), alliedParty(allied), ownerSprite(nullptr), goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
+    : shop(shop),
+    alliedParty(allied), 
+    ownerSprite(nullptr), 
+    goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62),
+    chestItemTexture(nullptr)
 {
     sceneName = "ShopScene";
     
@@ -126,7 +133,23 @@ void ShopScene::Update(float dt)
                 std::string price = std::to_string(rewardAmount);
                 Engine::GetInstance().render->DrawText((price).c_str(), 629-(12*potNum), 431, 23 + (20*potNum), 26, White);
             }
-            else {}
+            else 
+            {
+                if (chestItemTexture != nullptr)
+                {
+                    float texH;
+                    float texW;
+                    SDL_GetTextureSize(chestItemTexture, &texW, &texH);
+
+                    SDL_Rect firstFrame;
+                    firstFrame.x = 0;
+                    firstFrame.y = 0;
+                    firstFrame.w = (int)texW;
+                    firstFrame.h = (int)texH / 3;
+
+                    Engine::GetInstance().render->DrawTexture(chestItemTexture, REWARD_BOUNDS.x, REWARD_BOUNDS.y, &firstFrame);
+                }
+            }
         }
     }
     else if (shopOpen == true) {
@@ -254,6 +277,11 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         goldCounter.MoveCounter( 1144, 62);
         break;
     case OPEN_CHEST_ID:
+        if (chestItemTexture != nullptr)
+        {
+            Engine::GetInstance().textures->UnLoad(chestItemTexture);
+            chestItemTexture = nullptr;
+        }
         Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
         OpenUIChest();
@@ -268,6 +296,16 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     }
     case CLOSE_CHEST_ID:
+        if (chestOpen && selectedItem != nullptr && !selectedItem->IsPurchased())
+        {
+            delete selectedItem;
+            selectedItem = nullptr;
+        }
+        if (chestItemTexture != nullptr)
+        {
+            Engine::GetInstance().textures->UnLoad(chestItemTexture);
+            chestItemTexture = nullptr;
+        }
         Engine::GetInstance().audio->PlayFx(buttonPress);
         if (chestPopped) { break; }
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 300);
@@ -364,23 +402,22 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     }
     case 200:
     case 201:
+    case 202:
     {
-            int index = uiElement->id - CHARACTERS_AVAILABLE_BASE;
-            Character* character = alliedParty->GetMembers()[index];
+        int index = uiElement->id - CHARACTERS_AVAILABLE_BASE;
+        Character* character = alliedParty->GetMembers()[index];
 
-            EquippableItem* equippable = dynamic_cast<EquippableItem*>(selectedItem);
-            if (!equippable) { return false; }
+        EquippableItem* equippable = dynamic_cast<EquippableItem*>(selectedItem);
+        if (!equippable) { return false; }
 
+        if (chestOpen) //chest
+        {
             if (alliedParty->GetInventory().EquipItem(character->GetName(), equippable))
             {
-
                 selectedItem->SetPurchased(true);
-
                 chestPopped = false;
                 rewardAmount = 0;
-
-
-                LOG("Item equipado");
+                LOG("Item equipado desde chest");
             }
             else
             {
@@ -390,46 +427,35 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
                 LOG("No hay espacio, ganar 10 gold");
             }
 
-            // borrar personajes pero mantener items
             Engine::GetInstance().uiManager->RemoveElementsByRange(10, 300);
-            break;
         }
-
-    case 202:
-    {
-        int index = uiElement->id - CHARACTERS_AVAILABLE_BASE;
-        Character* character = alliedParty->GetMembers()[index];
-
-        EquippableItem* equippable = dynamic_cast<EquippableItem*>(selectedItem);
-        if (!equippable) { return false; }
-
-        if (alliedParty->GetInventory().EquipItem(character->GetName(), equippable))
+        else //pnale shop
         {
-            equippable->Use(character);
-            alliedParty->SpendGold(selectedItem->GetPrice());
-            Engine::GetInstance().audio->PlayFx(spendMoneyfx);
-            selectedItem->SetPurchased(true);
-
-            //button disabeled
-            UIButton* btn = dynamic_cast<UIButton*>(selectedItemButton);
-            if (btn != nullptr)
+            if (alliedParty->GetInventory().EquipItem(character->GetName(), equippable))
             {
-                btn->SetDisabledRow(2);
-                btn->SetDisabled(true);
+                equippable->Use(character);
+                alliedParty->SpendGold(selectedItem->GetPrice());
+                Engine::GetInstance().audio->PlayFx(spendMoneyfx);
+                selectedItem->SetPurchased(true);
+
+                UIButton* btn = dynamic_cast<UIButton*>(selectedItemButton);
+                if (btn != nullptr)
+                {
+                    btn->SetDisabledRow(2);
+                    btn->SetDisabled(true);
+                }
+                selectedItemButton = nullptr;
+
+               LOG("Item equipado desde tienda");
             }
-            selectedItemButton = nullptr; // limpiar referencia
+            else
+            {
+                LOG("No hay espacio");
+            }
 
-            LOG("Item equipado");
+            state = ShopState::SHOW_ITEMS;
+            Engine::GetInstance().uiManager->RemoveElementsByRange(CHARACTERS_AVAILABLE_BASE, CHARACTERS_AVAILABLE_BASE + 99);
         }
-        else
-        {
-            LOG("No hay espacio");
-        }
-
-        state = ShopState::SHOW_ITEMS;
-
-        // borrar personajes pero mantener items
-        Engine::GetInstance().uiManager->RemoveElementsByRange(CHARACTERS_AVAILABLE_BASE, CHARACTERS_AVAILABLE_BASE + 99);
         break;
     }
     default:
@@ -736,14 +762,35 @@ void ShopScene::GiveReward()
         );
     }
     else { 
-        Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, REWARD_EMPTY, "", claimBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, claimButton, 0, claimBounds.w, claimBounds.h
-        ); 
-        LOG("eat shit"); }
 
+        Faction faction = Faction::UNDEFINED;
+        IslandFaction islandFaction = shop->GetIsland()->GetIslandFaction();
+        if (islandFaction == IslandFaction::HUMANS) { faction = Faction::HUMAN; }
+        else if (islandFaction == IslandFaction::BIRD) { faction = Faction::BIRD; }
+        else if (islandFaction == IslandFaction::SIRENS) { faction = Faction::SIREN; }
+        else if (islandFaction == IslandFaction::REPTILES) { faction = Faction::REPTILE; }
 
+        std::vector<EquippableItem*> equippables = Engine::GetInstance().itemManager->GetEquippablesByFaction(faction);
 
+        if (!equippables.empty())
+        {
+            //random item
+            std::mt19937 rng(std::random_device{}());
+            std::uniform_int_distribution<int> dist(0, (int)equippables.size() - 1);
+            EquippableItem* chosen = equippables[dist(rng)];
+
+            selectedItem = chosen->Clone();
+
+            //load texture item
+            std::string factionFolder = SceneUtils::GetFactionString(islandFaction);
+            std::string texturePath = "Assets/Textures/ShopScene/Items/" + factionFolder + "/" + chosen->GetName() + ".png";
+            chestItemTexture = Engine::GetInstance().textures->Load(texturePath.c_str());
+
+            chestOpen = true; 
+            LOG("Chest reward: item equippable -> %s", chosen->GetName().c_str());
+            CreateCharacterSelectionUI();
+        }
+    }
 }
 
 void ShopScene::CreateCharacterSelectionUI()
