@@ -98,13 +98,15 @@ private:
     SDL_Rect GetSpriteBounds() const;
 
 #pragma region POSITIONS
+
 #pragma region CHEST
     static const SDL_Rect CHEST_HUMAN_BOUNDS;
     static const SDL_Rect CHEST_BIRD_BOUNDS;
     static const SDL_Rect CHEST_SIREN_BOUNDS;
     static const SDL_Rect CHEST_REPTILE_BOUNDS;
 #pragma endregion
-#pragma endregion NPC
+
+#pragma region NPC
 
     static const SDL_Rect HUMAN_CHARA_SELECT_BOUNDS;
     static const SDL_Rect BIRD_CHARA_SELECT_BOUNDS;
@@ -112,7 +114,8 @@ private:
     static const SDL_Rect REPTILE_CHARA_SELECT_BOUNDS;
 
 #pragma endregion
-#pragma endregion Sprite
+
+#pragma region Sprite
 
     static const SDL_Rect HUMAN_SPRITE_BOUNDS;
     static const SDL_Rect BIRD_SPRITE_BOUNDS;
@@ -120,24 +123,26 @@ private:
     static const SDL_Rect REPTILE_SPRITE_BOUNDS;
 
 #pragma endregion
-#pragma endregion Cross
+
+#pragma region Cross
 
     static const SDL_Rect CROSS_BOUNDS;
 
 #pragma endregion
-#pragma endregion Cross2
+
+#pragma region Cross2
 
     static const SDL_Rect CROSS_BOUNDS2;
 
 #pragma endregion
 
-#pragma endregion OpenButton
+#pragma region OpenButton
 
     static const SDL_Rect OPEN_BUTTON_BOUNDS;
 
 #pragma endregion
 
-#pragma endregion CHEST_ITEM_POSITIONS
+#pragma region CHEST_ITEM_POSITIONS
 
     static const SDL_Rect CHEST_ITEM_POSITIONS;
 
@@ -147,6 +152,7 @@ private:
 
     ShopState state = ShopState::CLOSED;
     Item* selectedItem = nullptr;
+    UIElement* selectedItemButton = nullptr;
 
     //audio variables
     int spendMoneyfx;

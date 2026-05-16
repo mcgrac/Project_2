@@ -278,9 +278,8 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
                 Engine::GetInstance().audio->PlayFx(spendMoneyfx);
             }
             selectedItem = item;
-
+            selectedItemButton = uiElement;
             state = ShopState::SELECT_CHARACTER;
-
             CreateCharacterSelectionUI();
         }
 
@@ -323,8 +322,16 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
             equippable->Use(character);
             alliedParty->SpendGold(selectedItem->GetPrice());
             Engine::GetInstance().audio->PlayFx(spendMoneyfx);
-
             selectedItem->SetPurchased(true);
+
+            //button disabeled
+            UIButton* btn = dynamic_cast<UIButton*>(selectedItemButton);
+            if (btn != nullptr)
+            {
+                btn->SetDisabledRow(2);
+                btn->SetDisabled(true);
+            }
+            selectedItemButton = nullptr; // limpiar referencia
 
             LOG("Item equipado");
         }
@@ -518,6 +525,8 @@ void ShopScene::CreateItemButtons()
 
         Item* item = shop->GetCurrentItems()[i];
 
+        bool purchased = item->IsPurchased();
+
         if (item == dynamic_cast<EquippableItem*>(item)) {
 #if _DEBUG
             LOG("CREATING ITEMS BUTTONS: Item is equippable (name-> %s)", shop->GetCurrentItems()[i]->GetName().c_str());
@@ -528,7 +537,7 @@ void ShopScene::CreateItemButtons()
             std::string texturePath = "Assets/Textures/ShopScene/Items/" + factionFolder + "/" + shop->GetCurrentItems()[i]->GetName() + ".png";
             SDL_Texture* itemTexture = Engine::GetInstance().textures->Load(texturePath.c_str());
 
-            Engine::GetInstance().uiManager->CreateUIElement(
+            auto element = Engine::GetInstance().uiManager->CreateUIElement(
                 UIElementType::BUTTON,
                 ITEMS_AVAILABLE_BASE + i,
                 "",
@@ -537,6 +546,17 @@ void ShopScene::CreateItemButtons()
             );
 
             loadedItemTextures.push_back(itemTexture);
+
+            // Si ya fue comprado, deshabilitar directamente
+            if (purchased && element != nullptr)
+            {
+                UIButton* btn = dynamic_cast<UIButton*>(element.get());
+                if (btn != nullptr)
+                {
+                    btn->SetDisabledRow(2);
+                    btn->SetDisabled(true);
+                }
+            }
         }
         else if (item == dynamic_cast<KeyItem*>(item)) {
 #if _DEBUG
