@@ -43,8 +43,10 @@ private:
 
     void PushDialogue();
     void CreateItemButtons();
+
     void OpenUIChest();
 
+    void PlayAnimation(float dt);
     void GiveReward();
    
     void CreateCharacterSelectionUI();
@@ -70,6 +72,8 @@ private:
     static constexpr int CLOSE_CHEST_ID = 7;
     static constexpr int OPEN_BUTTON_ID = 8;
     static constexpr int CLOSE_SHOP_ID = 9;
+    static constexpr int REWARD_GOLD = 10;
+    static constexpr int REWARD_EMPTY = 11;
     static constexpr int ITEMS_AVAILABLE_BASE = 100;
     static constexpr int CHARACTERS_AVAILABLE_BASE = 200;
 
@@ -90,6 +94,9 @@ private:
     SDL_Texture* chestBackground;
     SDL_Texture* openButton;
     SDL_Texture* chestSpritesheet;
+    SDL_Texture* moneyCard;
+    SDL_Texture* emptyCard;
+    SDL_Texture* claimButton;
     std::vector<SDL_Texture*> loadedItemTextures;
 #pragma endregion
 
@@ -142,6 +149,11 @@ private:
     static const SDL_Rect CHEST_ITEM_POSITIONS;
 
 #pragma endregion
+#pragma endregion Rewards
+
+    static const SDL_Rect REWARD_BOUNDS;
+
+#pragma endregion
 #pragma endregion
 
 
@@ -154,6 +166,8 @@ private:
     bool chestOpen = 0;
     bool shopOpen = 0;
     bool chestPopped = 0;
+
+    int rewardAmount = 1;
 
     SDL_Texture* chestTexture = nullptr;
     AnimationSet anims;

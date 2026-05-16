@@ -48,7 +48,10 @@ const SDL_Rect ShopScene::CROSS_BOUNDS2 = { 118, 63, 72, 72 };
 const SDL_Rect ShopScene::OPEN_BUTTON_BOUNDS = { 990, 250, 202, 63 };
 #pragma endregion
 #pragma endregion CHEST_ITEM_POSITION
-const SDL_Rect ShopScene::CHEST_ITEM_POSITIONS = { 526, 185, 229, 304 };
+const SDL_Rect ShopScene::CHEST_ITEM_POSITIONS = { 549, 507, 182, 72 };
+#pragma endregion
+#pragma endregion Rewards
+const SDL_Rect ShopScene::REWARD_BOUNDS = { 526, 185, 229, 304 };
 #pragma endregion
 #pragma endregion
 
@@ -93,6 +96,7 @@ void ShopScene::Update(float dt)
     }
     if(chestOpen == true){ 
         Engine::GetInstance().render->DrawTexture(chestBackground, 0, 0); 
+        if (animationPlaying) { PlayAnimation(dt); }
         Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
         Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
 
@@ -102,7 +106,28 @@ void ShopScene::Update(float dt)
         keyNum = 1;
         if (keys >= 10) { keyNum += 1; }
         Engine::GetInstance().render->DrawText((key).c_str(), 1114, 164, 19*keyNum, 33, White);
-     
+
+        SDL_Rect rewardBounds = REWARD_BOUNDS;
+
+        if (chestPopped) {
+            if (rewardAmount > 40) {
+
+                Engine::GetInstance().render->DrawTexture(emptyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
+
+            }
+            else if (rewardAmount < 21) {
+
+                Engine::GetInstance().render->DrawTexture(moneyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
+                
+                SDL_Color White = { 255, 255, 255 };
+                potNum = 0;
+                if (rewardAmount >= 10) { potNum += 1; }
+
+                std::string price = std::to_string(rewardAmount);
+                Engine::GetInstance().render->DrawText((price).c_str(), 629-(12*potNum), 431, 23 + (20*potNum), 26, White);
+            }
+            else {}
+        }
     }
     else if (shopOpen == true) {
 
@@ -143,6 +168,7 @@ void ShopScene::Update(float dt)
     }
 
     goldCounter.Update(alliedParty->GetGold(), dt);
+   
 }
 
 void ShopScene::PostUpdate(float dt)
@@ -199,8 +225,14 @@ void ShopScene::LoadTextures()
     moneyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/moneyCounter.png");
     otherCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/BackpackCounter.png");
     keyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/keyCounter.png");
-    keyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/keyCounter.png");
 
+    //chestSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/Animations/chestAnimated.png");
+    chestSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/Animations/chestAnimated.png");
+
+    claimButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/claimButton.png");
+    emptyCard = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/emptyCard.png");
+    moneyCard = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/moneyCard.png");
+    
     
     std::unordered_map<int, std::string> aliases = { {0,"idle"} };
     anims.LoadFromTSX("Assets/Textures/Animations/chestAnimated.tsx", aliases);
@@ -208,6 +240,7 @@ void ShopScene::LoadTextures()
 
     fullBackground = Engine::GetInstance().textures->Load((path + "/fullBack.png").c_str());
     characterSprite = Engine::GetInstance().textures->Load((path + "/NPC.png").c_str());
+
 }
 
 bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -216,6 +249,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     {
     case BACK_BUTTON_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
+        if (chestPopped) { break; }
         Engine::GetInstance().scene->PopScene();
         goldCounter.MoveCounter( 1144, 62);
         break;
@@ -235,6 +269,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     }
     case CLOSE_CHEST_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
+        if (chestPopped) { break; }
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 300);
         chestOpen = 0;
         shopOpen = 0;
@@ -243,14 +278,34 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case OPEN_BUTTON_ID:
         //if money and animationPlaying 0, take money. else break
+        Engine::GetInstance().audio->PlayFx(buttonPress);
+        if (chestPopped) { break; }
         if (alliedParty->GetInventory().GetItemCount("key") < 1) { break; }
         alliedParty->GetInventory().ConsumeItem("key");
-        chestPopped = true;
+        
+        animationPlaying = true;
         anims.SetCurrent("idle");
-        CreateItemButtons();
+        anims.SetLoop("idle", false);
+        //CreateItemButtons();
+        
         //playAnimation
         //put animationPlaying to 1
         break;
+    case REWARD_GOLD:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
+        alliedParty->AddGold(rewardAmount);
+        rewardAmount = 0;
+        chestPopped = false;
+        
+        Engine::GetInstance().uiManager->RemoveElementsByRange(10, 11);
+            break;
+
+    case REWARD_EMPTY:
+        Engine::GetInstance().audio->PlayFx(buttonPress);
+        chestPopped = false;
+        Engine::GetInstance().uiManager->RemoveElementsByRange(10, 11);
+        break;
+
     case 100:
     case 101:
     case 102:
@@ -310,6 +365,37 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     }
     case 200:
     case 201:
+    {
+            int index = uiElement->id - CHARACTERS_AVAILABLE_BASE;
+            Character* character = alliedParty->GetMembers()[index];
+
+            EquippableItem* equippable = dynamic_cast<EquippableItem*>(selectedItem);
+            if (!equippable) { return false; }
+
+            if (alliedParty->GetInventory().EquipItem(character->GetName(), equippable))
+            {
+
+                selectedItem->SetPurchased(true);
+
+                chestPopped = false;
+                rewardAmount = 0;
+
+
+                LOG("Item equipado");
+            }
+            else
+            {
+                alliedParty->AddGold(10);
+                chestPopped = false;
+                rewardAmount = 0;
+                LOG("No hay espacio, ganar 10 gold");
+            }
+
+            // borrar personajes pero mantener items
+            Engine::GetInstance().uiManager->RemoveElementsByRange(10, 300);
+            break;
+        }
+
     case 202:
     {
         int index = uiElement->id - CHARACTERS_AVAILABLE_BASE;
@@ -589,19 +675,54 @@ void ShopScene::OpenUIChest()
     );
 }
 
+void ShopScene::PlayAnimation(float dt)
+{
+    if (chestSpritesheet == nullptr) { LOG("chest spritesheet nullptr"); }
+    anims.Update(dt);
+
+    const SDL_Rect& animFrame = anims.GetCurrentFrame();
+
+    Engine::GetInstance().render->DrawTexture(
+        chestSpritesheet,
+        0,
+        0,
+        &animFrame
+    );
+
+    if (anims.IsCurrentFinished()) {
+        animationPlaying = false; chestPopped = true; GiveReward();
+    };
+}
+
 void ShopScene::GiveReward()
 {
     srand(time(NULL));
-    int random = rand();
+    rewardAmount = rand()%50;
 
-    switch (random%3) {
-    case 0: //get nothing
-        break;
-    case 1: //get money
-        break;
-    case 2: //get item
-        break;
+    LOG("reward Amount: %d", rewardAmount);
+    SDL_Rect claimBounds = CHEST_ITEM_POSITIONS;
+
+    if (rewardAmount > 40) {
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, REWARD_EMPTY, "", claimBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, claimButton, 0, claimBounds.w, claimBounds.h
+        );
     }
+    else if (rewardAmount < 21){
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, REWARD_GOLD, "", claimBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, claimButton, 0, claimBounds.w, claimBounds.h
+        );
+    }
+    else { 
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, REWARD_EMPTY, "", claimBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, claimButton, 0, claimBounds.w, claimBounds.h
+        ); 
+        LOG("eat shit"); }
+
+
+
 }
 
 void ShopScene::CreateCharacterSelectionUI()

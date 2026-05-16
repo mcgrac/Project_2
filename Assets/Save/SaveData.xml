@@ -2,8 +2,8 @@
 <savedata>
 	<world currentIslandId="1" />
 	<party>
-		<character name="Gerbera" health="96" isAlive="true" />
-		<character name="Markus" health="61" isAlive="true" />
-		<character name="Ignis" health="56" isAlive="true" />
+		<character name="Gerbera" health="86" isAlive="true" />
+		<character name="Markus" health="90" isAlive="true" />
+		<character name="Theresia" health="120" isAlive="true" />
 	</party>
 </savedata>

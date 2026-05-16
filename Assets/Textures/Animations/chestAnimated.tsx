@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.2" name="chestAnimated" tilewidth="1280" tileheight="720" tilecount="29" columns="1">
- <image source="../ShopScene/ChestAnimation.png" width="1280" height="20880"/>
+<tileset version="1.10" tiledversion="1.12.1" name="chestAnimated" tilewidth="1280" tileheight="720" tilecount="32" columns="2">
+ <image source="chestAnimated.png" width="2560" height="11520"/>
  <tile id="0">
   <animation>
    <frame tileid="0" duration="100"/>
