@@ -250,7 +250,7 @@ void CombatScene::LoadTextures()
     arrow = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/ArrowMarker.png");
     poisonIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/PoisonIndicator.png");
     burnIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/FireIndicator.png");
-    potionIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/FireIndicator.png");
+    potionIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/potionIcon.png");
 
     // Cargar icono de cada personaje dinámicamente desde las parties
     auto loadIconForParty = [&](Party* party)
@@ -821,7 +821,7 @@ void CombatScene::ShowSkillButtons()
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 50, "Potion", potionBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
-        {}, abilityIcons, 0, potionBounds.w, potionBounds.h
+        {}, potionIcon, 0, potionBounds.w, potionBounds.h
     );
 }
 

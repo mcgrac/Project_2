@@ -320,6 +320,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
 
         if (alliedParty->GetInventory().EquipItem(character->GetName(), equippable))
         {
+            equippable->Use(character);
             alliedParty->SpendGold(selectedItem->GetPrice());
             Engine::GetInstance().audio->PlayFx(spendMoneyfx);
 
