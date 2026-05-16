@@ -99,28 +99,6 @@ bool UIButton::Update(float dt)
 		int screenX = bounds.x + camX;
 		int screenY = bounds.y;
 
-		////If the position of the mouse if inside the bounds of the button 
-		//if (mousePos.getX() > bounds.x && mousePos.getX() < bounds.x + bounds.w && mousePos.getY() > bounds.y && mousePos.getY() < bounds.y + bounds.h) {
-
-		//	if(state != UIElementState::SELECTED)
-		//	{
-		//		state = UIElementState::FOCUSED;
-		//	}
-
-		//	if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
-		//		state = UIElementState::PRESSED;
-		//	}
-
-		//	if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_UP) {
-		//		NotifyObserver();
-		//	}
-		//}
-		//else {
-		//	if(state != UIElementState::SELECTED)
-		//	{
-		//		state = UIElementState::NORMAL;
-		//	}
-		//}
 
 		//If the position of the mouse is inside the bounds of the button 
 		if (mousePos.getX() > screenX && mousePos.getX() < screenX + bounds.w &&
@@ -206,13 +184,13 @@ void UIButton::DrawButton() const
 	if (playingAnim)
 	{
 		// Frames de animacion post-click (filas 2-5)
-		frameRect = GetFrameRect(buttonAnimStart + animFrame);
-		ResetTint();
+		//frameRect = GetFrameRect(buttonAnimStart + animFrame);
+		//ResetTint();
 	}
 	else if (state == UIElementState::DISABLED)
 	{
-		frameRect = GetFrameRect(buttonRowNormal);
-		SetTint(100, 100, 100);     // oscurecer para disabled
+		frameRect = GetFrameRect(buttonRowDisabeled);
+		ResetTint();
 	}
 	else if (state == UIElementState::PRESSED)
 	{
@@ -258,4 +236,26 @@ void UIButton::DrawButton() const
 	}
 
 	ResetTint();
+}
+
+void UIButton::SetDisabledRow(int row)
+{
+	buttonRowDisabeled = row;
+}
+
+void UIButton::SetDisabled(bool disabled)
+{
+	if (disabled)
+	{
+		state = UIElementState::DISABLED;
+	}
+	else
+	{
+		state = UIElementState::NORMAL;
+	}
+}
+
+bool UIButton::IsDisabled() const
+{
+	return state == UIElementState::DISABLED;
 }

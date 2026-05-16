@@ -18,6 +18,10 @@ public:
 
 	bool CleanUp() override;
 
+	void SetDisabledRow(int row);  // permite elegir qué fila dibujar cuando está disabled
+	void SetDisabled(bool disabled);
+	bool IsDisabled() const;
+
 private:
 
 	bool canClick = true;
@@ -53,10 +57,11 @@ private:
 	int buttonWidth;
 	int buttonHeight;
 
-	int buttonRowFocused = 1;
 	int buttonRowNormal = 0;
-	int buttonAnimStart = 2;   // primera fila de animacion
-	int butonAnimFrames = 4;   // cuantos frames tiene la animacion
+	int buttonRowFocused = 1;
+	int buttonRowDisabeled = 2;
+	//int buttonAnimStart = 2;   // primera fila de animacion
+	//int butonAnimFrames = 4;   // cuantos frames tiene la animacion
 
 	//sound
 	int PressedFx;
