@@ -165,6 +165,7 @@ private:
     void UpdateSkillHover();
     void DrawStatusIcons();
     void DrawUILaneSelection(std::string charName);
+    void DrawAlliedIcons();
     //tooltip
     TooltipRenderer tooltipRenderer;
 

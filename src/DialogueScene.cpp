@@ -8,6 +8,8 @@
 #include "Log.h"
 #include "SceneUtils.h"
 
+TooltipRenderer tooltip;
+
 DialogueScene::DialogueScene(const std::string& dialogueId,
                              std::function<void()> onFinished)
     : dialogueId(dialogueId)
@@ -40,6 +42,10 @@ void DialogueScene::Load()
 void DialogueScene::Update(float dt)
 {
     Engine::GetInstance().render->camera.x = 0;
+    if (portraitTexture != nullptr)
+    {
+        Engine::GetInstance().render->DrawTexture(portraitTexture, 0, 0);
+    }
 
     if (pendingRefresh) //avoids double clicking buttons
     {
@@ -57,30 +63,32 @@ void DialogueScene::Update(float dt)
 
 void DialogueScene::PostUpdate(float dt)
 {
+
+
+
+
     const DialogueNode* node = DialogueManager::GetCurrentNode();
     if (node == nullptr) return;
 
     // Panel de fondo semitransparente
-    SDL_Rect posPanel = { 0, 530, 1280, 190 };
-    Engine::GetInstance().render->DrawTexture(panel, posPanel.x, posPanel.y);
+   // SDL_Rect posPanel = { 0, 530, 1280, 190 };
+    //Engine::GetInstance().render->DrawTexture(panel, posPanel.x, posPanel.y);
 
     // Portrait — si cambió, recargarlo
     //UpdatePortrait(node->portrait);
 
-    if (portraitTexture != nullptr)
-    {
-        Engine::GetInstance().render->DrawTexture(portraitTexture, 800, 300);
-    }
+
 
     // Nombre del personaje
-    Engine::GetInstance().render->DrawText(
+   /* Engine::GetInstance().render->DrawText(
         node->speaker.c_str(),
         155, 540, 300, 30,
         { 255, 215, 0, 255 }   // dorado
-    );
+    );*/
 
+ 
     // Texto del diálogo
-    tooltipRenderer.Draw(node->text.c_str(), 255, 255);
+    tooltipRenderer.Draw(node->text.c_str(), 447, 520);
     //tocar valores de tooltip para adaptar texto
     
     //Engine::GetInstance().render->DrawText(
@@ -110,7 +118,7 @@ void DialogueScene::Unload()
 
 void DialogueScene::LoadTextures()
 {
-    button = Engine::GetInstance().textures->Load("Assets/Textures/Pause/ButtonsPause.png");
+    button = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/emptyButton.png");
     panel = Engine::GetInstance().textures->Load("Assets/Textures/Dialogues/TextBox.png");
     
     std::string portraitPath = SceneUtils::GetPortraitPath(dialogueId);
@@ -161,9 +169,9 @@ void DialogueScene::RefreshOptionButtons()
     if (node->options.empty() || node->isEnd)
     {
         // Nodo final — un solo botón para cerrar
-        SDL_Rect bounds = { 1100, 660, 221, 85 };
+        SDL_Rect bounds = { 1000, 63, 202, 63 };
         Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, OPTION_BTN_BASE, " ", bounds,
+            UIElementType::BUTTON, OPTION_BTN_BASE, "Continue", bounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, button, 0, bounds.w, bounds.h
         );
         return;
@@ -172,10 +180,10 @@ void DialogueScene::RefreshOptionButtons()
     for (int i = 0; i < (int)node->options.size(); ++i)
     {
         SDL_Rect bounds;
-        bounds.x = 10;
-        bounds.y = 10 + i * 100;
-        bounds.w = 221;
-        bounds.h = 85;
+        bounds.x = 50;
+        bounds.y = 63 + i * 73;
+        bounds.w = 202;
+        bounds.h = 63;
 
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, OPTION_BTN_BASE + i,
@@ -231,3 +239,4 @@ void DialogueScene::ClearOptionButtons()
 //    CreateCharactersButtons();
 //    CreateInterfaceButtons();
 //}
+

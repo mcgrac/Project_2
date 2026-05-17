@@ -833,6 +833,7 @@ void CombatScene::DrawHealthBar(int x, int y, int currentHP, int maxHP, bool lef
             chunkX = x - i * (HP_CHUNK_W);
         }
         Engine::GetInstance().render->DrawTexture(hpBarChunkTexture, chunkX, y, nullptr, false);
+        
     }
 }
 
@@ -1188,6 +1189,10 @@ void CombatScene::DrawUILaneSelection(std::string charName)
     else if (charName == "Ignis") { Engine::GetInstance().render->DrawTexture(laneIgnis, 0, 0); }
    
  
+}
+
+void CombatScene::DrawAlliedIcons()
+{
 }
 
 void CombatScene::OnResume()
