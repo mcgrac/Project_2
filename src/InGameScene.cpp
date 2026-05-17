@@ -269,6 +269,7 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
         PushSceneFromInGame(new PartyScene(alliedParty));
         break;
     case MAIN_MENU_BUTTON_ID:
+        SaveLoad::ClearSave();
         Engine::GetInstance().render->camera.x = 0;
         Engine::GetInstance().scene->ReplaceScene(new MainMenuScene);
         break;
@@ -607,7 +608,7 @@ void InGameScene::PushSceneFromInGame(BaseScene* scene)
 
 void InGameScene::ShowEndScreen(bool won)
 {
-    
+    SaveLoad::ClearSave();
     Engine::GetInstance().render->camera.x = 0;  // resetear cámara
 
     if (won)
