@@ -1,5 +1,7 @@
 #pragma once
 #include "BaseScene.h"
+#include "Vector2D.h"
+#include "SceneUtils.h"
 #include <string>
 #include <functional>
 #include "SceneUtils.h"
@@ -27,13 +29,20 @@ public:
     //void OnPause() override;
     //void CreateUI();
 
+        //tooltip
+    TooltipRenderer tooltipRenderer;
+
 private:
+
+
     std::string dialogueId;
     std::function<void()> onFinished; //callback to do an action when the dialogue finishes
 
     SDL_Texture* portraitTexture;
     SDL_Texture* panel;
     std::string currentPortraitPath = "";
+   // SDL_Texture* backTexture;
+    //std::string fullBackPath = "";
     SDL_Texture* button;
 
     TooltipRenderer tooltipRenderer;

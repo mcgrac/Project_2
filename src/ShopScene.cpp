@@ -273,8 +273,8 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     case BACK_BUTTON_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
         if (chestPopped) { break; }
+        goldCounter.MoveCounter(1144, 62);
         Engine::GetInstance().scene->PopScene();
-        goldCounter.MoveCounter( 1144, 62);
         break;
     case OPEN_CHEST_ID:
         if (chestItemTexture != nullptr)
@@ -585,7 +585,7 @@ void ShopScene::PushDialogue()
                 if (action == "buy")
                 {
                     LOG("SHOP: buy");
-
+                    goldCounter.MoveCounter(965, 328);
                     Faction factShop = Faction::UNDEFINED;
                     if (shop->GetIsland()->GetIslandFaction() == IslandFaction::HUMANS) { factShop = Faction::HUMAN; }
                     else if (shop->GetIsland()->GetIslandFaction() == IslandFaction::BIRD) { factShop = Faction::BIRD; }
