@@ -23,6 +23,25 @@ const SDL_Rect PartyScene::UPGRADE_RECT = { 640, 380,  280,  50 };
 const SDL_Rect PartyScene::TAB_RECT = { 1050, 20,   60,  60 };
 const SDL_Rect PartyScene::NAME_RECT = { 20, 30, 336, 81 };
 
+#pragma region POSITIONS
+#pragma region Items
+
+const SDL_Rect PartyScene::Item1_Bounds = { 191, 71, 669, 428 };
+
+#pragma endregion
+#pragma region Stats
+
+const SDL_Rect PartyScene::Stat_Bounds = { 624, 92, 16, 28 };
+
+#pragma endregion
+
+#pragma region Gems
+
+const SDL_Rect PartyScene::Gem_Bounds = { 624, 92, 16, 28 };
+
+#pragma endregion
+#pragma endregion
+
 PartyScene::PartyScene(Party* allied)
     : alliedParty(allied)
     , selectedMemberIndex(0)

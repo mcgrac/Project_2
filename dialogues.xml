@@ -12,7 +12,7 @@
             <option text="We are ready!" nextNode="4" />
         </node>
         <node id="1" speaker="Lady Sophia" portrait="Assets/Textures/Portraits/intro.png"
-              text="If you succeed we you will be heros, and will be paid as agreed">
+              text="If you succeed we you will be heroes, and will be paid as agreed">
             <option text="For the fame!" nextNode="3" />
 			<option text="For the money!" nextNode="3" />
 			<option text="For the people!" nextNode="3" />

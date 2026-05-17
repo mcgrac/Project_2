@@ -23,6 +23,51 @@ public:
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
+#pragma region POSITIONS
+
+#pragma endregion Items
+
+    static const SDL_Rect Item1_Bounds;
+    int spaceItems = 70;
+
+#pragma endregion
+#pragma endregion STATS
+
+    static const SDL_Rect Stat_Bounds;
+    int spaceStats = 47;
+
+#pragma endregion
+
+#pragma endregion EXIT
+
+    static const SDL_Rect Exit_Bounds;
+
+#pragma endregion
+
+#pragma endregion Icons
+
+    static const SDL_Rect Icon_Bounds;
+    int spaceIcons = 100;
+
+#pragma endregion
+
+#pragma endregion Gems
+
+    static const SDL_Rect Gem_Bounds;
+    int spaceGems = 252;
+
+#pragma endregion
+
+#pragma endregion Ascensions
+
+    static const SDL_Rect Ascension_Bounds;
+    int spaceAscensionsX = 251;
+    int spaceAscensionsY = 110;
+
+#pragma endregion
+
+#pragma endregion
+
 private:
     Party* alliedParty;
     int selectedMemberIndex = 0;   // 0-2, personaje actualmente mostrado
