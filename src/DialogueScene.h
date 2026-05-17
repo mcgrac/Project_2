@@ -17,6 +17,7 @@ public:
     ~DialogueScene();
 
     void Load() override;
+    void LoadSound();
     void Update(float dt) override;
     void PostUpdate(float dt) override;
     void Unload() override;
@@ -59,4 +60,7 @@ private:
 
     // IDs de botones de opción: 10, 11, 12...
     static constexpr int OPTION_BTN_BASE = 10;
+
+    //uadio variables
+    int buttonPress;
 };
