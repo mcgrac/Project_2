@@ -100,7 +100,7 @@ private:
     bool gameWonActive = false;
     SDL_Texture* gameOverTex = nullptr;
     SDL_Texture* gameWonTex = nullptr;
-    static constexpr int MAIN_MENU_BUTTON_ID = 999;
+    static constexpr int MAIN_MENU_BUTTON_ID = 10;
 
     void ShowEndScreen(bool won);
     void DrawEndScreen();

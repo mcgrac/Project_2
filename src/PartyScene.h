@@ -84,6 +84,7 @@ private:
     SDL_Texture* upgradeIconsTexture = nullptr;  // spritesheet por personaje
     SDL_Texture* gemsTexture = nullptr;  // spritesheet gemas estática
     SDL_Texture* linesTexture = nullptr;  // imagen líneas estática
+    SDL_Texture* backButton = nullptr;
 
     void LoadBackground(Character* c);
     void LoadStatsTable();
