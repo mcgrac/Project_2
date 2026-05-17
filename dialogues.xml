@@ -6,21 +6,23 @@
     <!-- ═══════════════════════════════════════════════════ -->
 
     <dialogue id="intro_boss">
-        <node id="0" speaker="Big Guy" portrait="Assets/Textures/Portraits/big_guy.png"
-              text="So... you've finally arrived. I've been watching your little voyage with great interest.">
-            <option text="Who are you?" nextNode="1" />
-            <option text="What do you want?" nextNode="2" />
+        <node id="0" speaker="Lady Sophia" portrait="Assets/Textures/Portraits/into.png"
+              text="The time has come. The Deep Ones have\nrisen, we have their location">
+            <option text="..." nextNode="1" />
+            <option text="We are ready!" nextNode="4" />
         </node>
-        <node id="1" speaker="Big Guy" portrait="Assets/Textures/Portraits/big_guy.png"
-              text="I am the one who controls these seas. Every island, every faction — they all answer to me.">
-            <option text="Not for long." nextNode="3" />
+        <node id="1" speaker="Lady Sophia" portrait="Assets/Textures/Portraits/intro.png"
+              text="If you succeed we you will be heros,\nand will be paid as agreed">
+            <option text="For the fame!" nextNode="3" />
+			<option text="For the money!" nextNode="3" />
+			<option text="For the people!" nextNode="3" />
         </node>
-        <node id="2" speaker="Big Guy" portrait="Assets/Textures/Portraits/big_guy.png"
-              text="What I want? I want you to turn back. But I suspect you won't. So let this be a warning.">
-            <option text="We're not afraid of you." nextNode="3" />
+        <node id="3" speaker="Lady Sophia" portrait="Assets/Textures/Portraits/big_guy.png"
+              text="Whatever keeps you motivated I guess">
+            <option text="Goodbye" nextNode="4" />
         </node>
-        <node id="3" speaker="Big Guy" portrait="Assets/Textures/Portraits/big_guy.png"
-              text="Bold words. We shall meet again — when you are broken and alone."
+        <node id="4" speaker="Lady Sophia" portrait="Assets/Textures/Portraits/big_guy.png"
+              text="Good luck, and don't fail. Some factions already changed sides"
               end="true" />
     </dialogue>
 
@@ -30,84 +32,104 @@
 	<!-- ................HUMANS............................-->
     <dialogue id="npc_hostel_human">
         <node id="0" speaker="Innkeeper" portrait=""
-              text="Welcome, traveler. You look weary. Can I help you? I am human">
-            <option text="I need to rest." nextNode="1" />
-            <option text="Tell me about this island." nextNode="2" />
-            <option text="Goodbye." nextNode="3" />
+              text="Welcome, traveler. You look weary.\nCan I help you?">
+            <option text="Any open room?" nextNode="1" />
+            <option text="You look cute" nextNode="2" />
+            <option text="Goodbye" nextNode="3" />
         </node>
         <node id="1" speaker="Innkeeper" portrait=""
-              text="A bed and a warm meal will cost you, but your wounds will heal by morning.">
+              text="Bedrooms and bar open all night.\nSome rest will get you healthy">
             <option text="Sounds good." nextNode="3" action="rest" />
-            <option text="Too expensive. Goodbye." nextNode="3" />
+            <option text="We are on a rush" nextNode="3" />
         </node>
         <node id="2" speaker="Innkeeper" portrait=""
-              text="This is Coral Isle. Mostly reptile folk here. We keep to ourselves... mostly.">
-            <option text="Interesting. Thanks." nextNode="3" />
+              text="Rent a room and maybe I'll come by...">
+            <option text="I'll consider it for sure" nextNode="4" />
         </node>
         <node id="3" speaker="Innkeeper" portrait=""
               text="Safe travels." end="true" />
+		<node id="4" speaker="Innkeeper" portrait=""
+	  text="Anything else??">
+			<option text="Any open room?" nextNode="1" /> 
+			<option text="Goodbye" nextNode="3" />
+		</node>
     </dialogue>
 	
 	<!-- ................SIRENS............................-->
 	<dialogue id="npc_hostel_siren">
 		<node id="0" speaker="Innkeeper" portrait=""
-              text="Welcome, traveler. You look weary. Can I help you? I am a siren">
-			<option text="I need to rest." nextNode="1" />
-			<option text="Tell me about this island." nextNode="2" />
-			<option text="Goodbye." nextNode="3" />
+              text="Welcome, traveler.Anything I\ncan do for you?">
+			<option text="Is this even a hostel?" nextNode="1" />
+			<option text="You look cute" nextNode="2" />
+			<option text="Goodbye" nextNode="3" />
 		</node>
 		<node id="1" speaker="Innkeeper" portrait=""
-              text="A bed and a warm meal will cost you, but your wounds will heal by morning.">
-			<option text="Sounds good." nextNode="3" action="rest" />
-			<option text="Too expensive. Goodbye." nextNode="3" />
+              text="Food or resting, everything at a cost">
+			<option text="Sounds good" nextNode="3" action="rest" />
+			<option text="Sounds expensive" nextNode="3" />
 		</node>
 		<node id="2" speaker="Innkeeper" portrait=""
-              text="This is Coral Isle. Mostly reptile folk here. We keep to ourselves... mostly.">
-			<option text="Interesting. Thanks." nextNode="3" />
+              text="Watch your mouth or rip\nyour skull open">
+			<option text="oh... okay" nextNode="4" />
 		</node>
 		<node id="3" speaker="Innkeeper" portrait=""
-              text="Safe travels." end="true" action="leave"/>
+              text="Get lost, then." end="true" />
+		<node id="4" speaker="Innkeeper" portrait=""
+	  text="Anything else??">
+			<option text="Any open room?" nextNode="1" />
+			<option text="Goodbye" nextNode="3" />
+		</node>
 	</dialogue>
 	
 	<!-- ................BIRD............................-->
 	<dialogue id="npc_hostel_bird">
 		<node id="0" speaker="Innkeeper" portrait=""
-              text="Welcome, traveler. You look weary. Can I help you? I am a bird">
+              text="Oooh, a new visit! Come in">
 			<option text="I need to rest." nextNode="1" />
-			<option text="Tell me about this island." nextNode="2" />
+			<option text="Tell me about this place" nextNode="2" />
 			<option text="Goodbye." nextNode="3" />
 		</node>
 		<node id="1" speaker="Innkeeper" portrait=""
-              text="A bed and a warm meal will cost you, but your wounds will heal by morning.">
+              text="Oh my feathers! I'll take\ncare of you in a second">
 			<option text="Sounds good." nextNode="3" action="rest" />
-			<option text="Too expensive. Goodbye." nextNode="3" />
+			<option text="Bye" nextNode="3" />
 		</node>
 		<node id="2" speaker="Innkeeper" portrait=""
-              text="This is Coral Isle. Mostly reptile folk here. We keep to ourselves... mostly.">
-			<option text="Interesting. Thanks." nextNode="3" />
+              text="We the bird tribe have lived in peace\nfor centuries now. Collecting knowledge">
+			<option text="Interesting. Thanks." nextNode="4" />
 		</node>
 		<node id="3" speaker="Innkeeper" portrait=""
               text="Safe travels." end="true" />
+		<node id="4" speaker="Innkeeper" portrait=""
+	  text="Anything else??">
+			<option text="Any open room?" nextNode="1" />
+			<option text="Goodbye" nextNode="3" />
+		</node>
 	</dialogue>
 	<!-- ................REPTILE............................-->
 	<dialogue id="npc_hostel_reptile">
 		<node id="0" speaker="Innkeeper" portrait=""
-              text="Welcome, traveler. You look weary. Can I help you? I am a reptile">
-			<option text="I need to rest." nextNode="1" />
-			<option text="Tell me about this island." nextNode="2" />
-			<option text="Goodbye." nextNode="3" />
+              text="I sense a dark energy in the air\nAre you here to pray?">
+			<option text="I need to rest" nextNode="1" />
+			<option text="Praying is useless" nextNode="2" />
+			<option text="Goodbye" nextNode="3" />
 		</node>
 		<node id="1" speaker="Innkeeper" portrait=""
-              text="A bed and a warm meal will cost you, but your wounds will heal by morning.">
+              text="In that case I'll get a bed for you.\nMaybe some food?">
 			<option text="Sounds good." nextNode="3" action="rest" />
 			<option text="Too expensive. Goodbye." nextNode="3" />
 		</node>
 		<node id="2" speaker="Innkeeper" portrait=""
-              text="This is Coral Isle. Mostly reptile folk here. We keep to ourselves... mostly.">
-			<option text="Interesting. Thanks." nextNode="3" />
+              text="You won't be saying all that\nwhen the serpent takes you">
+			<option text="Interesting. Thanks." nextNode="4" />
 		</node>
 		<node id="3" speaker="Innkeeper" portrait=""
               text="Safe travels." end="true" action ="leave"/>
+		<node id="4" speaker="Innkeeper" portrait=""
+	  text="Anything else??">
+			<option text="I need rest" nextNode="1" />
+			<option text="Goodbye" nextNode="3" />
+		</node>
 	</dialogue>
     <!-- ═══════════════════════════════════════════════════ -->
     <!--  NPC — Shopkeeper                                   -->

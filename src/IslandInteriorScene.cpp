@@ -46,6 +46,9 @@ const SDL_Rect IslandInteriorScene::CHEST_REPTILE_BOUNDS = { 626,  486,  54,  42
 
 const SDL_Rect IslandInteriorScene::CHEST_ITEM_POSITIONS = { 549, 507, 182, 72 };
 #pragma endregion
+#pragma region Rewards
+const SDL_Rect IslandInteriorScene::REWARD_BOUNDS = { 526, 185, 229, 304 };
+#pragma endregion
 #pragma endregion
 
 IslandInteriorScene::IslandInteriorScene(Island* island, Party* allied, Ship* _ship)
@@ -76,6 +79,7 @@ void IslandInteriorScene::Load()
     LoadAnimation();
     LoadSound();
     CreateUI();
+    goldCounter.MoveCounter(1160, 62);
 }
 
 void IslandInteriorScene::Update(float dt) {
@@ -94,7 +98,8 @@ void IslandInteriorScene::Update(float dt) {
 
     UpdateSound();
     
-    Engine::GetInstance().render->DrawTexture(moneyCounter, 1121, 30, nullptr, 0);
+    if(!chestOpened){ Engine::GetInstance().render->DrawTexture(moneyCounter, 1121, 30, nullptr, 0); }
+ 
     goldCounter.Update(alliedParty->GetGold(), dt);
 
 }
@@ -162,6 +167,7 @@ void IslandInteriorScene::LoadTextures()
     keyCounter = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/keyCounter.png");
     emptyCard = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/emptyCard.png");
     moneyCard = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/moneyCard.png");
+    openButton = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/OpenButton.png");
 }
 
 void IslandInteriorScene::Draw(float dt)
@@ -190,7 +196,8 @@ void IslandInteriorScene::Draw(float dt)
         Engine::GetInstance().render->DrawTexture(background, 0, 0);
     }
 
-    DrawChest(dt);
+    if(chestOpened==true){ DrawChest(dt); }
+    
 }
 
 void IslandInteriorScene::DrawChest(float dt)
@@ -200,13 +207,46 @@ void IslandInteriorScene::DrawChest(float dt)
 
     if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES) {
 
+        Engine::GetInstance().render->DrawTexture(chestBackground, 0, 0);
+        if (animationPlaying) { PlayAnimation(dt); }
         Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
         Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
 
+        SDL_Color White = { 255, 255, 255 };
+        int keys = alliedParty->GetInventory().GetItemCount("key");
+        std::string key = std::to_string(keys);
+        int keyNum = 1;
+        if (keys >= 10) { keyNum += 1; }
+        Engine::GetInstance().render->DrawText((key).c_str(), 1114, 164, 19 * keyNum, 33, White);
+
+        SDL_Rect rewardBounds = REWARD_BOUNDS;
+
+        if (chestPopped) {
+            if (rewardAmount > 40) {
+
+                Engine::GetInstance().render->DrawTexture(emptyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
+
+            }
+            else if (rewardAmount < 21) {
+
+                Engine::GetInstance().render->DrawTexture(moneyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
+
+                SDL_Color White = { 255, 255, 255 };
+                int potNum = 0;
+                if (rewardAmount >= 10) { potNum += 1; }
+
+                std::string price = std::to_string(rewardAmount);
+                Engine::GetInstance().render->DrawText((price).c_str(), 629 - (12 * potNum), 431, 23 + (20 * potNum), 26, White);
+            }
+
+        /*
+
         //chest animation
-        if (chestOpened) {
+        if (chestOpened = true) {
             //play animation chest
             animsChest.Update(dt);
+            Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
+            Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
 
             const SDL_Rect& animFrame = animsChest.GetCurrentFrame();
 
@@ -218,22 +258,37 @@ void IslandInteriorScene::DrawChest(float dt)
             );
 
             if (animsChest.IsCurrentFinished()) {
-                chestOpened = false;
+               // chestOpened = false;
                 chestPopped = true;
                 GiveReward();
             };
         }
+        SDL_Color White = { 255, 255, 255 };
+        int keys = alliedParty->GetInventory().GetItemCount("key");
+        std::string key = std::to_string(keys);
+        int keyNum = 1;
+        if (keys >= 10) { keyNum += 1; }
+        Engine::GetInstance().render->DrawText((key).c_str(), 1114, 164, 19 * keyNum, 33, White);
+
+        SDL_Rect rewardBounds = REWARD_BOUNDS;
 
         //chest render items
         if (chestPopped)
         {
             if (rewardAmount > 40)
             {
-                // nada, emptyCard
+                Engine::GetInstance().render->DrawTexture(emptyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
             }
             else if (rewardAmount < 21)
             {
-                // moneyCard — si tienes esa textura aquí también
+                Engine::GetInstance().render->DrawTexture(moneyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
+
+                SDL_Color White = { 255, 255, 255 };
+                int potNum = 0;
+                if (rewardAmount >= 10) { potNum += 1; }
+
+                std::string price = std::to_string(rewardAmount);
+                Engine::GetInstance().render->DrawText((price).c_str(), 629 - (12 * potNum), 431, 23 + (20 * potNum), 26, White);
             }
             else
             {
@@ -250,7 +305,7 @@ void IslandInteriorScene::DrawChest(float dt)
 
                     Engine::GetInstance().render->DrawTexture(chestItemTexture, 526, 185, &firstFrame);
                 }
-            }
+            }*/
         }
     }
 }
@@ -267,6 +322,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().scene->PushScene(
             new ShopScene(island->GetShop(), alliedParty)
         );
+        goldCounter.MoveCounter(965, 328);
         break;
 
     case HOSTEL_BUTTON_ID:
@@ -274,6 +330,8 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().scene->PushScene(
             new HostelScene(island->GetHostel(), alliedParty)
         );
+        goldCounter.MoveCounter(1002, 217);
+
         break;
 
     case DOCKYARD_BUTTON_ID:
@@ -282,17 +340,21 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().scene->PushScene(
             new DockyardScene(island->GetDockyard(), alliedParty)
         );
+        goldCounter.MoveCounter(883, 196);
         break;
 
     case LEAVE_BUTTON_ID:
         // Volver al mapa (IslandScene → InGameScene)
         Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Map.wav");
+        goldCounter.MoveCounter(1160, 62);
         Engine::GetInstance().scene->PopScene();
         break;
 
     case CHEST_BUTTON_ID :
         //open chest
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
+        chestOpened = true;
+        goldCounter.MoveCounter(1016, 101);
         OpenUIChest();
         break;
 
@@ -300,7 +362,8 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         if (chestPopped) { break; }
         if (alliedParty->GetInventory().GetItemCount("key") < 1) { break; }
         alliedParty->GetInventory().ConsumeItem("key");
-        chestOpened = true;
+        animationPlaying = true;
+        
         animsChest.SetCurrent("idle");
         animsChest.SetLoop("idle", false);
         break;
@@ -322,6 +385,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         chestOpened = false;
         chestPopped = false;
         showChest = false;
+        goldCounter.MoveCounter(1160, 62);
         CreateUI();
         break;
 
@@ -608,7 +672,26 @@ void IslandInteriorScene::OpenUIChest()
     );
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, OPEN_BUTTON_ID, "", openBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, claimButton, 0, openBounds.w, openBounds.h
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, openButton, 0, openBounds.w, openBounds.h
     );
+}
+
+void IslandInteriorScene::PlayAnimation(float dt)
+{
+    if (chestSpritesheet == nullptr) { LOG("chest spritesheet nullptr"); }
+    anims.Update(dt);
+
+    const SDL_Rect& animFrame = anims.GetCurrentFrame();
+
+    Engine::GetInstance().render->DrawTexture(
+        chestSpritesheet,
+        0,
+        0,
+        &animFrame
+    );
+
+    if (anims.IsCurrentFinished()) {
+        animationPlaying = false; chestPopped = true; GiveReward();
+    };
 }
 

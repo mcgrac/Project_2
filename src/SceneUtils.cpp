@@ -49,6 +49,22 @@ std::string SceneUtils::GetPortraitPath(const std::string& dialogueId)
 	return "Assets/Textures/PortraitsDialogues/" + location + "/" + faction + ".png";
 }
 
+/*std::string SceneUtils::GetBackPath(const std::string& dialogueId)
+{
+	// npc_hostel_human -> Assets/Textures/Portraits/hostel/human.png
+	// npc_dockyard_siren -> Assets/Textures/Portraits/dockyard/siren.png
+	// formato esperado: npc_{location}_{faction}
+	std::string stripped = dialogueId.substr(4); // quita "npc_"
+	size_t underscore = stripped.find('_');
+	if (underscore == std::string::npos)
+	{
+		return "";
+	}
+	std::string location = stripped.substr(0, underscore);
+	std::string faction = stripped.substr(underscore + 1);
+	return "Assets/Textures/PortraitsDialogues/" + location + "/" + faction + "Back.png";
+}*/
+
 bool SceneUtils::PointInRect(int x, int y, const SDL_Rect& r)
 {
 	return x > r.x &&

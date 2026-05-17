@@ -72,6 +72,9 @@ private:
     SDL_Rect GetHostelBounds() const;
     SDL_Rect GetChestBounds() const;
 
+    void PlayAnimation(float dt);
+
+
 #pragma region POSITIONS
 #pragma region DOCK
     static const SDL_Rect DOCK_HUMAN_BOUNDS;
@@ -103,6 +106,11 @@ private:
     static const SDL_Rect CHEST_ITEM_POSITIONS;
 
 #pragma endregion
+#pragma region Rewards
+
+    static const SDL_Rect REWARD_BOUNDS;
+
+#pragma endregion
 #pragma endregion
 
 #pragma region TEXTURES
@@ -119,6 +127,7 @@ private:
     SDL_Texture* moneyCounter = nullptr;
     SDL_Texture* moneyCard = nullptr;
     SDL_Texture* emptyCard = nullptr;
+    SDL_Texture* openButton;
 #pragma endregion
 
     //audio variables
@@ -141,4 +150,5 @@ private:
     bool showChest;
     bool chestOpened;
     bool chestPopped;
+    int animationPlaying = false;
 };
