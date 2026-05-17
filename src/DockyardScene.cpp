@@ -84,6 +84,7 @@ void DockyardScene::Load()
 {
     LOG("DockyardScene: cargando astillero.");
     LoadTextures();
+    LoadSound();
     CreateUI();
 
     IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
