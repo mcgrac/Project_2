@@ -140,7 +140,7 @@ void CombatScene::Update(float dt)
     //play music
     if (!Engine::GetInstance().audio->IsMusicPlaying()) {
         LOG("Play music again!");
-        Engine::GetInstance().audio->PlayMusic(combMusic);
+        //Engine::GetInstance().audio->PlayMusic(combMusic);
     }
 
     // Reset the click guard every frame so the next real click is accepted

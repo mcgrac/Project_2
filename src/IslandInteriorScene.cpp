@@ -400,7 +400,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
 
     case REWARD_GOLD:
         Engine::GetInstance().audio->PlayFx(buttonPress);
-        alliedParty->AddGold(rewardAmount);
+        alliedParty->AddGold(rewardAmount*2);
         rewardAmount = 0;
         chestPopped = false;
         Engine::GetInstance().uiManager->RemoveElementsByRange(10, 11);

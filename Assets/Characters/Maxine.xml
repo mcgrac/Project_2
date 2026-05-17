@@ -7,8 +7,8 @@
     >
 
 		<animations>
-			<anim name="idle" tile="2" loop="true"/>
-			<anim name="dead" tile="1" loop="false"/>
+			<anim name="idle" tile="3" loop="true"/>
+			<anim name="dead" tile="2" loop="false"/>
 
 			<anim name="heartbreak" tile="1" loop="false"/>
 

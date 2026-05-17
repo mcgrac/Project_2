@@ -28,7 +28,7 @@ MainMenuScene::~MainMenuScene()
 void MainMenuScene::Load()
 {
     //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
-
+    Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Start.wav");
     //textures
     LoadTextures();
     //sounds

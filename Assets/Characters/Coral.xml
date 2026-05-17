@@ -10,7 +10,7 @@
 			<anim name="idle" tile="2" loop="true"/>
 			<anim name="dead" tile="1" loop="false"/>
 
-			<anim name="bubbles" tile="1" loop="false"/>
+			<anim name="bubbles" tile="0" loop="false"/>
 
 
 		</animations>
