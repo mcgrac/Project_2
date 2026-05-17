@@ -64,7 +64,7 @@ private:
     bool showChart;
     bool shipImproved = false;
     int levelBeforeImprove = 1;
-    static constexpr int COST_IMPROVE_SHIP = 50;
+    static constexpr int COST_IMPROVE_SHIP = 25;
 
 #pragma region POSITIONS
 
