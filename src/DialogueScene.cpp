@@ -26,8 +26,18 @@ DialogueScene::~DialogueScene() {}
 void DialogueScene::Load()
 {
     tooltipRenderer.isDialogue = true;
+    
+    tooltipRenderer.charWidth = 13;
+    tooltipRenderer.lineHeight = 26;
+    tooltipRenderer.padding = 0;
+    tooltipRenderer.maxCharsPerLine = 36;
 
     LoadTextures();
+
+    if (dialogueId == "npc_shop_human" || dialogueId == "npc_shop_reptile" || dialogueId == "npc_shop_siren" || dialogueId == "npc_shop_bird")  {
+        positionX = 447;
+        positionY = 520;
+    }
 
     if (!DialogueManager::StartDialogue(dialogueId))
     {
@@ -87,7 +97,8 @@ void DialogueScene::PostUpdate(float dt)
     );*/
 
     // Texto del diálogo
-    tooltipRenderer.Draw(node->text.c_str(), 447, 520);
+
+    tooltipRenderer.Draw(node->text.c_str(), positionX, positionY);
     //tocar valores de tooltip para adaptar texto
     
     //Engine::GetInstance().render->DrawText(

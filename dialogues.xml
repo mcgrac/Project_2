@@ -7,12 +7,12 @@
 
     <dialogue id="intro_boss">
         <node id="0" speaker="Lady Sophia" portrait="Assets/Textures/Portraits/into.png"
-              text="The time has come. The Deep Ones have\nrisen, we have their location">
+              text="The time has come. The Deep Ones have risen, we have their location">
             <option text="..." nextNode="1" />
             <option text="We are ready!" nextNode="4" />
         </node>
         <node id="1" speaker="Lady Sophia" portrait="Assets/Textures/Portraits/intro.png"
-              text="If you succeed we you will be heros,\nand will be paid as agreed">
+              text="If you succeed we you will be heros, and will be paid as agreed">
             <option text="For the fame!" nextNode="3" />
 			<option text="For the money!" nextNode="3" />
 			<option text="For the people!" nextNode="3" />
