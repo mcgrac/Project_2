@@ -83,7 +83,6 @@ void PartyScene::Update(float dt)
 
 void PartyScene::PostUpdate(float dt)
 {
-
     DrawSkillTooltip();
     DrawUpgradeTooltip();
     DrawInventoryTooltip();

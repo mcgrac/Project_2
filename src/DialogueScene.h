@@ -2,6 +2,7 @@
 #include "BaseScene.h"
 #include <string>
 #include <functional>
+#include "SceneUtils.h"
 
 struct SDL_Texture;
 
@@ -35,6 +36,7 @@ private:
     std::string currentPortraitPath = "";
     SDL_Texture* button;
 
+    TooltipRenderer tooltipRenderer;
     bool pendingRefresh;
 
     // Reconstruye los botones de opciones del nodo actual

@@ -9,11 +9,11 @@ struct SDL_Texture;
 
 struct TooltipRenderer
 {
-	// Estilo — puedes cambiar estos valores por escena si quieres
 	int charWidth = 8;
 	int lineHeight = 20;
 	int padding = 10;
 	int maxCharsPerLine = 35;
+	bool isDialogue = false;
 
 	// Dibuja el tooltip completo en (x, y)
 	void Draw(const std::string& text, int x, int y) const;

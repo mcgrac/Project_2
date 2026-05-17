@@ -155,9 +155,11 @@ void TooltipRenderer::Draw(const std::string& text, int x, int y) const
 	int boxWidth = maxLineLen * charWidth + padding * 2;
 	int boxHeight = (int)lines.size() * lineHeight + padding * 2;
 
-	SDL_Rect bg = { x, y, boxWidth, boxHeight };
-	Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200, true, false);
-	Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
+	if (!isDialogue) {
+		SDL_Rect bg = { x, y, boxWidth, boxHeight };
+		Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200, true, false);
+		Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
+	}
 
 	int yOffset = 0;
 	for (const std::string& line : lines)
