@@ -712,10 +712,10 @@ void CombatScene::DrawResultPanel()
 
             if (snap.leveledUp)
             {
-                line += "  [LEVEL UP]";
+                line += "  LEVEL UP";
             }
 
-            Engine::GetInstance().render->DrawText(line.c_str(), 380, lineY, 520, 28, snap.leveledUp ? green : white);
+            Engine::GetInstance().render->DrawText(line.c_str(), 380, lineY, 350, 38, snap.leveledUp ? green : white);
             lineY += 40;
         }
     }
