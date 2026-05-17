@@ -546,6 +546,11 @@ void CombatScene::FinalizeLaneAssignments()
     // Now that every character has a lane, create the Combat object
     combat = new Combat(alliedParty, enemyParty, shipLevel);
 
+    combat->onPlaySound = [this](const std::string& animId)
+    {
+        ChooseSound(animId);
+    };
+
     for (auto& pair : laneAssignments)
     {
         combat->AssignLane(pair.first, pair.second);
