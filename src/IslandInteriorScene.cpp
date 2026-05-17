@@ -123,7 +123,16 @@ void IslandInteriorScene::Unload()
     Engine::GetInstance().textures->UnLoad(hostelButton);
     Engine::GetInstance().textures->UnLoad(chestButton);
     Engine::GetInstance().textures->UnLoad(exitButton);
+    Engine::GetInstance().textures->UnLoad(moneyCounter);
+    Engine::GetInstance().textures->UnLoad(backgroundSpritesheet);
+    Engine::GetInstance().textures->UnLoad(claimButton);
+    Engine::GetInstance().textures->UnLoad(chestSpritesheet);
+    Engine::GetInstance().textures->UnLoad(emptyButtons);
     Engine::GetInstance().textures->UnLoad(chestBackground);
+    Engine::GetInstance().textures->UnLoad(keyCounter);
+    Engine::GetInstance().textures->UnLoad(emptyCard);
+    Engine::GetInstance().textures->UnLoad(moneyCard);
+    Engine::GetInstance().textures->UnLoad(openButton);
 
     Engine::GetInstance().uiManager->CleanUp();
 
@@ -132,8 +141,7 @@ void IslandInteriorScene::Unload()
         Engine::GetInstance().textures->UnLoad(chestItemTexture);
         chestItemTexture = nullptr;
     }
-    Engine::GetInstance().textures->UnLoad(claimButton);
-    Engine::GetInstance().textures->UnLoad(emptyButtons);
+
 }
 
 void IslandInteriorScene::unloadSound() {
@@ -197,7 +205,7 @@ void IslandInteriorScene::Draw(float dt)
         Engine::GetInstance().render->DrawTexture(background, 0, 0);
     }
 
-    if(chestOpened==true){ DrawChest(dt); }
+    if(chestOpened == true){ DrawChest(dt); }
     
 }
 
@@ -590,6 +598,7 @@ void IslandInteriorScene::UpdateSound() {
         }
     }
 }
+
 void IslandInteriorScene::GiveReward()
 {
     srand(time(NULL));

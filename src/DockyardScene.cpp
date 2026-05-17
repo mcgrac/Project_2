@@ -186,6 +186,14 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().audio->PlayFx(buttonPress);
         showChart = false;
         goldCounter.MoveCounter(1144, 62);
+        {
+            IslandFaction faction = dockyard->GetIsland()->GetIslandFaction();
+            if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
+            {
+                Engine::GetInstance().scene->PopScene();
+                break;
+            }
+        }
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 100);
         CreateUI();
         break;
@@ -208,7 +216,6 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
 #endif // _DEBUG
 
         }
-
         break;
     default:
         break;
@@ -242,8 +249,9 @@ void DockyardScene::CreateUI()
         UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, exitButton, 0, backBounds.w, backBounds.h
     );
+
     SDL_Rect talkBounds = HUMAN_NPC_BOUNDS;
-    if (SceneUtils::GetFactionString(dockyard->GetIsland()->GetIslandFaction()) == "Bird") {
+    if (SceneUtils::GetFactionString(dockyard->GetIsland()->GetIslandFaction()) == "bird") {
         talkBounds = BIRD_NPC_BOUNDS;
     }
    
@@ -281,6 +289,10 @@ void DockyardScene::PushDialogue()
                 {
                     LOG("DOCK SCENE: Pop scene");
                     pendingPop = true;
+                }
+                else
+                {
+                    showChart = false;
                 }
             }
         )

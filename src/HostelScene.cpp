@@ -168,13 +168,15 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
             {
                 Engine::GetInstance().scene->PopScene();
             }
+
+            goldCounter.SetPosition(1160, 62);
+
         }
         else {
 #if _DEBUG
             LOG("Not enough gold for resting");
 #endif // _DEBUG
         }
-        goldCounter.SetPosition(1160, 62);
         break;
     case 21:
         //buy xp
@@ -208,6 +210,7 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 30:
     case 31:
     case 32:
+
         alliedParty->AddGold(-hostel->GetMealCost());
         hostel->GetADrink(alliedParty, uiElement->text);
         showSelectCharaPanel = false;
