@@ -150,6 +150,11 @@ void GoldCounter::MoveCounter(int positionX, int positionY)
 	GoldCounter::position.setX(positionX);
 	GoldCounter::position.setY(positionY);
 }
+void GoldCounter::SetPosition(int x, int y)
+{
+	GoldCounter::position.setX(x);
+	GoldCounter::position.setY(y);
+}
 #pragma endregion
 
 #pragma region TOOLTIP

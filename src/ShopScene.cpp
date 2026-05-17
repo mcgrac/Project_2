@@ -83,6 +83,8 @@ void ShopScene::Load()
     {
         pendingDialogue = true;
     }
+
+    goldCounter.SetPosition(1160, 62);
 }
 
 void ShopScene::Update(float dt)

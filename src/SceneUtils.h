@@ -44,6 +44,7 @@ struct GoldCounter
 	void SetTextureCoin(std::string path);
 
 	void MoveCounter(int positionX, int positionY);
+	void SetPosition(int x, int y);
 };
 
 class SceneUtils
