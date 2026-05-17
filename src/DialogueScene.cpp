@@ -86,7 +86,6 @@ void DialogueScene::PostUpdate(float dt)
         { 255, 215, 0, 255 }   // dorado
     );*/
 
- 
     // Texto del diálogo
     tooltipRenderer.Draw(node->text.c_str(), 447, 520);
     //tocar valores de tooltip para adaptar texto

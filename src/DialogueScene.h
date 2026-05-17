@@ -29,9 +29,6 @@ public:
     //void OnPause() override;
     //void CreateUI();
 
-        //tooltip
-    TooltipRenderer tooltipRenderer;
-
 private:
 
 
