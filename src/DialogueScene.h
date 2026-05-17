@@ -44,6 +44,9 @@ private:
 
     TooltipRenderer tooltipRenderer;
     bool pendingRefresh;
+  
+    int positionX = 447;
+    int positionY = 585;
 
     // Reconstruye los botones de opciones del nodo actual
     void RefreshOptionButtons();
