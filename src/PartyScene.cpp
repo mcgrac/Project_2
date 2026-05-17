@@ -215,6 +215,8 @@ void PartyScene::LoadTextures()
 
     std::string upgPath = "Assets/Textures/Teams/" + c->GetName() + "/Upgrades.png";
     upgradeIconsTexture = Engine::GetInstance().textures->Load(upgPath.c_str());
+
+    backButton = Engine::GetInstance().textures->Load("Assets/Textures/Teams/BackButton.png");
 }
 
 void PartyScene::LoadBackground(Character* c)
@@ -592,7 +594,7 @@ void PartyScene::RefreshButtons()
     }
     upgradeIconsTexture = Engine::GetInstance().textures->Load(("Assets/Textures/Teams/" + c->GetName() + "/Upgrades.png").c_str());
 
-    //---------skills
+    //---------skills----------
     auto& skills = c->GetSkills();
     for (int i = 0; i < (int)skills.size(); ++i)
     {
@@ -622,10 +624,11 @@ void PartyScene::RefreshButtons()
     }
 
     // --------------Botón cerrar------------
-    SDL_Rect closeBounds = { 20, 20, 40, 40 };
+    SDL_Rect closeBounds = { 20, 20, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, BACK_BTN, "X", closeBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
+        UIElementType::BUTTON, BACK_BTN, "", closeBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {},
+        backButton, 0, closeBounds.w, closeBounds.h
     );
 
     // ----------Botones de ascensiones del personaje seleccionado--------------
