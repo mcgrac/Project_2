@@ -25,6 +25,7 @@ DialogueScene::~DialogueScene() {}
 
 void DialogueScene::Load()
 {
+    tooltipRenderer.isDialogue = true;
 
     LoadTextures();
 
@@ -85,16 +86,16 @@ void DialogueScene::PostUpdate(float dt)
         { 255, 215, 0, 255 }   // dorado
     );*/
 
-    tooltip.Draw(node->text.c_str(), 447, 520);
-
+ 
     // Texto del diálogo
-    /*Engine::GetInstance().render->DrawText(
-        node->text.c_str(),
-        447, 520, 469, 71,
-        { 255, 255, 255, 255 }
-    );*/
-
-
+    tooltipRenderer.Draw(node->text.c_str(), 447, 520);
+    //tocar valores de tooltip para adaptar texto
+    
+    //Engine::GetInstance().render->DrawText(
+    //    node->text.c_str(),
+    //    155, 580, 1100, 80,
+    //    { 255, 255, 255, 255 }
+    //);
 }
 
 
