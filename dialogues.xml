@@ -137,13 +137,13 @@
 	<!-- ................HUMANS............................-->
     <dialogue id="npc_shop_human">
         <node id="0" speaker="Shopkeeper" portrait=""
-              text="Ah, a customer! Take a look around — finest goods this side of the sea. I am human">
+              text="Ah, a customer! Take a look around. Best good in the archepelago">
             <option text="What do you sell?" nextNode="1" />
             <option text="Just browsing." nextNode="2" />
         </node>
         <node id="1" speaker="Shopkeeper" portrait=""
               text="Weapons, potions, supplies. Everything an adventurer needs. Gold talks.">
-            <option text="Show me what you have." nextNode="2" action="buy"/>
+            <option text="Show me what you have." end="true" action="buy"/>
 			<option text="Not interested." nextNode="2"/>
         </node>
         <node id="2" speaker="Shopkeeper" portrait=""
@@ -153,29 +153,29 @@
 	<!-- ................SIRENS............................-->
 	<dialogue id="npc_shop_siren">
 		<node id="0" speaker="Shopkeeper" portrait=""
-              text="Ah, a customer! Take a look around — finest goods this side of the sea. I am siren">
+              text="Ooh! Visitors. Do you want weapons? Straight from the sea!">
 			<option text="What do you sell?" nextNode="1" />
 			<option text="Just browsing." nextNode="2" />
 		</node>
 		<node id="1" speaker="Shopkeeper" portrait=""
-              text="Weapons, potions, supplies. Everything an adventurer needs. Gold talks.">
-			<option text="Show me what you have." nextNode="2" action="buy"/>
-			<option text="Not interested." nextNode="2"/>
+              text="Everything deadly of course! Do you have gold?">
+			<option text="I do!" end="true" action="buy"/>
+			<option text="I don't..." nextNode="2"/>
 		</node>
 		<node id="2" speaker="Shopkeeper" portrait=""
-              text="Come back anytime!" end="true" action ="leave"/>
+              text="Come back anytime! And bring gold!" end="true" action ="leave"/>
 	</dialogue>
 	
 	<!-- ................BIRD............................-->
 	<dialogue id="npc_shop_bird">
 		<node id="0" speaker="Shopkeeper" portrait=""
-              text="Ah, a customer! Take a look around — finest goods this side of the sea. I am bird">
+              text="Welocome to the Nine Cloud Artifact Shop!">
 			<option text="What do you sell?" nextNode="1" />
 			<option text="Just browsing." nextNode="2" />
 		</node>
 		<node id="1" speaker="Shopkeeper" portrait=""
               text="Weapons, potions, supplies. Everything an adventurer needs. Gold talks.">
-			<option text="Show me what you have." nextNode="2" action="buy"/>
+			<option text="Show me what you have." end="true" action="buy"/>
 			<option text="Not interested." nextNode="2"/>
 		</node>
 		<node id="2" speaker="Shopkeeper" portrait=""
@@ -185,17 +185,17 @@
 	<!-- ................REPTILE............................-->
 	<dialogue id="npc_shop_reptile">
 		<node id="0" speaker="Shopkeeper" portrait=""
-              text="Ah, a customer! Take a look around — finest goods this side of the sea. I am reptile">
-			<option text="What do you sell?" nextNode="1" />
-			<option text="Just browsing." nextNode="2" />
+              text="Oh, hello! Why are you here for?">
+			<option text="Are you the shopkeeper?" nextNode="1" />
+			<option text="Nothing. Bye" nextNode="2" />
 		</node>
 		<node id="1" speaker="Shopkeeper" portrait=""
-              text="Weapons, potions, supplies. Everything an adventurer needs. Gold talks.">
-			<option text="Show me what you have." nextNode="2" action="buy"/>
-			<option text="Not interested." nextNode="2"/>
+              text="Oh, well, yes!">
+			<option text="Show me what you have." end="true" action="buy"/>
+			<option text="Okay bye." nextNode="2"/>
 		</node>
 		<node id="2" speaker="Shopkeeper" portrait=""
-              text="Come back anytime!" end="true" action="leave"/>
+              text="May the serpent ne with you!" end="true" action="leave"/>
 	</dialogue>
     <!-- ═══════════════════════════════════════════════════ -->
     <!--  NPC — Dockyard master                              -->
@@ -203,13 +203,9 @@
 	<!-- ................HUMANS............................-->
     <dialogue id="npc_dockyard_human">
         <node id="0" speaker="Dockmaster" portrait=""
-              text="Your ship's seen better days. I can fix her up — for the right price. I am human">
-            <option text="What can you do?" nextNode="1" />
+              text="Your ship's sucks. You need help. I need gold.">
+            <option text="Okay calamari" end="true" action ="upgrade"/>
             <option text="Not now." nextNode="2" />
-        </node>
-        <node id="1" speaker="Dockmaster" portrait=""
-              text="Repairs, upgrades, reinforcements. Name it and I'll quote you a price.">
-            <option text="Let's talk details." nextNode="2" action ="upgrade"/>
         </node>
         <node id="2" speaker="Dockmaster" portrait=""
               text="Come back when you're ready." end="true" />
@@ -218,13 +214,13 @@
 	<!-- ................SIRENS............................-->
 	<dialogue id="npc_dockyard_siren">
 		<node id="0" speaker="Dockmaster" portrait=""
-              text="Your ship's seen better days. I can fix her up — for the right price. I am siren">
+              text="Your ship's seen better days. I can fix her up — for the right price">
 			<option text="What can you do?" nextNode="1" />
 			<option text="Not now." nextNode="2" />
 		</node>
 		<node id="1" speaker="Dockmaster" portrait=""
               text="Repairs, upgrades, reinforcements. Name it and I'll quote you a price.">
-			<option text="Let's talk details." nextNode="2" action ="upgrade"/>
+			<option text="Let's talk details." end="true" action ="upgrade"/>
 		</node>
 		<node id="2" speaker="Dockmaster" portrait=""
               text="Come back when you're ready." end="true" />
@@ -233,13 +229,14 @@
 	<!-- ................BIRD............................-->
 	<dialogue id="npc_dockyard_bird">
 		<node id="0" speaker="Dockmaster" portrait=""
-              text="Your ship's seen better days. I can fix her up — for the right price. I am bird">
+              text="Hey people! What are yall here for?">
 			<option text="What can you do?" nextNode="1" />
 			<option text="Not now." nextNode="2" />
 		</node>
 		<node id="1" speaker="Dockmaster" portrait=""
-              text="Repairs, upgrades, reinforcements. Name it and I'll quote you a price.">
-			<option text="Let's talk details." nextNode="2" action ="upgrade"/>
+              text="My men can get your ship upgraded in a moment. You got coin?">
+			<option text="I do" end="true" action ="upgrade"/>
+			<option text="Not now." nextNode="2" />
 		</node>
 		<node id="2" speaker="Dockmaster" portrait=""
               text="Come back when you're ready." end="true" />
@@ -248,13 +245,13 @@
 	<!-- ................REPTILE............................-->
 	<dialogue id="npc_dockyard_reptile">
 		<node id="0" speaker="Dockmaster" portrait=""
-              text="Your ship's seen better days. I can fix her up — for the right price. I am reptile">
+              text="Welcome little one. Can I do anything for you?">
 			<option text="What can you do?" nextNode="1" />
 			<option text="Not now." nextNode="2" />
 		</node>
 		<node id="1" speaker="Dockmaster" portrait=""
               text="Repairs, upgrades, reinforcements. Name it and I'll quote you a price.">
-			<option text="Let's talk details." nextNode="2" action ="upgrade"/>
+			<option text="Let's talk details." end="true" action ="upgrade"/>
 		</node>
 		<node id="2" speaker="Dockmaster" portrait=""
               text="Come back when you're ready." end="true" />
