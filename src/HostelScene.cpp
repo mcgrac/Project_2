@@ -131,7 +131,7 @@ void HostelScene::LoadTextures()
 }
 
 void HostelScene::LoadSound() {
-    restfx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/rest.wav");
+    restfx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/rest.wav");
     buttonPress = buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }
 

@@ -1,6 +1,7 @@
 #include "DialogueScene.h"
 #include "DialogueManager.h"
 #include "Engine.h"
+#include "Audio.h"
 #include "Scene.h"
 #include "UIManager.h"
 #include "Textures.h"
@@ -33,6 +34,7 @@ void DialogueScene::Load()
     tooltipRenderer.maxCharsPerLine = 36;
 
     LoadTextures();
+    LoadSound();
 
     if (dialogueId == "npc_shop_human" || dialogueId == "npc_shop_reptile" || dialogueId == "npc_shop_siren" || dialogueId == "npc_shop_bird")  {
         positionX = 447;
@@ -139,9 +141,14 @@ void DialogueScene::LoadTextures()
     }
 }
 
+void DialogueScene::LoadSound() {
+    buttonPress = buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
+}
+
 
 bool DialogueScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    Engine::GetInstance().audio->PlayFx(buttonPress);
     pendingRefresh = true;
 
     int id = uiElement->id;

@@ -325,6 +325,7 @@ void CombatScene::LoadTextures()
 
 bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    Engine::GetInstance().audio->PlayFx(buttonPress);
     switch (uiElement->id)
     {
         // ---------- SKILLS ----------
