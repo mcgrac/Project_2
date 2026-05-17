@@ -4,6 +4,7 @@
 #include "Vector2D.h"
 #include "Character.h"
 #include <unordered_map>
+#include <functional>
 
 // Forward declarations
 class Character;
@@ -110,6 +111,8 @@ public:
 
     float GetLaneDamageMultiplier(Character* c);
     void ResumeFromNextRoundPause();
+
+    std::function<void(const std::string&)> onPlaySound;
 
 private:
 

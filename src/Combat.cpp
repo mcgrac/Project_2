@@ -777,6 +777,11 @@ void Combat::EnemyTurn()
 
     currentSkill = &chosenSkill;
     currentTarget = target;
+
+    if (onPlaySound)
+    {
+        onPlaySound(chosenSkill.GetAnimationId());
+    }
 }
 
 //  EXECUTE SKILL

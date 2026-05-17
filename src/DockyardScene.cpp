@@ -13,20 +13,19 @@
 #include "Combat.h"
 #include "Ship.h"
 
-
-
-#pragma endregion Chart
+#pragma region POSITIONS
+#pragma region Chart
 
 const SDL_Rect DockyardScene::CHART_BOUNDS = { 191, 71, 669, 428 };
 
 #pragma endregion
-#pragma endregion LEVEL
+#pragma region LEVEL
 
 const SDL_Rect DockyardScene::LEVEL1_BOUNDS = { 624, 92, 16, 28 };
 const SDL_Rect DockyardScene::LEVEL2_BOUNDS = { 780, 92, 16, 28 };
 
 #pragma endregion
-#pragma endregion STATS
+#pragma region STATS
 
 const SDL_Rect DockyardScene::BACK_POWER_BOUNDS = { 498, 196, 23, 19 };
 
@@ -37,7 +36,7 @@ const SDL_Rect DockyardScene::FRONT_HEALTH_BOUND = { 498, 385, 23, 19 };
 const SDL_Rect DockyardScene::FRONT_SPEED_BOUND = { 498, 423, 23, 19 };
 
 #pragma endregion
-#pragma endregion STATS2
+#pragma region STATS2
 
 const SDL_Rect DockyardScene::BACK_POWER_BOUNDS2 = { 704, 196, 23, 19 };
 
@@ -48,24 +47,24 @@ const SDL_Rect DockyardScene::FRONT_HEALTH_BOUND2 = { 704, 385, 23, 19 };
 const SDL_Rect DockyardScene::FRONT_SPEED_BOUND2 = { 704, 423, 23, 19 };
 
 #pragma endregion
-#pragma endregion NPC
+#pragma region NPC
 
 const SDL_Rect DockyardScene::HUMAN_NPC_BOUNDS = { 534, 107, 549, 616 };
 const SDL_Rect DockyardScene::BIRD_NPC_BOUNDS = { 216, 444, 100, 124 };
 
 #pragma endregion
-#pragma endregion BackButton
+#pragma region BackButton
 
 const SDL_Rect DockyardScene::BACK_BOUNDS = { 45, 45, 72, 72 };
 const SDL_Rect DockyardScene::BACK_BUTTON_BOUNDS = { 134, 58, 72, 72 };
 
 #pragma endregion
-#pragma endregion UpgradeButton
+#pragma region UpgradeButton
 
 const SDL_Rect DockyardScene::UPGRADE_BUTTON_BOUNDS = { 860, 239, 183, 63 };
 
 #pragma endregion
-#pragma endregion Gold Counter
+#pragma region Gold Counter
 
 const SDL_Rect DockyardScene::GOLD_COUNTER_BOUNDS = { 1121, 30, 549, 660 };
 const SDL_Rect DockyardScene::GOLD_COUNTER2_BOUNDS = { 860, 164, 119, 64 };
@@ -92,6 +91,8 @@ void DockyardScene::Load()
     {
         pendingDialogue = true;
     }
+
+    goldCounter.SetPosition(1160, 62);
 }
 
 void DockyardScene::Update(float dt)
@@ -131,10 +132,6 @@ void DockyardScene::Update(float dt)
 
 void DockyardScene::PostUpdate(float dt)
 {
-   /* Engine::GetInstance().render->DrawText(
-        "ASTILLERO", 520, 50, 240, 40, { 255, 255, 255, 255 }
-    );*/
-
     if(showChart)
     {
         DrawChartStats();

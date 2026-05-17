@@ -79,7 +79,8 @@ void IslandInteriorScene::Load()
     LoadAnimation();
     LoadSound();
     CreateUI();
-    goldCounter.MoveCounter(1160, 62);
+    //goldCounter.MoveCounter(1160, 62);
+    goldCounter.SetPosition(1160, 62);
 }
 
 void IslandInteriorScene::Update(float dt) {
@@ -322,7 +323,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().scene->PushScene(
             new ShopScene(island->GetShop(), alliedParty)
         );
-        goldCounter.MoveCounter(965, 328);
+        //goldCounter.MoveCounter(965, 328);
         break;
 
     case HOSTEL_BUTTON_ID:
@@ -330,7 +331,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().scene->PushScene(
             new HostelScene(island->GetHostel(), alliedParty)
         );
-        goldCounter.MoveCounter(1002, 217);
+        //goldCounter.MoveCounter(1002, 217);
 
         break;
 
@@ -340,7 +341,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().scene->PushScene(
             new DockyardScene(island->GetDockyard(), alliedParty)
         );
-        goldCounter.MoveCounter(883, 196);
+        //goldCounter.MoveCounter(883, 196);
         break;
 
     case LEAVE_BUTTON_ID:
