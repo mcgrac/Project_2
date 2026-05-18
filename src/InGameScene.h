@@ -65,6 +65,7 @@ private:
     SDL_Texture* fishButton;
     SDL_Texture* bossButton;
     SDL_Texture* tribalButton;
+    SDL_Texture* emptyButton;
 
     // Island sprites — drawn below each island button
     SDL_Texture* islandHumanTex;

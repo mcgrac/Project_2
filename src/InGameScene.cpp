@@ -209,6 +209,8 @@ void InGameScene::Unload()
     Engine::GetInstance().textures->UnLoad(gameOverTex);
     Engine::GetInstance().textures->UnLoad(gameWonTex);
 
+    Engine::GetInstance().textures->UnLoad(emptyButton);
+
     //unload worldMap
     worldMap->UnloadWorld();
     delete worldMap;
@@ -241,6 +243,7 @@ void InGameScene::LoadTextures(){
 
     gameOverTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/defeat.png");
     gameWonTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/victory.png");
+    emptyButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/emptyButton.png");
 }
 
 void InGameScene::LoadAudio() {
@@ -614,21 +617,23 @@ void InGameScene::ShowEndScreen(bool won)
     if (won)
     {
         gameWonActive = true;
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/GameOverWin.wav");
     }
     else
     {
         gameOverActive = true;
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/GameOverLose.wav");
     }
 
     Engine::GetInstance().uiManager->CleanUp();
 
     //return main menu
-    SDL_Rect btnBounds = { 490, 560, 300, 80 };
+    SDL_Rect btnBounds = { 539, 509, 202, 63 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, MAIN_MENU_BUTTON_ID, "",
         btnBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
-        {}, spritesheet, 0, btnBounds.w, btnBounds.h
+        {}, emptyButton, 0, btnBounds.w, btnBounds.h
     );
 }
 
@@ -659,12 +664,12 @@ void InGameScene::OnPause()
 void InGameScene::CreateUI()
 {
     //Botón de iniciar combate
-    SDL_Rect combatBtnBounds = { 20, 20, 154, 60 };
+    /*SDL_Rect combatBtnBounds = {20, 20, 154, 60};
     auto CombatBtn = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0, combatBtnBounds.w, combatBtnBounds.h
     );
-    CombatBtn->isHUD = true;//fixed on screen
+    CombatBtn->isHUD = true;//fixed on screen*/
 
     //Botón de party
     SDL_Rect partyBtnBounds = { 20, 600, 72, 72 };
