@@ -248,8 +248,6 @@ void CombatScene::Unload()
     Engine::GetInstance().textures->UnLoad(background);
     Engine::GetInstance().textures->UnLoad(abilityIcons);
     Engine::GetInstance().textures->UnLoad(panelBaseTexture);
-    Engine::GetInstance().textures->UnLoad(hpBarChunkTexture);
-    Engine::GetInstance().textures->UnLoad(initiativeBarChunkTexture);
     Engine::GetInstance().textures->UnLoad(nextRound);
     Engine::GetInstance().textures->UnLoad(arrow);
     Engine::GetInstance().textures->UnLoad(poisonIcon);
@@ -261,6 +259,9 @@ void CombatScene::Unload()
     Engine::GetInstance().textures->UnLoad(continueLose);
     Engine::GetInstance().textures->UnLoad(continueWin);
     Engine::GetInstance().textures->UnLoad(potionEmpty);
+
+    hpBar.UnloadTexture();
+    initiativeBar.UnloadTexture();
 
     for (auto& pair : characterIcons)
     {
@@ -278,8 +279,6 @@ void CombatScene::LoadTextures()
     abilityIcons = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/AbilityIcons.png");
     background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/BattleBackground.png");
     panelBaseTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/Panel.png");
-    hpBarChunkTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/HealthPoint.png");
-    initiativeBarChunkTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/InitiativePoint.png");
     nextRound = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/nextRound.png");
     arrow = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/ArrowMarker.png");
     poisonIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/PoisonIndicator.png");
@@ -321,6 +320,17 @@ void CombatScene::LoadTextures()
 
     loadIconForParty(alliedParty);
     loadIconForParty(enemyParty);
+
+    //hp bar
+    hpBar.chunkW = HP_CHUNK_W;
+    hpBar.chunkH = HP_CHUNK_H;
+    hpBar.LoadTexture("Assets/Textures/CombatScene/HealthPoint.png");
+
+    //initiative bar
+    initiativeBar.chunkW = INIT_CHUNK_W;
+    initiativeBar.chunkH = INIT_CHUNK_H;
+    initiativeBar.chunkOverlap = BAR_CHUNK_OVERLAP;
+    initiativeBar.LoadTexture("Assets/Textures/CombatScene/InitiativePoint.png");
 }
 
 bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -815,55 +825,14 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
     int hpBarY = panelY + HP_BAR_OFFSET_Y;
     int initBarY = panelY + INIT_BAR_OFFSET_Y;
 
-    DrawHealthBar(hpBarX, hpBarY, c->GetCurrentHP(), c->GetMaxHP(), isAlly);
-    DrawInitiativeBar(initBarX, initBarY, c->GetCurrentInitiative(), isAlly);
+    hpBar.position = Vector2D((float)hpBarX, (float)hpBarY);
+    hpBar.leftToRight = isAlly;
+    hpBar.Draw(c->GetCurrentHP(), c->GetMaxHP());
+
+    initiativeBar.position = Vector2D((float)initBarX, (float)initBarY);
+    initiativeBar.leftToRight = isAlly;
+    initiativeBar.Draw(c->GetCurrentInitiative(), MAX_INITIATIVE);
 }
-
-void CombatScene::DrawHealthBar(int x, int y, int currentHP, int maxHP, bool leftToRight)
-{
-    if (maxHP <= 0) { return; }
-
-    float hpPerChunk = maxHP / (float)HP_MAX_CHUNKS;
-    int filledChunks = std::min((int)(currentHP / hpPerChunk), HP_MAX_CHUNKS);
-    filledChunks = std::max(filledChunks, 0);
-
-    for (int i = 0; i < filledChunks; i++)
-    {
-        int chunkX;
-        if (leftToRight)
-        {
-            chunkX = x + i * (HP_CHUNK_W);
-        }
-        else
-        {
-            chunkX = x - i * (HP_CHUNK_W);
-        }
-        Engine::GetInstance().render->DrawTexture(hpBarChunkTexture, chunkX, y, nullptr, false);
-        
-    }
-}
-
-void CombatScene::DrawInitiativeBar(int x, int y, int currentInitiative, bool leftToRight)
-{
-
-    int clampedInit = std::max(std::min(currentInitiative, MAX_INITIATIVE), 0);
-    int filledChunks = std::min((int)(clampedInit / (MAX_INITIATIVE / (float)INIT_MAX_CHUNKS)), INIT_MAX_CHUNKS);
-
-    for (int i = 0; i < filledChunks; i++)
-    {
-        int chunkX;
-        if (leftToRight)
-        {
-            chunkX = x + i * (INIT_CHUNK_W - BAR_CHUNK_OVERLAP);
-        }
-        else
-        {
-            chunkX = x - i * (INIT_CHUNK_W - BAR_CHUNK_OVERLAP);
-        }
-        Engine::GetInstance().render->DrawTexture(initiativeBarChunkTexture, chunkX, y, nullptr, false);
-    }
-}
-
 #pragma endregion
 
 //loads skills textures and buttons depending of the character attacking

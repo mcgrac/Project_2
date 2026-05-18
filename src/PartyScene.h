@@ -25,40 +25,40 @@ public:
 
 #pragma region POSITIONS
 
-#pragma endregion Items
+#pragma region Items
 
     static const SDL_Rect Item1_Bounds;
     int spaceItems = 70;
 
 #pragma endregion
-#pragma endregion STATS
+#pragma region STATS
 
     static const SDL_Rect Stat_Bounds;
     int spaceStats = 47;
 
 #pragma endregion
 
-#pragma endregion EXIT
+#pragma region EXIT
 
     static const SDL_Rect Exit_Bounds;
 
 #pragma endregion
 
-#pragma endregion Icons
+#pragma region Icons
 
     static const SDL_Rect Icon_Bounds;
     int spaceIcons = 100;
 
 #pragma endregion
 
-#pragma endregion Gems
+#pragma region Gems
 
     static const SDL_Rect Gem_Bounds;
     int spaceGems = 252;
 
 #pragma endregion
 
-#pragma endregion Ascensions
+#pragma region Ascensions
 
     static const SDL_Rect Ascension_Bounds;
     int spaceAscensionsX = 251;
@@ -147,6 +147,10 @@ private:
     //tooltip inventory
     int hoveredInventorySlot = -1;
     std::string inventoryTooltipText = "";
+
+    //bars
+    DynamicBar hpBar;
+    DynamicBar xpBar;
 
     // ----- IDs de botones ----------------------
     // Tabs de miembros: 1, 2, 3

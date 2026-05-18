@@ -249,4 +249,48 @@ void TooltipRenderer::DrawColoredLine(const std::string& line, int x, int y) con
 }
 #pragma endregion
 
+#pragma region DYNAMIC BAR
+void DynamicBar::LoadTexture(const std::string& path)
+{
+	chunkTex = Engine::GetInstance().textures->Load(path.c_str());
+}
+
+void DynamicBar::Draw(int current, int max) const
+{
+	if (chunkTex == nullptr) { return; }
+	if (max <= 0) { return; }
+
+	int clampedCurrent = current;
+	if (clampedCurrent < 0) { clampedCurrent = 0; }
+	if (clampedCurrent > max) { clampedCurrent = max; }
+
+	int filledChunks = (clampedCurrent * maxChunks) / max;
+	if (filledChunks > maxChunks) { filledChunks = maxChunks; }
+
+	int baseX = (int)position.getX();
+	int baseY = (int)position.getY();
+
+	for (int i = 0; i < filledChunks; i++)
+	{
+		int chunkX;
+		if (leftToRight)
+		{
+			chunkX = baseX + i * (chunkW - chunkOverlap);
+		}
+		else
+		{
+			chunkX = baseX - i * (chunkW - chunkOverlap);
+		}
+
+		Engine::GetInstance().render->DrawTexture(chunkTex, chunkX, baseY, nullptr, false);
+	}
+}
+
+void DynamicBar::UnloadTexture()
+{
+	Engine::GetInstance().textures->UnLoad(chunkTex);
+	chunkTex = nullptr;
+}
+#pragma endregion
+
 
