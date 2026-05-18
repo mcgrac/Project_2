@@ -34,6 +34,7 @@ InGameScene::InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* 
     , spritesheet(nullptr)
     , islandHumanTex(nullptr)
     , islandReptileTex(nullptr)
+    , shipPanelTex(nullptr)
     , goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
     , pendingStartIsland(false)
 {
@@ -181,8 +182,8 @@ void InGameScene::Update(float dt)
     ship->Update(dt);
 
     //draw hp ship
-    std::string text = "HP: " + std::to_string(ship->GetCurrentHp()) + "/" + std::to_string(ship->GetMaxHp());
-    Engine::GetInstance().render->DrawText(text.c_str(), 600, 20, 0, 0, { 255,255,255,255 });
+    Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
+    shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
 
     //gold counter
     goldCounter.Update(alliedParty->GetGold(), dt);
@@ -210,6 +211,9 @@ void InGameScene::Unload()
     Engine::GetInstance().textures->UnLoad(gameWonTex);
 
     Engine::GetInstance().textures->UnLoad(emptyButton);
+
+    Engine::GetInstance().textures->UnLoad(shipPanelTex);
+    shipHpBar.UnloadTexture();
 
     //unload worldMap
     worldMap->UnloadWorld();
@@ -244,6 +248,13 @@ void InGameScene::LoadTextures(){
     gameOverTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/defeat.png");
     gameWonTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/victory.png");
     emptyButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/emptyButton.png");
+
+    shipPanelTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/BoatHealthBarEXP.png");
+    shipHpBar.chunkW = 10;
+    shipHpBar.chunkH = 12;
+    shipHpBar.position = Vector2D(40.0f, 8.0f); // ajusta al layout del panel
+    shipHpBar.LoadTexture("Assets/Textures/CombatScene/HealthPoint.png");
+
 }
 
 void InGameScene::LoadAudio() {

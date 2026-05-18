@@ -92,8 +92,8 @@ void PartyScene::Update(float dt)
     RenderCharacterName();
     RenderMemberTabs();
     //RenderPortrait(selected);
-    //RenderBars(selected);
     RenderStats(selected);
+    RenderBars(selected);
     RenderInventorySlots(selected);
     RenderSkillIcons(selected);
     RenderUpgradeTree(selected);
@@ -123,6 +123,8 @@ void PartyScene::UnloadTextures()
     Engine::GetInstance().textures->UnLoad(gemsTexture);
     Engine::GetInstance().textures->UnLoad(linesTexture);
     Engine::GetInstance().textures->UnLoad(upgradeIconsTexture);
+    hpBar.UnloadTexture();
+    xpBar.UnloadTexture();
 
     if (portraitTexture != nullptr)
     {
@@ -236,6 +238,21 @@ void PartyScene::LoadTextures()
     upgradeIconsTexture = Engine::GetInstance().textures->Load(upgPath.c_str());
 
     backButton = Engine::GetInstance().textures->Load("Assets/Textures/Teams/BackButton.png");
+
+    hpBar.chunkW = 24;
+    hpBar.chunkH = 20;
+    hpBar.position = Vector2D(100.0f, 330.0f);
+    hpBar.leftToRight = true;
+    hpBar.maxChunks = 18;
+    hpBar.chunkOverlap = 3;
+    hpBar.LoadTexture("Assets/Textures/Teams/HealthPoint.png");
+
+    xpBar.chunkW = 24;
+    xpBar.chunkH = 8;
+    xpBar.position = Vector2D(20.0f, 410.0f);
+    xpBar.leftToRight = true;
+    xpBar.maxChunks = 18;
+    xpBar.LoadTexture("Assets/Textures/Teams/EXPPoint.png");
 }
 
 void PartyScene::LoadBackground(Character* c)
@@ -338,38 +355,41 @@ void PartyScene::RenderPortrait(Character* c)
 
 void PartyScene::RenderBars(Character* c)
 {
-    // --------Barra de vida-----------
-    float hpRatio = (c->GetMaxHP() > 0)
-        ? (float)c->GetCurrentHP() / (float)c->GetMaxHP()
-        : 0.0f;
+    //// --------Barra de vida-----------
+    //float hpRatio = (c->GetMaxHP() > 0)
+    //    ? (float)c->GetCurrentHP() / (float)c->GetMaxHP()
+    //    : 0.0f;
 
-    // Fondo de la barra
-    SDL_Rect hpBg = { PORTRAIT_RECT.x, HP_BAR_Y, BAR_W, BAR_H };
-    Engine::GetInstance().render->DrawRectangle(hpBg, 60, 0, 0, 255, true, false);
+    //// Fondo de la barra
+    //SDL_Rect hpBg = { PORTRAIT_RECT.x, HP_BAR_Y, BAR_W, BAR_H };
+    //Engine::GetInstance().render->DrawRectangle(hpBg, 60, 0, 0, 255, true, false);
 
-    // Relleno
-    SDL_Rect hpFill = { PORTRAIT_RECT.x, HP_BAR_Y, (int)(BAR_W * hpRatio), BAR_H };
-    Engine::GetInstance().render->DrawRectangle(hpFill, 0, 200, 50, 255, true, false);
+    //// Relleno
+    //SDL_Rect hpFill = { PORTRAIT_RECT.x, HP_BAR_Y, (int)(BAR_W * hpRatio), BAR_H };
+    //Engine::GetInstance().render->DrawRectangle(hpFill, 0, 200, 50, 255, true, false);
 
-    // Texto HP
-    std::string hpText = std::to_string(c->GetCurrentHP()) + "/" + std::to_string(c->GetMaxHP());
-    Engine::GetInstance().render->DrawText(
-        hpText.c_str(), PORTRAIT_RECT.x + BAR_W + 5, HP_BAR_Y, 100, BAR_H, { 255, 255, 255, 255 }
-    );
+    //// Texto HP
+    //std::string hpText = std::to_string(c->GetCurrentHP()) + "/" + std::to_string(c->GetMaxHP());
+    //Engine::GetInstance().render->DrawText(
+    //    hpText.c_str(), PORTRAIT_RECT.x + BAR_W + 5, HP_BAR_Y, 100, BAR_H, { 255, 255, 255, 255 }
+    //);
 
-    // ------------Barra de experiencia-----------
-    float expRatio = (float)c->GetExperience() / 100.0f;
+    //// ------------Barra de experiencia-----------
+    //float expRatio = (float)c->GetExperience() / 100.0f;
 
-    SDL_Rect expBg = { PORTRAIT_RECT.x, EXP_BAR_Y, BAR_W, BAR_H };
-    Engine::GetInstance().render->DrawRectangle(expBg, 20, 20, 60, 255, true, false);
+    //SDL_Rect expBg = { PORTRAIT_RECT.x, EXP_BAR_Y, BAR_W, BAR_H };
+    //Engine::GetInstance().render->DrawRectangle(expBg, 20, 20, 60, 255, true, false);
 
-    SDL_Rect expFill = { PORTRAIT_RECT.x, EXP_BAR_Y, (int)(BAR_W * expRatio), BAR_H };
-    Engine::GetInstance().render->DrawRectangle(expFill, 100, 100, 255, 255, true, false);
+    //SDL_Rect expFill = { PORTRAIT_RECT.x, EXP_BAR_Y, (int)(BAR_W * expRatio), BAR_H };
+    //Engine::GetInstance().render->DrawRectangle(expFill, 100, 100, 255, 255, true, false);
 
-    std::string expText = "EXP " + std::to_string(c->GetExperience()) + "/100";
-    Engine::GetInstance().render->DrawText(
-        expText.c_str(), PORTRAIT_RECT.x + BAR_W + 5, EXP_BAR_Y, 100, BAR_H, { 200, 200, 255, 255 }
-    );
+    //std::string expText = "EXP " + std::to_string(c->GetExperience()) + "/100";
+    //Engine::GetInstance().render->DrawText(
+    //    expText.c_str(), PORTRAIT_RECT.x + BAR_W + 5, EXP_BAR_Y, 100, BAR_H, { 200, 200, 255, 255 }
+    //);
+
+    hpBar.Draw(c->GetCurrentHP(), c->GetMaxHP());
+    xpBar.Draw(c->GetExperience(), 100);
 }
 
 void PartyScene::RenderStats(Character* c)

@@ -47,6 +47,25 @@ struct GoldCounter
 	void SetPosition(int x, int y);
 };
 
+struct DynamicBar
+{
+	Vector2D position = { 0.0f, 0.0f };
+	bool leftToRight = true;
+
+	// Chunk dimensions — ajustar por instancia si se necesita
+	int chunkW = 10;
+	int chunkH = 12;
+	int chunkOverlap = 0;
+	int maxChunks = 10;
+
+	void LoadTexture(const std::string& path);
+	void Draw(int current, int max) const;
+	void UnloadTexture();
+
+private:
+	SDL_Texture* chunkTex = nullptr;
+};
+
 class SceneUtils
 {
 public:
