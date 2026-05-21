@@ -207,6 +207,8 @@ private:
     DynamicBar hpBar;
     DynamicBar initiativeBar;
 
+    void DrawTurnOrderTable();
+
     //---------Timer-----------
     static constexpr float NEXT_ROUND_PAUSE_DURATION = 3000.0f; // segundos
 

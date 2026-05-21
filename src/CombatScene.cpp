@@ -191,6 +191,9 @@ void CombatScene::Update(float dt)
 
     //ShowCurrentHP();
 
+    //------Draw turn table--------
+    DrawTurnOrderTable();
+
     if (!combat->GetWaitingForInput())
     {
         // Iterar hasta que el combate necesite esperar input externo
@@ -834,6 +837,74 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
     initiativeBar.Draw(c->GetCurrentInitiative(), MAX_INITIATIVE);
 }
 #pragma endregion
+
+void CombatScene::DrawTurnOrderTable()
+{
+    if (combat == nullptr) { return; }
+
+    const std::vector<Character*>& queue = combat->GetActorsQueue();
+    Character* current = combat->GetCurrentActor();
+
+    constexpr int TABLE_Y = 10;
+    constexpr int CELL_W = 200;
+    constexpr int CELL_H = 80;
+    constexpr int ICON_SIZE = 64;
+    constexpr int CELL_GAP = 13; // (1280 - 6*200) / 5 gaps = ~13px entre celdas
+
+    SDL_Color white = { 255, 255, 255, 255 };
+    SDL_Color yellow = { 255, 220,   0, 255 };
+
+    std::vector<Character*> rows;
+    if (current != nullptr)
+    {
+        rows.push_back(current);
+    }
+    for (Character* c : queue)
+    {
+        rows.push_back(c);
+    }
+
+    if (rows.empty()) { return; }
+
+    // Fondo de toda la tabla
+    int tableW = (int)rows.size() * CELL_W + ((int)rows.size() - 1) * CELL_GAP;
+    SDL_Rect tableBg = { -4, TABLE_Y - 4, tableW + 8, CELL_H + 8 };
+    Engine::GetInstance().render->DrawRectangle(tableBg, 0, 0, 0, 160, true, false);
+
+    for (int i = 0; i < (int)rows.size(); i++)
+    {
+        Character* c = rows[i];
+        bool isCurrent = (c == current && i == 0);
+
+        int cellX = i * (CELL_W + CELL_GAP);
+        SDL_Rect cellRect = { cellX, TABLE_Y, CELL_W, CELL_H };
+
+        if (isCurrent)
+        {
+            SDL_Rect border = { cellX - 2, TABLE_Y - 2, CELL_W + 4, CELL_H + 4 };
+            Engine::GetInstance().render->DrawRectangle(border, 255, 220, 0, 255, true, false);
+            Engine::GetInstance().render->DrawRectangle(cellRect, 60, 50, 10, 220, true, false);
+        }
+        else
+        {
+            Engine::GetInstance().render->DrawRectangle(cellRect, 30, 30, 50, 200, true, false);
+        }
+
+        // Icono a la izquierda de la celda
+        auto it = characterIcons.find(c->GetName());
+        if (it != characterIcons.end() && it->second != nullptr)
+        {
+            int iconY = TABLE_Y + (CELL_H - ICON_SIZE) / 2;
+            Engine::GetInstance().render->DrawTexture(it->second, cellX + 4, iconY, nullptr, false);
+        }
+
+        // Nombre a la derecha del icono
+        SDL_Rect textRect = { cellX + ICON_SIZE + 8, TABLE_Y + (CELL_H / 2) - 8, CELL_W - ICON_SIZE - 12, 20 };
+        Engine::GetInstance().render->DrawText(c->GetName().c_str(),
+            textRect.x, textRect.y, textRect.w, textRect.h,
+            isCurrent ? yellow : white);
+    }
+}
 
 //loads skills textures and buttons depending of the character attacking
 void CombatScene::CreateSkillButtons(Character* c)

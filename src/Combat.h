@@ -89,7 +89,7 @@ public:
 
     std::unordered_map<Character*, Character::PreCombatValues> preCombatValues;
 
-#pragma region REGION
+#pragma region GETTERS
     //getter
     inline bool IsNextRoundPause() const { return state == CombatState::NEXT_ROUND_PAUSE; }
     inline bool GetWaitingForInput() const { return state == CombatState::WAITING_FOR_PLAYER_INPUT; }
@@ -98,6 +98,7 @@ public:
     inline std::vector<Character*> GetAliveEnemies() { return GetAliveMembers(enemyParty); }
     inline std::vector<Character*> GetAliveAllies() { return GetAliveMembers(alliedParty); }
     inline CombatResult GetResult() const { return result; }
+    inline const std::vector<Character*>& GetActorsQueue() const { return actorsQueue; }
 #pragma endregion
 
     // Lane assignment — called by CombatScene during lane selection phase
