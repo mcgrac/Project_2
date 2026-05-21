@@ -56,12 +56,18 @@ void CharacterSelectScene::Load()
 void CharacterSelectScene::Update(float dt)
 {
  
-    if(backName == "Ignis") { Engine::GetInstance().render->DrawTexture(backgroundIgnis, 0, 0); }
-    else if(backName == "Gerbera"){ Engine::GetInstance().render->DrawTexture(backgroundGerbera, 0, 0); }
-    else if (backName == "Jochi") { Engine::GetInstance().render->DrawTexture(backgroundJochi, 0, 0); }
-    else if (backName == "Markus") { Engine::GetInstance().render->DrawTexture(backgroundMarkus, 0, 0); }
-    else if (backName == "Theresia") { Engine::GetInstance().render->DrawTexture(backgroundTheresia, 0, 0); }
-    else if (backName == "Fatuus") { Engine::GetInstance().render->DrawTexture(backgroundFatuus, 0, 0); }
+    if(backName == "Ignis" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundIgnis, 0, 0); }
+    else if(backName == "Gerbera" && switched == false){ Engine::GetInstance().render->DrawTexture(backgroundGerbera, 0, 0); }
+    else if (backName == "Jochi" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundJochi, 0, 0); }
+    else if (backName == "Markus" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundMarkus, 0, 0); }
+    else if (backName == "Theresia" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundTheresia, 0, 0); }
+    else if (backName == "Fatuus" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundFatuus, 0, 0); }
+    else if (backName == "Ignis") { Engine::GetInstance().render->DrawTexture(backgroundIgnis1, 0, 0); }
+    else if (backName == "Gerbera") { Engine::GetInstance().render->DrawTexture(backgroundGerbera1, 0, 0); }
+    else if (backName == "Jochi") { Engine::GetInstance().render->DrawTexture(backgroundJochi1, 0, 0); }
+    else if (backName == "Markus") { Engine::GetInstance().render->DrawTexture(backgroundMarkus1, 0, 0); }
+    else if (backName == "Theresia") { Engine::GetInstance().render->DrawTexture(backgroundTheresia1, 0, 0); }
+    else if (backName == "Fatuus") { Engine::GetInstance().render->DrawTexture(backgroundFatuus1, 0, 0); }
     else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
    
  
@@ -102,10 +108,19 @@ void CharacterSelectScene::LoadTextures(){
     backgroundJochi = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundJochi.png");
     backgroundFatuus = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundFatuus.png");
     backgroundIgnis = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundIgnis.png");
+
+    backgroundGerbera1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundGerbera1.png");
+    backgroundTheresia1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundTheresia1.png");
+    backgroundMarkus1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundMarkus1.png");
+    backgroundJochi1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundJochi1.png");
+    backgroundFatuus1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundFatuus1.png");
+    backgroundIgnis1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundIgnis1.png");
+
     spritesheetCharacters = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterButtons.png");
     panelInformationSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/Panel.png");
     labelSpritesheets = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterNamePlate.png");
     backButtonSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/BackButton.png");
+    switchButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/SwitchButton.png");
 }
 
 
@@ -117,6 +132,21 @@ void CharacterSelectScene::UnloadTextures()
     Engine::GetInstance().textures->UnLoad(panelInformationSpritesheet);
     Engine::GetInstance().textures->UnLoad(labelSpritesheets);
     Engine::GetInstance().textures->UnLoad(backButtonSpritesheet);
+    Engine::GetInstance().textures->UnLoad(switchButton);
+    //descriptions
+    Engine::GetInstance().textures->UnLoad(backgroundGerbera);
+    Engine::GetInstance().textures->UnLoad(backgroundTheresia);
+    Engine::GetInstance().textures->UnLoad(backgroundIgnis);
+    Engine::GetInstance().textures->UnLoad(backgroundJochi);
+    Engine::GetInstance().textures->UnLoad(backgroundFatuus);
+    Engine::GetInstance().textures->UnLoad(backgroundMarkus);
+    //stats
+    Engine::GetInstance().textures->UnLoad(backgroundGerbera1);
+    Engine::GetInstance().textures->UnLoad(backgroundTheresia1);
+    Engine::GetInstance().textures->UnLoad(backgroundIgnis1);
+    Engine::GetInstance().textures->UnLoad(backgroundJochi1);
+    Engine::GetInstance().textures->UnLoad(backgroundFatuus1);
+    Engine::GetInstance().textures->UnLoad(backgroundMarkus1);
 }
 
 void CharacterSelectScene::LoadSounds() {
@@ -142,6 +172,9 @@ bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case 8:
         Engine::GetInstance().scene->ReplaceScene(new MainMenuScene());
+        break;
+    case 9:
+        switched *= -1;
         break;
     default:
 
@@ -329,6 +362,12 @@ void CharacterSelectScene::CreateInterfaceButtons()
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 8, "", backButton,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, backButtonSpritesheet, 0, backButton.w, backButton.h
+    );
+
+    SDL_Rect switchButtonBounds = { 10, 600, 72, 72 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 8, "", switchButtonBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, switchButton, 0, switchButtonBounds.w, switchButtonBounds.h
     );
 }
 

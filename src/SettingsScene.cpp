@@ -28,19 +28,19 @@ void SettingsScene::Load()
     LoadTextures();
 
     // Boton volver
-    SDL_Rect backBounds = { 20, 20, 221, 85 };
+    SDL_Rect backBounds = { 20, 20, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, BACK_BTN_ID, "Back", backBounds,
+        UIElementType::BUTTON, BACK_BTN_ID, "", backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
         {}, buttonTexture, 0, backBounds.w, backBounds.h
     );
 
     // Boton fullscreen
-    SDL_Rect fsBounds = { 490, 480, 221, 85 };
+    SDL_Rect fsBounds = { 519, 480, 202, 63 };
     Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, FULLSCREEN_BTN_ID, "Fullscreen", fsBounds,
+        UIElementType::BUTTON, FULLSCREEN_BTN_ID, "FULLSCREEN", fsBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
-        {}, buttonTexture, 1, fsBounds.w, fsBounds.h
+        {}, emptyButtonTexture, 1, fsBounds.w, fsBounds.h
     );
 }
 
@@ -96,10 +96,7 @@ void SettingsScene::Update(float dt)
         draggingMusic = false;
         draggingSFX = false;
     }
-}
 
-void SettingsScene::PostUpdate(float dt)
-{
     // Fondo semitransparente
     SDL_Rect bg = { 300, 200, 680, 380 };
     Engine::GetInstance().render->DrawRectangle(bg, 20, 20, 40, 230, true, false);
@@ -146,6 +143,11 @@ void SettingsScene::PostUpdate(float dt)
     Engine::GetInstance().render->DrawText(sfxVal.c_str(), 820, 390, 60, 25, { 255, 255, 255, 255 });
 }
 
+void SettingsScene::PostUpdate(float dt)
+{
+   
+}
+
 void SettingsScene::Unload()
 {
     Engine::GetInstance().uiManager->CleanUp();
@@ -159,7 +161,8 @@ void SettingsScene::Unload()
 
 void SettingsScene::LoadTextures()
 {
-    buttonTexture = Engine::GetInstance().textures->Load("Assets/Textures/Pause/ButtonsPause.png");
+    buttonTexture = Engine::GetInstance().textures->Load("Assets/Textures/HumanIsland/BackButton.png");
+    emptyButtonTexture = Engine::GetInstance().textures->Load("Assets/Textures/ShopScene/EmptyTextButton.png");
 }
 
 void SettingsScene::LoadSound() {
