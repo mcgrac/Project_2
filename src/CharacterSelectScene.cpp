@@ -56,22 +56,25 @@ void CharacterSelectScene::Load()
 void CharacterSelectScene::Update(float dt)
 {
  
-    if(backName == "Ignis" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundIgnis, 0, 0); }
-    else if(backName == "Gerbera" && switched == false){ Engine::GetInstance().render->DrawTexture(backgroundGerbera, 0, 0); }
-    else if (backName == "Jochi" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundJochi, 0, 0); }
-    else if (backName == "Markus" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundMarkus, 0, 0); }
-    else if (backName == "Theresia" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundTheresia, 0, 0); }
-    else if (backName == "Fatuus" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundFatuus, 0, 0); }
-    else if (backName == "Ignis") { Engine::GetInstance().render->DrawTexture(backgroundIgnis1, 0, 0); }
-    else if (backName == "Gerbera") { Engine::GetInstance().render->DrawTexture(backgroundGerbera1, 0, 0); }
-    else if (backName == "Jochi") { Engine::GetInstance().render->DrawTexture(backgroundJochi1, 0, 0); }
-    else if (backName == "Markus") { Engine::GetInstance().render->DrawTexture(backgroundMarkus1, 0, 0); }
-    else if (backName == "Theresia") { Engine::GetInstance().render->DrawTexture(backgroundTheresia1, 0, 0); }
-    else if (backName == "Fatuus") { Engine::GetInstance().render->DrawTexture(backgroundFatuus1, 0, 0); }
-    else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
+    if (tutorialOpen) {
+        Engine::GetInstance().render->DrawTexture(tutorials[tutorialIndex], 0, 0);
+    }
+    else {
+        if (backName == "Ignis" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundIgnis, 0, 0); }
+        else if (backName == "Gerbera" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundGerbera, 0, 0); }
+        else if (backName == "Jochi" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundJochi, 0, 0); }
+        else if (backName == "Markus" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundMarkus, 0, 0); }
+        else if (backName == "Theresia" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundTheresia, 0, 0); }
+        else if (backName == "Fatuus" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundFatuus, 0, 0); }
+        else if (backName == "Ignis") { Engine::GetInstance().render->DrawTexture(backgroundIgnis1, 0, 0); }
+        else if (backName == "Gerbera") { Engine::GetInstance().render->DrawTexture(backgroundGerbera1, 0, 0); }
+        else if (backName == "Jochi") { Engine::GetInstance().render->DrawTexture(backgroundJochi1, 0, 0); }
+        else if (backName == "Markus") { Engine::GetInstance().render->DrawTexture(backgroundMarkus1, 0, 0); }
+        else if (backName == "Theresia") { Engine::GetInstance().render->DrawTexture(backgroundTheresia1, 0, 0); }
+        else if (backName == "Fatuus") { Engine::GetInstance().render->DrawTexture(backgroundFatuus1, 0, 0); }
+        else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
+    }
    
- 
-
     RenderSelection();
 }
 
@@ -122,6 +125,11 @@ void CharacterSelectScene::LoadTextures(){
     backButtonSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/BackButton.png");
     switchButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/SwitchButton.png");
 
+    tutorialOpenButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/tutorial.png");
+    tutorialLeftButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/left.png");
+    tutorialRightButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/right.png");
+
+
    
     for (int i = 0; i < 5; i++) { 
         std::string path = "Assets/Textures/CharacterSelectScene/tutorial";
@@ -155,6 +163,12 @@ void CharacterSelectScene::UnloadTextures()
     Engine::GetInstance().textures->UnLoad(backgroundJochi1);
     Engine::GetInstance().textures->UnLoad(backgroundFatuus1);
     Engine::GetInstance().textures->UnLoad(backgroundMarkus1);
+    //tutorial
+    for (int i = 0; i < 5; i++) { Engine::GetInstance().textures->UnLoad(tutorials[i]); }
+    Engine::GetInstance().textures->UnLoad(tutorialOpenButton);
+    Engine::GetInstance().textures->UnLoad(tutorialLeftButton);
+    Engine::GetInstance().textures->UnLoad(tutorialRightButton);
+
 }
 
 void CharacterSelectScene::LoadSounds() {
@@ -185,13 +199,14 @@ bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
         switched = !switched;
         break;
     case 10:
-        if(tutorialIndex > 0){ tutorialIndex++; }
+        tutorialOpen = !tutorialOpen;
+        UpdateTutorialUI();
         break;
     case 11:
-        if (tutorialIndex < 4) { tutorialIndex--; }
+        if (tutorialIndex > 0) { tutorialIndex--; }
         break;
     case 12:
-        tutorialIndex++;
+        if (tutorialIndex < 4) { tutorialIndex++; }
         break;
     default:
 
@@ -440,4 +455,38 @@ void CharacterSelectScene::CreateUI()
 {
     CreateCharactersButtons();
     CreateInterfaceButtons();
+}
+
+void CharacterSelectScene::UpdateTutorialUI()
+{
+    if (tutorialOpen == true) {
+        Engine::GetInstance().uiManager->RemoveElementsByRange(0, 20);
+
+        //OpenTutorial
+        SDL_Rect openBounds = { 581, 60, 195, 306 };
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 10, "", openBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 2, openBounds.w, openBounds.h
+        );
+
+        //Left
+        SDL_Rect leftBounds = { 581, 60, 195, 306 };
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 11, "", leftBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 2, leftBounds.w, leftBounds.h
+        );
+
+        //Right
+        SDL_Rect rightBounds = { 581, 60, 195, 306 };
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 12, "", rightBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 2, rightBounds.w, rightBounds.h
+        );
+    }
+    else {
+
+        Engine::GetInstance().uiManager->RemoveElementsByRange(0, 20);
+        CreateUI();
+    }
+
 }

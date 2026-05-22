@@ -55,6 +55,7 @@ public:
     void OnResume() override;
     void OnPause() override;
     void CreateUI();
+    void UpdateTutorialUI();
 
 private:
     // all available characters
@@ -110,7 +111,10 @@ private:
     SDL_Texture* panelInformationSpritesheet;
     SDL_Texture* labelSpritesheets;
     SDL_Texture* backButtonSpritesheet;
-    SDL_Texture* switchButton;
+    SDL_Texture* switchButton; 
+    SDL_Texture* tutorialOpenButton;
+    SDL_Texture* tutorialLeftButton;
+    SDL_Texture* tutorialRightButton;
     
     std::vector<SDL_Texture*> tutorials;
     int tutorialIndex = 0;
