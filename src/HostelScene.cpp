@@ -55,6 +55,8 @@ void HostelScene::Load()
 
         pendingDialogue = true;
     }
+
+    goldCounter.SetPosition(1160, 62);
 }
 
 void HostelScene::Update(float dt)
@@ -129,7 +131,7 @@ void HostelScene::LoadTextures()
 }
 
 void HostelScene::LoadSound() {
-    restfx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/rest.wav");
+    restfx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/rest.wav");
     buttonPress = buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }
 
@@ -150,37 +152,13 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     {
         //start dialogue
         PushDialogue();
-        //NPC* npc = hostel->GetOwner();
-        //if (npc == nullptr)
-        //{
-        //    LOG("Hostel: NPC es nullptr");
-        //    break;
-        //}
-        //else {
-        //    LOG("Hostel: NPC correcto");
-        //}
-
-        //LOG("Dialogue id npc: %s", npc->GetDialogueId().c_str());
-        //Engine::GetInstance().scene->PushScene(
-        //    new DialogueScene(npc->GetDialogueId(),
-        //        [this]()
-        //        {
-        //            std::string action = DialogueManager::GetLastChoiceTag();
-        //            
-        //            if (action == "rest")
-        //            {
-        //                LOG("Hostel: abrir panel de descanso");
-        //                showRestPanel = true;
-        //            }
-        //        }
-        //    )
-        //);
         break;
     }
     case 20:
         //rest
         if (hostel->CheckGold(hostel->GetRestCost(), alliedParty)) {
             Engine::GetInstance().audio->PlayFx(restfx);
+            alliedParty->AddGold(-hostel->GetRestCost());
             hostel->Rest(alliedParty);
             showRestPanel = false;
             hostelOpen = false;
@@ -190,17 +168,18 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
             {
                 Engine::GetInstance().scene->PopScene();
             }
+
+            goldCounter.SetPosition(1160, 62);
+
         }
         else {
 #if _DEBUG
             LOG("Not enough gold for resting");
 #endif // _DEBUG
         }
-
         break;
     case 21:
         //buy xp
-        //hostel->BuyXP(alliedParty, 50);
         if (hostel->CheckGold(hostel->GetMealCost(), alliedParty)) {
             showRestPanel = false;
             showSelectCharaPanel = true;
@@ -231,10 +210,12 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
     case 30:
     case 31:
     case 32:
+
+        alliedParty->AddGold(-hostel->GetMealCost());
         hostel->GetADrink(alliedParty, uiElement->text);
-        //showRestPanel = false;
         showSelectCharaPanel = false;
         hostelOpen = false;
+
         {
             IslandFaction faction = hostel->GetIsland()->GetIslandFaction();
             if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
@@ -242,6 +223,8 @@ bool HostelScene::OnUIMouseClickEvent(UIElement* uiElement)
                 Engine::GetInstance().scene->PopScene();
             }
         }
+
+        goldCounter.SetPosition(1160, 62);
         break;
     case 33:
         showSelectCharaPanel = false;

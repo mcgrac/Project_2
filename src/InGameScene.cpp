@@ -17,6 +17,7 @@
 #include <queue>
 #include "Window.h"
 #include "PartyScene.h"
+#include "MainMenuScene.h"
 
 // First button id reserved for combat button; island buttons start from this offset
 static const int ISLAND_BUTTON_ID_OFFSET = 100;
@@ -33,6 +34,7 @@ InGameScene::InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* 
     , spritesheet(nullptr)
     , islandHumanTex(nullptr)
     , islandReptileTex(nullptr)
+    , shipPanelTex(nullptr)
     , goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
     , pendingStartIsland(false)
 {
@@ -78,7 +80,7 @@ void InGameScene::Load()
 
     //callback when the player arrives to an island->world map notify ingameScene
     worldMap->arrivalIsland = [this](Island* island) {
-        Engine::GetInstance().scene->PushScene(new IslandScene(island, worldMap, alliedParty, ship));
+        Engine::GetInstance().scene->PushScene(new IslandScene(island, worldMap, alliedParty, ship, this));
     };
 
     //ship
@@ -104,11 +106,26 @@ void InGameScene::Load()
 
 void InGameScene::Update(float dt)
 {
-    // in first frame launch initial dialogue
-    static bool firstFrame = true;
+    // Si hay pantalla de fin de partida activa, solo dibujarla
+    if (gameOverActive || gameWonActive)
+    {
+        Engine::GetInstance().render->camera.x = 0;
+        DrawEndScreen();
+        return;
+    }
 
-  //  if (isMusicPlayed == false) { Engine::GetInstance().audio->PlayMusic("Assets\Audio\Music\Map.wav"); isMusicPlayed = true; }
-
+    if (pendingGameOver)
+    {
+        pendingGameOver = false;
+        ShowEndScreen(false);
+        return;
+    }
+    if (pendingGameWon)
+    {
+        pendingGameWon = false;
+        ShowEndScreen(true);
+        return;
+    }
 
     if (firstFrame && !isContinue)
     {
@@ -129,7 +146,7 @@ void InGameScene::Update(float dt)
         {
             worldMap->SetCurrentIsland(0);
             Engine::GetInstance().scene->PushScene(
-                new IslandScene(startIsland, worldMap, alliedParty, ship)
+                new IslandScene(startIsland, worldMap, alliedParty, ship, this)
             );
         }
     }
@@ -146,14 +163,27 @@ void InGameScene::Update(float dt)
         return;
     }
 
+    // debug testing
+    // Debug: F9 = game over, F10 = game won
+    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
+    {
+        ShowEndScreen(false);
+        return;
+    }
+    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN)
+    {
+        ShowEndScreen(true);
+        return;
+    }
+
     worldMap->Update(dt);
 
     //render ship
     ship->Update(dt);
 
     //draw hp ship
-    std::string text = "HP: " + std::to_string(ship->GetCurrentHp()) + "/" + std::to_string(ship->GetMaxHp());
-    Engine::GetInstance().render->DrawText(text.c_str(), 600, 20, 0, 0, { 255,255,255,255 });
+    Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
+    shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
 
     //gold counter
     goldCounter.Update(alliedParty->GetGold(), dt);
@@ -162,6 +192,7 @@ void InGameScene::Update(float dt)
 
 void InGameScene::PostUpdate(float dt)
 {
+    if (gameOverActive || gameWonActive) { return; }
     worldMap->PostUpdate(dt);
 }
 
@@ -175,6 +206,14 @@ void InGameScene::Unload()
     Engine::GetInstance().textures->UnLoad(islandHumanTex);
     Engine::GetInstance().textures->UnLoad(islandReptileTex);
     Engine::GetInstance().textures->UnLoad(skullTex);
+
+    Engine::GetInstance().textures->UnLoad(gameOverTex);
+    Engine::GetInstance().textures->UnLoad(gameWonTex);
+
+    Engine::GetInstance().textures->UnLoad(emptyButton);
+
+    Engine::GetInstance().textures->UnLoad(shipPanelTex);
+    shipHpBar.UnloadTexture();
 
     //unload worldMap
     worldMap->UnloadWorld();
@@ -205,6 +244,17 @@ void InGameScene::LoadTextures(){
     fishButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Fish.png");
     tribalButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Tribal.png");
     bossButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Boss.png");
+
+    gameOverTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/defeat.png");
+    gameWonTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/victory.png");
+    emptyButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/emptyButton.png");
+
+    shipPanelTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/BoatHealthBarEXP.png");
+    shipHpBar.chunkW = 10;
+    shipHpBar.chunkH = 12;
+    shipHpBar.position = Vector2D(40.0f, 8.0f); // ajusta al layout del panel
+    shipHpBar.LoadTexture("Assets/Textures/CombatScene/HealthPoint.png");
+
 }
 
 void InGameScene::LoadAudio() {
@@ -220,26 +270,25 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
     {
     // Add buttons in game
     case 1:
+    {
         LOG("InGameScene: iniciando combate...");
-        // PushScene — InGameScene queda suspendida con todo su estado
-        //Engine::GetInstance().scene->PushScene(new CombatScene(alliedParty, ship->GetLevel()));
         Engine::GetInstance().audio->PlayFx(startCombat);
-        PushSceneFromInGame(new CombatScene(alliedParty, ship->GetLevel(), worldMap->GetCurrentIsland()->GetIslandFaction()));
+        CombatScene* combatScene = new CombatScene(alliedParty, ship->GetLevel(), worldMap->GetCurrentIsland()->GetIslandFaction());
+        PushSceneFromInGame(combatScene);
+    }
         break;
     case 2:
         //Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
         Engine::GetInstance().audio->PlayFx(buttonPress);
         PushSceneFromInGame(new PartyScene(alliedParty));
         break;
+    case MAIN_MENU_BUTTON_ID:
+        SaveLoad::ClearSave();
+        Engine::GetInstance().render->camera.x = 0;
+        Engine::GetInstance().scene->ReplaceScene(new MainMenuScene);
+        break;
     default:
       
-        //islands
-        //if id is 100+
-        //if (uiElement->id >= ISLAND_BUTTON_ID_OFFSET) {
-        //    int islandId = uiElement->id - ISLAND_BUTTON_ID_OFFSET;
-        //    worldMap.TravelTo(islandId);
-        //}
-
         if (uiElement->id >= ISLAND_BUTTON_ID_OFFSET)
         {
             int islandId = uiElement->id - ISLAND_BUTTON_ID_OFFSET;
@@ -571,8 +620,49 @@ void InGameScene::PushSceneFromInGame(BaseScene* scene)
     Engine::GetInstance().scene->PushScene(scene);
 }
 
+void InGameScene::ShowEndScreen(bool won)
+{
+    SaveLoad::ClearSave();
+    Engine::GetInstance().render->camera.x = 0;  // resetear cámara
+
+    if (won)
+    {
+        gameWonActive = true;
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/GameOverWin.wav");
+    }
+    else
+    {
+        gameOverActive = true;
+        Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/GameOverLose.wav");
+    }
+
+    Engine::GetInstance().uiManager->CleanUp();
+
+    //return main menu
+    SDL_Rect btnBounds = { 539, 509, 202, 63 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, MAIN_MENU_BUTTON_ID, "",
+        btnBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+        {}, emptyButton, 0, btnBounds.w, btnBounds.h
+    );
+}
+
+void InGameScene::DrawEndScreen()
+{
+    if (gameWonActive)
+    {
+        Engine::GetInstance().render->DrawTexture(gameWonTex, 0, 0);
+    }
+    else if (gameOverActive)
+    {
+        Engine::GetInstance().render->DrawTexture(gameOverTex, 0, 0);
+    }
+}
+
 void InGameScene::OnResume()
 {
+    if (pendingGameOver || pendingGameWon) { return; }
     CreateUI();
 }
 
@@ -585,12 +675,12 @@ void InGameScene::OnPause()
 void InGameScene::CreateUI()
 {
     //Botón de iniciar combate
-    SDL_Rect combatBtnBounds = { 20, 20, 154, 60 };
+    /*SDL_Rect combatBtnBounds = {20, 20, 154, 60};
     auto CombatBtn = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0, combatBtnBounds.w, combatBtnBounds.h
     );
-    CombatBtn->isHUD = true;//fixed on screen
+    CombatBtn->isHUD = true;//fixed on screen*/
 
     //Botón de party
     SDL_Rect partyBtnBounds = { 20, 600, 72, 72 };

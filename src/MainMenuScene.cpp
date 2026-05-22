@@ -28,7 +28,7 @@ MainMenuScene::~MainMenuScene()
 void MainMenuScene::Load()
 {
     //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
-
+    Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/Start.wav");
     //textures
     LoadTextures();
     //sounds
@@ -133,14 +133,11 @@ bool MainMenuScene::OnUIMouseClickEvent(UIElement* uiElement)
         }
     case 3: //options button
         Engine::GetInstance().scene->PushScene(new SettingsScene());
-
-        //Engine::GetInstance().window->ToggleFullscreen();
-        //LOG("ToggleFullscreen llamado, ahora llamando UpdateCamera");
-        //Engine::GetInstance().render->UpdateCamera();
         break;
     case 4: //quit button
-        //Engine::GetInstance().input->quit = true;
-        //quit
+        SDL_Event quitEvent;
+        quitEvent.type = SDL_EVENT_QUIT;
+        SDL_PushEvent(&quitEvent);
         break;
     default:
         break;

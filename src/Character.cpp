@@ -154,6 +154,8 @@ void Character::LevelUp()
 {
 	level++;
 
+	LOG("|Character: %s has level up to level %d", name.c_str(), level);
+
 	//update stats
 	maxHealth += maxHealthLevelScaling;
 	health += maxHealthLevelScaling;

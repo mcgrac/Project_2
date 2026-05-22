@@ -24,6 +24,7 @@ public:
 
 private:
     SDL_Texture* buttonTexture;
+    SDL_Texture* emptyButtonTexture;
 
     // Volúmenes actuales 0.0f - 1.0f
     float musicVolume;

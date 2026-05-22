@@ -35,6 +35,9 @@ public:
 
     Party* GetAlliedParty() { return alliedParty; }
 
+    void SetPendingGameOver(bool b) { pendingGameOver = b; }
+    void SetPendingGameWon(bool b) { pendingGameWon = b; }
+
 private:
     std::vector<Character*> prebuiltCharacters;
 
@@ -62,11 +65,16 @@ private:
     SDL_Texture* fishButton;
     SDL_Texture* bossButton;
     SDL_Texture* tribalButton;
+    SDL_Texture* emptyButton;
+
+    SDL_Texture* shipPanelTex;
 
     // Island sprites — drawn below each island button
     SDL_Texture* islandHumanTex;
     SDL_Texture* islandReptileTex;
     SDL_Texture* skullTex;
+
+    DynamicBar shipHpBar;
 
     bool isContinue;
     void RestoreFromSave(const SaveData& data);
@@ -86,6 +94,19 @@ private:
     int startCombat;
     bool pendingStartIsland;
     bool isMusicPlayed = false;
+    bool firstFrame = true;
+    bool pendingGameOver = false;
+    bool pendingGameWon = false;
 
     const char* mapMusic = "Assets/Audio/Music/8bitMusic/Shipwreck.wav";
+
+    // Game over / victory screen
+    bool gameOverActive = false;
+    bool gameWonActive = false;
+    SDL_Texture* gameOverTex = nullptr;
+    SDL_Texture* gameWonTex = nullptr;
+    static constexpr int MAIN_MENU_BUTTON_ID = 10;
+
+    void ShowEndScreen(bool won);
+    void DrawEndScreen();
 };

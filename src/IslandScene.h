@@ -6,10 +6,12 @@
 #include "Ship.h"
 #include "CombatScene.h"
 
+class InGameScene;
+
 class IslandScene : public BaseScene
 {
 public:
-    IslandScene(Island* island, WorldMap* worldMap, Party* allied, Ship* _ship);
+    IslandScene(Island* island, WorldMap* worldMap, Party* allied, Ship* _ship, InGameScene* _inGame);
     ~IslandScene();
 
     void Load() override;
@@ -26,7 +28,9 @@ public:
     void OnPause() override;
     void CreateUI();
 
+
 private:
+    InGameScene* inGameScene;
     Island* island;       
     WorldMap* worldMap;     
     Party* alliedParty;  

@@ -9,8 +9,9 @@
 #include "Render.h"
 #include "Log.h"
 #include "SaveLoad.h"
+#include "InGameScene.h"
 
-IslandScene::IslandScene(Island* island, WorldMap* worldMap, Party* allied, Ship* _ship)
+IslandScene::IslandScene(Island* island, WorldMap* worldMap, Party* allied, Ship* _ship, InGameScene* _inGame)
     : island(island)
     , worldMap(worldMap)
     , alliedParty(allied)
@@ -21,6 +22,7 @@ IslandScene::IslandScene(Island* island, WorldMap* worldMap, Party* allied, Ship
     , background(nullptr)
     , combatPending(false)
     , lastCombatWon(false)
+    , inGameScene(_inGame)
 {
     sceneName = "BeforeIslandScene";
 }
@@ -200,8 +202,21 @@ void IslandScene::OnResume()
             // Penalización por derrota: daño al barco, sin recompensas
             ship->LoseBattle();
             LOG("IslandScene: derrota — barco recibe daño. HP: %d/%d", ship->GetCurrentHp(), ship->GetMaxHp());
-        }
+            // GAME OVER
+            if (ship->GetCurrentHp() <= 0)
+            {
+                inGameScene->SetPendingGameOver(true);
+            }
 
+        }
+        else
+        {
+            //game Won
+            if (island->GetIslandFaction() == IslandFaction::BOSS)
+            {
+                inGameScene->SetPendingGameWon(true);
+            }
+        }
 
         // Defeat, Pop scene and don't confirm the travel, player remains in that island
         Engine::GetInstance().scene->PopScene();

@@ -38,7 +38,11 @@ std::string SceneUtils::GetPortraitPath(const std::string& dialogueId)
 	// npc_hostel_human -> Assets/Textures/Portraits/hostel/human.png
 	// npc_dockyard_siren -> Assets/Textures/Portraits/dockyard/siren.png
 	// formato esperado: npc_{location}_{faction}
-	std::string stripped = dialogueId.substr(4); // quita "npc_"
+	if(dialogueId=="intro_boss"){
+		return "Assets/Textures/PortraitsDialogues/intro_boss.png";
+	}
+	else {
+std::string stripped = dialogueId.substr(4); // quita "npc_"
 	size_t underscore = stripped.find('_');
 	if (underscore == std::string::npos)
 	{
@@ -47,7 +51,25 @@ std::string SceneUtils::GetPortraitPath(const std::string& dialogueId)
 	std::string location = stripped.substr(0, underscore);
 	std::string faction = stripped.substr(underscore + 1);
 	return "Assets/Textures/PortraitsDialogues/" + location + "/" + faction + ".png";
+	}
+	
 }
+
+/*std::string SceneUtils::GetBackPath(const std::string& dialogueId)
+{
+	// npc_hostel_human -> Assets/Textures/Portraits/hostel/human.png
+	// npc_dockyard_siren -> Assets/Textures/Portraits/dockyard/siren.png
+	// formato esperado: npc_{location}_{faction}
+	std::string stripped = dialogueId.substr(4); // quita "npc_"
+	size_t underscore = stripped.find('_');
+	if (underscore == std::string::npos)
+	{
+		return "";
+	}
+	std::string location = stripped.substr(0, underscore);
+	std::string faction = stripped.substr(underscore + 1);
+	return "Assets/Textures/PortraitsDialogues/" + location + "/" + faction + "Back.png";
+}*/
 
 bool SceneUtils::PointInRect(int x, int y, const SDL_Rect& r)
 {
@@ -134,6 +156,11 @@ void GoldCounter::MoveCounter(int positionX, int positionY)
 	GoldCounter::position.setX(positionX);
 	GoldCounter::position.setY(positionY);
 }
+void GoldCounter::SetPosition(int x, int y)
+{
+	GoldCounter::position.setX(x);
+	GoldCounter::position.setY(y);
+}
 #pragma endregion
 
 #pragma region TOOLTIP
@@ -155,9 +182,11 @@ void TooltipRenderer::Draw(const std::string& text, int x, int y) const
 	int boxWidth = maxLineLen * charWidth + padding * 2;
 	int boxHeight = (int)lines.size() * lineHeight + padding * 2;
 
-	SDL_Rect bg = { x, y, boxWidth, boxHeight };
-	Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200, true, false);
-	Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
+	if (!isDialogue) {
+		SDL_Rect bg = { x, y, boxWidth, boxHeight };
+		Engine::GetInstance().render->DrawRectangle(bg, 0, 0, 0, 200, true, false);
+		Engine::GetInstance().render->DrawRectangle(bg, 255, 255, 255, 255, false, false);
+	}
 
 	int yOffset = 0;
 	for (const std::string& line : lines)
@@ -217,6 +246,50 @@ void TooltipRenderer::DrawColoredLine(const std::string& line, int x, int y) con
 		Engine::GetInstance().render->DrawText(word.c_str(), x + offsetX, y, wordW, lineHeight, color);
 		offsetX += wordW + charWidth;
 	}
+}
+#pragma endregion
+
+#pragma region DYNAMIC BAR
+void DynamicBar::LoadTexture(const std::string& path)
+{
+	chunkTex = Engine::GetInstance().textures->Load(path.c_str());
+}
+
+void DynamicBar::Draw(int current, int max) const
+{
+	if (chunkTex == nullptr) { return; }
+	if (max <= 0) { return; }
+
+	int clampedCurrent = current;
+	if (clampedCurrent < 0) { clampedCurrent = 0; }
+	if (clampedCurrent > max) { clampedCurrent = max; }
+
+	int filledChunks = (clampedCurrent * maxChunks) / max;
+	if (filledChunks > maxChunks) { filledChunks = maxChunks; }
+
+	int baseX = (int)position.getX();
+	int baseY = (int)position.getY();
+
+	for (int i = 0; i < filledChunks; i++)
+	{
+		int chunkX;
+		if (leftToRight)
+		{
+			chunkX = baseX + i * (chunkW - chunkOverlap);
+		}
+		else
+		{
+			chunkX = baseX - i * (chunkW - chunkOverlap);
+		}
+
+		Engine::GetInstance().render->DrawTexture(chunkTex, chunkX, baseY, nullptr, false);
+	}
+}
+
+void DynamicBar::UnloadTexture()
+{
+	Engine::GetInstance().textures->UnLoad(chunkTex);
+	chunkTex = nullptr;
 }
 #pragma endregion
 

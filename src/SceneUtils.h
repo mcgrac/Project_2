@@ -9,11 +9,11 @@ struct SDL_Texture;
 
 struct TooltipRenderer
 {
-	// Estilo — puedes cambiar estos valores por escena si quieres
 	int charWidth = 8;
 	int lineHeight = 20;
 	int padding = 10;
 	int maxCharsPerLine = 35;
+	bool isDialogue = false;
 
 	// Dibuja el tooltip completo en (x, y)
 	void Draw(const std::string& text, int x, int y) const;
@@ -44,6 +44,26 @@ struct GoldCounter
 	void SetTextureCoin(std::string path);
 
 	void MoveCounter(int positionX, int positionY);
+	void SetPosition(int x, int y);
+};
+
+struct DynamicBar
+{
+	Vector2D position = { 0.0f, 0.0f };
+	bool leftToRight = true;
+
+	// Chunk dimensions — ajustar por instancia si se necesita
+	int chunkW = 10;
+	int chunkH = 12;
+	int chunkOverlap = 0;
+	int maxChunks = 10;
+
+	void LoadTexture(const std::string& path);
+	void Draw(int current, int max) const;
+	void UnloadTexture();
+
+private:
+	SDL_Texture* chunkTex = nullptr;
 };
 
 class SceneUtils

@@ -140,7 +140,7 @@ void CombatScene::Update(float dt)
     //play music
     if (!Engine::GetInstance().audio->IsMusicPlaying()) {
         LOG("Play music again!");
-        Engine::GetInstance().audio->PlayMusic(combMusic);
+        //Engine::GetInstance().audio->PlayMusic(combMusic);
     }
 
     // Reset the click guard every frame so the next real click is accepted
@@ -248,8 +248,6 @@ void CombatScene::Unload()
     Engine::GetInstance().textures->UnLoad(background);
     Engine::GetInstance().textures->UnLoad(abilityIcons);
     Engine::GetInstance().textures->UnLoad(panelBaseTexture);
-    Engine::GetInstance().textures->UnLoad(hpBarChunkTexture);
-    Engine::GetInstance().textures->UnLoad(initiativeBarChunkTexture);
     Engine::GetInstance().textures->UnLoad(nextRound);
     Engine::GetInstance().textures->UnLoad(arrow);
     Engine::GetInstance().textures->UnLoad(poisonIcon);
@@ -261,6 +259,9 @@ void CombatScene::Unload()
     Engine::GetInstance().textures->UnLoad(continueLose);
     Engine::GetInstance().textures->UnLoad(continueWin);
     Engine::GetInstance().textures->UnLoad(potionEmpty);
+
+    hpBar.UnloadTexture();
+    initiativeBar.UnloadTexture();
 
     for (auto& pair : characterIcons)
     {
@@ -278,8 +279,6 @@ void CombatScene::LoadTextures()
     abilityIcons = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/AbilityIcons.png");
     background = Engine::GetInstance().textures->Load("Assets/Textures/Backgrounds/BattleBackground.png");
     panelBaseTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/Panel.png");
-    hpBarChunkTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/HealthPoint.png");
-    initiativeBarChunkTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/InitiativePoint.png");
     nextRound = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/nextRound.png");
     arrow = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/ArrowMarker.png");
     poisonIcon = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/PoisonIndicator.png");
@@ -307,17 +306,36 @@ void CombatScene::LoadTextures()
                 const std::string& name = c->GetName();
                 if (characterIcons.find(name) != characterIcons.end()) { continue; } // ya cargado
 
-                std::string path = "Assets/Textures/CombatScene/Icons/" + name + "_icon.png";
+                std::string folder;
+                if (party->GetMembers()[0]->GetIsAllied()) {
+                    folder = "allied";
+                }
+                else {
+                    folder = "enemy";
+                }
+                std::string path = "Assets/Textures/CombatScene/Icons/" + folder + "/" + name + "Icon.png";
                 characterIcons[name] = Engine::GetInstance().textures->Load(path.c_str());
             }
         };
 
     loadIconForParty(alliedParty);
     loadIconForParty(enemyParty);
+
+    //hp bar
+    hpBar.chunkW = HP_CHUNK_W;
+    hpBar.chunkH = HP_CHUNK_H;
+    hpBar.LoadTexture("Assets/Textures/CombatScene/HealthPoint.png");
+
+    //initiative bar
+    initiativeBar.chunkW = INIT_CHUNK_W;
+    initiativeBar.chunkH = INIT_CHUNK_H;
+    initiativeBar.chunkOverlap = BAR_CHUNK_OVERLAP;
+    initiativeBar.LoadTexture("Assets/Textures/CombatScene/InitiativePoint.png");
 }
 
 bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    Engine::GetInstance().audio->PlayFx(buttonPress);
     switch (uiElement->id)
     {
         // ---------- SKILLS ----------
@@ -491,15 +509,21 @@ void CombatScene::ShowLaneSelectionFor(int characterIndex)
     {
         int id;
         LaneType type;
-        const char* label;
     };
 
     LaneOption options[3] = {
 
-        { 30, LaneType::BACK,  "+15 Power" },
-        { 31, LaneType::SIDE,  "+10 Power +10 Speed" },
-        { 32, LaneType::FRONT, "+10 Speed +10 HP"   }
+        { 30, LaneType::BACK },
+        { 31, LaneType::SIDE },
+        { 32, LaneType::FRONT }
     };
+
+    std::string labels[3] = {
+    "+" + std::to_string(15 * shipLevel) + " Power",
+    "+" + std::to_string(10 * shipLevel) + " Power  +" + std::to_string(10 * shipLevel) + " Speed",
+    "+" + std::to_string(10 * shipLevel) + " Speed  +" + std::to_string(10 * shipLevel) + " HP"
+    };
+
 
     for (int i = 0; i < 3; i++)
     {
@@ -518,7 +542,7 @@ void CombatScene::ShowLaneSelectionFor(int characterIndex)
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,
             options[i].id,
-            options[i].label,
+            labels[i].c_str(),
             bounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
             {}, emptyButton, 0, bounds.w, bounds.h
@@ -532,6 +556,11 @@ void CombatScene::FinalizeLaneAssignments()
 
     // Now that every character has a lane, create the Combat object
     combat = new Combat(alliedParty, enemyParty, shipLevel);
+
+    combat->onPlaySound = [this](const std::string& animId)
+    {
+        ChooseSound(animId);
+    };
 
     for (auto& pair : laneAssignments)
     {
@@ -694,10 +723,10 @@ void CombatScene::DrawResultPanel()
 
             if (snap.leveledUp)
             {
-                line += "  [LEVEL UP]";
+                line += "  LEVEL UP";
             }
 
-            Engine::GetInstance().render->DrawText(line.c_str(), 380, lineY, 520, 28, snap.leveledUp ? green : white);
+            Engine::GetInstance().render->DrawText(line.c_str(), 380, lineY, 350, 38, snap.leveledUp ? green : white);
             lineY += 40;
         }
     }
@@ -796,54 +825,14 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
     int hpBarY = panelY + HP_BAR_OFFSET_Y;
     int initBarY = panelY + INIT_BAR_OFFSET_Y;
 
-    DrawHealthBar(hpBarX, hpBarY, c->GetCurrentHP(), c->GetMaxHP(), isAlly);
-    DrawInitiativeBar(initBarX, initBarY, c->GetCurrentInitiative(), isAlly);
+    hpBar.position = Vector2D((float)hpBarX, (float)hpBarY);
+    hpBar.leftToRight = isAlly;
+    hpBar.Draw(c->GetCurrentHP(), c->GetMaxHP());
+
+    initiativeBar.position = Vector2D((float)initBarX, (float)initBarY);
+    initiativeBar.leftToRight = isAlly;
+    initiativeBar.Draw(c->GetCurrentInitiative(), MAX_INITIATIVE);
 }
-
-void CombatScene::DrawHealthBar(int x, int y, int currentHP, int maxHP, bool leftToRight)
-{
-    if (maxHP <= 0) { return; }
-
-    float hpPerChunk = maxHP / (float)HP_MAX_CHUNKS;
-    int filledChunks = std::min((int)(currentHP / hpPerChunk), HP_MAX_CHUNKS);
-    filledChunks = std::max(filledChunks, 0);
-
-    for (int i = 0; i < filledChunks; i++)
-    {
-        int chunkX;
-        if (leftToRight)
-        {
-            chunkX = x + i * (HP_CHUNK_W);
-        }
-        else
-        {
-            chunkX = x - i * (HP_CHUNK_W);
-        }
-        Engine::GetInstance().render->DrawTexture(hpBarChunkTexture, chunkX, y, nullptr, false);
-    }
-}
-
-void CombatScene::DrawInitiativeBar(int x, int y, int currentInitiative, bool leftToRight)
-{
-
-    int clampedInit = std::max(std::min(currentInitiative, MAX_INITIATIVE), 0);
-    int filledChunks = std::min((int)(clampedInit / (MAX_INITIATIVE / (float)INIT_MAX_CHUNKS)), INIT_MAX_CHUNKS);
-
-    for (int i = 0; i < filledChunks; i++)
-    {
-        int chunkX;
-        if (leftToRight)
-        {
-            chunkX = x + i * (INIT_CHUNK_W - BAR_CHUNK_OVERLAP);
-        }
-        else
-        {
-            chunkX = x - i * (INIT_CHUNK_W - BAR_CHUNK_OVERLAP);
-        }
-        Engine::GetInstance().render->DrawTexture(initiativeBarChunkTexture, chunkX, y, nullptr, false);
-    }
-}
-
 #pragma endregion
 
 //loads skills textures and buttons depending of the character attacking
@@ -1175,6 +1164,10 @@ void CombatScene::DrawUILaneSelection(std::string charName)
     else if (charName == "Ignis") { Engine::GetInstance().render->DrawTexture(laneIgnis, 0, 0); }
    
  
+}
+
+void CombatScene::DrawAlliedIcons()
+{
 }
 
 void CombatScene::OnResume()

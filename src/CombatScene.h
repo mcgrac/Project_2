@@ -165,6 +165,7 @@ private:
     void UpdateSkillHover();
     void DrawStatusIcons();
     void DrawUILaneSelection(std::string charName);
+    void DrawAlliedIcons();
     //tooltip
     TooltipRenderer tooltipRenderer;
 
@@ -203,8 +204,8 @@ private:
     void DrawAlliedPanels();
     void DrawEnemyPanels();
     void DrawCharacterPanel(Character* c, int panelX, int panelY, bool isAlly);
-    void DrawHealthBar(int x, int y, int currentHP, int maxHP, bool leftToRight = true);
-    void DrawInitiativeBar(int x, int y, int currentInitiative, bool leftToRight = true);
+    DynamicBar hpBar;
+    DynamicBar initiativeBar;
 
     //---------Timer-----------
     static constexpr float NEXT_ROUND_PAUSE_DURATION = 3000.0f; // segundos

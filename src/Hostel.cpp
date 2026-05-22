@@ -24,7 +24,7 @@ void Hostel::Rest(Party* party)
 	LOG("Hostel: resting");
 	for (auto member : party->GetMembers()) {
 		//heal an amount
-		LOG("Character: %s | Previous health: %d", member->GetName(), member->GetCurrentHP());
+		LOG("Character: %s | Previous health: %d", member->GetName().c_str(), member->GetCurrentHP());
 		member->FullyHeal();
 		LOG("Current health: %d", member->GetCurrentHP());
 	}
@@ -36,8 +36,8 @@ void Hostel::BuyXP(Party* party, int amount)
 
 	for (auto member : party->GetMembers()) {
 
-		LOG("Character: %s | Previous xp: %d", member->GetName(), member->GetXP());
-		member->AddXP(amount);
+		LOG("Character: %s | Previous xp: %d", member->GetName().c_str(), member->GetXP());
+		member->GainExperience(amount);
 		LOG("Current experience: %d", member->GetXP());
 	}
 }
@@ -48,14 +48,14 @@ void Hostel::GetADrink(Party* party, std::string id)
 
 	for (auto member : party->GetMembers()) {
 		if (member->GetName() == id) {
-			LOG("HOSTEL: %s is getting a drink", id);
+			LOG("HOSTEL: %s is getting a drink", id.c_str());
 
-			LOG("Character: %s | Previous health: %d", id, member->GetCurrentHP());
+			LOG("Character: %s | Previous health: %d", id.c_str(), member->GetCurrentHP());
 			member->FullyHeal();
 			LOG("Current health: %d", member->GetCurrentHP());
 
-			LOG("Character: %s | Previous xp: %d", member->GetName(), member->GetXP());
-			member->AddXP(80);
+			LOG("Character: %s | Previous xp: %d", member->GetName().c_str(), member->GetXP());
+			member->GainExperience(80);
 			LOG("Current experience: %d", member->GetXP());
 		}
 	}

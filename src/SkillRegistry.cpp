@@ -49,12 +49,14 @@ SkillRegistry::SkillRegistry()
 
     //incomplete
     Register("laser_upward", [](int cost) {
-        Skill s("Laser Upward", DamageType::Magical, 15, 0.2f, cost, "laser_upward");
-        s.SetDescription("Deal 15(+20 power) Magical damage");
+        Skill s("Laser Upward", DamageType::None, 0, 0.0f, cost, "laser_upward");
+        s.SetDescription("");
+        s.SetHasAreaEffect(true);
+        s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
-            "Heal ally or damage enemy",
+            "Heal 10(+10%Power) your party",
             [](Character* caster, Character* target) {
-                //target->Heal((int)(caster->GetTotalPower() * 0.3f));
+                target->Heal((int)(10 + caster->GetTotalPower() * 0.10f));
             }
             });
         return s;
@@ -89,14 +91,15 @@ SkillRegistry::SkillRegistry()
         return s;
         });
 
-    //incompleta
     Register("healing_halo", [](int cost) {
         Skill s("Healing Halo", DamageType::None, 0, 0.0f, cost, "healing_halo");
         s.SetDescription("");
+        s.SetHasAreaEffect(true);
+        s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
-            "Heal and clean poison effect and burn effect to an ally",
+            "Heal for 5(+5%Power) and cleanse Poison and Burn your party",
             [](Character* caster, Character* target) {
-                target->Heal((int)(caster->GetTotalPower() * 0.15f));
+                target->Heal((int)( 5 + caster->GetTotalPower() * 0.05f));
                 target->SetBurned(false, 0, caster);
                 target->SetPoisoned(false, 0, caster);
             }

@@ -62,7 +62,7 @@ ShopScene::ShopScene(Shop* shop, Party* allied)
     : shop(shop),
     alliedParty(allied), 
     ownerSprite(nullptr), 
-    goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62),
+    goldCounter(0, "Assets/Textures/Animations/coin.png", 1160, 62),
     chestItemTexture(nullptr)
 {
     sceneName = "ShopScene";
@@ -83,6 +83,8 @@ void ShopScene::Load()
     {
         pendingDialogue = true;
     }
+
+    goldCounter.SetPosition(1160, 62);
 }
 
 void ShopScene::Update(float dt)
@@ -101,6 +103,7 @@ void ShopScene::Update(float dt)
         Engine::GetInstance().scene->PopScene();
         return;
     }
+
     if(chestOpen == true){ 
         Engine::GetInstance().render->DrawTexture(chestBackground, 0, 0); 
         if (animationPlaying) { PlayAnimation(dt); }
@@ -196,9 +199,7 @@ void ShopScene::Update(float dt)
 
 void ShopScene::PostUpdate(float dt)
 {
-    /*Engine::GetInstance().render->DrawText(
-        "TIENDA", 540, 50, 200, 40, { 255, 255, 255, 255 }
-    );*/
+
 }
 
 void ShopScene::Unload()
@@ -273,8 +274,8 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
     case BACK_BUTTON_ID:
         Engine::GetInstance().audio->PlayFx(buttonPress);
         if (chestPopped) { break; }
+        goldCounter.MoveCounter(1144, 62);
         Engine::GetInstance().scene->PopScene();
-        goldCounter.MoveCounter( 1144, 62);
         break;
     case OPEN_CHEST_ID:
         if (chestItemTexture != nullptr)
@@ -284,6 +285,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         }
         Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
+        chestOpen = true;
         OpenUIChest();
         goldCounter.MoveCounter(1016, 101);
         break;
@@ -292,7 +294,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().audio->PlayFx(buttonPress);
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 10);
         PushDialogue();
-        goldCounter.MoveCounter(965, 328);
+        goldCounter.SetPosition(965, 328);
         break;
     }
     case CLOSE_CHEST_ID:
@@ -308,10 +310,21 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         }
         Engine::GetInstance().audio->PlayFx(buttonPress);
         if (chestPopped) { break; }
+        if (shopOpen)
+        {
+            IslandFaction faction = shop->GetIsland()->GetIslandFaction();
+            if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES)
+            {
+                Engine::GetInstance().scene->PopScene();
+                break;
+            }
+        }
+
         Engine::GetInstance().uiManager->RemoveElementsByRange(0, 300);
         chestOpen = 0;
         shopOpen = 0;
-        goldCounter.MoveCounter(1144, 62);
+
+        goldCounter.SetPosition(1160, 62);
         CreateUI();
         break;
     case OPEN_BUTTON_ID:
@@ -324,11 +337,8 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         animationPlaying = true;
         anims.SetCurrent("idle");
         anims.SetLoop("idle", false);
-        //CreateItemButtons();
-        
-        //playAnimation
-        //put animationPlaying to 1
         break;
+
     case REWARD_GOLD:
         Engine::GetInstance().audio->PlayFx(buttonPress);
         alliedParty->AddGold(rewardAmount);
@@ -535,20 +545,6 @@ void ShopScene::CreateUI()
 
 }
 
-
-
-/*Faction ShopScene::IslandFactionToFaction(IslandFaction fact)
-{
-    Faction tempFaction = Faction::UNDEFINED;
-
-    if (fact == IslandFaction::HUMANS) { tempFaction = Faction::HUMAN; }
-    else if (fact == IslandFaction::BIRD) { tempFaction = Faction::BIRD; }
-    else if (fact == IslandFaction::SIRENS) { tempFaction = Faction::SIREN; }
-    else if (fact == IslandFaction::REPTILES) { tempFaction = Faction::REPTILE; }
-
-    return tempFaction;
-}*/
-
 void ShopScene::PushDialogue()
 {
     NPC* npc = shop->GetOwner();
@@ -573,7 +569,7 @@ void ShopScene::PushDialogue()
                 if (action == "buy")
                 {
                     LOG("SHOP: buy");
-
+                    goldCounter.MoveCounter(965, 328);
                     Faction factShop = Faction::UNDEFINED;
                     if (shop->GetIsland()->GetIslandFaction() == IslandFaction::HUMANS) { factShop = Faction::HUMAN; }
                     else if (shop->GetIsland()->GetIslandFaction() == IslandFaction::BIRD) { factShop = Faction::BIRD; }
@@ -597,14 +593,19 @@ void ShopScene::PushDialogue()
                 else if (popOnLeave)
                 {
                     LOG("DOCK SCENE: Pop scene");
+                    state = ShopState::CLOSED;
+                    shopOpen = false;
                     pendingPop = true;
+                }
+                else
+                {
+                    state = ShopState::CLOSED;
+                    shopOpen = false;
                 }
             }
         )
     );
 }
-
- 
 
 void ShopScene::CreateItemButtons()
 {
