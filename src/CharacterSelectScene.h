@@ -111,9 +111,14 @@ private:
     SDL_Texture* labelSpritesheets;
     SDL_Texture* backButtonSpritesheet;
     SDL_Texture* switchButton;
+    
+    std::vector<SDL_Texture*> tutorials;
+    int tutorialIndex = 0;
+    bool tutorialOpen = false;
+    
 
     //audio variables
     int buttonPress;
     //variable that controls if stats should be shown
-    bool switched = false;
+    bool switched = true;
 };

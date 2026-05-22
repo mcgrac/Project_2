@@ -121,6 +121,14 @@ void CharacterSelectScene::LoadTextures(){
     labelSpritesheets = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterNamePlate.png");
     backButtonSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/BackButton.png");
     switchButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/SwitchButton.png");
+
+   
+    for (int i = 0; i < 5; i++) { 
+        std::string path = "Assets/Textures/CharacterSelectScene/tutorial";
+        std::string index = std::to_string(i);
+        tutorials[i] = Engine::GetInstance().textures->Load((path + index + ".png").c_str());
+    }
+   
 }
 
 
@@ -174,7 +182,16 @@ bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().scene->ReplaceScene(new MainMenuScene());
         break;
     case 9:
-        switched *= -1;
+        switched = !switched;
+        break;
+    case 10:
+        if(tutorialIndex > 0){ tutorialIndex++; }
+        break;
+    case 11:
+        if (tutorialIndex < 4) { tutorialIndex--; }
+        break;
+    case 12:
+        tutorialIndex++;
         break;
     default:
 
