@@ -1077,12 +1077,24 @@ void CombatScene::ShowTargetPanel()
 
         std::string label = enemies[i]->GetName();
 
+        // Buscar el icono del enemigo en characterIcons
+        SDL_Texture* targetIcon = nullptr;
+        auto it = characterIcons.find(label);
+        if (it != characterIcons.end())
+        {
+            targetIcon = it->second;
+        }
+        else
+        {
+            targetIcon = abilityIcons; 
+        }
+
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,
             10 + i, // IDs 10..12
             label.c_str(),
             bounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0 + i, bounds.w, bounds.h
         );
     }
 
@@ -1268,12 +1280,25 @@ void CombatScene::CreateUI()
 
             std::string label = enemies[i]->GetName();
 
+            // Buscar el icono del enemigo en characterIcons
+            SDL_Texture* targetIcon = nullptr;
+            auto it = characterIcons.find(label);
+            if (it != characterIcons.end())
+            {
+                targetIcon = it->second;
+            }
+            else
+            {
+                targetIcon = abilityIcons;
+            }
+
+
             Engine::GetInstance().uiManager->CreateUIElement(
                 UIElementType::BUTTON,
                 10 + i, // IDs 10..12
                 label.c_str(),
                 bounds,
-                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0 + i, bounds.w, bounds.h
             );
         }
 

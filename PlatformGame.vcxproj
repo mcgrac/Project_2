@@ -295,7 +295,7 @@
     <Xml Include="Assets\Characters\Theresia.xml" />
     <Xml Include="Assets\Items\Items.xml" />
     <Xml Include="Assets\Maps\world.xml" />
-    <Xml Include="Assets\SaveData.xml" />
+    <Xml Include="Assets\Save\SaveData.xml" />
     <Xml Include="config.xml" />
     <Xml Include="dialogues.xml" />
   </ItemGroup>

@@ -5,6 +5,7 @@
 #include <thread>
 #include <atomic>
 #include "WorldMap.h"
+#include "SaveLoad.h"
 
 class Character;
 struct SDL_Texture;
@@ -20,6 +21,7 @@ public:
     void Unload() override;
     void LoadTextures() override;
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
+    void ApplySaveDataToCharacters();
 
 private:
     std::vector<std::string> characterNames;
@@ -42,4 +44,5 @@ private:
     int dotCount;
 
     WorldMap* loadedWorldMap;
+    SaveData loadedSaveData;
 };

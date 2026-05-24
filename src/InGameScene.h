@@ -77,7 +77,6 @@ private:
     DynamicBar shipHpBar;
 
     bool isContinue;
-    void RestoreFromSave(const SaveData& data);
 
     void CreateIslandButtons();   // builds one button per island using screen-space layout
 
@@ -109,4 +108,13 @@ private:
 
     void ShowEndScreen(bool won);
     void DrawEndScreen();
+
+    //BFS
+    struct IslandLayout
+    {
+        std::unordered_map<int, int> islandColumn;
+        std::unordered_map<int, int> islandRow;
+        std::unordered_map<int, int> colCount;
+    };
+    static IslandLayout BuildIslandLayout(const std::unordered_map<int, std::vector<int>>& tree);
 };

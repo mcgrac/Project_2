@@ -7,6 +7,7 @@
 #include "Textures.h"
 #include "Log.h"
 #include "DialogueManager.h"
+#include "ItemManager.h"
 
 LoadingScene::LoadingScene(std::vector<std::string> _characterNames, bool _isContinue)
     : characterNames(_characterNames)
@@ -33,10 +34,10 @@ void LoadingScene::DoBackgroundLoad()
     std::vector<std::string> namesToLoad;
     if (isContinue)
     {
-        SaveData data = SaveLoad::Load();
-        if (data.exists)
+        loadedSaveData = SaveLoad::Load();
+        if (loadedSaveData.exists)
         {
-            for (const auto& charSave : data.characters)
+            for (const auto& charSave : loadedSaveData.characters)
             {
                 namesToLoad.push_back(charSave.name);
             }
@@ -53,14 +54,13 @@ void LoadingScene::DoBackgroundLoad()
         Character* c = CharacterFactory::CreateDataOnly(name);
         if (c != nullptr)
         {
+            c->SetIsAllied(true);
             loadedCharacters.push_back(c);
         }
         else
         {
             LOG("LoadingScene: no se pudo crear '%s'.", name.c_str());
         }
-
-        c->SetIsAllied(true);
     }
 
     // WorldMap — solo datos, sin texturas
@@ -123,6 +123,12 @@ void LoadingScene::Update(float dt)
         CharacterFactory::LoadVisualsFor(c, c->GetName());
     }
 
+    // Restaurar estado del save si es Continue
+    if (isContinue && loadedSaveData.exists)
+    {
+        ApplySaveDataToCharacters();
+    }
+
     //worldMap
     SDL_Texture * humanTex = Engine::GetInstance().textures->Load("Assets/Textures/Islands/island_human.png");
     SDL_Texture* reptileTex = Engine::GetInstance().textures->Load("Assets/Textures/Islands/island_reptile.png");
@@ -161,4 +167,112 @@ void LoadingScene::UnloadTextures()
 bool LoadingScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
     return true;
+}
+
+void LoadingScene::ApplySaveDataToCharacters()
+{
+    for (Character* c : loadedCharacters)
+    {
+        // Buscar el save de este personaje
+        const SaveData::CharacterSave* charSave = nullptr;
+        for (const auto& cs : loadedSaveData.characters)
+        {
+            if (cs.name == c->GetName())
+            {
+                charSave = &cs;
+                break;
+            }
+        }
+
+        if (charSave == nullptr) { continue; }
+
+        // ----- Nivel -----
+        // CreateDataOnly siempre crea en nivel 1, aplicar los level-ups acumulados
+        int levelsToGain = charSave->level - c->GetLevel();
+        for (int i = 0; i < levelsToGain; i++)
+        {
+            c->LevelUp();
+        }
+
+        // ----- XP -----
+        c->AddXP(charSave->experience);
+
+        // ----- Upgrades -----
+        std::vector<UpgradeTier>& tiers = c->GetUpgradeTree()->GetTiers();
+        for (int i = 0; i < (int)charSave->chosenUpgrades.size() && i < (int)tiers.size(); i++)
+        {
+            const std::string& chosenName = charSave->chosenUpgrades[i];
+            if (chosenName.empty()) { continue; }
+
+            // Determinar si es opción A (0) o B (1)
+            int choice = -1;
+            if (tiers[i].GetOptionA().name == chosenName)
+            {
+                choice = 0;
+            }
+            else if (tiers[i].GetOptionB().name == chosenName)
+            {
+                choice = 1;
+            }
+
+            if (choice != -1)
+            {
+                tiers[i].ChooseUpgrade(choice, *c);
+                LOG("LoadingScene: %s — tier %d upgrade '%s' aplicado.",
+                    c->GetName().c_str(), i, chosenName.c_str());
+            }
+            else
+            {
+                LOG("LoadingScene: %s — tier %d upgrade '%s' no encontrado.",
+                    c->GetName().c_str(), i, chosenName.c_str());
+            }
+        }
+
+        // ----- Items equipados -----
+        for (const std::string& itemName : charSave->equippedItems)
+        {
+            Item* found = Engine::GetInstance().itemManager->GetItemByName(itemName);
+            if (found == nullptr)
+            {
+                LOG("LoadingScene: item '%s' no encontrado en ItemManager.", itemName.c_str());
+                continue;
+            }
+
+            EquippableItem* equippable = dynamic_cast<EquippableItem*>(found);
+            if (equippable == nullptr)
+            {
+                LOG("LoadingScene: item '%s' no es equippable.", itemName.c_str());
+                continue;
+            }
+
+            // Registrar en el inventario y aplicar el efecto al personaje
+            // El inventory vive en la party, pero aquí aún no tenemos la party creada.
+            // Aplicamos solo el efecto estadístico — el EquipItem al inventory
+            // se hará en InGameScene al recibir los personajes
+            equippable->Use(c);
+
+            LOG("LoadingScene: %s — item '%s' aplicado.",
+                c->GetName().c_str(), itemName.c_str());
+        }
+
+        // ----- HP -----
+        // Se restaura al final, después de que los level-ups e items hayan
+        // ajustado el maxHealth, para no recortar HP innecesariamente
+        int hpDiff = charSave->health - c->GetCurrentHP();
+        c->ModifyCurrentHealth(hpDiff);
+
+        // ----- isAlive -----
+        // Si murió y no ha revivido, el HP ya será 0 por el save;
+        // LevelUp y FullyHeal no se habrán llamado así que isAlive
+        // se gestiona solo via pendingToDie/health en combate.
+        // Si quieres forzarlo:
+        // if (!charSave->isAlive) { /* marcar muerto */ }
+
+        LOG("LoadingScene: %s restaurado — nivel %d, HP %d/%d.",
+            c->GetName().c_str(), c->GetLevel(), c->GetCurrentHP(), c->GetMaxHP());
+    }
+
+    // ----- Oro y consumibles de la party -----
+    // La party se crea en InGameScene, así que pasamos los datos via loadedSaveData
+    // que InGameScene ya recibe como isContinue=true y puede leer de nuevo,
 }

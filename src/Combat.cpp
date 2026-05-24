@@ -330,10 +330,11 @@ void Combat::StartCombat()
         backLane.occupant->SetPosition(defaultPositions[0].getX(), defaultPositions[0].getY());
     }
 
-    // Allies: reset initiative
+    // Allies: reset initiative and animations
     for (Character* c : alliedParty->GetMembers())
     {
         c->ResetCurrentInitiative();
+        c->PlayAnimation("idle");
     }
 
     // Enemies: position by index, starting at slot 3

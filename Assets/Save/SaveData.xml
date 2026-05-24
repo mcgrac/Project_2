@@ -1,9 +1,36 @@
 <?xml version="1.0"?>
 <savedata>
-	<world currentIslandId="0" />
-	<party>
-		<character name="Jochi" health="95" isAlive="true" />
-		<character name="Fatuus" health="100" isAlive="true" />
-		<character name="Ignis" health="105" isAlive="true" />
+	<world currentIslandId="5" />
+	<party gold="1866" consumables="3">
+		<character name="Fatuus" health="67" isAlive="true" experience="50" level="5">
+			<upgrades>
+				<tier index="0" chosen="Reinforced Scales" />
+				<tier index="1" chosen="" />
+				<tier index="2" chosen="" />
+			</upgrades>
+			<equippedItems>
+				<item name="Heart of the Jungle" />
+			</equippedItems>
+		</character>
+		<character name="Jochi" health="103" isAlive="true" experience="50" level="2">
+			<upgrades>
+				<tier index="0" chosen="" />
+				<tier index="1" chosen="" />
+				<tier index="2" chosen="" />
+			</upgrades>
+			<equippedItems>
+				<item name="Mysterious Shroom 5" />
+			</equippedItems>
+		</character>
+		<character name="Ignis" health="42" isAlive="true" experience="50" level="2">
+			<upgrades>
+				<tier index="0" chosen="" />
+				<tier index="1" chosen="" />
+				<tier index="2" chosen="" />
+			</upgrades>
+			<equippedItems>
+				<item name="Mysterious Shroom 3" />
+			</equippedItems>
+		</character>
 	</party>
 </savedata>

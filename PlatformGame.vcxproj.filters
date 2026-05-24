@@ -496,9 +496,6 @@
     <Xml Include="Assets\Characters\Chaman.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
-    <Xml Include="Assets\SaveData.xml">
-      <Filter>Configuration FIles</Filter>
-    </Xml>
     <Xml Include="dialogues.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
@@ -512,6 +509,9 @@
       <Filter>Configuration FIles</Filter>
     </Xml>
     <Xml Include="Assets\Characters\Ignis.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
+    <Xml Include="Assets\Save\SaveData.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
   </ItemGroup>
