@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "Audio.h"
 #include "SceneUtils.h"
+#include "ParticleSystem.h"
 
 struct SDL_Texture;
 
@@ -49,6 +50,8 @@ public:
     std::function<void(bool)> onCombatEnd;
 
 private:
+    ParticleSystem particleSystem;
+
     Party* alliedParty;
     Party* enemyParty;
     Combat* combat;
@@ -84,7 +87,7 @@ private:
     void HideCombatUI();
     void ShowCurrentHP();
     void DrawSkillCosts();
-
+    void EmitParticles(float dt);
     void UpdateNextRoundPause(float dt);
     void DrawNextRoundBanner();
 

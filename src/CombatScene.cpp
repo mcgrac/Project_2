@@ -171,6 +171,9 @@ void CombatScene::Update(float dt)
         c->Update(dt);
     }
 
+    //particles
+    EmitParticles(dt);
+
     //draw status icons
     DrawStatusIcons();
 
@@ -1185,6 +1188,34 @@ void CombatScene::DrawSkillCosts()
             canAfford ? SDL_Color{ 255, 255, 255, 255 } : SDL_Color{ 255, 80, 80, 255 }
         );
     }
+}
+
+void CombatScene::EmitParticles(float dt)
+{
+    // Emitir partículas de los personajes con efectos activos
+    for (Character* c : combat->GetAllCombatants())
+    {
+        if (!c->GetIsAlive()) { continue; }
+
+        Vector2D pos = c->GetPosition();
+        // Emitir desde la altura del torso
+        Vector2D emitPos;
+        emitPos.setX(pos.getX());
+        emitPos.setY(pos.getY() - 40.0f);
+
+        if (c->IsPoisoned())
+        {
+            particleSystem.Emit(emitPos, ParticleEmitterType::POISON, dt);
+        }
+        if (c->IsBurning())
+        {
+            particleSystem.Emit(emitPos, ParticleEmitterType::FIRE, dt);
+        }
+    }
+
+    particleSystem.Update(dt);
+    particleSystem.Draw();
+
 }
 
 void CombatScene::UpdateNextRoundPause(float dt)
