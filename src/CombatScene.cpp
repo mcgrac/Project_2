@@ -36,13 +36,14 @@ void AbilitiesSounds::SetFxSound(std::string path)
 }
 #pragma endregion
 
-CombatScene::CombatScene(Party* _allied, int _shipLevel, IslandFaction _faction)
+CombatScene::CombatScene(Party* _allied, int _shipLevel, IslandFaction _faction, int _islandLevel)
     : alliedParty(_allied)
     , enemyParty(nullptr)
     , combat(nullptr)
     , combatFinished(false)
     , background(nullptr)
     , nextRound(nullptr)
+    , islandLevel(_islandLevel)
     , arrow(nullptr)
     , poisonIcon(nullptr)
     , burnIcon(nullptr)
@@ -355,6 +356,24 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
         combatInputConsumed = true;
 
         selectedSkillIdx = uiElement->id - 1;
+
+        // Si la skill es de área no necesita seleccionar target
+        Character* actor = combat->GetCurrentActor();
+        if (actor != nullptr)
+        {
+            auto& skills = actor->GetSkills();
+            if (selectedSkillIdx < (int)skills.size() && skills[selectedSkillIdx].GetHasAreaEffect())
+            {
+                // Ejecutar directamente sin panel de targets
+                // targetIndex = 0 porque Combat ignorará el target en skills de área
+                ChooseSound(skills[selectedSkillIdx].GetAnimationId());
+                combat->SubmitPlayerChoice(selectedSkillIdx, 0);
+                HideCombatUI();
+                selectedSkillIdx = -1;
+                break;
+            }
+        }
+
         ShowTargetPanel();
         break;
     }
@@ -975,6 +994,13 @@ void CombatScene::CreateEnemyParty()
         
         if (c != nullptr)
         {
+            // Aplicar level - ups desde nivel 1 hasta el nivel de la isla
+            int levelsToGain = islandLevel - c->GetLevel();
+            for (int lvl = 0; lvl < levelsToGain; lvl++)
+            {
+                c->LevelUp();
+            }
+
             enemyParty->AddMember(c);
         }
         else
@@ -990,7 +1016,8 @@ void CombatScene::CreateEnemyParty()
     enemyParty->SetXPReward(50);
     enemyParty->SetGoldReward(20);
 
-    LOG("CombatScene: party enemiga creada con %d miembros.", enemyParty->GetMemberCount());
+    LOG("CombatScene: party enemiga creada con %d miembros, nivel %d.",
+        enemyParty->GetMemberCount(), islandLevel);
 }
 
 void CombatScene::DestroyEnemyParty()

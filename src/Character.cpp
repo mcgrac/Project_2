@@ -243,6 +243,12 @@ void Character::ModifyMaxDurability(int amount)
 	maxDurability = std::min(MAX_DURABILITY_POSSIBLE, newMaxDurability);
 }
 
+void Character::ModifyBaseDurability(int amount)
+{
+	int newBase = baseDurability + amount;
+	baseDurability = std::max(0, std::min(maxDurability, newBase));
+}
+
 void Character::SetBurned(bool state, int damage, Character* attacker)
 {
 	isBurned = state;

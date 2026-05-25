@@ -226,6 +226,7 @@ public:
 	inline void AddXP(int amount) { experience += amount; }
 	inline void ModifyLifesteal(int amount) { lifesteal += amount; }
 	void ModifyMaxDurability(int amount);
+	void ModifyBaseDurability(int amount);
 
 	inline void SetTotalPower() { totalPower = basePower + bonusPower; }
 	inline void SetTotalDurability() { totalDurability = baseDurability + bonusDurability; }

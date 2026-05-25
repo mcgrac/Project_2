@@ -66,7 +66,6 @@ void ParticleSystem::Emit(const Vector2D& origin, ParticleEmitterType type, floa
     float particlesThisFrame = config.emitRate * (dt / 1000.0f);
     int count = (int)particlesThisFrame;
 
-    // Fraccion sobrante: emitir una particula extra probabilisticamente
     float remainder = particlesThisFrame - (float)count;
     if (RandomFloat(0.0f, 1.0f) < remainder)
     {

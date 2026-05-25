@@ -42,6 +42,7 @@ public:
     inline int GetY() const { return (int)position.getY(); }
     inline int GetWidth() const { return (int)size.getX(); }
     inline int GetHeight() const { return (int)size.getY(); }
+    inline int GetLevel() const { return level; }
 
     inline IslandFaction GetIslandFaction() const { return islandFaction; }
 
@@ -58,10 +59,12 @@ public:
     void SetSkullSprite(SDL_Texture* tex) { skullSprite = tex; }
     void SetRenderPos(float x, float y, float w, float h);
     void SetType(IslandType _type);
+    inline void SetLevel(int l) { level = l; }
 #pragma endregion
 
 private:
     int id = -1;
+    int level = 1;
     std::string name = "";
     IslandType type = IslandType::UNDEFINED;
     Vector2D position;

@@ -25,7 +25,7 @@ class CombatScene : public BaseScene
 {
 public:
 
-    CombatScene(Party* allied, int _shipLevel, IslandFaction _faction);
+    CombatScene(Party* allied, int _shipLevel, IslandFaction _faction, int _islandLevel);
     ~CombatScene();
 
     void Load() override;
@@ -58,6 +58,8 @@ private:
 
     bool combatFinished;
     bool playerWon;
+
+    int islandLevel;
 
     std::string currentSelecting;
 

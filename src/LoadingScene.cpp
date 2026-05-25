@@ -261,18 +261,7 @@ void LoadingScene::ApplySaveDataToCharacters()
         int hpDiff = charSave->health - c->GetCurrentHP();
         c->ModifyCurrentHealth(hpDiff);
 
-        // ----- isAlive -----
-        // Si murió y no ha revivido, el HP ya será 0 por el save;
-        // LevelUp y FullyHeal no se habrán llamado así que isAlive
-        // se gestiona solo via pendingToDie/health en combate.
-        // Si quieres forzarlo:
-        // if (!charSave->isAlive) { /* marcar muerto */ }
-
         LOG("LoadingScene: %s restaurado — nivel %d, HP %d/%d.",
             c->GetName().c_str(), c->GetLevel(), c->GetCurrentHP(), c->GetMaxHP());
     }
-
-    // ----- Oro y consumibles de la party -----
-    // La party se crea en InGameScene, así que pasamos los datos via loadedSaveData
-    // que InGameScene ya recibe como isContinue=true y puede leer de nuevo,
 }

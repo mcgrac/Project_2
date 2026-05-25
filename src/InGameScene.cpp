@@ -316,15 +316,6 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
 
     switch (uiElement->id)
     {
-    // Add buttons in game
-    case 1:
-    {
-        LOG("InGameScene: iniciando combate...");
-        Engine::GetInstance().audio->PlayFx(startCombat);
-        CombatScene* combatScene = new CombatScene(alliedParty, ship->GetLevel(), worldMap->GetCurrentIsland()->GetIslandFaction());
-        PushSceneFromInGame(combatScene);
-    }
-        break;
     case 2:
         //Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
         Engine::GetInstance().audio->PlayFx(buttonPress);
