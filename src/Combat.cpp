@@ -330,10 +330,11 @@ void Combat::StartCombat()
         backLane.occupant->SetPosition(defaultPositions[0].getX(), defaultPositions[0].getY());
     }
 
-    // Allies: reset initiative
+    // Allies: reset initiative and animations
     for (Character* c : alliedParty->GetMembers())
     {
         c->ResetCurrentInitiative();
+        c->PlayAnimation("idle");
     }
 
     // Enemies: position by index, starting at slot 3
@@ -514,6 +515,16 @@ void Combat::AttackAnimation()
 
 void Combat::AttackResolve()
 {
+    if (currentSkill->GetHasAreaEffect() && currentTarget == nullptr)
+    {
+        // false target so execute skill works and current target is not null
+        auto aliveEnemies = GetAliveMembers(enemyParty);
+        if (!aliveEnemies.empty())
+        {
+            currentTarget = aliveEnemies[0];
+        }
+    }
+
     ExecuteSkill(currentActor, *currentSkill, currentTarget);
     //reset animation idle current actor
     currentActor->PlayAnimation("idle");
@@ -1005,10 +1016,10 @@ void Combat::SubmitPlayerChoice(int skillIndex, int targetIndex)
 
     // --- NORMAL ACTION ----------------------
     auto& skills = currentActor->GetSkills();
-    auto  aliveEnemies = GetAliveMembers(enemyParty);
+    //auto  aliveEnemies = GetAliveMembers(enemyParty);
 
     if (skillIndex < 0 || skillIndex >= (int)skills.size()) { return; }
-    if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size()) { return; }
+    //if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size()) { return; }
 
     // --- CHECK INITIATIVE COST --------------
     int cost = skills[skillIndex].GetInitiativeCost();
@@ -1023,16 +1034,28 @@ void Combat::SubmitPlayerChoice(int skillIndex, int targetIndex)
     }
 
     currentSkill = &skills[skillIndex];
-    currentTarget = aliveEnemies[targetIndex];
+    //currentTarget = aliveEnemies[targetIndex];
+
+    if (currentSkill->GetHasAreaEffect())
+    {
+        // Skill de area: no necesita target individual
+        // ExecuteSkill ignorará currentTarget y aplicará a toda la party
+        currentTarget = nullptr;
+    }
+    else
+    {
+        auto aliveEnemies = GetAliveMembers(enemyParty);
+        if (targetIndex < 0 || targetIndex >= (int)aliveEnemies.size()) { return; }
+        currentTarget = aliveEnemies[targetIndex];
+    }
 
     std::string anim = currentSkill->GetAnimationId();
     currentActor->PlayAnimation(anim);
     state = CombatState::ATTACK_ANIMATION;
 
-    LOG("SubmitPlayerChoice | %s uses %s on %s -> ATTACK_ANIMATION",
+    LOG("SubmitPlayerChoice | %s uses %s -> ATTACK_ANIMATION",
         currentActor->GetName().c_str(),
-        currentSkill->GetName().c_str(),
-        currentTarget->GetName().c_str());
+        currentSkill->GetName().c_str());
 }
 
 void Combat::ForceVictory()

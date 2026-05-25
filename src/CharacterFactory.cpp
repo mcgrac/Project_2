@@ -225,6 +225,7 @@ std::function<void(Character&)> CharacterFactory::ParseUpgradeEffect(const std::
     if (stat == "poisonMod") return [value](Character& c) {c.ModifyPoisonPower(value); };
     if (stat == "lifesteal") return [value](Character& c) {c.ModifyLifesteal(value); };
     if (stat == "maxDurability") return [value](Character& c) {c.ModifyMaxDurability(value); };
+    if (stat == "durability") return [value](Character& c) {c.ModifyBaseDurability(value); };
 
     LOG("CharacterFactory: stat de upgrade no reconocida: '%s'", stat.c_str());
     return [](Character&) {};

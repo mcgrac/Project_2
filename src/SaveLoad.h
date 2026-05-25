@@ -9,6 +9,8 @@ struct SaveData
 {
     bool exists = false;    // false si no hay fichero de guardado
     int currentIslandId = 0;
+    int partyGold = 0;
+    int consumables = 0;
 
     //specific characters saving
     struct CharacterSave
@@ -16,6 +18,13 @@ struct SaveData
         std::string name;
         int health;
         bool isAlive;
+        int experience;
+        int level;
+
+        // Nombre del upgrade elegido por tier (vacío si el tier no está desbloqueado)
+        std::vector<std::string> chosenUpgrades;
+        // Nombres de los items equipados
+        std::vector<std::string> equippedItems;
     };
 
     std::vector<CharacterSave> characters;

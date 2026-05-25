@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "Audio.h"
 #include "SceneUtils.h"
+#include "ParticleSystem.h"
 
 struct SDL_Texture;
 
@@ -24,7 +25,7 @@ class CombatScene : public BaseScene
 {
 public:
 
-    CombatScene(Party* allied, int _shipLevel, IslandFaction _faction);
+    CombatScene(Party* allied, int _shipLevel, IslandFaction _faction, int _islandLevel);
     ~CombatScene();
 
     void Load() override;
@@ -49,12 +50,16 @@ public:
     std::function<void(bool)> onCombatEnd;
 
 private:
+    ParticleSystem particleSystem;
+
     Party* alliedParty;
     Party* enemyParty;
     Combat* combat;
 
     bool combatFinished;
     bool playerWon;
+
+    int islandLevel;
 
     std::string currentSelecting;
 
@@ -84,7 +89,7 @@ private:
     void HideCombatUI();
     void ShowCurrentHP();
     void DrawSkillCosts();
-
+    void EmitParticles(float dt);
     void UpdateNextRoundPause(float dt);
     void DrawNextRoundBanner();
 
@@ -206,6 +211,8 @@ private:
     void DrawCharacterPanel(Character* c, int panelX, int panelY, bool isAlly);
     DynamicBar hpBar;
     DynamicBar initiativeBar;
+
+    void DrawTurnOrderTable();
 
     //---------Timer-----------
     static constexpr float NEXT_ROUND_PAUSE_DURATION = 3000.0f; // segundos

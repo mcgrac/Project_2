@@ -183,6 +183,7 @@
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\Markus.cpp" />
     <ClCompile Include="src\NPC.cpp" />
+    <ClCompile Include="src\ParticleSystem.cpp" />
     <ClCompile Include="src\Party.cpp" />
     <ClCompile Include="src\PartyScene.cpp" />
     <ClCompile Include="src\PauseScene.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="src\Markus.h" />
     <ClInclude Include="src\Module.h" />
     <ClInclude Include="src\NPC.h" />
+    <ClInclude Include="src\ParticleSystem.h" />
     <ClInclude Include="src\Party.h" />
     <ClInclude Include="src\PartyScene.h" />
     <ClInclude Include="src\PauseScene.h" />
@@ -295,7 +297,7 @@
     <Xml Include="Assets\Characters\Theresia.xml" />
     <Xml Include="Assets\Items\Items.xml" />
     <Xml Include="Assets\Maps\world.xml" />
-    <Xml Include="Assets\SaveData.xml" />
+    <Xml Include="Assets\Save\SaveData.xml" />
     <Xml Include="config.xml" />
     <Xml Include="dialogues.xml" />
   </ItemGroup>

@@ -36,13 +36,14 @@ void AbilitiesSounds::SetFxSound(std::string path)
 }
 #pragma endregion
 
-CombatScene::CombatScene(Party* _allied, int _shipLevel, IslandFaction _faction)
+CombatScene::CombatScene(Party* _allied, int _shipLevel, IslandFaction _faction, int _islandLevel)
     : alliedParty(_allied)
     , enemyParty(nullptr)
     , combat(nullptr)
     , combatFinished(false)
     , background(nullptr)
     , nextRound(nullptr)
+    , islandLevel(_islandLevel)
     , arrow(nullptr)
     , poisonIcon(nullptr)
     , burnIcon(nullptr)
@@ -171,6 +172,9 @@ void CombatScene::Update(float dt)
         c->Update(dt);
     }
 
+    //particles
+    EmitParticles(dt);
+
     //draw status icons
     DrawStatusIcons();
 
@@ -190,6 +194,9 @@ void CombatScene::Update(float dt)
     DrawSkillTooltip();
 
     //ShowCurrentHP();
+
+    //------Draw turn table--------
+    DrawTurnOrderTable();
 
     if (!combat->GetWaitingForInput())
     {
@@ -349,6 +356,24 @@ bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
         combatInputConsumed = true;
 
         selectedSkillIdx = uiElement->id - 1;
+
+        // Si la skill es de área no necesita seleccionar target
+        Character* actor = combat->GetCurrentActor();
+        if (actor != nullptr)
+        {
+            auto& skills = actor->GetSkills();
+            if (selectedSkillIdx < (int)skills.size() && skills[selectedSkillIdx].GetHasAreaEffect())
+            {
+                // Ejecutar directamente sin panel de targets
+                // targetIndex = 0 porque Combat ignorará el target en skills de área
+                ChooseSound(skills[selectedSkillIdx].GetAnimationId());
+                combat->SubmitPlayerChoice(selectedSkillIdx, 0);
+                HideCombatUI();
+                selectedSkillIdx = -1;
+                break;
+            }
+        }
+
         ShowTargetPanel();
         break;
     }
@@ -835,6 +860,74 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
 }
 #pragma endregion
 
+void CombatScene::DrawTurnOrderTable()
+{
+    if (combat == nullptr) { return; }
+
+    const std::vector<Character*>& queue = combat->GetActorsQueue();
+    Character* current = combat->GetCurrentActor();
+
+    constexpr int TABLE_Y = 10;
+    constexpr int CELL_W = 200;
+    constexpr int CELL_H = 80;
+    constexpr int ICON_SIZE = 64;
+    constexpr int CELL_GAP = 13; // (1280 - 6*200) / 5 gaps = ~13px entre celdas
+
+    SDL_Color white = { 255, 255, 255, 255 };
+    SDL_Color yellow = { 255, 220,   0, 255 };
+
+    std::vector<Character*> rows;
+    if (current != nullptr)
+    {
+        rows.push_back(current);
+    }
+    for (Character* c : queue)
+    {
+        rows.push_back(c);
+    }
+
+    if (rows.empty()) { return; }
+
+    // Fondo de toda la tabla
+    int tableW = (int)rows.size() * CELL_W + ((int)rows.size() - 1) * CELL_GAP;
+    SDL_Rect tableBg = { -4, TABLE_Y - 4, tableW + 8, CELL_H + 8 };
+    Engine::GetInstance().render->DrawRectangle(tableBg, 0, 0, 0, 160, true, false);
+
+    for (int i = 0; i < (int)rows.size(); i++)
+    {
+        Character* c = rows[i];
+        bool isCurrent = (c == current && i == 0);
+
+        int cellX = i * (CELL_W + CELL_GAP);
+        SDL_Rect cellRect = { cellX, TABLE_Y, CELL_W, CELL_H };
+
+        if (isCurrent)
+        {
+            SDL_Rect border = { cellX - 2, TABLE_Y - 2, CELL_W + 4, CELL_H + 4 };
+            Engine::GetInstance().render->DrawRectangle(border, 255, 220, 0, 255, true, false);
+            Engine::GetInstance().render->DrawRectangle(cellRect, 60, 50, 10, 220, true, false);
+        }
+        else
+        {
+            Engine::GetInstance().render->DrawRectangle(cellRect, 30, 30, 50, 200, true, false);
+        }
+
+        // Icono a la izquierda de la celda
+        auto it = characterIcons.find(c->GetName());
+        if (it != characterIcons.end() && it->second != nullptr)
+        {
+            int iconY = TABLE_Y + (CELL_H - ICON_SIZE) / 2;
+            Engine::GetInstance().render->DrawTexture(it->second, cellX + 4, iconY, nullptr, false);
+        }
+
+        // Nombre a la derecha del icono
+        SDL_Rect textRect = { cellX + ICON_SIZE + 8, TABLE_Y + (CELL_H / 2) - 8, CELL_W - ICON_SIZE - 12, 20 };
+        Engine::GetInstance().render->DrawText(c->GetName().c_str(),
+            textRect.x, textRect.y, textRect.w, textRect.h,
+            isCurrent ? yellow : white);
+    }
+}
+
 //loads skills textures and buttons depending of the character attacking
 void CombatScene::CreateSkillButtons(Character* c)
 {
@@ -901,6 +994,13 @@ void CombatScene::CreateEnemyParty()
         
         if (c != nullptr)
         {
+            // Aplicar level - ups desde nivel 1 hasta el nivel de la isla
+            int levelsToGain = islandLevel - c->GetLevel();
+            for (int lvl = 0; lvl < levelsToGain; lvl++)
+            {
+                c->LevelUp();
+            }
+
             enemyParty->AddMember(c);
         }
         else
@@ -916,7 +1016,8 @@ void CombatScene::CreateEnemyParty()
     enemyParty->SetXPReward(50);
     enemyParty->SetGoldReward(20);
 
-    LOG("CombatScene: party enemiga creada con %d miembros.", enemyParty->GetMemberCount());
+    LOG("CombatScene: party enemiga creada con %d miembros, nivel %d.",
+        enemyParty->GetMemberCount(), islandLevel);
 }
 
 void CombatScene::DestroyEnemyParty()
@@ -1006,12 +1107,24 @@ void CombatScene::ShowTargetPanel()
 
         std::string label = enemies[i]->GetName();
 
+        // Buscar el icono del enemigo en characterIcons
+        SDL_Texture* targetIcon = nullptr;
+        auto it = characterIcons.find(label);
+        if (it != characterIcons.end())
+        {
+            targetIcon = it->second;
+        }
+        else
+        {
+            targetIcon = abilityIcons; 
+        }
+
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,
             10 + i, // IDs 10..12
             label.c_str(),
             bounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0 + i, bounds.w, bounds.h
         );
     }
 
@@ -1102,6 +1215,34 @@ void CombatScene::DrawSkillCosts()
             canAfford ? SDL_Color{ 255, 255, 255, 255 } : SDL_Color{ 255, 80, 80, 255 }
         );
     }
+}
+
+void CombatScene::EmitParticles(float dt)
+{
+    // Emitir partículas de los personajes con efectos activos
+    for (Character* c : combat->GetAllCombatants())
+    {
+        if (!c->GetIsAlive()) { continue; }
+
+        Vector2D pos = c->GetPosition();
+        // Emitir desde la altura del torso
+        Vector2D emitPos;
+        emitPos.setX(pos.getX());
+        emitPos.setY(pos.getY() - 40.0f);
+
+        if (c->IsPoisoned())
+        {
+            particleSystem.Emit(emitPos, ParticleEmitterType::POISON, dt);
+        }
+        if (c->IsBurning())
+        {
+            particleSystem.Emit(emitPos, ParticleEmitterType::FIRE, dt);
+        }
+    }
+
+    particleSystem.Update(dt);
+    particleSystem.Draw();
+
 }
 
 void CombatScene::UpdateNextRoundPause(float dt)
@@ -1197,12 +1338,25 @@ void CombatScene::CreateUI()
 
             std::string label = enemies[i]->GetName();
 
+            // Buscar el icono del enemigo en characterIcons
+            SDL_Texture* targetIcon = nullptr;
+            auto it = characterIcons.find(label);
+            if (it != characterIcons.end())
+            {
+                targetIcon = it->second;
+            }
+            else
+            {
+                targetIcon = abilityIcons;
+            }
+
+
             Engine::GetInstance().uiManager->CreateUIElement(
                 UIElementType::BUTTON,
                 10 + i, // IDs 10..12
                 label.c_str(),
                 bounds,
-                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0 + i, bounds.w, bounds.h
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0 + i, bounds.w, bounds.h
             );
         }
 

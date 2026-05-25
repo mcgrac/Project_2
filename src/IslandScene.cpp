@@ -167,7 +167,7 @@ void IslandScene::AttackIsland()
     combatPending = true;
     lastCombatWon = false;
 
-    CombatScene* combat = new CombatScene(alliedParty, ship->GetLevel(), island->GetIslandFaction());
+    CombatScene* combat = new CombatScene(alliedParty, ship->GetLevel(), island->GetIslandFaction(), island->GetLevel());
 
     combat->onCombatEnd = [this](bool won)
     {

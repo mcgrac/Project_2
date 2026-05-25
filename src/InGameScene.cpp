@@ -18,6 +18,8 @@
 #include "Window.h"
 #include "PartyScene.h"
 #include "MainMenuScene.h"
+#include "ItemManager.h"
+#include "EquippableItem.h"
 
 // First button id reserved for combat button; island buttons start from this offset
 static const int ISLAND_BUTTON_ID_OFFSET = 100;
@@ -61,18 +63,49 @@ void InGameScene::Load()
             }
         }
         prebuiltCharacters.clear();
-    }
-    else if (isContinue)
-    {
-        // Venimos de MainMenuScene — crear personajes desde el save
-        SaveData data = SaveLoad::Load();
-        if (data.exists)
+
+       // Si venimos de un Continue, restaurar los recursos de la party
+       // (oro, consumibles e items equipados en el inventario).
+       // Los stats de los personajes ya están aplicados desde LoadingScene.
+        if (isContinue)
         {
-            RestoreFromSave(data);
-            worldMap->SetCurrentIsland(data.currentIslandId);
-            LOG("InGameScene: partida restaurada — isla %d.", data.currentIslandId);
+            SaveData data = SaveLoad::Load();
+            if (data.exists)
+            {
+                alliedParty->AddGold(data.partyGold);
+                alliedParty->GetInventory().AddItem("consumable", data.consumables);
+
+                for (const auto& charSave : data.characters)
+                {
+                    for (const std::string& itemName : charSave.equippedItems)
+                    {
+                        Item* found = Engine::GetInstance().itemManager->GetItemByName(itemName);
+                        if (found == nullptr)
+                        {
+                            LOG("InGameScene: item '%s' no encontrado.", itemName.c_str());
+                            continue;
+                        }
+
+                        EquippableItem* eq = dynamic_cast<EquippableItem*>(found);
+                        if (eq == nullptr)
+                        {
+                            LOG("InGameScene: item '%s' no es equippable.", itemName.c_str());
+                            continue;
+                        }
+
+                        // Solo registrar en el slot del inventario — el efecto
+                        // ya fue aplicado al personaje en LoadingScene
+                        alliedParty->GetInventory().EquipItem(charSave.name, eq);
+                    }
+                }
+
+                worldMap->SetCurrentIsland(data.currentIslandId);
+                LOG("InGameScene: recursos restaurados — oro %d, isla %d.",
+                    data.partyGold, data.currentIslandId);
+            }
         }
     }
+
     LOG("InGameScene cargada, %d miembros en party.", alliedParty->GetMemberCount());
 
     //load textures
@@ -86,21 +119,36 @@ void InGameScene::Load()
     //ship
     ship = new Ship();
 
-    //set ship ay island 0
-    int island0CenterX = 224;
-    int islandOffsetX = 125;
-    int island0CenterY = 189;
-    Vector2D startPos = Vector2D((float)(island0CenterX + islandOffsetX), (float)(island0CenterY));
-    ship->SetPosition(startPos);
-    worldMap->SetIslandShipPosition(0, startPos);
+    if (isContinue)
+    {
+        SaveData data = SaveLoad::Load();
+        if (data.exists)
+        {
+            int savedIslandId = data.currentIslandId;
+            worldMap->SetCurrentIsland(savedIslandId);
+
+            IslandLayout layout = BuildIslandLayout(worldMap->GetTree());
+
+            int col = layout.islandColumn[savedIslandId];
+            int row = layout.islandRow[savedIslandId];
+            int centerX = 224 + 448 * col;
+            int centerY = GetIslandCenterY(row, layout.colCount[col]);
+
+            Vector2D savedPos = Vector2D((float)(centerX + 125), (float)centerY);
+            ship->SetPosition(savedPos);
+            worldMap->SetIslandShipPosition(savedIslandId, savedPos);
+        }
+    }
+    else
+    {
+        //set ship ay island 0
+        Vector2D startPos = Vector2D(224.0f + 125.0f, 189.0f);
+        ship->SetPosition(startPos);
+        worldMap->SetIslandShipPosition(0, startPos);
+    }
 
     CreateUI();
-
-    //audio loading
     LoadAudio();
-    //audio ambiance playing
-   
-  
     Engine::GetInstance().audio->PlayFx(islandAmbiance);
 }
 
@@ -268,15 +316,6 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
 
     switch (uiElement->id)
     {
-    // Add buttons in game
-    case 1:
-    {
-        LOG("InGameScene: iniciando combate...");
-        Engine::GetInstance().audio->PlayFx(startCombat);
-        CombatScene* combatScene = new CombatScene(alliedParty, ship->GetLevel(), worldMap->GetCurrentIsland()->GetIslandFaction());
-        PushSceneFromInGame(combatScene);
-    }
-        break;
     case 2:
         //Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
         Engine::GetInstance().audio->PlayFx(buttonPress);
@@ -301,46 +340,12 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
             // Guardar posición actual del barco ANTES de moverse
             Vector2D posBeforeMove = ship->GetPosition();
 
-            // --- Determine which movement the ship must perform ---
-            // We need the BFS row/colCount data that CreateIslandButtons already computed.
-            // Re-derive it here with the same logic so we can read centerY values.
-
-            const auto& treeRef = worldMap->GetTree();
-            std::unordered_map<int, int> islandColumn;
-            std::unordered_map<int, int> islandRow;
-            std::unordered_map<int, int> colCount;
-
-            std::queue<int> bfsQueue;
-            bfsQueue.push(0);
-            islandColumn[0] = 0;
-
-            while (!bfsQueue.empty())
-            {
-                int cur = bfsQueue.front();
-                bfsQueue.pop();
-
-                int col = islandColumn[cur];
-                islandRow[cur] = colCount[col];
-                colCount[col]++;
-
-                auto it = treeRef.find(cur);
-                if (it != treeRef.end())
-                {
-                    for (int childId : it->second)
-                    {
-                        if (islandColumn.find(childId) == islandColumn.end())
-                        {
-                            islandColumn[childId] = col + 1;
-                            bfsQueue.push(childId);
-                        }
-                    }
-                }
-            }
+            IslandLayout layout = BuildIslandLayout(worldMap->GetTree());
 
             int fromId = worldMap->GetCurrentIslandId();
-            int fromCY = GetIslandCenterY(islandRow[fromId], colCount[islandColumn[fromId]]);
-            int toCY = GetIslandCenterY(islandRow[islandId], colCount[islandColumn[islandId]]);
-            int destCol = islandColumn[islandId];
+            int fromCY = GetIslandCenterY(layout.islandRow[fromId], layout.colCount[layout.islandColumn[fromId]]);
+            int toCY = GetIslandCenterY(layout.islandRow[islandId], layout.colCount[layout.islandColumn[islandId]]);
+            int destCol = layout.islandColumn[islandId];
 
             ShipMovement movement = DetermineShipMovement(fromCY, toCY);
 
@@ -378,23 +383,6 @@ void InGameScene::DestroyParty()
     alliedParty = nullptr;
 }
 
-void InGameScene::RestoreFromSave(const SaveData& data)
-{
-    for (const auto& charSave : data.characters)
-    {
-        for (Character* c : alliedParty->GetMembers())
-        {
-            if (c->GetName() == charSave.name)
-            {
-                c->RestorePreCombatValues({ charSave.health, charSave.isAlive });
-                LOG("SaveLoad: restaurado %s — HP:%d isAlive:%d",
-                    charSave.name.c_str(), charSave.health, charSave.isAlive);
-                break;
-            }
-        }
-    }
-}
-
 void InGameScene::CreateIslandButtons()
 {
     static const int BUTTON_W = 176;
@@ -405,60 +393,17 @@ void InGameScene::CreateIslandButtons()
     Engine::GetInstance().window->GetWindowSize(screenW, screenH);
 
     const auto& islands = worldMap->GetAllIslands();
-    const auto& tree = worldMap->GetTree();
-
-    // BFS to assign a column index to every island
-    // Column 0 = starting island, column N = N hops from the root
-    std::unordered_map<int, int> islandColumn; // islandId -> column
-    std::unordered_map<int, int> islandRow;    // islandId -> row within its column
-
-    // Count how many islands fall in each column so we can distribute rows
-    std::unordered_map<int, int> colCount;     // column -> number of islands so far
-
-    std::queue<int> bfsQueue;
-    bfsQueue.push(0);
-    islandColumn[0] = 0;
-
-    while (!bfsQueue.empty())
-    {
-        int currentId = bfsQueue.front();
-        bfsQueue.pop();
-
-        int col = islandColumn[currentId];
-
-        // Assign row within this column
-        int row = colCount[col];
-        islandRow[currentId] = row;
-        colCount[col]++;
-
-        auto it = tree.find(currentId);
-        if (it != tree.end())
-        {
-            for (int childId : it->second)
-            {
-                if (islandColumn.find(childId) == islandColumn.end())
-                {
-                    islandColumn[childId] = col + 1;
-                    bfsQueue.push(childId);
-                }
-            }
-        }
-    }
-
-    if (islandColumn.empty())
-    {
-        return;
-    }
+    IslandLayout layout = BuildIslandLayout(worldMap->GetTree());
 
     // --- Create one button per island ---
     for (auto& pair : islands)
     {
-        int     islandId = pair.first;
+        int islandId = pair.first;
         Island* island = pair.second;
 
-        int col = islandColumn[islandId];
-        int row = islandRow[islandId];
-        int islandsInCol = colCount[col];
+        int col = layout.islandColumn[islandId];
+        int row = layout.islandRow[islandId];
+        int islandsInCol = layout.colCount[col];
 
         //--------Dynamic drawing------------
         //// Horizontal center of this column
@@ -660,6 +605,42 @@ void InGameScene::DrawEndScreen()
     }
 }
 
+InGameScene::IslandLayout InGameScene::BuildIslandLayout(const std::unordered_map<int, std::vector<int>>& tree)
+{
+    IslandLayout layout;
+
+    std::queue<int> bfsQueue;
+    bfsQueue.push(0);
+    layout.islandColumn[0] = 0;
+
+    while (!bfsQueue.empty())
+    {
+        int cur = bfsQueue.front();
+        bfsQueue.pop();
+
+        int col = layout.islandColumn[cur];
+        layout.islandRow[cur] = layout.colCount[col];
+        layout.colCount[col]++;
+
+        auto it = tree.find(cur);
+        if (it != tree.end())
+        {
+            for (int childId : it->second)
+            {
+                if (layout.islandColumn.find(childId) == layout.islandColumn.end())
+                {
+                    layout.islandColumn[childId] = col + 1;
+                    bfsQueue.push(childId);
+                }
+            }
+        }
+    }
+
+    return layout;
+}
+
+
+
 void InGameScene::OnResume()
 {
     if (pendingGameOver || pendingGameWon) { return; }
@@ -674,14 +655,6 @@ void InGameScene::OnPause()
 
 void InGameScene::CreateUI()
 {
-    //Botón de iniciar combate
-    /*SDL_Rect combatBtnBounds = {20, 20, 154, 60};
-    auto CombatBtn = Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 1, "Start Combat", combatBtnBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheet, 0, combatBtnBounds.w, combatBtnBounds.h
-    );
-    CombatBtn->isHUD = true;//fixed on screen*/
-
     //Botón de party
     SDL_Rect partyBtnBounds = { 20, 600, 72, 72 };
     auto partyButon = Engine::GetInstance().uiManager->CreateUIElement(
