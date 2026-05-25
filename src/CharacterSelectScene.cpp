@@ -50,22 +50,34 @@ void CharacterSelectScene::Load()
 
     LoadTextures();
     LoadSounds();
-    CreateUI();
+    //The scene begins with the tutorial open
+    UpdateTutorialUI();
 }
 
 void CharacterSelectScene::Update(float dt)
 {
  
-    if(backName == "Ignis") { Engine::GetInstance().render->DrawTexture(backgroundIgnis, 0, 0); }
-    else if(backName == "Gerbera"){ Engine::GetInstance().render->DrawTexture(backgroundGerbera, 0, 0); }
-    else if (backName == "Jochi") { Engine::GetInstance().render->DrawTexture(backgroundJochi, 0, 0); }
-    else if (backName == "Markus") { Engine::GetInstance().render->DrawTexture(backgroundMarkus, 0, 0); }
-    else if (backName == "Theresia") { Engine::GetInstance().render->DrawTexture(backgroundTheresia, 0, 0); }
-    else if (backName == "Fatuus") { Engine::GetInstance().render->DrawTexture(backgroundFatuus, 0, 0); }
-    else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
-   
- 
+    if (tutorialOpen) {
+        Engine::GetInstance().render->DrawTexture(tutorials[tutorialIndex], 0, 0);
+    }
+    else {
+        if (backName == "Ignis" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundIgnis, 0, 0); }
+        else if (backName == "Gerbera" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundGerbera, 0, 0); }
+        else if (backName == "Jochi" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundJochi, 0, 0); }
+        else if (backName == "Markus" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundMarkus, 0, 0); }
+        else if (backName == "Theresia" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundTheresia, 0, 0); }
+        else if (backName == "Fatuus" && switched == false) { Engine::GetInstance().render->DrawTexture(backgroundFatuus, 0, 0); }
+        else if (backName == "Ignis") { Engine::GetInstance().render->DrawTexture(backgroundIgnis1, 0, 0); }
+        else if (backName == "Gerbera") { Engine::GetInstance().render->DrawTexture(backgroundGerbera1, 0, 0); }
+        else if (backName == "Jochi") { Engine::GetInstance().render->DrawTexture(backgroundJochi1, 0, 0); }
+        else if (backName == "Markus") { Engine::GetInstance().render->DrawTexture(backgroundMarkus1, 0, 0); }
+        else if (backName == "Theresia") { Engine::GetInstance().render->DrawTexture(backgroundTheresia1, 0, 0); }
+        else if (backName == "Fatuus") { Engine::GetInstance().render->DrawTexture(backgroundFatuus1, 0, 0); }
+        else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
 
+        DrawSelectedIndicator();
+    }
+    
     RenderSelection();
 }
 
@@ -102,10 +114,31 @@ void CharacterSelectScene::LoadTextures(){
     backgroundJochi = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundJochi.png");
     backgroundFatuus = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundFatuus.png");
     backgroundIgnis = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundIgnis.png");
+
+    backgroundGerbera1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundGerbera1.png");
+    backgroundTheresia1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundTheresia1.png");
+    backgroundMarkus1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundMarkus1.png");
+    backgroundJochi1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundJochi1.png");
+    backgroundFatuus1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundFatuus1.png");
+    backgroundIgnis1 = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterSelectionBackgroundIgnis1.png");
+
     spritesheetCharacters = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterButtons.png");
     panelInformationSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/Panel.png");
     labelSpritesheets = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/CharacterNamePlate.png");
     backButtonSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/BackButton.png");
+    switchButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/SwitchButton.png");
+
+    tutorialOpenButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/tutorialOpenButton.png");
+    tutorialLeftButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/left.png");
+    tutorialRightButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/right.png");
+
+
+   
+    for (int i = 0; i < 6; i++) {
+        std::string path = "Assets/Textures/CharacterSelectScene/tutorial";
+        std::string index = std::to_string(i);
+        tutorials.push_back(Engine::GetInstance().textures->Load((path + index + ".png").c_str())) ;
+    }
 }
 
 
@@ -117,6 +150,27 @@ void CharacterSelectScene::UnloadTextures()
     Engine::GetInstance().textures->UnLoad(panelInformationSpritesheet);
     Engine::GetInstance().textures->UnLoad(labelSpritesheets);
     Engine::GetInstance().textures->UnLoad(backButtonSpritesheet);
+    Engine::GetInstance().textures->UnLoad(switchButton);
+    //descriptions
+    Engine::GetInstance().textures->UnLoad(backgroundGerbera);
+    Engine::GetInstance().textures->UnLoad(backgroundTheresia);
+    Engine::GetInstance().textures->UnLoad(backgroundIgnis);
+    Engine::GetInstance().textures->UnLoad(backgroundJochi);
+    Engine::GetInstance().textures->UnLoad(backgroundFatuus);
+    Engine::GetInstance().textures->UnLoad(backgroundMarkus);
+    //stats
+    Engine::GetInstance().textures->UnLoad(backgroundGerbera1);
+    Engine::GetInstance().textures->UnLoad(backgroundTheresia1);
+    Engine::GetInstance().textures->UnLoad(backgroundIgnis1);
+    Engine::GetInstance().textures->UnLoad(backgroundJochi1);
+    Engine::GetInstance().textures->UnLoad(backgroundFatuus1);
+    Engine::GetInstance().textures->UnLoad(backgroundMarkus1);
+    //tutorial
+    for (int i = 0; i < 6; i++) { Engine::GetInstance().textures->UnLoad(tutorials[i]); }
+    Engine::GetInstance().textures->UnLoad(tutorialOpenButton);
+    Engine::GetInstance().textures->UnLoad(tutorialLeftButton);
+    Engine::GetInstance().textures->UnLoad(tutorialRightButton);
+
 }
 
 void CharacterSelectScene::LoadSounds() {
@@ -142,6 +196,19 @@ bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case 8:
         Engine::GetInstance().scene->ReplaceScene(new MainMenuScene());
+        break;
+    case 9:
+        switched = !switched;
+        break;
+    case 10:
+        tutorialOpen = !tutorialOpen;
+        UpdateTutorialUI();
+        break;
+    case 11:
+        if (tutorialIndex > 0) { tutorialIndex--; }
+        break;
+    case 12:
+        if (tutorialIndex < 5) { tutorialIndex++; }
         break;
     default:
 
@@ -330,6 +397,33 @@ void CharacterSelectScene::CreateInterfaceButtons()
         UIElementType::BUTTON, 8, "", backButton,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, backButtonSpritesheet, 0, backButton.w, backButton.h
     );
+
+    SDL_Rect switchButtonBounds = { 842, 13, 72, 72 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 9, "", switchButtonBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, switchButton, 0, switchButtonBounds.w, switchButtonBounds.h
+    );
+
+    //OpenTutorial
+    SDL_Rect openBounds = { 4, 85, 72, 72 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 10, "tutorial", openBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 2, openBounds.w, openBounds.h
+    );
+}
+
+void CharacterSelectScene::DrawSelectedIndicator()
+{
+    SDL_Color White = { 255, 255, 255 };
+    SDL_Color Yellow = { 255, 255, 0 };
+    int selected = selectedNames.size();
+
+    std::string selectedStr = std::to_string(selected);
+
+    if (selected==3) { Engine::GetInstance().render->DrawText(("Selected: " + selectedStr + "/3").c_str(), 915, 663, 206, 33, Yellow); }
+    else{ Engine::GetInstance().render->DrawText(("Selected: " + selectedStr + "/3").c_str(), 915, 663, 206, 33, White); }
+
+    
 }
 
 void CharacterSelectScene::SetPortraitButtonStatePressed(int index)
@@ -384,4 +478,40 @@ void CharacterSelectScene::CreateUI()
 {
     CreateCharactersButtons();
     CreateInterfaceButtons();
+}
+
+void CharacterSelectScene::UpdateTutorialUI()
+{
+    Engine::GetInstance().uiManager->RemoveElementsByRange(0, 20);
+
+    if (tutorialOpen == true) {
+        
+
+        //OpenTutorial
+        SDL_Rect openBounds = { 4, 85, 72, 72 };
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 10, "tutorial", openBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 2, openBounds.w, openBounds.h
+        );
+
+        //Left
+        SDL_Rect leftBounds = { 29, 339, 42, 42 };
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 11, "left", leftBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialLeftButton, 2, leftBounds.w, leftBounds.h
+        );
+
+        //Right
+        SDL_Rect rightBounds = { 1209, 339, 42, 42 };
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 12, "right", rightBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialRightButton, 2, rightBounds.w, rightBounds.h
+        );
+    }
+    else {
+
+        Engine::GetInstance().uiManager->RemoveElementsByRange(0, 20);
+        CreateUI();
+    }
+
 }

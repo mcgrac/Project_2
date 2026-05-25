@@ -55,6 +55,7 @@ public:
     void OnResume() override;
     void OnPause() override;
     void CreateUI();
+    void UpdateTutorialUI();
 
 private:
     // all available characters
@@ -79,6 +80,8 @@ private:
     void CreateCharactersButtons();
     void CreateInterfaceButtons();
 
+    void DrawSelectedIndicator();
+
     void SetPortraitButtonStatePressed(int index);
     void SetPortraitButtonStateNormal(int index);
 
@@ -100,11 +103,28 @@ private:
     SDL_Texture* backgroundTheresia;
     SDL_Texture* backgroundFatuus;
     SDL_Texture* backgroundJochi;
+    SDL_Texture* backgroundGerbera1;
+    SDL_Texture* backgroundIgnis1;
+    SDL_Texture* backgroundMarkus1;
+    SDL_Texture* backgroundTheresia1;
+    SDL_Texture* backgroundFatuus1;
+    SDL_Texture* backgroundJochi1;
     SDL_Texture* spritesheetCharacters;
     SDL_Texture* panelInformationSpritesheet;
     SDL_Texture* labelSpritesheets;
     SDL_Texture* backButtonSpritesheet;
+    SDL_Texture* switchButton; 
+    SDL_Texture* tutorialOpenButton;
+    SDL_Texture* tutorialLeftButton;
+    SDL_Texture* tutorialRightButton;
+    
+    std::vector<SDL_Texture*> tutorials;
+    int tutorialIndex = 0;
+    bool tutorialOpen = true;
+    
 
     //audio variables
     int buttonPress;
+    //variable that controls if stats should be shown
+    bool switched = false;
 };
