@@ -118,11 +118,11 @@ private:
     
     std::vector<SDL_Texture*> tutorials;
     int tutorialIndex = 0;
-    bool tutorialOpen = false;
+    bool tutorialOpen = true;
     
 
     //audio variables
     int buttonPress;
     //variable that controls if stats should be shown
-    bool switched = true;
+    bool switched = false;
 };

@@ -50,7 +50,8 @@ void CharacterSelectScene::Load()
 
     LoadTextures();
     LoadSounds();
-    CreateUI();
+    //The scene begins with the tutorial open
+    UpdateTutorialUI();
 }
 
 void CharacterSelectScene::Update(float dt)
@@ -125,18 +126,17 @@ void CharacterSelectScene::LoadTextures(){
     backButtonSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/BackButton.png");
     switchButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/SwitchButton.png");
 
-    tutorialOpenButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/tutorial.png");
+    tutorialOpenButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/tutorialOpenButton.png");
     tutorialLeftButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/left.png");
     tutorialRightButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/right.png");
 
 
    
-    for (int i = 0; i < 5; i++) { 
+    for (int i = 0; i < 6; i++) {
         std::string path = "Assets/Textures/CharacterSelectScene/tutorial";
         std::string index = std::to_string(i);
-        tutorials[i] = Engine::GetInstance().textures->Load((path + index + ".png").c_str());
+        tutorials.push_back(Engine::GetInstance().textures->Load((path + index + ".png").c_str())) ;
     }
-   
 }
 
 
@@ -164,7 +164,7 @@ void CharacterSelectScene::UnloadTextures()
     Engine::GetInstance().textures->UnLoad(backgroundFatuus1);
     Engine::GetInstance().textures->UnLoad(backgroundMarkus1);
     //tutorial
-    for (int i = 0; i < 5; i++) { Engine::GetInstance().textures->UnLoad(tutorials[i]); }
+    for (int i = 0; i < 6; i++) { Engine::GetInstance().textures->UnLoad(tutorials[i]); }
     Engine::GetInstance().textures->UnLoad(tutorialOpenButton);
     Engine::GetInstance().textures->UnLoad(tutorialLeftButton);
     Engine::GetInstance().textures->UnLoad(tutorialRightButton);
@@ -206,7 +206,7 @@ bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
         if (tutorialIndex > 0) { tutorialIndex--; }
         break;
     case 12:
-        if (tutorialIndex < 4) { tutorialIndex++; }
+        if (tutorialIndex < 5) { tutorialIndex++; }
         break;
     default:
 
@@ -396,10 +396,17 @@ void CharacterSelectScene::CreateInterfaceButtons()
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, backButtonSpritesheet, 0, backButton.w, backButton.h
     );
 
-    SDL_Rect switchButtonBounds = { 10, 600, 72, 72 };
+    SDL_Rect switchButtonBounds = { 842, 13, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 8, "", switchButtonBounds,
+        UIElementType::BUTTON, 9, "", switchButtonBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, switchButton, 0, switchButtonBounds.w, switchButtonBounds.h
+    );
+
+    //OpenTutorial
+    SDL_Rect openBounds = { 4, 85, 72, 72 };
+    Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 10, "tutorial", openBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 2, openBounds.w, openBounds.h
     );
 }
 
@@ -459,28 +466,30 @@ void CharacterSelectScene::CreateUI()
 
 void CharacterSelectScene::UpdateTutorialUI()
 {
+    Engine::GetInstance().uiManager->RemoveElementsByRange(0, 20);
+
     if (tutorialOpen == true) {
-        Engine::GetInstance().uiManager->RemoveElementsByRange(0, 20);
+        
 
         //OpenTutorial
-        SDL_Rect openBounds = { 581, 60, 195, 306 };
+        SDL_Rect openBounds = { 4, 85, 72, 72 };
         Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, 10, "", openBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 2, openBounds.w, openBounds.h
+            UIElementType::BUTTON, 10, "tutorial", openBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 2, openBounds.w, openBounds.h
         );
 
         //Left
-        SDL_Rect leftBounds = { 581, 60, 195, 306 };
+        SDL_Rect leftBounds = { 29, 339, 42, 42 };
         Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, 11, "", leftBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 2, leftBounds.w, leftBounds.h
+            UIElementType::BUTTON, 11, "left", leftBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialLeftButton, 2, leftBounds.w, leftBounds.h
         );
 
         //Right
-        SDL_Rect rightBounds = { 581, 60, 195, 306 };
+        SDL_Rect rightBounds = { 1209, 339, 42, 42 };
         Engine::GetInstance().uiManager->CreateUIElement(
-            UIElementType::BUTTON, 12, "", rightBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, 2, rightBounds.w, rightBounds.h
+            UIElementType::BUTTON, 12, "right", rightBounds,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialRightButton, 2, rightBounds.w, rightBounds.h
         );
     }
     else {
