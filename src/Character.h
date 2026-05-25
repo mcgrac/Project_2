@@ -242,7 +242,7 @@ public:
 
 private:
 
-	float incomingDamageMultiplier = 0.0f;
+	float incomingDamageMultiplier = 1.0f;
 	bool pendingToDie = false;
 
 	static constexpr int MAX_DURABILITY_POSSIBLE = 70;

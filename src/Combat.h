@@ -62,6 +62,7 @@ struct Lane
 {
     LaneType type;
     Character* occupant = nullptr;
+    Character* enemyOccupant = nullptr;
 
     // Base bonus values (level 1)
     static const int BASE_BACK_POWER = 15;
@@ -134,7 +135,16 @@ private:
     Lane sideLane;
     Lane frontLane;
 
+    // Enemigos
+    Lane enemyBackLane;
+    Lane enemySideLane;
+    Lane enemyFrontLane;
+
+    float damageReductionLane = 0.30f;
+
     void ApplyLaneBonuses();
+
+    void AssignEnemyLanes();
 
     std::vector<Character*> actorsQueue;
 
