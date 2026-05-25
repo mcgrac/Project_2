@@ -43,6 +43,10 @@ Combat::Combat(Party* allied, Party* enemy, int _shipLevel)
     backLane.type = LaneType::BACK;
     sideLane.type = LaneType::SIDE;
     frontLane.type = LaneType::FRONT;
+
+    enemyBackLane.type = LaneType::BACK;
+    enemySideLane.type = LaneType::SIDE;
+    enemyFrontLane.type = LaneType::FRONT;
 }
 
 Combat::~Combat()
@@ -156,8 +160,65 @@ void Combat::ApplyLaneBonuses()
         c->SetTotalSpeed();
     }
 }
+
 #pragma endregion
 
+void Combat::AssignEnemyLanes()
+{
+    auto& members = enemyParty->GetMembers();
+    if (members.empty()) { return; }
+
+    // Encontrar el tanque: mayor durabilidad, en caso de empate mayor vida
+    Character* tankCandidate = nullptr;
+    Character* damageCandidate = nullptr;
+    Character* sideCandidate = nullptr;
+
+    int highestDurability = -1;
+    int highestPower = -1;
+
+    for (Character* c : members)
+    {
+        if (c->GetTotalDurability() > highestDurability ||
+            (c->GetTotalDurability() == highestDurability &&
+                tankCandidate != nullptr &&
+                c->GetMaxHP() > tankCandidate->GetMaxHP()))
+        {
+            highestDurability = c->GetTotalDurability();
+            tankCandidate = c;
+        }
+    }
+
+    for (Character* c : members)
+    {
+        if (c == tankCandidate) { continue; }
+
+        if (c->GetTotalPower() > highestPower)
+        {
+            highestPower = c->GetTotalPower();
+            damageCandidate = c;
+        }
+    }
+
+    // El que queda va al side
+    for (Character* c : members)
+    {
+        if (c != tankCandidate && c != damageCandidate)
+        {
+            sideCandidate = c;
+            break;
+        }
+    }
+
+    // Asignar lanes
+    enemyFrontLane.occupant = tankCandidate;
+    enemyBackLane.occupant = damageCandidate;
+    enemySideLane.occupant = sideCandidate;
+
+    LOG("Combat: enemy lanes — FRONT(tank): %s | SIDE: %s | BACK(dmg): %s",
+        tankCandidate ? tankCandidate->GetName().c_str() : "none",
+        sideCandidate ? sideCandidate->GetName().c_str() : "none",
+        damageCandidate ? damageCandidate->GetName().c_str() : "none");
+}
 
 void Combat::Run()
 {
@@ -315,7 +376,7 @@ void Combat::StartCombat()
     // Apply lane bonuses after resetting so they are the only bonuses active
     ApplyLaneBonuses();
 
-    auto allCombatants = GetAllCombatants();
+    //auto allCombatants = GetAllCombatants();
 
     if (frontLane.occupant != nullptr)
     {
@@ -337,12 +398,21 @@ void Combat::StartCombat()
         c->PlayAnimation("idle");
     }
 
-    // Enemies: position by index, starting at slot 3
-    auto& enemies = enemyParty->GetMembers();
-    for (int i = 0; i < static_cast<int>(enemies.size()); ++i)
+    AssignEnemyLanes();
+    if (enemyFrontLane.occupant != nullptr)
     {
-        enemies[i]->SetPosition(defaultPositions[3 + i].getX(), defaultPositions[3 + i].getY());
-        enemies[i]->ResetCurrentInitiative();
+        enemyFrontLane.occupant->SetPosition(defaultPositions[3].getX(), defaultPositions[3].getY());
+        enemyFrontLane.occupant->ResetCurrentInitiative();
+    }
+    if (enemySideLane.occupant != nullptr)
+    {
+        enemySideLane.occupant->SetPosition(defaultPositions[4].getX(), defaultPositions[4].getY());
+        enemySideLane.occupant->ResetCurrentInitiative();
+    }
+    if (enemyBackLane.occupant != nullptr)
+    {
+        enemyBackLane.occupant->SetPosition(defaultPositions[5].getX(), defaultPositions[5].getY());
+        enemyBackLane.occupant->ResetCurrentInitiative();
     }
 
 #if _DEBUG
@@ -704,6 +774,11 @@ void Combat::EndCombat()
             LOG("Combat: %s revive con 1 HP para el siguiente combate.", c->GetName().c_str());
         }
     }
+
+    //clean lanes
+    enemyFrontLane.occupant = nullptr;
+    enemySideLane.occupant = nullptr;
+    enemyBackLane.occupant = nullptr;
 
     preCombatValues.clear();
     runningCombat = false;
@@ -1074,64 +1149,135 @@ void Combat::ForceDefeat()
 
 float Combat:: GetLaneDamageMultiplier(Character* c)
 {
-    // Si el objetivo es un enemigo, no aplicamos bonos de lane
-    if (!IsAllied(c))
-    {
-        LOG("Lane damage multiplier not applied to %s [ENEMY]", c->GetName().c_str());
-        return 1.0f;
-    }
-
     float reduction = 0.0f;
+    bool isAlly = IsAllied(c);
 
     //----test----
     int coversActive = 0;
     std::string targetLane = "";
     //------------
 
-    if (frontLane.occupant == c)
-    {
-        //----test-----
-        targetLane = "FRONT";
-        LOG("LANE LOGIC: %s is in FRONT. No cover available. Multiplier: 1.0", c->GetName().c_str());
-        //------------
+    LaneType characterLaneType;
+    bool found = false;
 
-        return 1.0f;
+    if (isAlly)
+    {
+        if (frontLane.occupant == c) { characterLaneType = LaneType::FRONT; found = true; }
+        else if (sideLane.occupant == c) { characterLaneType = LaneType::SIDE;  found = true; }
+        else if (backLane.occupant == c) { characterLaneType = LaneType::BACK;  found = true; }
+    }
+    else
+    {
+        if (enemyFrontLane.occupant == c) { characterLaneType = LaneType::FRONT; found = true; }
+        else if (enemySideLane.occupant == c) { characterLaneType = LaneType::SIDE; found = true; }
+        else if (enemyBackLane.occupant == c) { characterLaneType = LaneType::BACK; found = true; }
     }
 
-    if (sideLane.occupant == c)
+    if (!found) { return 1.0f; }
+    if (characterLaneType == LaneType::FRONT) { return 1.0f; }
+
+    Character* front = nullptr;
+    Character* side = nullptr;
+
+    if (isAlly)
     {
-        targetLane = "SIDE";
-        if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+        front = frontLane.occupant;
+        side = sideLane.occupant;
+    }
+    else
+    {
+        front = enemyFrontLane.occupant;
+        side = enemySideLane.occupant;
+    }
+
+    if (characterLaneType == LaneType::SIDE)
+    {
+        if (front != nullptr && front->GetIsAlive())
         {
-            reduction = 0.15f;
-            coversActive = 1;
+            reduction = damageReductionLane;
         }
     }
-    else if (backLane.occupant == c)
+    else if (characterLaneType == LaneType::BACK)
     {
-        targetLane = "BACK";
-        if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+        if (front != nullptr && front->GetIsAlive())
         {
-            reduction += 0.15f;
-            coversActive++;
+            reduction += damageReductionLane;
         }
-        if (sideLane.occupant != nullptr && sideLane.occupant->GetIsAlive())
+        if (side != nullptr && side->GetIsAlive())
         {
-            reduction += 0.15f;
-            coversActive++;
+            reduction += damageReductionLane;
         }
     }
+
+    //if (frontLane.occupant == c)
+    //{
+    //    //----test-----
+    //    targetLane = "FRONT";
+    //    LOG("LANE LOGIC: %s is in FRONT. No cover available. Multiplier: 1.0", c->GetName().c_str());
+    //    //------------
+
+    //    return 1.0f;
+    //}
+
+    //if (sideLane.occupant == c)
+    //{
+    //    targetLane = "SIDE";
+    //    if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+    //    {
+    //        reduction = 0.15f;
+    //        coversActive = 1;
+    //    }
+    //}
+    //else if (backLane.occupant == c)
+    //{
+    //    targetLane = "BACK";
+    //    if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
+    //    {
+    //        reduction += 0.15f;
+    //        coversActive++;
+    //    }
+    //    if (sideLane.occupant != nullptr && sideLane.occupant->GetIsAlive())
+    //    {
+    //        reduction += 0.15f;
+    //        coversActive++;
+    //    }
+    //}
 
     float finalMultiplier = 1.0f - reduction;
 
-    //------test------
-    LOG("LANE LOGIC: Target %s [%s] | Coberturas activas: %d | Reduccion: %.2f | Multiplicador Final: %.2f",
+#if _DEBUG
+    std::string laneStr = "";
+    if (characterLaneType == LaneType::FRONT)
+    {
+        laneStr = "FRONT";
+    }
+    else if (characterLaneType == LaneType::SIDE)
+    {
+        laneStr = "SIDE";
+    }
+    else if (characterLaneType == LaneType::BACK)
+    {
+        laneStr = "BACK";
+    }
+
+    std::string bandoStr = "";
+    if (isAlly)
+    {
+        bandoStr = "ALLY";
+    }
+    else
+    {
+        bandoStr = "ENEMY";
+    }
+
+    LOG("LANE LOGIC: Target %s [%s][%s] | Reduccion: %.2f | Multiplicador: %.2f",
         c->GetName().c_str(),
-        targetLane.c_str(),
-        coversActive,
+        bandoStr.c_str(),
+        laneStr.c_str(),
         reduction,
         finalMultiplier);
-    //----------------
+
+#endif // _DEBUG
 
     return finalMultiplier;
 }
