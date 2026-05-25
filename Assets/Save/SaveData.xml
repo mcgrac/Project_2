@@ -1,9 +1,5 @@
 <?xml version="1.0"?>
 <savedata>
 	<world currentIslandId="0" />
-	<party>
-		<character name="Jochi" health="95" isAlive="true" />
-		<character name="Fatuus" health="100" isAlive="true" />
-		<character name="Ignis" health="105" isAlive="true" />
-	</party>
+	<party />
 </savedata>
