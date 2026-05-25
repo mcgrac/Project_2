@@ -74,8 +74,10 @@ void CharacterSelectScene::Update(float dt)
         else if (backName == "Theresia") { Engine::GetInstance().render->DrawTexture(backgroundTheresia1, 0, 0); }
         else if (backName == "Fatuus") { Engine::GetInstance().render->DrawTexture(backgroundFatuus1, 0, 0); }
         else { Engine::GetInstance().render->DrawTexture(background, 0, 0); }
+
+        DrawSelectedIndicator();
     }
-   
+    
     RenderSelection();
 }
 
@@ -408,6 +410,20 @@ void CharacterSelectScene::CreateInterfaceButtons()
         UIElementType::BUTTON, 10, "tutorial", openBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 2, openBounds.w, openBounds.h
     );
+}
+
+void CharacterSelectScene::DrawSelectedIndicator()
+{
+    SDL_Color White = { 255, 255, 255 };
+    SDL_Color Yellow = { 255, 255, 0 };
+    int selected = selectedNames.size();
+
+    std::string selectedStr = std::to_string(selected);
+
+    if (selected==3) { Engine::GetInstance().render->DrawText(("Selected: " + selectedStr + "/3").c_str(), 915, 663, 206, 33, Yellow); }
+    else{ Engine::GetInstance().render->DrawText(("Selected: " + selectedStr + "/3").c_str(), 915, 663, 206, 33, White); }
+
+    
 }
 
 void CharacterSelectScene::SetPortraitButtonStatePressed(int index)

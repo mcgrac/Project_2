@@ -80,6 +80,8 @@ private:
     void CreateCharactersButtons();
     void CreateInterfaceButtons();
 
+    void DrawSelectedIndicator();
+
     void SetPortraitButtonStatePressed(int index);
     void SetPortraitButtonStateNormal(int index);
 
