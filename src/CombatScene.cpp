@@ -62,190 +62,7 @@ CombatScene::~CombatScene()
     DestroyEnemyParty();
 }
 
-void CombatScene::LoadSounds() {
-
-    LoadSoundsParty(alliedParty);
-    LoadSoundsParty(enemyParty);
-}
-
-void CombatScene::LoadSoundsParty(Party* party)
-{
-    for (Character* c : party->GetMembers()) {
-
-        //check if enemy
-        std::string folder;
-        if (c->GetIsAllied()) {
-            folder = "allies";
-        }
-        else {
-            folder = "enemies";
-        }
-
-        for (int i = 0; i < c->GetSkills().size(); i++) {
-            Skill skill = c->GetSkills()[i];
-
-            AbilitiesSounds ability;
-
-            std::string path = "Assets/Audio/Fx/" + folder + "/" + c->GetName() + "/" + skill.GetAnimationId() + ".wav";
-            ability.SetFxSound(path);
-            ability.SetIdSound(skill.GetAnimationId());
-
-            abilities.push_back(ability);
-        }
-    }
-}
-
-void CombatScene::Load()
-{
-    LOG("CombatScene: cargando...");
-
-    CreateEnemyParty();
-    LoadTextures();
-    LoadSounds();
-    LoadSound();
-    Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Combat" + SceneUtils::GetFactionString(currentIslandFaction) + ".wav").c_str());
-
-    // ---------Testing------------
-    for (Character* c : alliedParty->GetMembers())
-    {
-        c->PrintDebugInfo();
-    }
-    // -----------------------------
-
-    if (enemyParty == nullptr)
-    {
-        LOG("CombatScene: ERROR — enemyParty es nullptr tras CreateEnemyParty");
-        return;
-    }
-
-    LOG("CombatScene: enemyParty tiene %d miembros:", enemyParty->GetMemberCount());
-    for (Character* c : enemyParty->GetMembers())
-    {
-        LOG("  enemy -> %s", c->GetName().c_str());
-    }
-
-    // Combat is created after lane assignments are confirmed — see FinalizeLaneAssignments()
-    // Start the lane selection phase immediately
-    laneAssignmentCursor = 0;
-    laneAssignments.clear();
-    ShowLaneSelectionFor(laneAssignmentCursor);
-}
-
-void CombatScene::Update(float dt)
-{
-    potionCount = alliedParty->GetInventory().GetItemCount("consumable");
-
-    // Dibujar background cada frame
-    Engine::GetInstance().render->DrawTexture(background, 0, 0);
-
-    //play music
-    if (!Engine::GetInstance().audio->IsMusicPlaying()) {
-        LOG("Play music again!");
-        //Engine::GetInstance().audio->PlayMusic(combMusic);
-    }
-
-    // Reset the click guard every frame so the next real click is accepted
-    laneInputConsumed = false;
-    combatInputConsumed = false;
-
-    // Lane selection is still ongoing — don't run combat yet
-    if (uiState == CombatUIState::SELECTING_LANE)
-    {
-        DrawUILaneSelection(currentSelecting);
-        return;
-    }
-
-    // Testing: F1 = victory, F2 = defeat
-    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
-    {
-        LOG("CombatScene [TEST]: forzando VICTORIA.");
-        combat->ForceVictory();
-    }
-    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN)
-    {
-        LOG("CombatScene [TEST]: forzando DERROTA.");
-        combat->ForceDefeat();
-    }
-
-    for (Character* c : combat->GetAllCombatants()) {
-        //call update of every character (animations)
-        c->Update(dt);
-    }
-
-    //particles
-    EmitParticles(dt);
-
-    //draw status icons
-    DrawStatusIcons();
-
-    //------Draw panels--------------------
-    DrawAlliedPanels();
-    DrawEnemyPanels();
-
-    DrawArrowCurrentActor();
-    UpdateNextRoundPause(dt);
-    DrawSkillCosts();
-
-    //------Gestionar UI si es turno del jugador--------
-    UpdateCombatUI();
-
-    //-------Hovered Skill----------------
-    UpdateSkillHover();
-    DrawSkillTooltip();
-
-    //ShowCurrentHP();
-
-    //------Draw turn table--------
-    DrawTurnOrderTable();
-
-    if (!combat->GetWaitingForInput())
-    {
-        // Iterar hasta que el combate necesite esperar input externo
-        // (input del jugador o animación) o haya terminado
-        bool keepRunning = true;
-
-        while (keepRunning)
-        {
-            combat->Run();
-
-            if (combat->CombatIsFinished()) { keepRunning = false; }
-            else if (combat->GetWaitingForInput()) { keepRunning = false; }
-            else if (combat->IsWaitingAnimation()) { keepRunning = false; }
-            else if (combat->IsNextRoundPause()) { keepRunning = false; }
-        }
-        //combat->Run();
-    }
-
-    //Draw Potions UI
-    if(potionCount==0){ Engine::GetInstance().render->DrawTexture(potionEmpty, POTION_BOUNDS.x, POTION_BOUNDS.y); }
-
-    SDL_Color White = { 255, 255, 255 };
-    SDL_Color Red = { 255, 0, 0 };
-
-    std::string potions = std::to_string(potionCount);
-    if(potionCount>=10){ Engine::GetInstance().render->DrawText((potions).c_str(), TEXT1_BOUNDS.x, TEXT1_BOUNDS.y, TEXT1_BOUNDS.w, TEXT1_BOUNDS.h, White); }
-    else if(potionCount>0){ Engine::GetInstance().render->DrawText((potions).c_str(), TEXT1_BOUNDS.x, TEXT1_BOUNDS.y, TEXT1_BOUNDS.w, TEXT1_BOUNDS.h, White); }
-    else{ Engine::GetInstance().render->DrawText((potions).c_str(), TEXT1_BOUNDS.x, TEXT1_BOUNDS.y, TEXT1_BOUNDS.w, TEXT1_BOUNDS.h, Red); }
-    
-
-    // Al acabar el combate volvemos a InGameScene (que quedó suspendida)
-    if(combat->CombatIsFinished())
-    {
-        if (!resultPanelActive)
-        {
-            HideCombatUI();
-            bool won = (combat->GetResult() == CombatResult::VICTORY);
-            ShowResultPanel(won);
-        }
-        DrawResultPanel();
-    }
-}
-
-void CombatScene::PostUpdate(float dt) 
-{
-
-}
-
+#pragma region LOAD / UNLOAD TEXTURES AND SOUNDS
 void CombatScene::Unload()
 {
     LOG("CombatScene: descargando...");
@@ -359,6 +176,241 @@ void CombatScene::LoadTextures()
     initiativeBar.chunkH = INIT_CHUNK_H;
     initiativeBar.chunkOverlap = BAR_CHUNK_OVERLAP;
     initiativeBar.LoadTexture("Assets/Textures/CombatScene/InitiativePoint.png");
+}
+
+void CombatScene::LoadSounds() {
+
+    LoadSoundsParty(alliedParty);
+    LoadSoundsParty(enemyParty);
+}
+
+void CombatScene::LoadSoundsParty(Party* party)
+{
+    for (Character* c : party->GetMembers()) {
+
+        //check if enemy
+        std::string folder;
+        if (c->GetIsAllied()) {
+            folder = "allies";
+        }
+        else {
+            folder = "enemies";
+        }
+
+        for (int i = 0; i < c->GetSkills().size(); i++) {
+            Skill skill = c->GetSkills()[i];
+
+            AbilitiesSounds ability;
+
+            std::string path = "Assets/Audio/Fx/" + folder + "/" + c->GetName() + "/" + skill.GetAnimationId() + ".wav";
+            ability.SetFxSound(path);
+            ability.SetIdSound(skill.GetAnimationId());
+
+            abilities.push_back(ability);
+        }
+    }
+}
+#pragma endregion
+
+
+void CombatScene::Load()
+{
+    LOG("CombatScene: cargando...");
+
+    CreateEnemyParty();
+    LoadTextures();
+    LoadSounds();
+    LoadSound();
+    Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Combat" + SceneUtils::GetFactionString(currentIslandFaction) + ".wav").c_str());
+
+    // ---------Testing------------
+    for (Character* c : alliedParty->GetMembers())
+    {
+        c->PrintDebugInfo();
+    }
+    // -----------------------------
+
+    if (enemyParty == nullptr)
+    {
+        LOG("CombatScene: ERROR — enemyParty es nullptr tras CreateEnemyParty");
+        return;
+    }
+
+    LOG("CombatScene: enemyParty tiene %d miembros:", enemyParty->GetMemberCount());
+    for (Character* c : enemyParty->GetMembers())
+    {
+        LOG("  enemy -> %s", c->GetName().c_str());
+    }
+
+    // Combat is created after lane assignments are confirmed — see FinalizeLaneAssignments()
+    // Start the lane selection phase immediately
+    laneAssignmentCursor = 0;
+    laneAssignments.clear();
+    ShowLaneSelectionFor(laneAssignmentCursor);
+}
+
+void CombatScene::Update(float dt)
+{
+    potionCount = alliedParty->GetInventory().GetItemCount("consumable");
+
+    // Reset the click guard every frame so the next real click is accepted
+    laneInputConsumed = false;
+    combatInputConsumed = false;
+
+    //play music
+    if (!Engine::GetInstance().audio->IsMusicPlaying()) {
+        LOG("Play music again!");
+        Engine::GetInstance().audio->PlayMusic(combMusic);
+    }
+
+    //lane selection blocker
+    if (uiState == CombatUIState::SELECTING_LANE)
+    {
+        return;
+    }
+
+    //combat not ready yet (blocker)
+    if (combat == nullptr)
+    {
+        return;
+    }
+
+    // Testing: F1 = victory, F2 = defeat
+    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
+    {
+        LOG("CombatScene [TEST]: forzando VICTORIA.");
+        combat->ForceVictory();
+    }
+    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F2) == KEY_DOWN)
+    {
+        LOG("CombatScene [TEST]: forzando DERROTA.");
+        combat->ForceDefeat();
+    }
+
+    // Core combat UI
+    UpdateCombatUI();
+    UpdateSkillHover();
+
+    //Characters
+    for (Character* c : combat->GetAllCombatants()) {
+        //call update of every character (animations)
+        c->Update(dt);
+    }
+    if (combat->IsDoingFeedback())
+    {
+        for (Character* c : combat->GetAllCombatants())
+        {
+            LOG("UPDATE POP UP");
+            c->UpdatePopUp(dt);
+        }
+    }
+
+    //Particles
+    EmitParticles(dt);
+    UpdateNextRoundPause(dt);
+
+    //Combat loop
+    if (!combat->GetWaitingForInput())
+    {
+        // Iterar hasta que el combate necesite esperar input externo
+        // (input del jugador o animación) o haya terminado
+        bool keepRunning = true;
+
+        while (keepRunning)
+        {
+            combat->Run(dt);
+
+            if (combat->CombatIsFinished()) { keepRunning = false; }
+            else if (combat->GetWaitingForInput()) { keepRunning = false; }
+            else if (combat->IsWaitingAnimation()) { keepRunning = false; }
+            else if (combat->IsNextRoundPause()) { keepRunning = false; }
+            else if (combat->IsDoingFeedback()) { keepRunning = false; }
+        }
+    }
+
+    // Results panel
+    if(combat->CombatIsFinished())
+    {
+        if (!resultPanelActive)
+        {
+            HideCombatUI();
+            bool won = (combat->GetResult() == CombatResult::VICTORY);
+            ShowResultPanel(won);
+        }
+    }
+}
+
+void CombatScene::PostUpdate(float dt) 
+{
+    //---------Background---------------
+    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+
+    //---------Lane selection-------------
+    if (uiState == CombatUIState::SELECTING_LANE)
+    {
+        DrawUILaneSelection(currentSelecting);
+        return;
+    }
+
+    //-------------Characters-----------------
+    for (Character* c : combat->GetAllCombatants()) {
+        c->Draw(dt);
+    }
+
+    LOG("IsDoingFeedback = %d", combat->IsDoingFeedback());
+    if (combat->IsDoingFeedback())
+    {
+        for (Character* c : combat->GetAllCombatants())
+        {
+            LOG("DrawPopUp");
+            c->DrawPopUp();
+        }
+    }
+
+    //------------Particles----------------
+    particleSystem.Draw();
+
+    //------Draw panels--------------------
+    DrawAlliedPanels();
+    DrawEnemyPanels();
+
+    //--------Other draw--------------
+    DrawArrowCurrentActor();
+    DrawSkillCosts();
+    DrawSkillTooltip();
+    DrawStatusIcons();
+
+    //------Draw turn table--------
+    DrawTurnOrderTable();
+
+    // Next round
+    if (combat->IsNextRoundPause())
+    {
+        DrawNextRoundBanner();
+    }
+
+    //Draw Potions UI
+    if (potionCount == 0) { Engine::GetInstance().render->DrawTexture(potionEmpty, POTION_BOUNDS.x, POTION_BOUNDS.y); }
+
+    SDL_Color White = { 255,255,255 };
+    SDL_Color Red = { 255,0,0 };
+
+    std::string potions = std::to_string(potionCount);
+
+    Engine::GetInstance().render->DrawText(
+        potions.c_str(),
+        TEXT1_BOUNDS.x,
+        TEXT1_BOUNDS.y,
+        TEXT1_BOUNDS.w,
+        TEXT1_BOUNDS.h,
+        potionCount > 0 ? White : Red
+    );
+
+    // results panel
+    if (combat->CombatIsFinished())
+    {
+        DrawResultPanel();
+    }
 }
 
 bool CombatScene::OnUIMouseClickEvent(UIElement* uiElement)
@@ -1267,7 +1319,6 @@ void CombatScene::EmitParticles(float dt)
     }
 
     particleSystem.Update(dt);
-    particleSystem.Draw();
 
 }
 
@@ -1283,7 +1334,6 @@ void CombatScene::UpdateNextRoundPause(float dt)
     }
 
     nextRoundTimer += dt;
-    DrawNextRoundBanner();
 
     if (nextRoundTimer >= NEXT_ROUND_PAUSE_DURATION)
     {

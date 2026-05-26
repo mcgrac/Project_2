@@ -14,7 +14,7 @@ public:
 	virtual ~UIButton();
 
 	// Called each loop iteration
-	bool Update(float dt);
+	bool Update(float dt) override;
 
 	bool CleanUp() override;
 
@@ -52,7 +52,7 @@ private:
 	void SetTint(Uint8 r, Uint8 g, Uint8 b) const;
 	void ResetTint() const;
 
-	void DrawButton() const;
+	bool Draw() override;
 
 	int buttonWidth;
 	int buttonHeight;

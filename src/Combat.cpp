@@ -220,7 +220,7 @@ void Combat::AssignEnemyLanes()
         damageCandidate ? damageCandidate->GetName().c_str() : "none");
 }
 
-void Combat::Run()
+void Combat::Run(float dt)
 {
     if (!runningCombat) return;
 
@@ -289,7 +289,12 @@ void Combat::Run()
 
     case CombatState::ATTACK_RESOLVE:
         AttackResolve();
-        state = CombatState::MODIFIERS;
+        feedbackTimer = 0.0f;
+        state = CombatState::ATTACK_FEEDBACK;
+        break;
+
+    case CombatState::ATTACK_FEEDBACK:
+        AttackFeedback(dt);
         break;
 
     case CombatState::MODIFIERS:
@@ -613,10 +618,6 @@ void Combat::ApplyModifiers()
 
         if (c->IsPoisoned())
         {
-            //int poisonDmg = c->GetPoisonDamage();
-            //c->TakePoisonDamage();
-            //std::cout << c->GetName() << " sufre " << poisonDmg << " de daño por veneno.\n";
-
             anyModifier = true;
             int poisonDmg = c->GetPoisonDamage();
             int hpBefore = c->GetCurrentHP();
@@ -873,8 +874,6 @@ void Combat::EnemyTurn()
 //  EXECUTE SKILL
 void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 {
-    int targetHpBefore = target->GetCurrentHP();
-
     LOG("EXECUTE SKILL");
 
     // Check if the ability need access to the whole party
@@ -905,6 +904,8 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 
         for (Character* c : GetAliveMembers(targetParty)) {
 
+            int targetHpBefore = target->GetCurrentHP();
+
             // Aplicar multiplicador específico de este objetivo según su Lane
             float multiplier = GetLaneDamageMultiplier(c);
             c->SetIncomingDamageMultiplier(multiplier);
@@ -914,11 +915,19 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
             // Limpiar multiplicador (volver a 1.0) tras el golpe
             c->SetIncomingDamageMultiplier(1.0f);
 
-            int targetHpAfter = target->GetCurrentHP();
+            int targetHpAfter = c->GetCurrentHP();
             int damageDone = targetHpBefore - targetHpAfter;
+
+            //add feedback
+            if (damageDone > 0)
+            {
+                LOG("Added damage pop up to target -> %s", c->GetName().c_str());
+                c->AddDamagePopup(damageDone);
+                c->OnHit();
+            }
 #if _DEBUG
             std::cout << user->GetName() << " usa " << skill.GetName()
-                << " -> " << target->GetName() << "\n";
+                << " -> " << c->GetName() << "\n";
 #endif
 
             //-----------------debug-----------------
@@ -926,10 +935,10 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
             {
 #if _DEBUG
                 std::cout << "    Daño: " << damageDone
-                    << " | HP " << target->GetName() << ": "
+                    << " | HP " << c->GetName() << ": "
                     << targetHpBefore << " -> " << targetHpAfter;
 
-                if (!target->GetIsAlive())
+                if (!c->GetIsAlive())
                 {
                     std::cout << "  [MUERTO]";
                 }
@@ -941,25 +950,25 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
             {
 #if _DEBUG
                 std::cout << "    Curación: " << (-damageDone)
-                    << " | HP " << target->GetName() << ": "
+                    << " | HP " << c->GetName() << ": "
                     << targetHpBefore << " -> " << targetHpAfter << "\n";
 #endif
             }
 
             // Estado de efectos del target tras el ataque
-            if (target->IsBurning())
+            if (c->IsBurning())
             {
 #if _DEBUG
-                std::cout << "    " << target->GetName()
-                    << " esta QUEMADO: " << target->GetBurnDamage() << " de daño/turno\n";
+                std::cout << "    " << c->GetName()
+                    << " esta QUEMADO: " << c->GetBurnDamage() << " de daño/turno\n";
 #endif
             }
 
-            if (target->IsPoisoned())
+            if (c->IsPoisoned())
             {
 #if _DEBUG
-                std::cout << "    " << target->GetName()
-                    << " esta ENVENENADO: " << target->GetPoisonDamage() << " de daño/turno\n";
+                std::cout << "    " << c->GetName()
+                    << " esta ENVENENADO: " << c->GetPoisonDamage() << " de daño/turno\n";
 #endif
             }
 #if _DEBUG
@@ -976,6 +985,8 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
     }
     else {
 
+        int targetHpBefore = target->GetCurrentHP();
+
         // Aplicar multiplicador específico de este objetivo según su Lane
         float multiplier = GetLaneDamageMultiplier(target);
         target->SetIncomingDamageMultiplier(multiplier);
@@ -987,6 +998,14 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
 
         int targetHpAfter = target->GetCurrentHP();
         int damageDone = targetHpBefore - targetHpAfter;
+
+        //add feedback
+        if (damageDone > 0)
+        {
+            LOG("Added damage popo Up 1 single target");
+            target->AddDamagePopup(damageDone);
+            target->OnHit();
+        }
 
         // Restar el coste de iniciativa al usuario
         user->AddInitiative(-(skill.GetInitiativeCost()));
@@ -1315,4 +1334,22 @@ bool Combat::IsAllied(Character* character)
         if (c == character) return true;
     }
     return false;
+}
+
+void Combat::AttackFeedback(float dt)
+{
+    feedbackTimer += dt;
+
+    if (feedbackTimer >= feedbackDuration)
+    {
+        //delete and reset popUps
+        for (Character* c : GetAllCombatants())
+        {
+            c->DeletePopUps();
+            c->ClearHitFlash();
+        }
+
+        feedbackTimer = 0.0f;
+        state = CombatState::MODIFIERS;
+    }
 }
