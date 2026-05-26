@@ -80,6 +80,16 @@ bool UIManager::Update(float dt)
 	return true;
 }
 
+bool UIManager::PostUpdate()
+{
+	for (const auto& uiElement : UIElementsList)
+	{
+		uiElement->Draw();
+	}
+
+	return true;
+}
+
 bool UIManager::CleanUp()
 {
 	for (const auto& uiElement : UIElementsList)

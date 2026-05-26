@@ -26,6 +26,7 @@ enum class CombatState
 
     ATTACK_ANIMATION,
     ATTACK_RESOLVE,
+    ATTACK_FEEDBACK,
 
     MODIFIERS,
     CHECK_DEFEAT,
@@ -38,18 +39,6 @@ enum class CombatResult
     VICTORY,
     DEFEAT
 };
-
-// ------------------- Lanes -------------------------------------
-// Each lane holds a reference to the character assigned to it and
-// computes bonuses that scale with the ship level.
-//
-// Base bonuses (level 1):
-//   Back  → +15 power
-//   Side  → +10 power, +10 speed
-//   Front → +10 speed, +10 max health
-//
-// Every stat is multiplied by shipLevel, so level 2 doubles them, etc.
-// Maximum ship level is 3.
 
 enum class LaneType
 {
@@ -84,7 +73,7 @@ public:
     ~Combat();
 
     // Whole combat cycle
-    void Run();
+    void Run(float dt);
     bool CombatIsFinished() const;
     std::vector<Character*> GetAllCombatants();
 
@@ -95,6 +84,8 @@ public:
     inline bool IsNextRoundPause() const { return state == CombatState::NEXT_ROUND_PAUSE; }
     inline bool GetWaitingForInput() const { return state == CombatState::WAITING_FOR_PLAYER_INPUT; }
     inline bool IsWaitingAnimation() const { return state == CombatState::ATTACK_ANIMATION; }
+    inline bool IsDoingFeedback() const { return state == CombatState::ATTACK_FEEDBACK; }
+
     inline Character* GetCurrentActor() const { return currentActor; }
     inline std::vector<Character*> GetAliveEnemies() { return GetAliveMembers(enemyParty); }
     inline std::vector<Character*> GetAliveAllies() { return GetAliveMembers(alliedParty); }
@@ -117,6 +108,7 @@ public:
     std::function<void(const std::string&)> onPlaySound;
 
 private:
+
 
     Party* alliedParty;
     Party* enemyParty;
@@ -180,4 +172,9 @@ private:
     std::vector<Character*> GetAliveMembers(Party* party);
     bool IsPartyDefeated(Party* party);
     bool IsAllied(Character* character);
+
+    float feedbackTimer = 0.0f;
+    float feedbackDuration = 2000.0f;
+    void AttackFeedback(float dt);
+
 };

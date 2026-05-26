@@ -80,11 +80,11 @@ bool UIButton::Update(float dt)
 	if (createdThisFrame)
 	{
 		createdThisFrame = false;
-		DrawButton();
+		//Draw();
 		return false;
 	}
 
-	if (Engine::GetInstance().scene->GetIgnoreInputThisFrame()) { DrawButton();  return false; } //ignore frame
+	if (Engine::GetInstance().scene->GetIgnoreInputThisFrame()) { /*Draw();*/  return false; } //ignore frame
 
 	if (state != UIElementState::DISABLED)
 	{
@@ -133,7 +133,7 @@ bool UIButton::Update(float dt)
 		}
 	}
 
-	DrawButton();
+	//DrawButton();
 
 	return false;
 }
@@ -172,11 +172,11 @@ void UIButton::ResetTint() const
 	SDL_SetTextureColorMod(spritesheet, 255, 255, 255);
 }
 
-void UIButton::DrawButton() const
+bool UIButton::Draw()
 {
 	if (spritesheet == nullptr) 
 	{
-		return;
+		return false;
 	}
 
 	SDL_Rect frameRect;
@@ -236,6 +236,8 @@ void UIButton::DrawButton() const
 	}
 
 	ResetTint();
+
+	return true;
 }
 
 void UIButton::SetDisabledRow(int row)
