@@ -275,6 +275,11 @@ void CombatScene::Unload()
         Engine::GetInstance().textures->UnLoad(pair.second);
     }
     characterIcons.clear();
+    for (auto& pair : characterIconsButtons)
+    {
+        Engine::GetInstance().textures->UnLoad(pair.second);
+    }
+    characterIconsButtons.clear();
     delete combat;
     combat = nullptr;
 
@@ -327,6 +332,22 @@ void CombatScene::LoadTextures()
 
     loadIconForParty(alliedParty);
     loadIconForParty(enemyParty);
+
+    // Cargar los botones icono de las party
+    auto loadIconButtonsForParty = [&](Party* party)
+        {
+            for (Character* c : party->GetMembers())
+            {
+                const std::string& name = c->GetName();
+                if (characterIconsButtons.find(name) != characterIconsButtons.end()) { continue; } // ya cargado
+
+                std::string path = "Assets/Textures/CombatScene/IconButtons/" + name + ".png";
+                characterIconsButtons[name] = Engine::GetInstance().textures->Load(path.c_str());
+            }
+        };
+
+    loadIconButtonsForParty(alliedParty);
+    loadIconButtonsForParty(enemyParty);
 
     //hp bar
     hpBar.chunkW = HP_CHUNK_W;
@@ -868,10 +889,10 @@ void CombatScene::DrawTurnOrderTable()
     Character* current = combat->GetCurrentActor();
 
     constexpr int TABLE_Y = 10;
-    constexpr int CELL_W = 200;
+    constexpr int CELL_W = 80;
     constexpr int CELL_H = 80;
     constexpr int ICON_SIZE = 64;
-    constexpr int CELL_GAP = 13; // (1280 - 6*200) / 5 gaps = ~13px entre celdas
+    constexpr int CELL_GAP = 8; // (1280 - 6*200) / 5 gaps = ~13px entre celdas
 
     SDL_Color white = { 255, 255, 255, 255 };
     SDL_Color yellow = { 255, 220,   0, 255 };
@@ -919,12 +940,17 @@ void CombatScene::DrawTurnOrderTable()
             int iconY = TABLE_Y + (CELL_H - ICON_SIZE) / 2;
             Engine::GetInstance().render->DrawTexture(it->second, cellX + 4, iconY, nullptr, false);
         }
-
+/*
         // Nombre a la derecha del icono
-        SDL_Rect textRect = { cellX + ICON_SIZE + 8, TABLE_Y + (CELL_H / 2) - 8, CELL_W - ICON_SIZE - 12, 20 };
+        SDL_Rect textRect = { cellX + ICON_SIZE + 16, TABLE_Y + (CELL_H / 2) - 8, 75, 25 };
         Engine::GetInstance().render->DrawText(c->GetName().c_str(),
             textRect.x, textRect.y, textRect.w, textRect.h,
             isCurrent ? yellow : white);
+        int currInitiative = c->GetCurrentInitiative();
+        std::string Ini = std::to_string(currInitiative);
+        Engine::GetInstance().render->DrawText(Ini.c_str(),
+            textRect.x, textRect.y, textRect.w, textRect.h,
+            isCurrent ? yellow : white); */
     }
 }
 
@@ -1109,8 +1135,8 @@ void CombatScene::ShowTargetPanel()
 
         // Buscar el icono del enemigo en characterIcons
         SDL_Texture* targetIcon = nullptr;
-        auto it = characterIcons.find(label);
-        if (it != characterIcons.end())
+        auto it = characterIconsButtons.find(label);
+        if (it != characterIconsButtons.end())
         {
             targetIcon = it->second;
         }
@@ -1122,7 +1148,7 @@ void CombatScene::ShowTargetPanel()
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,
             10 + i, // IDs 10..12
-            label.c_str(),
+            "",
             bounds,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0 + i, bounds.w, bounds.h
         );
@@ -1340,8 +1366,8 @@ void CombatScene::CreateUI()
 
             // Buscar el icono del enemigo en characterIcons
             SDL_Texture* targetIcon = nullptr;
-            auto it = characterIcons.find(label);
-            if (it != characterIcons.end())
+            auto it = characterIconsButtons.find(label);
+            if (it != characterIconsButtons.end())
             {
                 targetIcon = it->second;
             }
@@ -1354,7 +1380,7 @@ void CombatScene::CreateUI()
             Engine::GetInstance().uiManager->CreateUIElement(
                 UIElementType::BUTTON,
                 10 + i, // IDs 10..12
-                label.c_str(),
+                "",
                 bounds,
                 [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0 + i, bounds.w, bounds.h
             );
