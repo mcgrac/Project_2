@@ -720,6 +720,15 @@ void Combat::EndCombat()
         ResetBonusStats(c);
     }
 
+    //reset base Values for every character
+    for (Character* c : alliedParty->GetMembers()) {
+        //reset base stats to original
+        auto it = preCombatValues.find(c);
+        if (it != preCombatValues.end()) {
+            c->RestoreBaseStats(it->second);
+        }
+    }
+
     if (result == CombatResult::VICTORY)
     {
         std::cout << "\n══════════════════════════════════════\n";
@@ -727,27 +736,14 @@ void Combat::EndCombat()
         std::cout << "══════════════════════════════════════\n";
 
         //reset base Values for every character
-        for (Character* c : alliedParty->GetMembers()) {
-            //reset base stats to original
-            auto it = preCombatValues.find(c);
-            if (it != preCombatValues.end()) {
-                c->RestoreBaseStats(it->second);
-            }
-        }
-        
-        //// Distribuir XP a los aliados vivos
-        //int totalXP = enemyParty->GetTotalXPReward();
-        //int totalGold = enemyParty->GetTotalGoldReward();
-        //auto lootItems = enemyParty->GetLootItems();
-
-        //for (Character* ally : GetAliveMembers(alliedParty))
-        //{
-        //    ally->GainExperience(totalXP);
-        //    std::cout << ally->GetName() << " gana " << totalXP << " XP.\n";
+        //for (Character* c : alliedParty->GetMembers()) {
+        //    //reset base stats to original
+        //    auto it = preCombatValues.find(c);
+        //    if (it != preCombatValues.end()) {
+        //        c->RestoreBaseStats(it->second);
+        //    }
         //}
-
-        //alliedParty->AddGold(totalGold);
-        //std::cout << "Recompensa: " << totalGold << " de oro.\n";
+        
     }
     else // DEFEAT
     {
@@ -756,12 +752,12 @@ void Combat::EndCombat()
         std::cout << "══════════════════════════════════════\n";
 
         //reset allied party values
-        for (Character* c : alliedParty->GetMembers()) {
-            auto it = preCombatValues.find(c);
-            if (it != preCombatValues.end()) {
-                c->RestorePreCombatValues(it->second);
-            }
-        }
+        //for (Character* c : alliedParty->GetMembers()) {
+        //    auto it = preCombatValues.find(c);
+        //    if (it != preCombatValues.end()) {
+        //        c->RestorePreCombatValues(it->second);
+        //    }
+        //}
     }
 
     // Revivir aliados muertos con 1 HP para el siguiente combate
@@ -769,10 +765,13 @@ void Combat::EndCombat()
     {
         if (!c->GetIsAlive())
         {
-            c->ModifyCurrentHealth(1);
-            // Forzar isAlive a true
-            c->RestorePreCombatValues({ 1, true });
-            LOG("Combat: %s revive con 1 HP para el siguiente combate.", c->GetName().c_str());
+            c->SetIsAlive(true);
+            c->SetPendingToDie(false);
+
+            c->ModifyCurrentHealth(10);
+            // Forzar isAlive a true y pending to die false
+            c->RestorePreCombatValues({ 10, true, false });
+            LOG("Combat: %s revive con 10 HP para el siguiente combate.", c->GetName().c_str());
         }
     }
 
@@ -1227,40 +1226,6 @@ float Combat:: GetLaneDamageMultiplier(Character* c)
             reduction += damageReductionLane;
         }
     }
-
-    //if (frontLane.occupant == c)
-    //{
-    //    //----test-----
-    //    targetLane = "FRONT";
-    //    LOG("LANE LOGIC: %s is in FRONT. No cover available. Multiplier: 1.0", c->GetName().c_str());
-    //    //------------
-
-    //    return 1.0f;
-    //}
-
-    //if (sideLane.occupant == c)
-    //{
-    //    targetLane = "SIDE";
-    //    if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
-    //    {
-    //        reduction = 0.15f;
-    //        coversActive = 1;
-    //    }
-    //}
-    //else if (backLane.occupant == c)
-    //{
-    //    targetLane = "BACK";
-    //    if (frontLane.occupant != nullptr && frontLane.occupant->GetIsAlive())
-    //    {
-    //        reduction += 0.15f;
-    //        coversActive++;
-    //    }
-    //    if (sideLane.occupant != nullptr && sideLane.occupant->GetIsAlive())
-    //    {
-    //        reduction += 0.15f;
-    //        coversActive++;
-    //    }
-    //}
 
     float finalMultiplier = 1.0f - reduction;
 

@@ -76,6 +76,7 @@ public:
 	struct PreCombatValues {
 		int _health;
 		bool _isAlive;
+		bool _pendingToDie;
 
 		int _basePower;
 		int _baseSpeed;
@@ -106,6 +107,8 @@ public:
 	void RestorePreCombatValues(const PreCombatValues& snap) {
 		health = snap._health;
 		isAlive = snap._isAlive;
+		pendingToDie = snap._pendingToDie;
+
 		ClearStatusEffects();
 		ResetCurrentInitiative();
 
@@ -246,6 +249,9 @@ public:
 	inline void SetTotalPower() { totalPower = basePower + bonusPower; }
 	inline void SetTotalDurability() { totalDurability = baseDurability + bonusDurability; }
 	inline void SetTotalSpeed() { totalSpeed = baseSpeed + bonusSpeed; }
+
+	inline void SetIsAlive(bool b) { isAlive = b; }
+	inline void SetPendingToDie(bool b) { pendingToDie = b; }
 
 	inline void SetIncomingDamageMultiplier(float f) { incomingDamageMultiplier = f; }
 	inline void SetIsAllied(bool b) { isAllied = b; }
