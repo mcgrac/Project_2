@@ -4,6 +4,7 @@
 #include "Textures.h"
 #include "Log.h"
 #include "Item.h"
+#include "QuestManager.h"
 
 Character::Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 	int _maxInitiative, int _basePower, int _bonusPower, int _totalPower, int _totalDurability, int _baseDurability, int _bonusDurability, int _maxDurability, int _baseSpeed,
@@ -152,6 +153,8 @@ void Character::GainExperience(int amount)
 
 void Character::LevelUp()
 {
+	if (level == 20) { return; } //max level is 20
+
 	level++;
 
 	LOG("|Character: %s has level up to level %d", name.c_str(), level);
@@ -165,6 +168,10 @@ void Character::LevelUp()
 	SetTotalDurability();
 	SetTotalPower();
 	SetTotalSpeed();
+
+	//quest check level character and stats character
+	QuestManager::GetInstance().OnCharacterLevelUp(this);
+	QuestManager::GetInstance().OnStatChanged(this);
 }
 
 void Character::Draw(float dt) 

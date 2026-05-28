@@ -19,7 +19,7 @@
 #include "ItemManager.h"
 #include <algorithm>
 #include <random>
-
+#include "QuestManager.h"
 #include "Inventory.h"
 
 #pragma region POSITIONS
@@ -456,11 +456,14 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
                 }
                 selectedItemButton = nullptr;
 
-               LOG("Item equipado desde tienda");
+                //check quest buy an item
+                QuestManager::GetInstance().OnItemPurchased(equippable->GetName(), SceneUtils::GetFactionString(shop->GetIsland()->GetIslandFaction()));
+
+                LOG("Item equipado desde tienda");
             }
             else
             {
-                LOG("No hay espacio");
+                 LOG("No hay espacio");
             }
 
             state = ShopState::SHOW_ITEMS;

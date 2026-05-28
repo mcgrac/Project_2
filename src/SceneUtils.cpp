@@ -55,6 +55,14 @@ std::string stripped = dialogueId.substr(4); // quita "npc_"
 	
 }
 
+void SceneUtils::DrawAutoText(const char* text, int x, int y, SDL_Color color, int charW, int lineH)
+{
+	if (text == nullptr) { return; }
+	int len = (int)strlen(text);
+	int w = len * charW;
+	Engine::GetInstance().render->DrawText(text, x, y, w, lineH, color);
+}
+
 /*std::string SceneUtils::GetBackPath(const std::string& dialogueId)
 {
 	// npc_hostel_human -> Assets/Textures/Portraits/hostel/human.png

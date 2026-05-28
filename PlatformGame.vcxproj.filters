@@ -50,6 +50,9 @@
     <Filter Include="Source Files\Game\Dialogue">
       <UniqueIdentifier>{6a06f30b-03e4-4ef9-b055-97e965277c0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game\Quests">
+      <UniqueIdentifier>{5dfbb577-8ddd-4d3f-9825-edf10d265cfe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json">
@@ -267,6 +270,12 @@
     <ClCompile Include="src\ParticleSystem.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
+    <ClCompile Include="src\QuestScene.cpp">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="src\QuestManager.cpp">
+      <Filter>Source Files\Game\Quests</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Audio.h">
@@ -476,6 +485,15 @@
     <ClInclude Include="src\ParticleSystem.h">
       <Filter>Source Files\Game</Filter>
     </ClInclude>
+    <ClInclude Include="src\QuestScene.h">
+      <Filter>Source Files\Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Quest.h">
+      <Filter>Source Files\Game\Quests</Filter>
+    </ClInclude>
+    <ClInclude Include="src\QuestManager.h">
+      <Filter>Source Files\Game\Quests</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="config.xml">
@@ -518,6 +536,9 @@
       <Filter>Configuration FIles</Filter>
     </Xml>
     <Xml Include="Assets\Save\SaveData.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
+    <Xml Include="Assets\Quests\quests.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
   </ItemGroup>

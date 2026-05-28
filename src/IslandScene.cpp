@@ -10,6 +10,7 @@
 #include "Log.h"
 #include "SaveLoad.h"
 #include "InGameScene.h"
+#include "QuestManager.h"
 
 IslandScene::IslandScene(Island* island, WorldMap* worldMap, Party* allied, Ship* _ship, InGameScene* _inGame)
     : island(island)
@@ -33,6 +34,9 @@ void IslandScene::Load()
 {
     LoadTextures();
     CreateUI();
+
+    //check quest island visited (faction)
+    QuestManager::GetInstance().OnIslandVisited(SceneUtils::GetFactionString(island->GetIslandFaction()));
 }
 
 void IslandScene::LoadSound() {

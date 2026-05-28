@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quests>
+
+	<quest id="1" name="First Ascent" reward_gold="100">
+		<description>Level up any character to level 5.</description>
+		<condition type="REACH_LEVEL" target_level="5"/>
+	</quest>
+
+	<quest id="2" name="Explorer" reward_gold="150">
+		<description>Visit an island belonging to the Sirens faction.</description>
+		<condition type="VISIT_FACTION_ISLAND" faction="siren"/>
+	</quest>
+
+	<quest id="3" name="Merchant" reward_gold="200">
+		<description>Buy the item Heart of the Heavens from the Humans faction.</description>
+		<condition type="BUY_FACTION_ITEM" faction="human" item_name="Heart of the Heavens"/>
+	</quest>
+
+	<quest id="4" name="Brutal Strike" reward_gold="300">
+		<description>Deal 500 damage in a single combat.</description>
+		<condition type="DAMAGE_IN_COMBAT" amount="500"/>
+	</quest>
+
+	<quest id="5" name="War Veteran" reward_gold="500">
+		<description>Deal a total of 5000 damage across all combats.</description>
+		<condition type="TOTAL_DAMAGE" amount="5000"/>
+	</quest>
+
+	<quest id="6" name="Brute Strength" reward_gold="250">
+		<description>Have a character with 20 Power points.</description>
+		<condition type="STAT_THRESHOLD" stat="power" amount="200"/>
+	</quest>
+
+</quests>
