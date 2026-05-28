@@ -162,6 +162,7 @@ private:
 
     // icono por personaje: cargados dinámicamente por nombre
     std::unordered_map<std::string, SDL_Texture*> characterIcons;
+    std::unordered_map<std::string, SDL_Texture*> characterIconsButtons;
 
     int hoveredSkillIdx = -1;
 
