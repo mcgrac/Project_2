@@ -300,7 +300,6 @@ void CombatScene::Update(float dt)
     {
         for (Character* c : combat->GetAllCombatants())
         {
-            LOG("UPDATE POP UP");
             c->UpdatePopUp(dt);
         }
     }
@@ -357,12 +356,10 @@ void CombatScene::PostUpdate(float dt)
         c->Draw(dt);
     }
 
-    LOG("IsDoingFeedback = %d", combat->IsDoingFeedback());
     if (combat->IsDoingFeedback())
     {
         for (Character* c : combat->GetAllCombatants())
         {
-            LOG("DrawPopUp");
             c->DrawPopUp();
         }
     }
