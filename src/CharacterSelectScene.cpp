@@ -408,7 +408,7 @@ void CharacterSelectScene::CreateInterfaceButtons()
     SDL_Rect openBounds = { 4, 85, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 10, "tutorial", openBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 2, openBounds.w, openBounds.h
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 0, openBounds.w, openBounds.h
     );
 }
 
@@ -491,21 +491,21 @@ void CharacterSelectScene::UpdateTutorialUI()
         SDL_Rect openBounds = { 4, 85, 72, 72 };
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, 10, "tutorial", openBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 2, openBounds.w, openBounds.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 0, openBounds.w, openBounds.h
         );
 
         //Left
         SDL_Rect leftBounds = { 29, 339, 42, 42 };
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, 11, "left", leftBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialLeftButton, 2, leftBounds.w, leftBounds.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialLeftButton, 0, leftBounds.w, leftBounds.h
         );
 
         //Right
         SDL_Rect rightBounds = { 1209, 339, 42, 42 };
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON, 12, "right", rightBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialRightButton, 2, rightBounds.w, rightBounds.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialRightButton, 0, rightBounds.w, rightBounds.h
         );
     }
     else {

@@ -198,10 +198,23 @@ void InGameScene::Update(float dt)
             );
         }
     }
-
+    //check if tutorial is open, if it is don't draw the scene and draw it instead.
+    if (tutorialOpen) {
+        Engine::GetInstance().render->DrawTexture(tutorials[tutorialIndex], 0, 0);
+    }
+    else {
+        //render background
+        Engine::GetInstance().render->DrawTexture(background, 0, 0);
+        Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
+        //render ship
+        ship->Update(dt);
+        //draw hp ship
+        Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
+        shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
+    }
     //render background
-    Engine::GetInstance().render->DrawTexture(background, 0, 0);
-    Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
+    //Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    //Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
 
     //detect pause menu
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
@@ -227,11 +240,11 @@ void InGameScene::Update(float dt)
     worldMap->Update(dt);
 
     //render ship
-    ship->Update(dt);
+    //ship->Update(dt);
 
     //draw hp ship
-    Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
-    shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
+    //Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
+    //shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
 
     //gold counter
     goldCounter.Update(alliedParty->GetGold(), dt);
@@ -259,6 +272,12 @@ void InGameScene::Unload()
     Engine::GetInstance().textures->UnLoad(gameWonTex);
 
     Engine::GetInstance().textures->UnLoad(emptyButton);
+
+    //unload tutorial textures
+    Engine::GetInstance().textures->UnLoad(tutorialOpenButton);
+    Engine::GetInstance().textures->UnLoad(tutorialLeftButton);
+    Engine::GetInstance().textures->UnLoad(tutorialRightButton);
+    for (int i = 0; i < slidesNum; i++) { Engine::GetInstance().textures->UnLoad(tutorials[i]); }
 
     Engine::GetInstance().textures->UnLoad(shipPanelTex);
     shipHpBar.UnloadTexture();
@@ -297,6 +316,17 @@ void InGameScene::LoadTextures(){
     gameWonTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/victory.png");
     emptyButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/emptyButton.png");
 
+    //tutorial textures
+    tutorialOpenButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/tutorialOpenButton.png");
+    tutorialLeftButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/left.png");
+    tutorialRightButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/right.png");
+    //tutorial slides
+    for (int i = 0; i < slidesNum; i++) {
+        std::string path = "Assets/Textures/MainMap/tutorial";
+        std::string index = std::to_string(i);
+        tutorials.push_back(Engine::GetInstance().textures->Load((path + index + ".png").c_str()));
+    }
+
     shipPanelTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/BoatHealthBarEXP.png");
     shipHpBar.chunkW = 10;
     shipHpBar.chunkH = 12;
@@ -321,6 +351,9 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
         Engine::GetInstance().audio->PlayFx(buttonPress);
         PushSceneFromInGame(new PartyScene(alliedParty));
         break;
+    case 3:
+        //open tutorial
+
     case MAIN_MENU_BUTTON_ID:
         SaveLoad::ClearSave();
         Engine::GetInstance().render->camera.x = 0;
@@ -662,6 +695,12 @@ void InGameScene::CreateUI()
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, teamButton, 0, partyBtnBounds.w, partyBtnBounds.h
     );
     partyButon->isHUD = true; //fixed on screen
+
+    //tutorial button
+    SDL_Rect tutorialBtnBounds = { 20, 100, 72, 72 };
+    auto tutorialButton = Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 3, "tutorial", partyBtnBounds, [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 0, tutorialBtnBounds.w, tutorialBtnBounds.h
+    );
 
     //island buttons
     CreateIslandButtons();
