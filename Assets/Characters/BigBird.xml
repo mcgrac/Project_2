@@ -38,7 +38,7 @@
     />
 
 	<skills>
-		<skill id="birds_flying" initiativeCost="100" />
+		<skill id="bird_flying" initiativeCost="100" />
 		<skill id="paper_bird_projectile" initiativeCost="130" />
 	</skills>
 
