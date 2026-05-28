@@ -20,6 +20,8 @@
 #include "MainMenuScene.h"
 #include "ItemManager.h"
 #include "EquippableItem.h"
+#include "QuestManager.h"
+#include "QuestScene.h"
 
 // First button id reserved for combat button; island buttons start from this offset
 static const int ISLAND_BUTTON_ID_OFFSET = 100;
@@ -52,6 +54,10 @@ void InGameScene::Load()
 {
     // Construir la party aliada con los 3 personajes seleccionados
     alliedParty = new Party("Aliados");
+
+    //initi quest manager
+    QuestManager::GetInstance().Init(alliedParty);
+       
     if (!prebuiltCharacters.empty())
     {
         // Venimos de LoadingScene — personajes ya creados con stats y visuals
@@ -199,10 +205,6 @@ void InGameScene::Update(float dt)
         }
     }
 
-    //render background
-    Engine::GetInstance().render->DrawTexture(background, 0, 0);
-    Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
-
     //detect pause menu
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
     {
@@ -229,18 +231,30 @@ void InGameScene::Update(float dt)
     //render ship
     ship->Update(dt);
 
-    //draw hp ship
-    Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
-    shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
+
 
     //gold counter
     goldCounter.Update(alliedParty->GetGold(), dt);
-    
+
 }
 
 void InGameScene::PostUpdate(float dt)
 {
     if (gameOverActive || gameWonActive) { return; }
+
+    //render background
+    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
+
+    //draw hp ship and ship
+    Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
+    shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
+    ship->Draw(dt);
+
+    //draw gol counter
+    goldCounter.Draw(dt);
+
+    //render skulls and lines above buttons
     worldMap->PostUpdate(dt);
 }
 
@@ -316,6 +330,9 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
 
     switch (uiElement->id)
     {
+    case 1:
+        PushSceneFromInGame(new QuestScene());
+        break;
     case 2:
         //Engine::GetInstance().scene->PushScene(new PartyScene(alliedParty));
         Engine::GetInstance().audio->PlayFx(buttonPress);
@@ -662,6 +679,14 @@ void InGameScene::CreateUI()
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, teamButton, 0, partyBtnBounds.w, partyBtnBounds.h
     );
     partyButon->isHUD = true; //fixed on screen
+
+    //button quests
+    SDL_Rect questsBtnBounds = { 100, 600, 72, 72 };
+    auto questsBtn = Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 1, "", questsBtnBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, teamButton, 0, questsBtnBounds.w, questsBtnBounds.h
+    );
+    questsBtn->isHUD = true; //fixed on screen
 
     //island buttons
     CreateIslandButtons();

@@ -1,36 +1,30 @@
 <?xml version="1.0"?>
 <savedata>
-	<world currentIslandId="6" />
-	<party gold="2950" consumables="0">
-		<character name="Ignis" health="173" isAlive="true" experience="30" level="3">
+	<world currentIslandId="0" />
+	<party gold="0" consumables="0">
+		<character name="Ignis" health="105" isAlive="true" experience="0" level="1">
 			<upgrades>
 				<tier index="0" chosen="" />
 				<tier index="1" chosen="" />
 				<tier index="2" chosen="" />
 			</upgrades>
-			<equippedItems>
-				<item name="Mysterious Shroom 5" />
-			</equippedItems>
+			<equippedItems />
 		</character>
-		<character name="Fatuus" health="103" isAlive="true" experience="50" level="2">
+		<character name="Fatuus" health="100" isAlive="true" experience="0" level="1">
 			<upgrades>
 				<tier index="0" chosen="" />
 				<tier index="1" chosen="" />
 				<tier index="2" chosen="" />
 			</upgrades>
-			<equippedItems>
-				<item name="Mysterious Shroom 1" />
-			</equippedItems>
+			<equippedItems />
 		</character>
-		<character name="Jochi" health="78" isAlive="true" experience="50" level="2">
+		<character name="Jochi" health="95" isAlive="true" experience="0" level="1">
 			<upgrades>
 				<tier index="0" chosen="" />
 				<tier index="1" chosen="" />
 				<tier index="2" chosen="" />
 			</upgrades>
-			<equippedItems>
-				<item name="Mysterious Shroom 3" />
-			</equippedItems>
+			<equippedItems />
 		</character>
 	</party>
 </savedata>

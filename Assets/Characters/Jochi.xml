@@ -51,15 +51,15 @@
 	<upgradeTree>
 		<tier requiredLevel="5">
 			<optionA name="Artifact Studies"  description="Power +20, Speed +20, Durability +20, Current Health -20" effect1="power+20" effect2="speed+20" effect3="health-20" effect4="durability+20"/>
-			<optionB name="Alchemy Studies"   description="Fire modifier +20, Poison modifier +20"  effect1="firePower+20" effect2="poisonPower+20" />
+			<optionB name="Alchemy Studies"   description="Fire modifier +20, Poison modifier +20"  effect1="fireMod+20" effect2="poisonMod+20" />
 		</tier>
 		<tier requiredLevel="10">
 			<optionA name="Quick Spelling"    description="Speed +40, Power +20" effect1="speed+40" effect2="power+20"/>
-			<optionB name="Elemental Scepter" description="Fire modifier +50, Poison modifier +50, Speed +10"  effect1="firePower+50" effect2="poisonPower+50" effect3 ="speed+10" />
+			<optionB name="Elemental Scepter" description="Fire modifier +50, Poison modifier +50, Speed +10"  effect1="fireMod+50" effect2="poisonMod+50" effect3 ="speed+10" />
 		</tier>
 		<tier requiredLevel="15">
-			<optionA name="Immesurable Power" description="Power +50" effect1="Power+50"/>
-			<optionB name="Poisoned Blood"  description="Health -20, Posion modifier +130"  effect1="health-20" effect2="poisonpower+130"  />
+			<optionA name="Immesurable Power" description="Power +50" effect1="power+50"/>
+			<optionB name="Poisoned Blood"  description="Health -20, Posion modifier +130"  effect1="health-20" effect2="poisonMod+130"  />
 		</tier>
 	</upgradeTree>
 

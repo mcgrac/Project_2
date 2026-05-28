@@ -73,6 +73,7 @@ public:
 	static std::string GetBuildingTexturePath(IslandFaction faction, const std::string& building);
 	static std::string GetIslandTexturePath(IslandFaction faction);
 	static std::string GetPortraitPath(const std::string& dialogueId);
+	static void DrawAutoText(const char* text, int x, int y, SDL_Color color, int charW = 8, int lineH = 20);
 
 	static bool PointInRect(int x, int y, const SDL_Rect& r);
 	static SDL_Point GetMousePosition();
