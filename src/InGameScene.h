@@ -82,7 +82,9 @@ private:
     std::vector<SDL_Texture*> tutorials; //vector withe the tutorial slides' textures
     int tutorialIndex = 0; 
     int slidesNum = 2;
-    bool tutorialOpen = true; //checks if tutorial is open or not
+    bool tutorialOpen = false; //checks if tutorial is open or not
+
+    void UpdateTutorialUI();
 
     DynamicBar shipHpBar;
 

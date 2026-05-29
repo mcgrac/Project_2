@@ -330,7 +330,7 @@ void InGameScene::LoadTextures(){
     shipPanelTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/BoatHealthBarEXP.png");
     shipHpBar.chunkW = 10;
     shipHpBar.chunkH = 12;
-    shipHpBar.position = Vector2D(40.0f, 8.0f); // ajusta al layout del panel
+    shipHpBar.position = Vector2D(90.0f, 25.0f); // ajusta al layout del panel
     shipHpBar.LoadTexture("Assets/Textures/CombatScene/HealthPoint.png");
 
 }
@@ -353,6 +353,8 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case 3:
         //open tutorial
+        tutorialOpen = !tutorialOpen;
+        //update tutorial UI
 
     case MAIN_MENU_BUTTON_ID:
         SaveLoad::ClearSave();
@@ -696,12 +698,20 @@ void InGameScene::CreateUI()
     );
     partyButon->isHUD = true; //fixed on screen
 
-    //tutorial button
-    SDL_Rect tutorialBtnBounds = { 20, 100, 72, 72 };
+    /*//tutorial button
+    SDL_Rect tutorialBtnBounds = { 20, 20, 72, 72 };
     auto tutorialButton = Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 3, "tutorial", partyBtnBounds, [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 0, tutorialBtnBounds.w, tutorialBtnBounds.h
-    );
+        UIElementType::BUTTON, 3, "tutorial", tutorialBtnBounds, [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 0, tutorialBtnBounds.w, tutorialBtnBounds.h
+    );*/
 
     //island buttons
     CreateIslandButtons();
+}
+
+void InGameScene::UpdateTutorialUI() {
+    // tutorial button
+        SDL_Rect tutorialBtnBounds = { 20, 20, 72, 72 };
+    auto tutorialButton = Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, 3, "tutorial", tutorialBtnBounds, [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 0, tutorialBtnBounds.w, tutorialBtnBounds.h
+    );
 }
