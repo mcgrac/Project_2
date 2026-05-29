@@ -2,6 +2,7 @@
 #include "Quest.h"
 #include <vector>
 #include <string>
+#include "pugixml.hpp"
 
 class Party;
 class Character;
@@ -19,7 +20,7 @@ public:
     void LoadQuestsFromXML(const std::string& path);
 
     // Persistencia: guarda/carga solo status y progress en el XML de guardado
-    void SaveProgress(const std::string& savePath);
+    void SaveProgress(pugi::xml_node& rootNode);
     void LoadProgress(const std::string& savePath);
 
     // Eventos

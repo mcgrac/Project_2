@@ -2,7 +2,6 @@
 #include "Quest.h"
 #include "Party.h"
 #include "Character.h"
-#include "pugixml.hpp"
 #include <iostream>
 
 
@@ -85,30 +84,20 @@ void QuestManager::LoadQuestsFromXML(const std::string& path)
 
 // Persistencia
 
-void QuestManager::SaveProgress(const std::string& savePath)
+void QuestManager::SaveProgress(pugi::xml_node& rootNode)
 {
-    pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_file(savePath.c_str());
-    if (!result)
-    {
-        std::cerr << "[QuestManager] SaveProgress: could not load " << savePath << "\n";
-        return;
-    }
-
-    // Elimina el nodo quests anterior si existe
-    pugi::xml_node root = doc.child("save");
-    pugi::xml_node oldQuests = root.child("quests");
+    pugi::xml_node oldQuests = rootNode.child("quests");
     if (oldQuests)
     {
-        root.remove_child(oldQuests);
+        rootNode.remove_child(oldQuests);
     }
 
-    pugi::xml_node questsNode = root.append_child("quests");
+    pugi::xml_node questsNode = rootNode.append_child("quests");
 
     for (const Quest& quest : _quests)
     {
         pugi::xml_node node = questsNode.append_child("quest");
-        node.append_attribute("id")       = quest.id;
+        node.append_attribute("id") = quest.id;
         node.append_attribute("progress") = quest.progress;
 
         if (quest.status == QuestStatus::COMPLETED)
@@ -124,8 +113,6 @@ void QuestManager::SaveProgress(const std::string& savePath)
             node.append_attribute("status") = "active";
         }
     }
-
-    doc.save_file(savePath.c_str());
 }
 
 void QuestManager::LoadProgress(const std::string& savePath)
@@ -137,7 +124,7 @@ void QuestManager::LoadProgress(const std::string& savePath)
         return;
     }
 
-    pugi::xml_node root      = doc.child("save");
+    pugi::xml_node root = doc.child("savedata");
     pugi::xml_node questsNode = root.child("quests");
     if (!questsNode)
     {
@@ -146,8 +133,8 @@ void QuestManager::LoadProgress(const std::string& savePath)
 
     for (pugi::xml_node node : questsNode.children("quest"))
     {
-        int id            = node.attribute("id").as_int();
-        int progress      = node.attribute("progress").as_int();
+        int id = node.attribute("id").as_int();
+        int progress = node.attribute("progress").as_int();
         std::string status = node.attribute("status").as_string();
 
         for (Quest& quest : _quests)

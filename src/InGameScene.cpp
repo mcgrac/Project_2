@@ -108,6 +108,9 @@ void InGameScene::Load()
                 worldMap->SetCurrentIsland(data.currentIslandId);
                 LOG("InGameScene: recursos restaurados — oro %d, isla %d.",
                     data.partyGold, data.currentIslandId);
+
+                //load quest information
+                QuestManager::GetInstance().LoadProgress(SaveLoad::SAVE_PATH);
             }
         }
     }

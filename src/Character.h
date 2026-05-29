@@ -249,6 +249,7 @@ public:
 	inline void SetTotalPower() { totalPower = basePower + bonusPower; }
 	inline void SetTotalDurability() { totalDurability = baseDurability + bonusDurability; }
 	inline void SetTotalSpeed() { totalSpeed = baseSpeed + bonusSpeed; }
+	inline void SetCurrentHealth(int i) { health = i; }
 
 	inline void SetIsAlive(bool b) { isAlive = b; }
 	inline void SetPendingToDie(bool b) { pendingToDie = b; }
