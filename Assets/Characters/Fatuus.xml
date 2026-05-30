@@ -55,11 +55,11 @@
 		</tier>
 		<tier requiredLevel="10">
 			<optionA name="Apex Predator"    description="Power +20, Speed +10" effect1="power+20" effect2="speed+10"/>
-			<optionB name="Elementalist" description="Fire modifier +15, Posion Modifier +15" effect1="firePower+15" effect2="poisonPower+15"/>
+			<optionB name="Elementalist" description="Fire modifier +15, Posion Modifier +15" effect1="fireMod+15" effect2="poisonMod+15"/>
 		</tier>
 		<tier requiredLevel="15">
-			<optionA name="Specialization" description="Fire Modifier +20, Power+30" effect1="firePower+20" effect2="power+30"/>
-			<optionB name="Adaptability"  description="Fire modifier +10, Posion modifier +15, Speed +10, Lifesteal +15"  effect1="firePower+10" effect2="posionPower+15" effect3="speed+10" effect4="lifesteal+15" />
+			<optionA name="Specialization" description="Fire Modifier +20, Power+30" effect1="fireMod+20" effect2="power+30"/>
+			<optionB name="Adaptability"  description="Fire modifier +10, Posion modifier +15, Speed +10, Lifesteal +15"  effect1="fireMod+10" effect2="poisonMod+15" effect3="speed+10" effect4="lifesteal+15" />
 		</tier>
 	</upgradeTree>
 

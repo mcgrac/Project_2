@@ -14,6 +14,13 @@ struct AnimAlias
 	bool loop;
 };
 
+
+struct DamagePopup
+{
+	int value = 0;
+	Vector2D offset;
+};
+
 class Character {
 protected:
 
@@ -69,6 +76,7 @@ public:
 	struct PreCombatValues {
 		int _health;
 		bool _isAlive;
+		bool _pendingToDie;
 
 		int _basePower;
 		int _baseSpeed;
@@ -99,6 +107,8 @@ public:
 	void RestorePreCombatValues(const PreCombatValues& snap) {
 		health = snap._health;
 		isAlive = snap._isAlive;
+		pendingToDie = snap._pendingToDie;
+
 		ClearStatusEffects();
 		ResetCurrentInitiative();
 
@@ -153,7 +163,7 @@ public:
 
 	inline void AddUpgradeTier(UpgradeTier tier) { upgradeTree->AddTier(tier); }
 	inline void TakePoisonDamage() { ReceiveMagicalDamage(poisonStatMod, nullptr); }
-	inline void TakeBurnDamage() { ReceiveMagicalDamage(burnedStatMod, nullptr); }
+	inline void TakeBurnDamage() { ReceivePhysicalDamage(burnedStatMod, nullptr); }
 
 	// Initiative (combat)
 	inline void ResetCurrentInitiative() { initiative = 0; }
@@ -169,6 +179,14 @@ public:
 
 	void ClearBonusStats();
 
+#pragma region DAMAGE POP-UP
+	void AddDamagePopup(int dmg);
+	void OnHit();
+	void DrawPopUp();
+	void UpdatePopUp(float dt);
+	void DeletePopUps();
+	void ClearHitFlash();
+#pragma endregion
 
 #pragma region GETTERS
 	inline Vector2D GetPosition() const { return position; }
@@ -232,6 +250,9 @@ public:
 	inline void SetTotalDurability() { totalDurability = baseDurability + bonusDurability; }
 	inline void SetTotalSpeed() { totalSpeed = baseSpeed + bonusSpeed; }
 
+	inline void SetIsAlive(bool b) { isAlive = b; }
+	inline void SetPendingToDie(bool b) { pendingToDie = b; }
+
 	inline void SetIncomingDamageMultiplier(float f) { incomingDamageMultiplier = f; }
 	inline void SetIsAllied(bool b) { isAllied = b; }
 #pragma endregion
@@ -242,8 +263,21 @@ public:
 
 private:
 
+	//-----------FUNCTIONS--------------//
+
+
+	//-----------VARIABLES------------//
 	float incomingDamageMultiplier = 1.0f;
 	bool pendingToDie = false;
 
 	static constexpr int MAX_DURABILITY_POSSIBLE = 70;
+
+#pragma region DAMAGE POPUP
+	std::vector<DamagePopup> damagePopups;
+	bool hitFlash = false;
+	float blinkTimer = 0.0f;
+	bool blinkVisible = true;
+	const float BLINK_INTERVAL = 80.0f; // ajusta esto
+#pragma endregion
+
 };

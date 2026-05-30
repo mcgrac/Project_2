@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "DialogueManager.h"
 #include "ItemManager.h"
+#include "QuestManager.h"
 
 LoadingScene::LoadingScene(std::vector<std::string> _characterNames, bool _isContinue)
     : characterNames(_characterNames)
@@ -69,6 +70,9 @@ void LoadingScene::DoBackgroundLoad()
 
     //dialogues
     DialogueManager::LoadDialogues("dialogues.xml");
+
+    //quests
+    QuestManager::GetInstance().LoadQuestsFromXML("Assets/Quests/quests.xml");
 
     loadingDone = true;
 }

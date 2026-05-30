@@ -127,7 +127,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("battle_fury", [](int cost) {
-        Skill s("Battle Fury", DamageType::Magical, 0, 0.5f, cost, "battle_fury");
+        Skill s("Battle Fury", DamageType::Magical, 0, 0.0f, cost, "battle_fury");
         s.SetDescription("");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
@@ -369,6 +369,8 @@ SkillRegistry::SkillRegistry()
     Register("yellow_tornado", [](int cost) {
         Skill s("Yellow Tornado", DamageType::Magical, 10, 0.1f, cost, "yellow_tornado");
         s.SetDescription("Deal 5(+10% Power) Magic Damage");
+        s.SetHasAreaEffect(true);
+        s.SetAreaEffectTargetAllies(false);
         s.AddEffect({
             "Reduce the Initiative by 20",
             [](Character* caster, Character* target) {
@@ -780,6 +782,7 @@ SkillRegistry::SkillRegistry()
 
     Register("electric_shock", [](int cost) {
         Skill s("Electric Shock", DamageType::Magical, 3, 0.1f, cost, "electric_shock");
+        s.SetDescription("Deal 3(+10%Power) magic damage");
         s.AddEffect({
             "Reduce initiative by 10(+10%Power)%",
             [](Character* caster, Character* target) {
@@ -812,7 +815,7 @@ SkillRegistry::SkillRegistry()
 #pragma region BLUE JELLY
 
     Register("waves", [](int cost) {
-        Skill s("Waves", DamageType::Magical, 3, 0.1f, cost, "waves");
+        Skill s("Waves", DamageType::Magical, 0, 0.0f, cost, "waves");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(false);
         s.AddEffect({
@@ -830,6 +833,7 @@ SkillRegistry::SkillRegistry()
         Skill s("Electric Ball", DamageType::Magical, 3, 0.15f, cost, "electric_ball");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(false);
+        s.SetDescription("Deal 3(+15% Power) magic damage");
         s.AddEffect({
             "Reduce the enemy's Power by 10(+10% Power)%",
             [](Character* caster, Character* target) {
@@ -921,6 +925,7 @@ SkillRegistry::SkillRegistry()
 
     Register("fire_attack", [](int cost) {
         Skill s("Fire Attack", DamageType::Physical, 5, 1.0f, cost, "fire_attack");
+        s.SetDescription("Deal 5(+100% Power) Physical Damage");
         s.AddEffect({
             "Deal 5(+100% Power) Physical Damage and inflict 10 Fire",
             [](Character* caster, Character* target) {

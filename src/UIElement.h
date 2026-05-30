@@ -56,7 +56,11 @@ public:
 		return true;
 	}
 
-	// 
+	virtual bool Draw() {
+
+		return true;
+	}
+
 	void SetTexture(SDL_Texture* tex)
 	{
 		texture = tex;

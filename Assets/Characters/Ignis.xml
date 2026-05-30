@@ -58,8 +58,8 @@
 			<optionB name="Uncontrolled Overgrowth" description="Max Health +100" effect1="health+100" />
 		</tier>
 		<tier requiredLevel="15">
-			<optionA name="Jungle's Heart" description="Durability +10, Fire modifier +10, Power +10, Poison modifier +10" effect1="durability+10" effect2="firePower+10" effect3="power+10" effect4="poisonPower+10"/>
-			<optionB name="Fire Spirit"  description="Fire modifier +40, Poison modifier +20"  effect1="firePower+40" effect2="poisonPower+20"  />
+			<optionA name="Jungle's Heart" description="Durability +10, Fire modifier +10, Power +10, Poison modifier +10" effect1="durability+10" effect2="fireMod+10" effect3="power+10" effect4="poisonMod+10"/>
+			<optionB name="Fire Spirit"  description="Fire modifier +40, Poison modifier +20"  effect1="fireMod+40" effect2="poisonMod+20"  />
 		</tier>
 	</upgradeTree>
 

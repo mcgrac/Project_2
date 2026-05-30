@@ -55,7 +55,7 @@ void Ship::Update(float dt) {
     }
     UpdateSound();
     UpdateCamera();
-    Draw(dt);
+    anims.Update(dt);
 
     if (pendingArrival)
     {
@@ -70,8 +70,6 @@ void Ship::Update(float dt) {
 }
 
 void Ship::Draw(float dt) {
-
-    anims.Update(dt);
 
     const SDL_Rect& animFrame = anims.GetCurrentFrame();
 

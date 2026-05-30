@@ -124,7 +124,7 @@ void Render::ResetViewPort()
 }
 
 // Blit to screen
-bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY, bool flipHorizontal) const
+bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* section, float speed, double angle, int pivotX, int pivotY, bool flipHorizontal, float alpha) const
 {
 	bool ret = true;
 	int scale = Engine::GetInstance().window->GetScale();
@@ -171,7 +171,9 @@ bool Render::DrawTexture(SDL_Texture* texture, int x, int y, const SDL_Rect* sec
 		p = &pivot;
 	}
 
-	// SDL3: returns bool; map to int-style check
+	//alpha
+	SDL_SetTextureAlphaMod(texture, (Uint8)(alpha * 255));
+
 	SDL_FlipMode flipMode = flipHorizontal ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
 	int rc = SDL_RenderTextureRotated(renderer, texture, src, &rect, angle, p, flipMode) ? 0 : -1;
 	if (rc != 0)

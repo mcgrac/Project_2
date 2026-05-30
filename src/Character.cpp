@@ -4,6 +4,7 @@
 #include "Textures.h"
 #include "Log.h"
 #include "Item.h"
+#include "QuestManager.h"
 
 Character::Character(Vector2D _position, std::string _name, int _health, int _maxHealth, int _experience, int _initiative,
 	int _maxInitiative, int _basePower, int _bonusPower, int _totalPower, int _totalDurability, int _baseDurability, int _bonusDurability, int _maxDurability, int _baseSpeed,
@@ -47,7 +48,7 @@ Character::~Character()
 
 void Character::Update(float dt)
 {
-	Draw(dt);
+	anims.Update(dt);
 
 	//check death animation
 	if (pendingToDie) {
@@ -152,6 +153,8 @@ void Character::GainExperience(int amount)
 
 void Character::LevelUp()
 {
+	if (level == 20) { return; } //max level is 20
+
 	level++;
 
 	LOG("|Character: %s has level up to level %d", name.c_str(), level);
@@ -165,12 +168,20 @@ void Character::LevelUp()
 	SetTotalDurability();
 	SetTotalPower();
 	SetTotalSpeed();
+
+	//quest check level character and stats character
+	QuestManager::GetInstance().OnCharacterLevelUp(this);
+	QuestManager::GetInstance().OnStatChanged(this);
 }
 
 void Character::Draw(float dt) 
 {
-	anims.Update(dt);
+	float alpha = 1.0f;
 
+	if (hitFlash)
+	{
+		alpha = blinkVisible ? 1.0f : 0.35f;
+	}
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
 	int drawX = (int)position.getX() - animFrame.w / 2;
@@ -189,7 +200,8 @@ void Character::Draw(float dt)
 		0.0f,
 		INT_MAX,
 		INT_MAX,
-		flipHorizontal
+		flipHorizontal,
+		alpha
 	);
 }
 
@@ -340,6 +352,80 @@ void Character::ClearBonusStats()
 	bonusSpeed = 0;
 }
 
+#pragma region DAMAGE POP-UP
+void Character::AddDamagePopup(int dmg)
+{
+	DamagePopup p;
+	p.value = dmg;
+	p.offset = Vector2D(0, 0);
+
+	damagePopups.push_back(p);
+}
+
+void Character::OnHit()
+{
+	hitFlash = true;
+}
+
+void Character::UpdatePopUp(float dt)
+{
+	// update popups
+	for (auto& p : damagePopups)
+	{
+		p.offset.setY(p.offset.getY() - dt * 0.05f); // sube hacia arriba
+
+	}
+
+	//blink
+	if (hitFlash)
+	{
+		blinkTimer += dt;
+
+		if (blinkTimer >= BLINK_INTERVAL)
+		{
+			blinkTimer = 0.0f;
+			blinkVisible = !blinkVisible;
+		}
+	}
+	else
+	{
+		blinkVisible = true;
+		blinkTimer = 0.0f;
+	}
+}
+
+void Character::DeletePopUps()
+{
+	damagePopups.clear();
+}
+
+void Character::ClearHitFlash()
+{
+	hitFlash = false;
+	blinkVisible = true;
+	blinkTimer = 0.0f;
+}
+void Character::DrawPopUp()
+{
+	for (auto& p : damagePopups)
+	{
+		int x = (int)position.getX();
+		int y = (int)position.getY() + (int)p.offset.getY();
+
+		Engine::GetInstance().render->DrawText(
+			std::to_string(p.value).c_str(),
+			x,
+			y,
+			50,
+			50,
+			{ 255, 50, 50, 255 }
+		);
+	}
+}
+#pragma endregion
+
+
+
 //bool Character::EquipItem(Item* item)
 //{
 //	if (equippedItems.size() >= MAX_EQUIPPED_ITEMS) { return false; }
@@ -401,3 +487,5 @@ void Character::PrintDebugInfo(){
 
 	LOG("========================================");
 }
+
+
