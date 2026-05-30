@@ -147,9 +147,11 @@ void InGameScene::Load()
         worldMap->SetIslandShipPosition(0, startPos);
     }
 
-    CreateUI();
+    //CreateUI();
     LoadAudio();
-    Engine::GetInstance().audio->PlayFx(islandAmbiance);
+    Engine::GetInstance().audio->PlayFx(islandAmbiance);//remove?
+    //checks if scene starts with tutorial open
+    UpdateTutorialUI();
 }
 
 void InGameScene::Update(float dt)
@@ -200,7 +202,7 @@ void InGameScene::Update(float dt)
     }
     //check if tutorial is open, if it is don't draw the scene and draw it instead.
     if (tutorialOpen) {
-        Engine::GetInstance().render->DrawTexture(tutorials[tutorialIndex], 0, 0);
+        Engine::GetInstance().render->DrawTexture(tutorials[tutorialIndex], Engine::GetInstance().render->camera.x, Engine::GetInstance().render->camera.y);
     }
     else {
         //render background
@@ -355,6 +357,17 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
         //open tutorial
         tutorialOpen = !tutorialOpen;
         //update tutorial UI
+        UpdateTutorialUI();
+        break;
+    case 4:
+        //flip tutorial right
+        if (tutorialIndex < slidesNum - 1) { tutorialIndex++; }
+        break;
+    case 5:
+        //flip tutorial left
+        if (tutorialIndex > 0) { tutorialIndex--; }
+        break;
+
 
     case MAIN_MENU_BUTTON_ID:
         SaveLoad::ClearSave();
@@ -679,7 +692,8 @@ InGameScene::IslandLayout InGameScene::BuildIslandLayout(const std::unordered_ma
 void InGameScene::OnResume()
 {
     if (pendingGameOver || pendingGameWon) { return; }
-    CreateUI();
+    //CreateUI();
+    UpdateTutorialUI();
 }
 
 void InGameScene::OnPause()
@@ -698,20 +712,50 @@ void InGameScene::CreateUI()
     );
     partyButon->isHUD = true; //fixed on screen
 
-    /*//tutorial button
-    SDL_Rect tutorialBtnBounds = { 20, 20, 72, 72 };
-    auto tutorialButton = Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, 3, "tutorial", tutorialBtnBounds, [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 0, tutorialBtnBounds.w, tutorialBtnBounds.h
-    );*/
-
-    //island buttons
-    CreateIslandButtons();
-}
-
-void InGameScene::UpdateTutorialUI() {
-    // tutorial button
-        SDL_Rect tutorialBtnBounds = { 20, 20, 72, 72 };
+    //button to open tutorial
+    SDL_Rect tutorialBtnBounds = { 102, 600, 72, 72 };
     auto tutorialButton = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 3, "tutorial", tutorialBtnBounds, [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 0, tutorialBtnBounds.w, tutorialBtnBounds.h
     );
+    tutorialButton->isHUD = true;
+    //island buttons
+    if (tutorialOpen == false) {
+        CreateIslandButtons();
+    }
+    
+}
+
+void InGameScene::UpdateTutorialUI() {
+
+    Engine::GetInstance().uiManager->CleanUp();
+    //Engine::GetInstance().uiManager->RemoveElementsByRange(0, 20);
+
+    if (tutorialOpen == true) {
+
+        // tutorial button close
+        SDL_Rect tutorialBtnBounds = { 20, 600, 72, 72 };
+        auto tutorialButton = Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 3, "tutorial", tutorialBtnBounds, [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 0, tutorialBtnBounds.w, tutorialBtnBounds.h
+        );
+        tutorialButton->isHUD = true;
+
+        //flip tutorial page right
+        SDL_Rect rightBtnBounds = { 1209, 339, 42, 42 };
+        auto rightButton = Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 4, "right", rightBtnBounds, [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialRightButton, 0, rightBtnBounds.w, rightBtnBounds.h
+        );
+        rightButton->isHUD = true;
+
+        //flip tutorail page left
+        SDL_Rect leftBtnBounds = { 29, 339, 42, 42 };
+        auto leftButton = Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, 5, "left", leftBtnBounds, [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialLeftButton, 0, leftBtnBounds.w, leftBtnBounds.h
+        );
+        leftButton->isHUD = true;
+    }
+    else {
+        //Engine::GetInstance().uiManager->RemoveElementsByRange(0, 20);
+        CreateUI();
+    }
+
 }
