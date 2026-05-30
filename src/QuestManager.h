@@ -2,6 +2,7 @@
 #include "Quest.h"
 #include <vector>
 #include <string>
+#include "pugixml.hpp"
 
 class Party;
 class Character;
@@ -19,7 +20,7 @@ public:
     void LoadQuestsFromXML(const std::string& path);
 
     // Persistencia: guarda/carga solo status y progress en el XML de guardado
-    void SaveProgress(const std::string& savePath);
+    void SaveProgress(pugi::xml_node& rootNode);
     void LoadProgress(const std::string& savePath);
 
     // Eventos
@@ -35,6 +36,20 @@ public:
 
     const std::vector<Quest>& GetQuests() const;
 
+#pragma region NOTIFICATION SYSTEM
+    struct QuestNotification
+    {
+        std::string questName;
+        std::string description;
+        int rewardGold = 0;
+        float timer = 0.0f;
+    };
+
+    const QuestNotification* GetActiveNotification() const;
+    void UpdateNotification(float dt);
+    inline float GetNotificationDuration() const { return NOTIFICATION_DURATION; }
+#pragma endregion
+
 private:
     QuestManager()  = default;
     ~QuestManager() = default;
@@ -44,7 +59,13 @@ private:
     void CheckAndComplete(Quest& quest);
     void CompleteQuest(Quest& quest);
 
-    std::vector<Quest> _quests;
+    std::vector<Quest> quests;
     Party* party = nullptr;
     int combatDamage = 0;   // acumulado del combate actual
+
+#pragma region NOTIFICATION SYSTEM
+    static constexpr float NOTIFICATION_DURATION = 4000.0f; // ms
+    std::vector<QuestNotification> notificationQueue;
+#pragma endregion
+
 };

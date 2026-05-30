@@ -108,6 +108,9 @@ void InGameScene::Load()
                 worldMap->SetCurrentIsland(data.currentIslandId);
                 LOG("InGameScene: recursos restaurados — oro %d, isla %d.",
                     data.partyGold, data.currentIslandId);
+
+                //load quest information
+                QuestManager::GetInstance().LoadProgress(SaveLoad::SAVE_PATH);
             }
         }
     }
@@ -368,8 +371,6 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
 
             ship->MoveToIsland(movement, [this, islandId, toCY, destCol, posBeforeMove]()
             {
-                    // Reposition ship to the right offset of the destination island
-                    // so the next departure starts correctly
                     int destCenterX = 224.0f + 448.0f * (float)destCol;
                     Vector2D destPos = Vector2D(destCenterX + 125.0f, (float)toCY);
                     ship->SetPosition(destPos);
@@ -379,7 +380,6 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
                     // Guardar posición de origen en WorldMap para restaurarla si hay derrota
                     worldMap->SetShipReturnPosition(posBeforeMove);
                     worldMap->TravelTo(islandId);
-                    //worldMap.TravelTo(islandId);
             });
         }
         break;
