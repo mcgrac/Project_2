@@ -36,6 +36,20 @@ public:
 
     const std::vector<Quest>& GetQuests() const;
 
+#pragma region NOTIFICATION SYSTEM
+    struct QuestNotification
+    {
+        std::string questName;
+        std::string description;
+        int rewardGold = 0;
+        float timer = 0.0f;
+    };
+
+    const QuestNotification* GetActiveNotification() const;
+    void UpdateNotification(float dt);
+    inline float GetNotificationDuration() const { return NOTIFICATION_DURATION; }
+#pragma endregion
+
 private:
     QuestManager()  = default;
     ~QuestManager() = default;
@@ -45,7 +59,13 @@ private:
     void CheckAndComplete(Quest& quest);
     void CompleteQuest(Quest& quest);
 
-    std::vector<Quest> _quests;
+    std::vector<Quest> quests;
     Party* party = nullptr;
     int combatDamage = 0;   // acumulado del combate actual
+
+#pragma region NOTIFICATION SYSTEM
+    static constexpr float NOTIFICATION_DURATION = 4000.0f; // ms
+    std::vector<QuestNotification> notificationQueue;
+#pragma endregion
+
 };

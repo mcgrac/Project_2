@@ -65,4 +65,7 @@ private:
 	//Destroy and unload all scenes
 	void ClearStack();
 #pragma endregion
+
+	void DrawQuestNotification();
+
 };

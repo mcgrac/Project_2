@@ -13,6 +13,7 @@
 #include "UIManager.h"
 #include "MainMenuScene.h"
 #include "SplashScene.h"
+#include "QuestManager.h"
 
 Scene::Scene() : Module()
 {
@@ -77,6 +78,10 @@ bool Scene::PostUpdate()
 	{
 		sceneStack.top()->PostUpdate(0.f);
 	}
+
+	//Notifications quests
+	QuestManager::GetInstance().UpdateNotification(Engine::GetInstance().GetDt()); // ~16ms en ms
+	DrawQuestNotification();
 
 	return ret;
 }
@@ -183,3 +188,98 @@ void Scene::ClearStack() {
 	}
 }
 #pragma endregion
+
+void Scene::DrawQuestNotification()
+{
+	const QuestManager::QuestNotification* notif =
+		QuestManager::GetInstance().GetActiveNotification();
+
+	if (notif == nullptr)
+	{
+		return;
+	}
+
+	int screenW = 0;
+	int screenH = 0;
+	Engine::GetInstance().window->GetWindowSize(screenW, screenH);
+
+	// Fade out en el ultimo tercio
+	float progress = notif->timer / QuestManager::GetInstance().GetNotificationDuration();
+	Uint8 alpha = 255;
+	if (progress > 0.66f)
+	{
+		float fadeProgress = (progress - 0.66f) / 0.34f;
+		alpha = (Uint8)(255.0f * (1.0f - fadeProgress));
+	}
+
+	const int CHAR_W = 8;
+	const int LINE_H = 18;
+	const int PADDING = 10;
+
+	// 4 lineas: "Quest completada!" + nombre + descripcion + recompensa
+	const int PANEL_H = PADDING + LINE_H * 4 + PADDING;
+	const int PANEL_W = 340;
+	const int PANEL_X = screenW / 2 - PANEL_W / 2;
+	const int PANEL_Y = 24;
+
+	SDL_Renderer* ren = Engine::GetInstance().render->renderer;
+	SDL_SetRenderDrawBlendMode(ren, SDL_BLENDMODE_BLEND);
+
+	// Fondo
+	SDL_SetRenderDrawColor(ren, 15, 15, 25, (Uint8)(200.0f * alpha / 255.0f));
+	SDL_FRect bg = { (float)PANEL_X, (float)PANEL_Y, (float)PANEL_W, (float)PANEL_H };
+	SDL_RenderFillRect(ren, &bg);
+
+	// Borde dorado
+	SDL_SetRenderDrawColor(ren, 255, 200, 50, alpha);
+	SDL_RenderRect(ren, &bg);
+
+	// Linea de acento superior
+	SDL_FRect topLine = { (float)PANEL_X + 1, (float)PANEL_Y + 1, (float)PANEL_W - 2, 3.0f };
+	SDL_RenderFillRect(ren, &topLine);
+
+	SDL_SetRenderDrawBlendMode(ren, SDL_BLENDMODE_NONE);
+
+	int textY = PANEL_Y + PADDING;
+
+	// Linea 1: "Quest completada!" — dorado, centrado
+	const char* header = "Quest completed!";
+	int headerW = (int)strlen(header) * CHAR_W;
+	Engine::GetInstance().render->DrawText(
+		header,
+		PANEL_X + PANEL_W / 2 - headerW / 2,
+		textY, headerW, LINE_H,
+		{ 255, 200, 50, alpha }
+	);
+	textY += LINE_H;
+
+	// Linea 2: nombre de la quest — blanco, centrado
+	int nameW = (int)notif->questName.size() * CHAR_W;
+	Engine::GetInstance().render->DrawText(
+		notif->questName.c_str(),
+		PANEL_X + PANEL_W / 2 - nameW / 2,
+		textY, nameW, LINE_H,
+		{ 255, 255, 255, alpha }
+	);
+	textY += LINE_H;
+
+	// Linea 3: descripcion — gris claro, centrado
+	int descW = (int)notif->description.size() * CHAR_W;
+	Engine::GetInstance().render->DrawText(
+		notif->description.c_str(),
+		PANEL_X + PANEL_W / 2 - descW / 2,
+		textY, descW, LINE_H,
+		{ 180, 180, 180, alpha }
+	);
+	textY += LINE_H;
+
+	// Linea 4: recompensa — amarillo, centrado
+	std::string rewardStr = "Reward: " + std::to_string(notif->rewardGold) + " gold";
+	int rewardW = (int)rewardStr.size() * CHAR_W;
+	Engine::GetInstance().render->DrawText(
+		rewardStr.c_str(),
+		PANEL_X + PANEL_W / 2 - rewardW / 2,
+		textY, rewardW, LINE_H,
+		{ 255, 200, 50, alpha }
+	);
+}

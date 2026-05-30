@@ -205,17 +205,9 @@ void Ship::UpdateMovement(float dt)
             anims.SetCurrent("idle");
             pendingArrival = true;  // fire next frame, after Draw
 
-            //if (onArrivalCallback)
-            //{
-            //    std::function<void()> callback = onArrivalCallback;
-            //    onArrivalCallback = nullptr;
-            //    callback();
-            //}
         }
         else
         {
-            // Start next segment — update animation for second leg
-            // (second leg is always horizontal so set idle)
             anims.SetCurrent("idle");
             segT = 0.0f;
         }
