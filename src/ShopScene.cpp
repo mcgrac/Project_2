@@ -335,6 +335,7 @@ bool ShopScene::OnUIMouseClickEvent(UIElement* uiElement)
         alliedParty->GetInventory().ConsumeItem("key");
         
         animationPlaying = true;
+        anims.ResetClip("idle"); //reset animation so it plays again
         anims.SetCurrent("idle");
         anims.SetLoop("idle", false);
         break;
