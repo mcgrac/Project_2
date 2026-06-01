@@ -372,7 +372,8 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         if (alliedParty->GetInventory().GetItemCount("key") < 1) { break; }
         alliedParty->GetInventory().ConsumeItem("key");
         animationPlaying = true;
-        
+
+        anims.ResetClip("idle"); //reset animation so it plays again
         animsChest.SetCurrent("idle");
         animsChest.SetLoop("idle", false);
         break;

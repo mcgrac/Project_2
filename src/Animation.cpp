@@ -168,3 +168,12 @@ void AnimationSet::SetLoop(const std::string& name, bool v)
         it->second.SetLoop(v);
     }
 }
+
+void AnimationSet::ResetClip(const std::string& name)
+{
+    auto it = clips_.find(name);
+    if (it != clips_.end())
+    {
+        it->second.Reset();
+    }
+}
