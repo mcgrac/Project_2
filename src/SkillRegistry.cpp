@@ -97,7 +97,7 @@ SkillRegistry::SkillRegistry()
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
-            "Heal for 5(+5%Power) and cleanse Poison and Burn your party",
+            "Heal for 5(+5%Power) and clean Poison and Burn effects to your party",
             [](Character* caster, Character* target) {
                 target->Heal((int)( 5 + caster->GetTotalPower() * 0.05f));
                 target->SetBurned(false, 0, caster);
@@ -118,7 +118,6 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Grant your team 5 Durability and 10 Initiative",
             [](Character* caster, Character* target) {
-                //cambiar a modify bonusDurability
                 target->ModifyBonusDurability(5);
                 target->AddInitiative(10);
             }
@@ -147,7 +146,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Steal 5 durability",
             [](Character* caster, Character* target) {
-                caster->ModifyDurability(5);
+                caster->ModifyBonusDurability(5);
                 target->ModifyDurability(-5);
             }
             });
@@ -170,13 +169,17 @@ SkillRegistry::SkillRegistry()
         Skill s("Double Blade", DamageType::Physical, 10, 0.25f, cost, "double_blade");
         s.SetDescription("Deal 10 (+25% power) Physical damage");
         s.AddEffect({
-            "Inflict 10 fire",
+            "Inflict 6 fire",
             [](Character* caster, Character* target) {
-                if ((int)caster->GetFirePower() > 0)
-                {
-                    int damageFirePower = (int)(10 * (1 + caster->GetFirePower() / 100.0f));
-                    target->SetBurned(true, damageFirePower, caster);
-                }
+
+                int damageFirePower = (int)(6 * (1 + caster->GetFirePower() / 100.0f));
+                target->SetBurned(true, damageFirePower, caster);
+
+                //if ((int)caster->GetFirePower() > 0)
+                //{
+                //    int damageFirePower = (int)(10 * (1 + caster->GetFirePower() / 100.0f));
+                //    target->SetBurned(true, damageFirePower, caster);
+                //}
             }
             });
         return s;
@@ -186,12 +189,12 @@ SkillRegistry::SkillRegistry()
 #pragma region GERBERA
 
     Register("fire_charge", [](int cost) {
-        Skill s("Fire Charge", DamageType::Physical, 10, 0.35f, cost, "fire_charge");
-        s.SetDescription("Deal 10 (+35% power) Physical damage");
+        Skill s("Fire Charge", DamageType::Physical, 10, 0.20f, cost, "fire_charge");
+        s.SetDescription("Deal 10 (+20% power) Physical damage");
         s.AddEffect({
-            "Inflict 5 Fire",
+            "Inflict 3 Fire",
             [](Character* caster, Character* target) {
-                int damageFirePower = (int)(5 * (1 + caster->GetFirePower() / 100.0f));
+                int damageFirePower = (int)(3 * (1 + caster->GetFirePower() / 100.0f));
                 target->SetBurned(true, damageFirePower, caster);
             }
             });
@@ -202,9 +205,9 @@ SkillRegistry::SkillRegistry()
         Skill s("Charge Arrow", DamageType::None, 0, 0.0f, cost, "charge_arrow");
         s.SetDescription("");
         s.AddEffect({
-            "Gain 20 power and 30 initiative",
+            "Gain 20 power and 130 initiative",
             [](Character* caster, Character* target) {
-                caster->AddInitiative(30);
+                caster->AddInitiative(130);
                 caster->ModifyBonusPower(20);
             }
             });
@@ -215,9 +218,9 @@ SkillRegistry::SkillRegistry()
         Skill s("Green Arrow", DamageType::Physical, 20, 0.1f, cost, "green_arrow");
         s.SetDescription("Deal 20 (+10% power) Physical damage");
         s.AddEffect({
-            "Inflict 10 poison",
+            "Inflict 7 poison",
             [](Character* caster, Character* target) {
-                 int damagePoisonPower = (int)(8 * (1 + caster->GetPoisonPower() / 100.0f));
+                int damagePoisonPower = (int)(7 * (1 + caster->GetPoisonPower() / 100.0f));
                 target->SetPoisoned(true, damagePoisonPower, caster);
             }
             });
@@ -241,11 +244,13 @@ SkillRegistry::SkillRegistry()
         Skill s("Fire Arrow 2", DamageType::Physical, 15, 0.1f, cost, "fire_arrow_2");
         s.SetDescription("Deal 15 (+10% power) Physical damage");
         s.AddEffect({
-            "Deal bonus damage per fire stack and reset fire to 0",
+            "Deal 1(+3% power) bonus damage per fire stack and reset fire to 0",
             [](Character* caster, Character* target) {
-                int bonusDmg = (int)((1 + caster->GetTotalPower() * 0.1f) * target->GetBurnDamage());
+                int fireStacks = target->GetBurnDamage();
+                float dmgPerStack = 1.0f + (caster->GetTotalPower() * 0.03f);
+                int bonusDmg = (int)(dmgPerStack * fireStacks);
                 target->ReceivePhysicalDamage(bonusDmg, caster);
-                target->SetBurned(false, 0, caster);
+                target->SetBurned(false, 0, nullptr);
             }
             });
         return s;
@@ -259,7 +264,8 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Apply 5(+1% Power) Fire",
             [](Character* caster, Character* target) {
-                int damageFirePower = (int)(5 + (0.01 * caster->GetTotalPower()));
+                int damageFire = (int)(5 + (0.01 * caster->GetTotalPower()));
+                int damageFirePower = (int)(damageFire * (1 + caster->GetFirePower() / 100.0f));
                 target->SetBurned(true, damageFirePower, caster);
             }
             });
@@ -272,7 +278,8 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Apply 5 Poison",
             [](Character* caster, Character* target) {
-                target->SetPoisoned(true, 5, caster);
+                int damagePoisonPower = (int)(5 * (1 + caster->GetPoisonPower() / 100.0f));
+                target->SetPoisoned(true, damagePoisonPower, caster);
             }
             });
         return s;
@@ -284,7 +291,7 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "",
             [](Character* caster, Character* target) {
-                caster->ModifyBonusPower((int)(5 * (100 / (caster->GetMaxHP() / caster->GetCurrentHP()))));
+                caster->ModifyBonusPower((int)(5 + (100 / (caster->GetMaxHP() / caster->GetCurrentHP()))));
                 caster->AddInitiative(50);
                 caster->ModifyLifesteal(20);
             }
@@ -298,7 +305,8 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "",
             [](Character* caster, Character* target) {
-                caster->Heal((int)(caster->GetCurrentHP() * (10 + (caster->GetTotalPower() * 0.15))));
+                float healPercent = 10.0f + caster->GetTotalPower() * 0.15f;
+                caster->Heal((int)(caster->GetMaxHP()* healPercent / 100.0f));
             }
             });
         return s;
@@ -341,10 +349,15 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "",
             [](Character* caster, Character* target) {
-                caster->SetBurned(true, 5, caster);
-                caster->SetPoisoned(true, 5, caster);
-                target->SetBurned(true, 10, caster);
-                target->SetPoisoned(true, 10, caster);
+                int damagePoisonPowerAlly = (int)(5 * (1 + caster->GetPoisonPower() / 100.0f));
+                int damageFirePowerAlly = (int)(5 * (1 + caster->GetFirePower() / 100.0f));
+                caster->SetBurned(true, damagePoisonPowerAlly, caster);
+                caster->SetPoisoned(true, damageFirePowerAlly, caster);
+
+                int damagePoisonPowerEnemy = (int)(10 * (1 + caster->GetPoisonPower() / 100.0f));
+                int damageFirePowerEnemy = (int)(10 * (1 + caster->GetFirePower() / 100.0f));
+                target->SetBurned(true, damagePoisonPowerEnemy, caster);
+                target->SetPoisoned(true, damageFirePowerEnemy, caster);
             }
             });
         return s;
@@ -367,10 +380,8 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("yellow_tornado", [](int cost) {
-        Skill s("Yellow Tornado", DamageType::Magical, 10, 0.1f, cost, "yellow_tornado");
+        Skill s("Yellow Tornado", DamageType::Magical, 5, 0.1f, cost, "yellow_tornado");
         s.SetDescription("Deal 5(+10% Power) Magic Damage");
-        s.SetHasAreaEffect(true);
-        s.SetAreaEffectTargetAllies(false);
         s.AddEffect({
             "Reduce the Initiative by 20",
             [](Character* caster, Character* target) {
@@ -386,7 +397,9 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Burn for 4 and deal 150% of the current fire on the enemy (+50% Power) as magic damage",
             [](Character* caster, Character* target) {
-                target->SetBurned(true, 4, caster);
+                int damageFirePower = (int)(4 * (1 + caster->GetFirePower() / 100.0f));
+                target->SetBurned(true, damageFirePower, caster);
+
                 int damage = (int)(target->GetBurnDamage() * 1.5f + (caster->GetTotalPower() * 0.5f));
                 target->ReceiveMagicalDamage(damage, caster);
             }
@@ -424,8 +437,12 @@ SkillRegistry::SkillRegistry()
         s.AddEffect({
             "Apply 6 Poison and 3 Fire and reduce the Durability of the target by 5(+15% Fire Power)",
             [](Character* caster, Character* target) {
-                target->SetBurned(true, 3, caster);
-                target->SetPoisoned(true, 6, caster);
+                int damagePoisonPower = (int)(6 * (1 + caster->GetPoisonPower() / 100.0f));
+                int damageFirePower = (int)(3 * (1 + caster->GetFirePower() / 100.0f));
+
+                target->SetBurned(true, damageFirePower, caster);
+                target->SetPoisoned(true, damagePoisonPower, caster);
+
                 int reducedDurability = (int)(5 + (caster->GetFirePower() * 0.15f));
                 target->ModifyDurability(-reducedDurability);
             }
