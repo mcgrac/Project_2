@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <savedata>
-	<world currentIslandId="6" />
-	<party gold="2725" consumables="0">
-		<character name="Ignis" health="109" isAlive="true" experience="0" level="2">
+	<world currentIslandId="14" />
+	<party gold="7163" consumables="0">
+		<character name="Jochi" health="111" isAlive="true" experience="0" level="3">
 			<upgrades>
 				<tier index="0" chosen="" />
 				<tier index="1" chosen="" />
@@ -10,28 +10,28 @@
 			</upgrades>
 			<equippedItems />
 		</character>
-		<character name="Fatuus" health="113" isAlive="true" experience="0" level="2">
+		<character name="Fatuus" health="106" isAlive="true" experience="0" level="3">
+			<upgrades>
+				<tier index="0" chosen="" />
+				<tier index="1" chosen="" />
+				<tier index="2" chosen="" />
+			</upgrades>
+			<equippedItems />
+		</character>
+		<character name="Ignis" health="143" isAlive="true" experience="0" level="3">
 			<upgrades>
 				<tier index="0" chosen="" />
 				<tier index="1" chosen="" />
 				<tier index="2" chosen="" />
 			</upgrades>
 			<equippedItems>
-				<item name="Shield" />
+				<item name="Golden Facade" />
 			</equippedItems>
-		</character>
-		<character name="Jochi" health="108" isAlive="true" experience="0" level="2">
-			<upgrades>
-				<tier index="0" chosen="" />
-				<tier index="1" chosen="" />
-				<tier index="2" chosen="" />
-			</upgrades>
-			<equippedItems />
 		</character>
 	</party>
 	<quests>
-		<quest id="1" progress="0" status="active" />
-		<quest id="2" progress="0" status="active" />
+		<quest id="1" progress="0" status="completed" />
+		<quest id="2" progress="0" status="completed" />
 		<quest id="3" progress="0" status="active" />
 		<quest id="4" progress="0" status="active" />
 		<quest id="5" progress="0" status="active" />

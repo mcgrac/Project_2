@@ -24,6 +24,7 @@ public:
 
     void Draw(float dt);
     void DrawChest(float dt);
+    void DrawReward();
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
