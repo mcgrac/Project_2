@@ -66,6 +66,25 @@ private:
 	SDL_Texture* chunkTex = nullptr;
 };
 
+struct UIPanelAnimation
+{
+	float x = 0.0f;
+	float y = 0.0f;
+
+	float targetX = 0.0f;
+	float targetY = 0.0f;
+
+	float speed = 8.0f; //initial speed
+
+	bool active = false;
+
+	void Start(float startX, float startY, float endX, float endY);
+
+	void Update(float dt);
+
+	bool IsFinished() const;
+};
+
 class SceneUtils
 {
 public:

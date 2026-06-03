@@ -337,6 +337,12 @@ void CombatScene::Update(float dt)
             ShowResultPanel(won);
         }
     }
+
+    //animation panel
+    if (resultPanelActive)
+    {
+        resultPanelAnim.Update(dt);
+    }
 }
 
 void CombatScene::PostUpdate(float dt) 
@@ -755,6 +761,13 @@ void CombatScene::ShowResultPanel(bool victory)
     resultPanelActive = true;
     resultPanelIsVictory = victory;
 
+    resultPanelAnim.Start(
+        0,
+        -720,
+        0,
+        0
+    );
+
     if(victory){ Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/EndCombatWin.wav"); }
     else{ Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/EndCombatLose.wav"); }
 
@@ -800,13 +813,16 @@ void CombatScene::DrawResultPanel()
     SDL_Color yellow = { 255, 220,   0, 255 };
     SDL_Color green = { 80, 255,  80, 255 };
 
+    //animation vertical
+    int offsetY = (int)resultPanelAnim.y;
+
     if (resultPanelIsVictory)
     {
-        //Engine::GetInstance().render->DrawText("VICTORY", 460, 170, 220, 50, yellow);
-        Engine::GetInstance().render->DrawTexture(backWin, 0, 0);
+        Engine::GetInstance().render->DrawTexture(backWin, (int)resultPanelAnim.x, offsetY);
+
         // Oro ganado
         std::string goldText = "Gold gained: " + std::to_string(goldGained);
-        Engine::GetInstance().render->DrawText(goldText.c_str(), 400, 240, 300, 30, white);
+        Engine::GetInstance().render->DrawText(goldText.c_str(), 400, 240 + offsetY, 300, 30, white);
 
         // XP por personaje
         int lineY = 285;
@@ -821,17 +837,16 @@ void CombatScene::DrawResultPanel()
                 line += "  LEVEL UP";
             }
 
-            Engine::GetInstance().render->DrawText(line.c_str(), 380, lineY, 350, 38, snap.leveledUp ? green : white);
+            Engine::GetInstance().render->DrawText(line.c_str(), 380, lineY + offsetY, 350, 38, snap.leveledUp ? green : white);
             lineY += 40;
         }
     }
     else
     {
-        Engine::GetInstance().render->DrawTexture(backLose, 0, 0);
-        //Engine::GetInstance().render->DrawText("DEFEAT", 470, 170, 200, 50, { 255, 60, 60, 255 });
+        Engine::GetInstance().render->DrawTexture(backLose, (int)resultPanelAnim.x, offsetY);
 
         std::string dmgText = "Ship damage: -" + std::to_string(shipDamage);
-        Engine::GetInstance().render->DrawText(dmgText.c_str(), 420, 260, 300, 30, white);
+        Engine::GetInstance().render->DrawText(dmgText.c_str(), 420, 260 + offsetY, 300, 30, white);
     }
 }
 

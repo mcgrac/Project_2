@@ -63,22 +63,6 @@ void SceneUtils::DrawAutoText(const char* text, int x, int y, SDL_Color color, i
 	Engine::GetInstance().render->DrawText(text, x, y, w, lineH, color);
 }
 
-/*std::string SceneUtils::GetBackPath(const std::string& dialogueId)
-{
-	// npc_hostel_human -> Assets/Textures/Portraits/hostel/human.png
-	// npc_dockyard_siren -> Assets/Textures/Portraits/dockyard/siren.png
-	// formato esperado: npc_{location}_{faction}
-	std::string stripped = dialogueId.substr(4); // quita "npc_"
-	size_t underscore = stripped.find('_');
-	if (underscore == std::string::npos)
-	{
-		return "";
-	}
-	std::string location = stripped.substr(0, underscore);
-	std::string faction = stripped.substr(underscore + 1);
-	return "Assets/Textures/PortraitsDialogues/" + location + "/" + faction + "Back.png";
-}*/
-
 bool SceneUtils::PointInRect(int x, int y, const SDL_Rect& r)
 {
 	return x > r.x &&
@@ -299,6 +283,51 @@ void DynamicBar::UnloadTexture()
 	Engine::GetInstance().textures->UnLoad(chunkTex);
 	chunkTex = nullptr;
 }
+#pragma endregion
+
+#pragma region UI PANEL ANIMATION
+void UIPanelAnimation::Start(float startX, float startY, float endX, float endY)
+{
+	x = startX;
+	y = startY;
+
+	targetX = endX;
+	targetY = endY;
+
+	active = true;
+}
+
+void UIPanelAnimation::Update(float dt)
+{
+	dt /= 1000.0f;
+
+	if (!active) return;
+
+	//movement
+	x += (targetX - x) * speed * dt;
+	y += (targetY - y) * speed * dt;
+
+	if (fabs(targetY - y) < 1.0f)
+	{
+		y = targetY;
+	}
+
+	if (fabs(targetX - x) < 1.0f)
+	{
+		x = targetX;
+	}
+
+	if (x == targetX && y == targetY)
+	{
+		active = false;
+	}
+}
+
+bool UIPanelAnimation::IsFinished() const
+{
+	return !active;
+}
+
 #pragma endregion
 
 

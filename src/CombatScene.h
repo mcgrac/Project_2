@@ -136,11 +136,12 @@ private:
 
 #pragma endregion
 
+#pragma region TEXTURES
     SDL_Texture* abilityIcons;
     SDL_Texture* abilityIcons2;
-    SDL_Texture* panelBaseTexture;     
-    SDL_Texture* hpBarChunkTexture;     
-    SDL_Texture* initiativeBarChunkTexture; 
+    SDL_Texture* panelBaseTexture;
+    SDL_Texture* hpBarChunkTexture;
+    SDL_Texture* initiativeBarChunkTexture;
     SDL_Texture* nextRound;
     SDL_Texture* arrow;
     SDL_Texture* poisonIcon;
@@ -163,6 +164,7 @@ private:
     // icono por personaje: cargados dinámicamente por nombre
     std::unordered_map<std::string, SDL_Texture*> characterIcons;
     std::unordered_map<std::string, SDL_Texture*> characterIconsButtons;
+#pragma endregion
 
     int hoveredSkillIdx = -1;
 
@@ -172,6 +174,7 @@ private:
     void DrawStatusIcons();
     void DrawUILaneSelection(std::string charName);
     void DrawAlliedIcons();
+
     //tooltip
     TooltipRenderer tooltipRenderer;
 
@@ -214,6 +217,11 @@ private:
     DynamicBar initiativeBar;
 
     void DrawTurnOrderTable();
+
+
+#pragma region UI ANIMATION
+    UIPanelAnimation resultPanelAnim;
+#pragma endregion
 
     //---------Timer-----------
     static constexpr float NEXT_ROUND_PAUSE_DURATION = 3000.0f; // segundos

@@ -5,6 +5,14 @@
 #include "SDL3/SDL.h"
 #include "SDL3_ttf/SDL_ttf.h"
 
+//fade black animation scenes
+enum class FadeState
+{
+	NONE,
+	FADE_IN,
+	FADE_OUT
+};
+
 class Render : public Module
 {
 public:
@@ -47,6 +55,12 @@ public:
 
 	//for fullscreen mode
 	void UpdateCamera();
+
+	//animation fade to black 
+	void StartFadeIn(float speed = 1.0f);
+	void StartFadeOut(float speed = 1.0f);
+	bool IsFading() const;
+
 public:
 
 	SDL_Renderer* renderer;
@@ -57,4 +71,9 @@ public:
 private:
 	bool vsync = false;
 	TTF_Font* font;
+
+	//fade animation variables
+	FadeState fadeState = FadeState::NONE;
+	float fadeAlpha = 0.0f;
+	float fadeSpeed = 1.0f;
 };
