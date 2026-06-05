@@ -158,11 +158,16 @@ void InGameScene::Load()
 
     CreateUI();
     LoadAudio();
-    Engine::GetInstance().audio->PlayFx(islandAmbiance);
+
+    //play music
+    Engine::GetInstance().audio->PlayMusic(mainMusic.c_str());
 }
 
 void InGameScene::Update(float dt)
 {
+    //check music
+    if(!Engine::GetInstance().audio->IsMusicPlaying()) { Engine::GetInstance().audio->PlayMusic(mainMusic.c_str()); }
+
     // Si hay pantalla de fin de partida activa, solo dibujarla
     if (gameOverActive || gameWonActive)
     {
@@ -233,8 +238,6 @@ void InGameScene::Update(float dt)
 
     //render ship
     ship->Update(dt);
-
-
 
     //gold counter
     goldCounter.Update(alliedParty->GetGold(), dt);
@@ -323,7 +326,7 @@ void InGameScene::LoadTextures(){
 }
 
 void InGameScene::LoadAudio() {
-    islandAmbiance = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/island_ambiance.wav");
+    mainMusic = "Assets/Audio/Music/Map.wav";
     buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }
 

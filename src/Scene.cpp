@@ -62,6 +62,32 @@ bool Scene::Update(float dt)
 		sceneStack.top()->Update(dt);
 	}
 
+	// fade black logic
+	if (isTransitioning)
+	{
+		if (!Engine::GetInstance().render->IsFading())
+		{
+			// 1. eliminar escena actual
+			if (!sceneStack.empty())
+			{
+				sceneStack.top()->Unload();
+				delete sceneStack.top();
+				sceneStack.pop();
+			}
+
+			// 2. cargar nueva escena
+			pendingScene->Load();
+			sceneStack.push(pendingScene);
+
+			pendingScene = nullptr;
+
+			// 3. fade in
+			Engine::GetInstance().render->StartFadeIn(1.5f);
+
+			isTransitioning = false;
+		}
+	}
+
 	return true;
 }
 
@@ -140,9 +166,18 @@ void Scene::PopScene(){
 	ignoreInputThisFrame = true; // bloquear input este frame
 
 	PrintStack();
+
 }
 
 void Scene::ReplaceScene(BaseScene* scene){
+	//// Iniciar fade out
+	//Engine::GetInstance().render->StartFadeOut(fadeSpeed);
+
+	//pendingScene = scene;
+	//waitingFadeOut = true;
+
+	//ignoreInputThisFrame = true;
+
 	ClearStack();
 	scene->Load();
 	sceneStack.push(scene);
@@ -178,6 +213,7 @@ void Scene::PrintStack()
 
 	std::cout << "=====================\n";
 }
+
 
 void Scene::ClearStack() {
 	while (!sceneStack.empty())
@@ -283,3 +319,15 @@ void Scene::DrawQuestNotification()
 		{ 255, 200, 50, alpha }
 	);
 }
+
+#pragma region FADE SYSTEM
+void Scene::ChangeSceneWithFade(BaseScene* scene)
+{
+	if (isTransitioning) return;
+
+	isTransitioning = true;
+	pendingScene = scene;
+
+	Engine::GetInstance().render->StartFadeOut(1.5f);
+}
+#pragma endregion
