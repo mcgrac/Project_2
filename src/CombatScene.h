@@ -181,8 +181,8 @@ private:
     void LoadSound();
     //audio variables
     int buttonPress;
-    //music dir
-    const char* combMusic = "Assets/Audio/Music/8bitMusic/over_the_seas.wav";
+
+    std::string combatMusic;
 
     float nextRoundTimer = 0.0f;
     bool nextRoundPauseActive = false;
