@@ -17,8 +17,8 @@
 
 const SDL_Rect PartyScene::PORTRAIT_RECT = { 20,   80,  220, 300 };
 const SDL_Rect PartyScene::STATS_PANEL_RECT = { 20,  300,  484, 431 };
-const SDL_Rect PartyScene::INV_SLOT_RECT = { 250,  80,   64,  64 };
-const SDL_Rect PartyScene::SKILL_ICON_RECT = { 640,  80,   60,  60 };
+const SDL_Rect PartyScene::INV_SLOT_RECT = { 425,  80,   64,  64 };
+const SDL_Rect PartyScene::SKILL_ICON_RECT = { 640,  80,   64,  64 };
 const SDL_Rect PartyScene::UPGRADE_RECT = { 640, 380,  280,  50 };
 const SDL_Rect PartyScene::TAB_RECT = { 1050, 20,   60,  60 };
 const SDL_Rect PartyScene::NAME_RECT = { 20, 30, 336, 81 };
@@ -40,6 +40,10 @@ const SDL_Rect PartyScene::Stat_Bounds = { 624, 92, 16, 28 };
 const SDL_Rect PartyScene::Gem_Bounds = { 624, 92, 16, 28 };
 
 #pragma endregion
+#pragma region LEVEL
+const SDL_Rect PartyScene::level_Bounds = { 50, 250, 50, 50 };
+#pragma endregion
+
 #pragma endregion
 
 PartyScene::PartyScene(Party* allied)
@@ -65,6 +69,7 @@ void PartyScene::LoadSound() {
 
 void PartyScene::Update(float dt)
 {
+#if _DEBUG
     //debug->add 1000 gold pressing 2
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
     {
@@ -72,6 +77,8 @@ void PartyScene::Update(float dt)
         c->LevelUp();
 
     }
+#endif // _DEBUG
+
 
     // Cerrar con ESC
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
@@ -91,12 +98,12 @@ void PartyScene::Update(float dt)
     RenderBackground(selected);
     RenderCharacterName();
     RenderMemberTabs();
-    //RenderPortrait(selected);
     RenderStats(selected);
     RenderBars(selected);
     RenderInventorySlots(selected);
     RenderSkillIcons(selected);
     RenderUpgradeTree(selected);
+    RenderLevel(selected);
 }
 
 
@@ -105,6 +112,7 @@ void PartyScene::PostUpdate(float dt)
     DrawSkillTooltip();
     DrawUpgradeTooltip();
     DrawInventoryTooltip();
+
 }
 
 #pragma region UNLOAD
@@ -216,6 +224,14 @@ void PartyScene::RenderCharacterName()
             NAME_RECT.y
         );
     }
+}
+
+void PartyScene::RenderLevel(Character* c)
+{
+    int level = c->GetLevel();
+    std::string levelStr = std::to_string(level);
+    SDL_Color col = { 255,255,255,255 };
+    Engine::GetInstance().render->DrawText(levelStr.c_str(), level_Bounds.x, level_Bounds.y, level_Bounds.w, level_Bounds.h, col);
 }
 
 #pragma region LOAD
@@ -355,39 +371,6 @@ void PartyScene::RenderPortrait(Character* c)
 
 void PartyScene::RenderBars(Character* c)
 {
-    //// --------Barra de vida-----------
-    //float hpRatio = (c->GetMaxHP() > 0)
-    //    ? (float)c->GetCurrentHP() / (float)c->GetMaxHP()
-    //    : 0.0f;
-
-    //// Fondo de la barra
-    //SDL_Rect hpBg = { PORTRAIT_RECT.x, HP_BAR_Y, BAR_W, BAR_H };
-    //Engine::GetInstance().render->DrawRectangle(hpBg, 60, 0, 0, 255, true, false);
-
-    //// Relleno
-    //SDL_Rect hpFill = { PORTRAIT_RECT.x, HP_BAR_Y, (int)(BAR_W * hpRatio), BAR_H };
-    //Engine::GetInstance().render->DrawRectangle(hpFill, 0, 200, 50, 255, true, false);
-
-    //// Texto HP
-    //std::string hpText = std::to_string(c->GetCurrentHP()) + "/" + std::to_string(c->GetMaxHP());
-    //Engine::GetInstance().render->DrawText(
-    //    hpText.c_str(), PORTRAIT_RECT.x + BAR_W + 5, HP_BAR_Y, 100, BAR_H, { 255, 255, 255, 255 }
-    //);
-
-    //// ------------Barra de experiencia-----------
-    //float expRatio = (float)c->GetExperience() / 100.0f;
-
-    //SDL_Rect expBg = { PORTRAIT_RECT.x, EXP_BAR_Y, BAR_W, BAR_H };
-    //Engine::GetInstance().render->DrawRectangle(expBg, 20, 20, 60, 255, true, false);
-
-    //SDL_Rect expFill = { PORTRAIT_RECT.x, EXP_BAR_Y, (int)(BAR_W * expRatio), BAR_H };
-    //Engine::GetInstance().render->DrawRectangle(expFill, 100, 100, 255, 255, true, false);
-
-    //std::string expText = "EXP " + std::to_string(c->GetExperience()) + "/100";
-    //Engine::GetInstance().render->DrawText(
-    //    expText.c_str(), PORTRAIT_RECT.x + BAR_W + 5, EXP_BAR_Y, 100, BAR_H, { 200, 200, 255, 255 }
-    //);
-
     hpBar.Draw(c->GetCurrentHP(), c->GetMaxHP());
     xpBar.Draw(c->GetExperience(), 100);
 }
@@ -502,7 +485,6 @@ void PartyScene::RenderSkillIcons(Character* c)
         SDL_Rect icon = { SKILL_ICON_RECT.x + i * (SKILL_ICON_RECT.w + SKILL_ICON_GAP), SKILL_ICON_RECT.y, SKILL_ICON_RECT.w, SKILL_ICON_RECT.h };
 
         bool hovered = SceneUtils::PointInRect(mx, my, icon);
-
 
         if (hovered)
         {

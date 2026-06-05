@@ -20,13 +20,6 @@ UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _text
 	PressedFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 	SelectedFx = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/select.wav");
 
-	//if (spritesheet) {
-	//	LOG("spritesheet in button");
-	//}
-	//else {
-	//	LOG("No spritesheet in buttons");
-	//}
-
 	// Crear texto si existe
 	if (!this->text.empty())
 	{
@@ -42,10 +35,6 @@ UIButton::UIButton(int id, SDL_Rect bounds, const char* text, SDL_Texture* _text
 
 			if (textTexture != nullptr)
 			{
-				//SDL_GetTextureSize(textTexture, (float*)&textRect.w, (float*)&textRect.h);
-
-				//textRect.x = bounds.x + (bounds.w - textRect.w) / 2;
-				//textRect.y = bounds.y + (bounds.h - textRect.h) / 2;
 
 				float w, h;
 				SDL_GetTextureSize(textTexture, &w, &h);
@@ -80,11 +69,10 @@ bool UIButton::Update(float dt)
 	if (createdThisFrame)
 	{
 		createdThisFrame = false;
-		//Draw();
 		return false;
 	}
 
-	if (Engine::GetInstance().scene->GetIgnoreInputThisFrame()) { /*Draw();*/  return false; } //ignore frame
+	if (Engine::GetInstance().scene->GetIgnoreInputThisFrame()) { return false; } //ignore frame
 
 	if (state != UIElementState::DISABLED)
 	{
@@ -113,8 +101,6 @@ bool UIButton::Update(float dt)
 
 				state = UIElementState::FOCUSED;
 			}
-
-			
 
 			if (Engine::GetInstance().input->GetMouseButtonDown(SDL_BUTTON_LEFT) == KEY_REPEAT) {
 				state = UIElementState::PRESSED;

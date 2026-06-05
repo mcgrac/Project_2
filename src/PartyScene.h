@@ -66,12 +66,25 @@ public:
 
 #pragma endregion
 
+#pragma region Lines
+
+    static const SDL_Rect Line_Bounds;
+    static const SDL_Rect Line_Bounds2;
+    int spaceLines = 52;
+
+#pragma endregion
+
+#pragma region LEVEL
+    static const SDL_Rect level_Bounds;
+#pragma endregion
+
 #pragma endregion
 
 private:
     Party* alliedParty;
     int selectedMemberIndex = 0;   // 0-2, personaje actualmente mostrado
 
+#pragma region TEXTURES
     // -------------Texturas ----------
     SDL_Texture* background = nullptr;
     SDL_Texture* statsPanelTexture = nullptr;  // fondo del panel de stats
@@ -85,10 +98,12 @@ private:
     SDL_Texture* gemsTexture = nullptr;  // spritesheet gemas estática
     SDL_Texture* linesTexture = nullptr;  // imagen líneas estática
     SDL_Texture* backButton = nullptr;
+#pragma endregion
 
     void LoadBackground(Character* c);
     void LoadStatsTable();
     void LoadCharacterNames(Character* c);
+
     // ------------ Tooltips ----------
     std::string tooltipText = "";   // texto a mostrar en el tooltip activo
     int hoveredSkillIdx = -1;   // índice de la skill hoverada (-1 = ninguna)
@@ -118,12 +133,17 @@ private:
     // Dibuja los botones de ascensiones
     void RenderUpgradeTree(Character* c);
 
+    //render character names
+    void RenderCharacterName();
+
+    //render level
+    void RenderLevel(Character* c);
+
     // Recrea los botones de la UI al cambiar de personaje
     void RefreshButtons();
     void ClearButtons();
 
-    //render character names
-    void RenderCharacterName();
+
 
     void LoadTextures();
     void UnloadTextures();
@@ -131,8 +151,7 @@ private:
     //tooltip
     void DrawSkillTooltip();
     TooltipRenderer tooltipRenderer;
-    //void DrawColoredLine(const std::string& line, int x, int y);
-    //std::vector<std::string> WrapText(const std::string& text, int maxCharsPerLine);
+
     void DrawUpgradeTooltip();
     void DrawInventoryTooltip();
 
