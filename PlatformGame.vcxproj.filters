@@ -541,5 +541,8 @@
     <Xml Include="Assets\Quests\quests.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
+    <Xml Include="Assets\Characters\PecksandBubbles.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

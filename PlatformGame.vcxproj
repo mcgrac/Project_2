@@ -297,6 +297,7 @@
     <Xml Include="Assets\Characters\Ignis.xml" />
     <Xml Include="Assets\Characters\Jochi.xml" />
     <Xml Include="Assets\Characters\Markus.xml" />
+    <Xml Include="Assets\Characters\PecksandBubbles.xml" />
     <Xml Include="Assets\Characters\Raptor.xml" />
     <Xml Include="Assets\Characters\Rex.xml" />
     <Xml Include="Assets\Characters\Theresia.xml" />

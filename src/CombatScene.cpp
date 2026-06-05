@@ -11,6 +11,7 @@
 #include <sstream>
 #include "Window.h"
 
+#pragma region POSITIONS
 #pragma region Continue
 const SDL_Rect CombatScene::CONTINUE_BOUNDS = { 473, 540, 335, 105 };
 #pragma endregion
@@ -34,6 +35,7 @@ void AbilitiesSounds::SetFxSound(std::string path)
 {
     fxSound = Engine::GetInstance().audio->LoadFx(path.c_str());
 }
+#pragma endregion
 #pragma endregion
 
 CombatScene::CombatScene(Party* _allied, int _shipLevel, IslandFaction _faction, int _islandLevel)
@@ -1053,7 +1055,7 @@ std::vector<std::string> CombatScene::GetEnemyNamesForFaction(IslandFaction fact
     switch (faction)
     {
     case IslandFaction::FISH:
-        return { "Buck", "Fish1", "PeckandBubbles" };
+        return { "Buck", "Fish1", "PecksandBubbles" };
     case IslandFaction::JELLYFISH:
         return { "ToxicJelly", "PinkJelly", "BlueJelly" };
     case IslandFaction::HUMANS:
@@ -1214,7 +1216,7 @@ void CombatScene::ShowTargetPanel()
             10 + i, // IDs 10..12
             "",
             bounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0 + i, bounds.w, bounds.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0, bounds.w, bounds.h
         );
     }
 
@@ -1444,7 +1446,7 @@ void CombatScene::CreateUI()
                 10 + i, // IDs 10..12
                 "",
                 bounds,
-                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0 + i, bounds.w, bounds.h
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0, bounds.w, bounds.h
             );
         }
 
