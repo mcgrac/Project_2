@@ -50,6 +50,7 @@ private:
 
     WorldMap* worldMap;
 
+#pragma region TEXTURES
     //textures
     SDL_Texture* background;
     SDL_Texture* spritesheet;
@@ -73,6 +74,7 @@ private:
     SDL_Texture* islandHumanTex;
     SDL_Texture* islandReptileTex;
     SDL_Texture* skullTex;
+#pragma endregion
 
     DynamicBar shipHpBar;
 
@@ -88,7 +90,7 @@ private:
     void PushSceneFromInGame(BaseScene* scene);
 
     //audio variables
-    int islandAmbiance;
+    std::string mainMusic;
     int buttonPress;
     int startCombat;
     bool pendingStartIsland;
@@ -96,8 +98,6 @@ private:
     bool firstFrame = true;
     bool pendingGameOver = false;
     bool pendingGameWon = false;
-
-    const char* mapMusic = "Assets/Audio/Music/8bitMusic/Shipwreck.wav";
 
     // Game over / victory screen
     bool gameOverActive = false;
