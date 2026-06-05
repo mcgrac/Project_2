@@ -291,6 +291,7 @@
     <ClInclude Include="src\WorldMap.h" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="Assets\Characters\BigBird.xml" />
     <Xml Include="Assets\Characters\Chaman.xml" />
     <Xml Include="Assets\Characters\Fatuus.xml" />
     <Xml Include="Assets\Characters\Gerbera.xml" />
