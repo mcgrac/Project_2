@@ -923,6 +923,22 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
         Engine::GetInstance().render->DrawTexture(it->second, iconX, iconY, nullptr, false);
     }
 
+    // 3 - level
+    int level = c->GetLevel();
+    std::string levelStr = std::to_string(level);
+    SDL_Color col = { 255,255,255,255 };
+    Vector2D pos;
+
+    if (isAlly) {
+        pos = { (float)(LEVEL_OFFSET_X + panelX), (float)(panelY + LEVEL_OFFSET_Y) };
+    }
+    else { //enemy
+        pos = { (float)(LEVEL_OFFSET_X_ENEMY + panelX), (float)(panelY + LEVEL_OFFSET_Y_ENEMY) };
+    }
+
+    Engine::GetInstance().render->DrawText(levelStr.c_str(), (int)pos.getX(), (int)pos.getY(), LEVEL_W, LEVEL_H, col);
+
+    // 4 - hp and initiative bar initialization
     int hpBarX;
     int initBarX;
     if (isAlly)
@@ -939,10 +955,12 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
     int hpBarY = panelY + HP_BAR_OFFSET_Y;
     int initBarY = panelY + INIT_BAR_OFFSET_Y;
 
+    //hp bar
     hpBar.position = Vector2D((float)hpBarX, (float)hpBarY);
     hpBar.leftToRight = isAlly;
     hpBar.Draw(c->GetCurrentHP(), c->GetMaxHP());
 
+    //initiative bar
     initiativeBar.position = Vector2D((float)initBarX, (float)initBarY);
     initiativeBar.leftToRight = isAlly;
     initiativeBar.Draw(c->GetCurrentInitiative(), MAX_INITIATIVE);

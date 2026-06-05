@@ -31,6 +31,7 @@ private:
     void PushDialogue();
     bool pendingDialogue = false;
     bool pendingPop = false;
+    bool inputConsumed = false;
 
     Dockyard* dockyard; 
     Party* alliedParty;  
@@ -64,7 +65,7 @@ private:
     bool showChart;
     bool shipImproved = false;
     int levelBeforeImprove = 1;
-    static constexpr int COST_IMPROVE_SHIP = 25;
+    static constexpr int COST_IMPROVE_SHIP = 50;
 
 #pragma region POSITIONS
 

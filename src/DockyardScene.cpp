@@ -73,7 +73,13 @@ const SDL_Rect DockyardScene::GOLD_COUNTER2_BOUNDS = { 860, 164, 119, 64 };
 #pragma endregion
 
 DockyardScene::DockyardScene(Dockyard* dockyard, Party* allied)
-    : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr), ownerSprite(nullptr), showChart(false), goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
+    : dockyard(dockyard),
+    alliedParty(allied),
+    background(nullptr),
+    exitButton(nullptr),
+    ownerSprite(nullptr),
+    showChart(false),
+    goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
 {
     sceneName = "DockyardScene";
 }
@@ -98,6 +104,8 @@ void DockyardScene::Load()
 
 void DockyardScene::Update(float dt)
 {
+
+
     if (pendingDialogue)
     {
         pendingDialogue = false;
@@ -137,6 +145,7 @@ void DockyardScene::PostUpdate(float dt)
     {
         DrawChartStats();
     }
+    inputConsumed = false;
 }
 
 void DockyardScene::Unload()
@@ -175,6 +184,10 @@ void DockyardScene::LoadSound() {
 
 bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    LOG("CLICK ID = %d", uiElement->id);
+    if (inputConsumed) { return true; }
+    inputConsumed = true;
+
     switch (uiElement->id)
     {
     case BACK_BUTTON_ID:
@@ -204,7 +217,7 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     }
     case IMPROVE_SHIP:
-        if (alliedParty->GetGold() >= COST_IMPROVE_SHIP) {
+        if (alliedParty->GetGold() >= COST_IMPROVE_SHIP && dockyard->GetShip()->GetLevel() < 3) {
             Engine::GetInstance().audio->PlayFx(shipUpgrade);
             alliedParty->AddGold(-COST_IMPROVE_SHIP);
             levelBeforeImprove = dockyard->GetShip()->GetLevel();
@@ -283,6 +296,7 @@ void DockyardScene::PushDialogue()
                 {
                     LOG("DOCKYARD: upgrade");
                     goldCounter.MoveCounter(GOLD_COUNTER2_BOUNDS.x+23, GOLD_COUNTER2_BOUNDS.y+32);
+                    Engine::GetInstance().uiManager->RemoveElementsByRange(0, 100);
                     CreateChartButtons();
                     showChart = true;
                 }
