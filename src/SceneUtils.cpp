@@ -19,6 +19,7 @@ std::string SceneUtils::GetFactionString(IslandFaction faction)
 	case IslandFaction::FISH:      return "fish";
 	case IslandFaction::JELLYFISH: return "jellyfish";
 	case IslandFaction::TRIBAL:    return "tribal";
+	case IslandFaction::BOSS:	   return "boss";
 	default:                       return "human"; // fallback
 	}
 }

@@ -223,7 +223,9 @@ void CombatScene::Load()
     LoadTextures();
     LoadSounds();
     LoadSound();
-    Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Combat" + SceneUtils::GetFactionString(currentIslandFaction) + ".wav").c_str());
+
+    combatMusic = ("Assets/Audio/Music/Combat" + SceneUtils::GetFactionString(currentIslandFaction) + ".wav").c_str();
+    Engine::GetInstance().audio->PlayMusic(combatMusic);
 
     // ---------Testing------------
     for (Character* c : alliedParty->GetMembers())
@@ -262,7 +264,7 @@ void CombatScene::Update(float dt)
     //play music
     if (!Engine::GetInstance().audio->IsMusicPlaying()) {
         LOG("Play music again!");
-        Engine::GetInstance().audio->PlayMusic(combMusic);
+        Engine::GetInstance().audio->PlayMusic(combatMusic);
     }
 
     //lane selection blocker
