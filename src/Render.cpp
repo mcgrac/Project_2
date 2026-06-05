@@ -340,7 +340,8 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 
 	// Render the text to a surface
 	// SDL3_ttf: length can be 0 for null-terminated strings
-	SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
+	//SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
+	SDL_Surface* surface = TTF_RenderText_Blended(font, text, 0, color);
 	if (!surface) {
 		LOG("DrawText: TTF_RenderText_Solid failed: %s", SDL_GetError());
 		return false;
@@ -356,11 +357,11 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 
 	// Optional but often needed when using alpha/text
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	SDL_SetTextureAlphaMod(texture, color.a);  // aplica el alpha del color
 
 	// If w/h are 0, use the text’s natural size
 	float fw = (w > 0) ? (float)w : (float)surface->w;
 	float fh = (h > 0) ? (float)h : (float)surface->h;
-
 	SDL_FRect dstrect = { (float)x, (float)y, fw, fh };
 
 	// Render the texture to the current render target

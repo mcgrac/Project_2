@@ -32,6 +32,8 @@ private:
     bool pendingDialogue = false;
     bool pendingPop = false;
     bool inputConsumed = false;
+    bool hoveringUpgrade = false;
+    float hoverPulseTimer = 0.0f;
 
     Dockyard* dockyard; 
     Party* alliedParty;  
