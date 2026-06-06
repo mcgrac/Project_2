@@ -277,7 +277,7 @@ void InGameScene::PostUpdate(float dt)
         Engine::GetInstance().render->DrawTexture(background, 0, 0);
         Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
         //render ship
-        ship->Update(dt);
+        //ship->Update(dt);
         //draw hp ship
         Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
         shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
