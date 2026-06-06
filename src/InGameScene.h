@@ -78,6 +78,18 @@ private:
     SDL_Texture* skullTex;
 #pragma endregion
 
+    //tutorial button textures
+    SDL_Texture* tutorialOpenButton; //open/close tutorial
+    SDL_Texture* tutorialLeftButton; //buttons to change page of the tutorial
+    SDL_Texture* tutorialRightButton;
+
+    std::vector<SDL_Texture*> tutorials; //vector withe the tutorial slides' textures
+    int tutorialIndex = 0; 
+    int slidesNum = 7;
+    bool tutorialOpen = true; //checks if tutorial is open or not
+
+    void UpdateTutorialUI();
+
     DynamicBar shipHpBar;
 
     bool isContinue;
