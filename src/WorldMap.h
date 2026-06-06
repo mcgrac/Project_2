@@ -16,7 +16,7 @@ public:
     void ConnectVisuals(SDL_Texture* humanTex, SDL_Texture* reptileTex, SDL_Texture* skullTex); // hilo principal
 
     bool Update (float dt);
-    bool PostUpdate (float dt);
+    bool PostUpdate (float dt, bool playerInTutorial);
     void UnloadWorld ();
 
     void MakeAllIslandsHostile(IslandFaction faction);
@@ -58,7 +58,7 @@ private:
 
     std::unordered_map<int, Vector2D> islandShipPositions;
 
-    void RenderWorld(float dt);
+    void RenderWorld(float dt, bool playerInTutorial);
 
     // Current island and selection
     int currentIslandId = -1;
