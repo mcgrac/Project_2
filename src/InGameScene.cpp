@@ -154,10 +154,11 @@ void InGameScene::Load()
     }
 
     //CreateUI();
+    UpdateTutorialUI();
     LoadAudio();
     Engine::GetInstance().audio->PlayFx(islandAmbiance);//remove?
     //checks if scene starts with tutorial open
-    UpdateTutorialUI();
+    
 }
 
 void InGameScene::Update(float dt)
@@ -206,8 +207,9 @@ void InGameScene::Update(float dt)
             );
         }
     }
+    ship->Update(dt);
     //check if tutorial is open, if it is don't draw the scene and draw it instead.
-    if (tutorialOpen) {
+    /*if (tutorialOpen) {
         Engine::GetInstance().render->DrawTexture(tutorials[tutorialIndex], Engine::GetInstance().render->camera.x, Engine::GetInstance().render->camera.y);
     }
     else {
@@ -220,6 +222,7 @@ void InGameScene::Update(float dt)
         Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
         shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
     }
+    */
     //render background
     //Engine::GetInstance().render->DrawTexture(background, 0, 0);
     //Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
@@ -263,20 +266,39 @@ void InGameScene::PostUpdate(float dt)
 {
     if (gameOverActive || gameWonActive) { return; }
 
+    //check if tutorial is open, if it is don't draw the scene and draw it instead.
+    if (tutorialOpen) {
+        Engine::GetInstance().render->DrawTexture(tutorials[tutorialIndex], Engine::GetInstance().render->camera.x, Engine::GetInstance().render->camera.y);
+    }
+    else {
+        //render background
+        Engine::GetInstance().render->DrawTexture(background, 0, 0);
+        Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
+        //render ship
+        ship->Update(dt);
+        //draw hp ship
+        Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
+        shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
+        ship->Draw(dt);
+        goldCounter.Draw(dt);
+        
+    }
+    worldMap->PostUpdate(dt, tutorialOpen);
+
     //render background
-    Engine::GetInstance().render->DrawTexture(background, 0, 0);
-    Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
+    //Engine::GetInstance().render->DrawTexture(background, 0, 0);
+    //Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
 
     //draw hp ship and ship
-    Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
-    shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
-    ship->Draw(dt);
+    //Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
+    //shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
+    //ship->Draw(dt);
 
     //draw gol counter
-    goldCounter.Draw(dt);
+    //goldCounter.Draw(dt);
 
     //render skulls and lines above buttons
-    worldMap->PostUpdate(dt);
+    //worldMap->PostUpdate(dt);
 }
 
 void InGameScene::Unload()
@@ -736,7 +758,7 @@ void InGameScene::CreateUI()
     partyButon->isHUD = true; //fixed on screen
 
     //button to open tutorial
-    SDL_Rect tutorialBtnBounds = { 102, 600, 72, 72 };
+    SDL_Rect tutorialBtnBounds = { 180, 600, 72, 72 };
     auto tutorialButton = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 3, "tutorial", tutorialBtnBounds, [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, tutorialOpenButton, 0, tutorialBtnBounds.w, tutorialBtnBounds.h
     );

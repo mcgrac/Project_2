@@ -225,11 +225,12 @@ void WorldMap::ConfirmTravel()
     LOG("WorldMap: viaje confirmado a isla id=%d (%s)", currentIslandId, islands.at(currentIslandId)->GetName().c_str());
 }
 
-void WorldMap::RenderWorld(float dt)
+void WorldMap::RenderWorld(float dt, bool playerInTutorial)
 {
     
     // 1. Dibujar icono de hostil (calavera)
-    for (auto const& pair : islands)
+    if (!playerInTutorial) {
+        for (auto const& pair : islands)
     {
         Island* island = pair.second;
 
@@ -267,6 +268,8 @@ void WorldMap::RenderWorld(float dt)
         // Un recuadro amarillo brillante para saber dónde estamos
         Engine::GetInstance().render->DrawRectangle(highlight, 255, 255, 0, 100);
     }
+    }
+    
 }
 
 void WorldMap::UnloadWorld()
@@ -326,8 +329,8 @@ bool WorldMap::Update(float dt)
     return true;
 }
 
-bool WorldMap::PostUpdate(float dt)
+bool WorldMap::PostUpdate(float dt, bool playerInTutorial)
 {
-    RenderWorld(dt);
+    RenderWorld(dt, playerInTutorial);
     return true;
 }
