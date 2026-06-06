@@ -271,6 +271,8 @@ void InGameScene::Unload()
     Engine::GetInstance().textures->UnLoad(background);
     Engine::GetInstance().textures->UnLoad(spritesheet);
     Engine::GetInstance().textures->UnLoad(teamButton);
+    Engine::GetInstance().textures->UnLoad(tutorialButton);
+    Engine::GetInstance().textures->UnLoad(questButton);
     Engine::GetInstance().textures->UnLoad(islandHumanTex);
     Engine::GetInstance().textures->UnLoad(islandReptileTex);
     Engine::GetInstance().textures->UnLoad(skullTex);
@@ -301,6 +303,8 @@ void InGameScene::LoadTextures(){
     background = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/WorldMap.png");
     spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/EmptyIslandLabel.png");
     teamButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/TeamButton.png");
+    tutorialButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/TutorialButton.png");
+    questButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/QuestButton.png");
     goldBack = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/goldCount.png");
 
     humanButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Human.png");
@@ -687,7 +691,7 @@ void InGameScene::CreateUI()
     SDL_Rect questsBtnBounds = { 100, 600, 72, 72 };
     auto questsBtn = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "", questsBtnBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, teamButton, 0, questsBtnBounds.w, questsBtnBounds.h
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, questButton, 0, questsBtnBounds.w, questsBtnBounds.h
     );
     questsBtn->isHUD = true; //fixed on screen
 

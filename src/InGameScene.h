@@ -55,6 +55,8 @@ private:
     SDL_Texture* background;
     SDL_Texture* spritesheet;
     SDL_Texture* teamButton;
+    SDL_Texture* tutorialButton;
+    SDL_Texture* questButton;
     SDL_Texture* goldBack;
 
     SDL_Texture* humanButton;
