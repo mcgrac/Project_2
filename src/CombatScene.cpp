@@ -11,6 +11,7 @@
 #include <sstream>
 #include "Window.h"
 
+#pragma region POSITIONS
 #pragma region Continue
 const SDL_Rect CombatScene::CONTINUE_BOUNDS = { 473, 540, 335, 105 };
 #pragma endregion
@@ -34,6 +35,7 @@ void AbilitiesSounds::SetFxSound(std::string path)
 {
     fxSound = Engine::GetInstance().audio->LoadFx(path.c_str());
 }
+#pragma endregion
 #pragma endregion
 
 CombatScene::CombatScene(Party* _allied, int _shipLevel, IslandFaction _faction, int _islandLevel)
@@ -221,7 +223,9 @@ void CombatScene::Load()
     LoadTextures();
     LoadSounds();
     LoadSound();
-    Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Combat" + SceneUtils::GetFactionString(currentIslandFaction) + ".wav").c_str());
+
+    combatMusic = "Assets/Audio/Music/Combat" + SceneUtils::GetFactionString(currentIslandFaction) + ".wav";
+    Engine::GetInstance().audio->PlayMusic(combatMusic.c_str());
 
     // ---------Testing------------
     for (Character* c : alliedParty->GetMembers())
@@ -260,7 +264,7 @@ void CombatScene::Update(float dt)
     //play music
     if (!Engine::GetInstance().audio->IsMusicPlaying()) {
         LOG("Play music again!");
-        Engine::GetInstance().audio->PlayMusic(combMusic);
+        Engine::GetInstance().audio->PlayMusic(combatMusic.c_str());
     }
 
     //lane selection blocker
@@ -336,6 +340,12 @@ void CombatScene::Update(float dt)
             bool won = (combat->GetResult() == CombatResult::VICTORY);
             ShowResultPanel(won);
         }
+    }
+
+    //animation panel
+    if (resultPanelActive)
+    {
+        resultPanelAnim.Update(dt);
     }
 }
 
@@ -755,6 +765,13 @@ void CombatScene::ShowResultPanel(bool victory)
     resultPanelActive = true;
     resultPanelIsVictory = victory;
 
+    resultPanelAnim.Start(
+        0,
+        -720,
+        0,
+        0
+    );
+
     if(victory){ Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/EndCombatWin.wav"); }
     else{ Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/EndCombatLose.wav"); }
 
@@ -800,13 +817,16 @@ void CombatScene::DrawResultPanel()
     SDL_Color yellow = { 255, 220,   0, 255 };
     SDL_Color green = { 80, 255,  80, 255 };
 
+    //animation vertical
+    int offsetY = (int)resultPanelAnim.y;
+
     if (resultPanelIsVictory)
     {
-        //Engine::GetInstance().render->DrawText("VICTORY", 460, 170, 220, 50, yellow);
-        Engine::GetInstance().render->DrawTexture(backWin, 0, 0);
+        Engine::GetInstance().render->DrawTexture(backWin, (int)resultPanelAnim.x, offsetY);
+
         // Oro ganado
         std::string goldText = "Gold gained: " + std::to_string(goldGained);
-        Engine::GetInstance().render->DrawText(goldText.c_str(), 400, 240, 300, 30, white);
+        Engine::GetInstance().render->DrawText(goldText.c_str(), 400, 240 + offsetY, 300, 30, white);
 
         // XP por personaje
         int lineY = 285;
@@ -821,17 +841,16 @@ void CombatScene::DrawResultPanel()
                 line += "  LEVEL UP";
             }
 
-            Engine::GetInstance().render->DrawText(line.c_str(), 380, lineY, 350, 38, snap.leveledUp ? green : white);
+            Engine::GetInstance().render->DrawText(line.c_str(), 380, lineY + offsetY, 350, 38, snap.leveledUp ? green : white);
             lineY += 40;
         }
     }
     else
     {
-        Engine::GetInstance().render->DrawTexture(backLose, 0, 0);
-        //Engine::GetInstance().render->DrawText("DEFEAT", 470, 170, 200, 50, { 255, 60, 60, 255 });
+        Engine::GetInstance().render->DrawTexture(backLose, (int)resultPanelAnim.x, offsetY);
 
         std::string dmgText = "Ship damage: -" + std::to_string(shipDamage);
-        Engine::GetInstance().render->DrawText(dmgText.c_str(), 420, 260, 300, 30, white);
+        Engine::GetInstance().render->DrawText(dmgText.c_str(), 420, 260 + offsetY, 300, 30, white);
     }
 }
 
@@ -904,6 +923,22 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
         Engine::GetInstance().render->DrawTexture(it->second, iconX, iconY, nullptr, false);
     }
 
+    // 3 - level
+    int level = c->GetLevel();
+    std::string levelStr = std::to_string(level);
+    SDL_Color col = { 255,255,255,255 };
+    Vector2D pos;
+
+    if (isAlly) {
+        pos = { (float)(LEVEL_OFFSET_X + panelX), (float)(panelY + LEVEL_OFFSET_Y) };
+    }
+    else { //enemy
+        pos = { (float)(LEVEL_OFFSET_X_ENEMY + panelX), (float)(panelY + LEVEL_OFFSET_Y_ENEMY) };
+    }
+
+    Engine::GetInstance().render->DrawText(levelStr.c_str(), (int)pos.getX(), (int)pos.getY(), LEVEL_W, LEVEL_H, col);
+
+    // 4 - hp and initiative bar initialization
     int hpBarX;
     int initBarX;
     if (isAlly)
@@ -920,10 +955,12 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
     int hpBarY = panelY + HP_BAR_OFFSET_Y;
     int initBarY = panelY + INIT_BAR_OFFSET_Y;
 
+    //hp bar
     hpBar.position = Vector2D((float)hpBarX, (float)hpBarY);
     hpBar.leftToRight = isAlly;
     hpBar.Draw(c->GetCurrentHP(), c->GetMaxHP());
 
+    //initiative bar
     initiativeBar.position = Vector2D((float)initBarX, (float)initBarY);
     initiativeBar.leftToRight = isAlly;
     initiativeBar.Draw(c->GetCurrentInitiative(), MAX_INITIATIVE);
@@ -1038,7 +1075,7 @@ std::vector<std::string> CombatScene::GetEnemyNamesForFaction(IslandFaction fact
     switch (faction)
     {
     case IslandFaction::FISH:
-        return { "Buck", "Fish1", "PeckandBubbles" };
+        return { "Buck", "Fish1", "PecksandBubbles" };
     case IslandFaction::JELLYFISH:
         return { "ToxicJelly", "PinkJelly", "BlueJelly" };
     case IslandFaction::HUMANS:
@@ -1199,7 +1236,7 @@ void CombatScene::ShowTargetPanel()
             10 + i, // IDs 10..12
             "",
             bounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0 + i, bounds.w, bounds.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0, bounds.w, bounds.h
         );
     }
 
@@ -1429,7 +1466,7 @@ void CombatScene::CreateUI()
                 10 + i, // IDs 10..12
                 "",
                 bounds,
-                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0 + i, bounds.w, bounds.h
+                [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, targetIcon, 0, bounds.w, bounds.h
             );
         }
 

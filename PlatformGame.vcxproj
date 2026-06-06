@@ -291,12 +291,14 @@
     <ClInclude Include="src\WorldMap.h" />
   </ItemGroup>
   <ItemGroup>
+    <Xml Include="Assets\Characters\BigBird.xml" />
     <Xml Include="Assets\Characters\Chaman.xml" />
     <Xml Include="Assets\Characters\Fatuus.xml" />
     <Xml Include="Assets\Characters\Gerbera.xml" />
     <Xml Include="Assets\Characters\Ignis.xml" />
     <Xml Include="Assets\Characters\Jochi.xml" />
     <Xml Include="Assets\Characters\Markus.xml" />
+    <Xml Include="Assets\Characters\PecksandBubbles.xml" />
     <Xml Include="Assets\Characters\Raptor.xml" />
     <Xml Include="Assets\Characters\Rex.xml" />
     <Xml Include="Assets\Characters\Theresia.xml" />

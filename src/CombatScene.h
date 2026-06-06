@@ -136,11 +136,12 @@ private:
 
 #pragma endregion
 
+#pragma region TEXTURES
     SDL_Texture* abilityIcons;
     SDL_Texture* abilityIcons2;
-    SDL_Texture* panelBaseTexture;     
-    SDL_Texture* hpBarChunkTexture;     
-    SDL_Texture* initiativeBarChunkTexture; 
+    SDL_Texture* panelBaseTexture;
+    SDL_Texture* hpBarChunkTexture;
+    SDL_Texture* initiativeBarChunkTexture;
     SDL_Texture* nextRound;
     SDL_Texture* arrow;
     SDL_Texture* poisonIcon;
@@ -163,6 +164,7 @@ private:
     // icono por personaje: cargados dinámicamente por nombre
     std::unordered_map<std::string, SDL_Texture*> characterIcons;
     std::unordered_map<std::string, SDL_Texture*> characterIconsButtons;
+#pragma endregion
 
     int hoveredSkillIdx = -1;
 
@@ -172,14 +174,15 @@ private:
     void DrawStatusIcons();
     void DrawUILaneSelection(std::string charName);
     void DrawAlliedIcons();
+
     //tooltip
     TooltipRenderer tooltipRenderer;
 
     void LoadSound();
     //audio variables
     int buttonPress;
-    //music dir
-    const char* combMusic = "Assets/Audio/Music/8bitMusic/over_the_seas.wav";
+
+    std::string combatMusic;
 
     float nextRoundTimer = 0.0f;
     bool nextRoundPauseActive = false;
@@ -215,6 +218,11 @@ private:
 
     void DrawTurnOrderTable();
 
+
+#pragma region UI ANIMATION
+    UIPanelAnimation resultPanelAnim;
+#pragma endregion
+
     //---------Timer-----------
     static constexpr float NEXT_ROUND_PAUSE_DURATION = 3000.0f; // segundos
 
@@ -241,6 +249,13 @@ private:
     static constexpr int INIT_CHUNK_W = 12;
     static constexpr int INIT_CHUNK_H = 10;
     static constexpr int INIT_MAX_CHUNKS = 10;
+    // Posicion del nivel del personaje relativa al panel
+    static constexpr int LEVEL_OFFSET_X = 10;
+    static constexpr int LEVEL_OFFSET_Y = 10;
+    static constexpr int LEVEL_OFFSET_X_ENEMY = 190;
+    static constexpr int LEVEL_OFFSET_Y_ENEMY = 10;
+    static constexpr int LEVEL_W = 20;
+    static constexpr int LEVEL_H = 20;
     // Posiciones en pantalla de los paneles aliados (izquierda, apilados verticalmente)
     static constexpr int ALLIED_PANEL_X = 10;
     static constexpr int ALLIED_PANEL_START_Y = 400;

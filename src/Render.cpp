@@ -95,8 +95,49 @@ bool Render::Update(float dt)
 
 bool Render::PostUpdate()
 {
-	SDL_SetRenderDrawColor(renderer, background.r, background.g, background.g, background.a);
+	//animation fade black
+	if (fadeState != FadeState::NONE)
+	{
+		float dt = Engine::GetInstance().GetDt() / 1000.0f; // importante si dt está en ms
+
+		if (fadeState == FadeState::FADE_IN)
+		{
+			fadeAlpha -= fadeSpeed * dt;
+			if (fadeAlpha <= 0.0f)
+			{
+				fadeAlpha = 0.0f;
+				fadeState = FadeState::NONE;
+			}
+		}
+		else if (fadeState == FadeState::FADE_OUT)
+		{
+			fadeAlpha += fadeSpeed * dt;
+			if (fadeAlpha >= 1.0f)
+			{
+				fadeAlpha = 1.0f;
+				fadeState = FadeState::NONE;
+			}
+		}
+	}
+
+	if (fadeAlpha > 0.0f)
+	{
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, (Uint8)(fadeAlpha * 255));
+
+		SDL_FRect screen = {
+			0, 0,
+			(float)camera.w,
+			(float)camera.h
+		};
+
+		SDL_RenderFillRect(renderer, &screen);
+	}
+
+	SDL_SetRenderDrawColor(renderer, background.r, background.g, background.b, background.a);
 	SDL_RenderPresent(renderer);
+
+
 	return true;
 }
 
@@ -299,7 +340,8 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 
 	// Render the text to a surface
 	// SDL3_ttf: length can be 0 for null-terminated strings
-	SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
+	//SDL_Surface* surface = TTF_RenderText_Solid(font, text, 0, color);
+	SDL_Surface* surface = TTF_RenderText_Blended(font, text, 0, color);
 	if (!surface) {
 		LOG("DrawText: TTF_RenderText_Solid failed: %s", SDL_GetError());
 		return false;
@@ -315,11 +357,11 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 
 	// Optional but often needed when using alpha/text
 	SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+	SDL_SetTextureAlphaMod(texture, color.a);  // aplica el alpha del color
 
 	// If w/h are 0, use the text’s natural size
 	float fw = (w > 0) ? (float)w : (float)surface->w;
 	float fh = (h > 0) ? (float)h : (float)surface->h;
-
 	SDL_FRect dstrect = { (float)x, (float)y, fw, fh };
 
 	// Render the texture to the current render target
@@ -391,3 +433,24 @@ void Render::UpdateCamera(){
 
 	LOG("UpdateCamera: camera DESPUES — w=%d h=%d", camera.w, camera.h);
 }
+
+#pragma region ANIMATION FADE IN FADE OUT
+void Render::StartFadeIn(float speed)
+{
+	fadeState = FadeState::FADE_IN;
+	fadeSpeed = speed;
+	fadeAlpha = 1.0f; // empieza negro total
+}
+
+void Render::StartFadeOut(float speed)
+{
+	fadeState = FadeState::FADE_OUT;
+	fadeSpeed = speed;
+	fadeAlpha = 0.0f;
+}
+
+bool Render::IsFading() const
+{
+	return fadeState != FadeState::NONE;
+}
+#pragma endregion

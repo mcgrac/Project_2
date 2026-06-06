@@ -6,6 +6,7 @@
 #include <fstream>
 #include "Item.h"
 #include "EquippableItem.h"
+#include "QuestManager.h"
 
 bool SaveLoad::HasSaveFile()
 {
@@ -101,6 +102,9 @@ void SaveLoad::Save(Party* party, int currentIslandId)
             itemNode.append_attribute("name").set_value(item->GetName().c_str());
         }
     }
+
+    //save damage done
+    QuestManager::GetInstance().SaveProgress(root);
 
     // save file
     bool saved = doc.save_file(SAVE_PATH);

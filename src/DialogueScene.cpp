@@ -75,39 +75,11 @@ void DialogueScene::Update(float dt)
 
 void DialogueScene::PostUpdate(float dt)
 {
-
-
-
-
     const DialogueNode* node = DialogueManager::GetCurrentNode();
     if (node == nullptr) return;
 
-    // Panel de fondo semitransparente
-   // SDL_Rect posPanel = { 0, 530, 1280, 190 };
-    //Engine::GetInstance().render->DrawTexture(panel, posPanel.x, posPanel.y);
-
-    // Portrait — si cambió, recargarlo
-    //UpdatePortrait(node->portrait);
-
-
-
-    // Nombre del personaje
-   /* Engine::GetInstance().render->DrawText(
-        node->speaker.c_str(),
-        155, 540, 300, 30,
-        { 255, 215, 0, 255 }   // dorado
-    );*/
-
-    // Texto del diálogo
-
     tooltipRenderer.Draw(node->text.c_str(), positionX, positionY);
-    //tocar valores de tooltip para adaptar texto
-    
-    //Engine::GetInstance().render->DrawText(
-    //    node->text.c_str(),
-    //    155, 580, 1100, 80,
-    //    { 255, 255, 255, 255 }
-    //);
+
 }
 
 
@@ -169,8 +141,7 @@ bool DialogueScene::OnUIMouseClickEvent(UIElement* uiElement)
         else
         {
             // Avanzar al siguiente nodo — refrescar botones
-            //ClearOptionButtons();
-            //RefreshOptionButtons();
+
         }
     }
 

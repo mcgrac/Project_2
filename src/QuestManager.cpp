@@ -2,9 +2,8 @@
 #include "Quest.h"
 #include "Party.h"
 #include "Character.h"
-#include "pugixml.hpp"
 #include <iostream>
-
+#include "Log.h"
 
 QuestManager& QuestManager::GetInstance()
 {
@@ -23,7 +22,7 @@ void QuestManager::Init(Party* _party)
 // XML loading
 void QuestManager::LoadQuestsFromXML(const std::string& path)
 {
-    _quests.clear();
+    quests.clear();
 
     pugi::xml_document doc;
     pugi::xml_parse_result result = doc.load_file(path.c_str());
@@ -78,37 +77,27 @@ void QuestManager::LoadQuestsFromXML(const std::string& path)
             quest.condition.amount = cond.attribute("amount").as_int();
         }
 
-        _quests.push_back(quest);
+        quests.push_back(quest);
     }
 }
 
 
 // Persistencia
 
-void QuestManager::SaveProgress(const std::string& savePath)
+void QuestManager::SaveProgress(pugi::xml_node& rootNode)
 {
-    pugi::xml_document doc;
-    pugi::xml_parse_result result = doc.load_file(savePath.c_str());
-    if (!result)
-    {
-        std::cerr << "[QuestManager] SaveProgress: could not load " << savePath << "\n";
-        return;
-    }
-
-    // Elimina el nodo quests anterior si existe
-    pugi::xml_node root = doc.child("save");
-    pugi::xml_node oldQuests = root.child("quests");
+    pugi::xml_node oldQuests = rootNode.child("quests");
     if (oldQuests)
     {
-        root.remove_child(oldQuests);
+        rootNode.remove_child(oldQuests);
     }
 
-    pugi::xml_node questsNode = root.append_child("quests");
+    pugi::xml_node questsNode = rootNode.append_child("quests");
 
-    for (const Quest& quest : _quests)
+    for (const Quest& quest : quests)
     {
         pugi::xml_node node = questsNode.append_child("quest");
-        node.append_attribute("id")       = quest.id;
+        node.append_attribute("id") = quest.id;
         node.append_attribute("progress") = quest.progress;
 
         if (quest.status == QuestStatus::COMPLETED)
@@ -124,8 +113,6 @@ void QuestManager::SaveProgress(const std::string& savePath)
             node.append_attribute("status") = "active";
         }
     }
-
-    doc.save_file(savePath.c_str());
 }
 
 void QuestManager::LoadProgress(const std::string& savePath)
@@ -137,7 +124,7 @@ void QuestManager::LoadProgress(const std::string& savePath)
         return;
     }
 
-    pugi::xml_node root      = doc.child("save");
+    pugi::xml_node root = doc.child("savedata");
     pugi::xml_node questsNode = root.child("quests");
     if (!questsNode)
     {
@@ -146,11 +133,11 @@ void QuestManager::LoadProgress(const std::string& savePath)
 
     for (pugi::xml_node node : questsNode.children("quest"))
     {
-        int id            = node.attribute("id").as_int();
-        int progress      = node.attribute("progress").as_int();
+        int id = node.attribute("id").as_int();
+        int progress = node.attribute("progress").as_int();
         std::string status = node.attribute("status").as_string();
 
-        for (Quest& quest : _quests)
+        for (Quest& quest : quests)
         {
             if (quest.id == id)
             {
@@ -182,7 +169,7 @@ void QuestManager::OnCharacterLevelUp(Character* character)
         return;
     }
 
-    for (Quest& quest : _quests)
+    for (Quest& quest : quests)
     {
         if (quest.status != QuestStatus::ACTIVE)
         {
@@ -206,7 +193,7 @@ void QuestManager::OnCharacterLevelUp(Character* character)
 
 void QuestManager::OnIslandVisited(const std::string& faction)
 {
-    for (Quest& quest : _quests)
+    for (Quest& quest : quests)
     {
         if (quest.status != QuestStatus::ACTIVE)
         {
@@ -225,7 +212,7 @@ void QuestManager::OnIslandVisited(const std::string& faction)
 
 void QuestManager::OnItemPurchased(const std::string& itemName, const std::string& faction)
 {
-    for (Quest& quest : _quests)
+    for (Quest& quest : quests)
     {
         if (quest.status != QuestStatus::ACTIVE)
         {
@@ -251,7 +238,7 @@ void QuestManager::OnCombatDamageDealt(int amount)
 
     combatDamage += amount;
 
-    for (Quest& quest : _quests)
+    for (Quest& quest : quests)
     {
         if (quest.status != QuestStatus::ACTIVE)
         {
@@ -289,7 +276,7 @@ void QuestManager::OnStatChanged(Character* character)
         return;
     }
 
-    for (Quest& quest : _quests)
+    for (Quest& quest : quests)
     {
         if (quest.status != QuestStatus::ACTIVE)
         {
@@ -305,7 +292,7 @@ void QuestManager::OnStatChanged(Character* character)
 
 void QuestManager::UnlockQuest(int questId)
 {
-    for (Quest& quest : _quests)
+    for (Quest& quest : quests)
     {
         if (quest.id == questId && quest.status == QuestStatus::LOCKED)
         {
@@ -317,8 +304,35 @@ void QuestManager::UnlockQuest(int questId)
 
 const std::vector<Quest>& QuestManager::GetQuests() const
 {
-    return _quests;
+    return quests;
 }
+
+#pragma region NOTIFICATION SYSTEM
+const QuestManager::QuestNotification* QuestManager::GetActiveNotification() const
+{
+    if (notificationQueue.empty())
+    {
+        return nullptr;
+    }
+    return &notificationQueue.front();
+}
+
+void QuestManager::UpdateNotification(float dt)
+{
+    if (notificationQueue.empty())
+    {
+        return;
+    }
+
+    notificationQueue.front().timer += dt;
+
+    if (notificationQueue.front().timer >= NOTIFICATION_DURATION)
+    {
+        notificationQueue.erase(notificationQueue.begin());
+    }
+}
+#pragma endregion
+
 
 // Complete quest
 
@@ -384,6 +398,15 @@ void QuestManager::CompleteQuest(Quest& quest)
         party->AddGold(quest.rewardGold);
     }
 
-    std::cout << "[QuestManager] Quest completed: " << quest.name
-              << " | Reward: " << quest.rewardGold << " gold\n";
+    // Encolar notificacion
+    QuestNotification notif;
+    notif.questName = quest.name;
+    notif.description = quest.description;
+    notif.rewardGold = quest.rewardGold;
+    notif.timer = 0.0f;
+    notificationQueue.push_back(notif);
+
+#if _DEBUG
+    LOG("[QuestManager] Quest completada: %s | Recompensa: %d oro", quest.name.c_str(), quest.rewardGold);
+#endif // _DEBUG
 }

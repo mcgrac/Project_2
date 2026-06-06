@@ -24,6 +24,7 @@ public:
 
     void Draw(float dt);
     void DrawChest(float dt);
+    void DrawReward();
 
     bool OnUIMouseClickEvent(UIElement* uiElement) override;
 
@@ -137,12 +138,7 @@ private:
     void unloadSound();
     void UpdateSound();
 
-    //bool musicPlaying = false;
-
-    //ambiance directory
-    const char* humanAmb = "Assets/Audio/Music/Ambiance/crowd_talking.wav";
-    const char* sirenAmb = "Assets/Audio/Music/Ambiance/ambiance_waves.wav";
-    const char* reptileAmb = "Assets/Audio/Music/Ambiance/jungle_sounds.wav";
+    std::string musicIsland;
 
     //fx variables
     int buttonPress;

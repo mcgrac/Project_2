@@ -30,13 +30,14 @@ private:
     SDL_Texture* panelTex = nullptr;
     SDL_Texture* entryTex = nullptr;
     SDL_Texture* backButtonTex = nullptr;
+    SDL_Texture* background = nullptr;
 
     static constexpr int BACK_BUTTON_ID = 1;
     static constexpr int PANEL_MARGIN = 20;
     static constexpr int ENTRY_HEIGHT = 90;
     static constexpr int ENTRY_PADDING = 10;
-    static constexpr int TOP_OFFSET = 70;
-    static constexpr int BOTTOM_OFFSET = 80;
+    static constexpr int TOP_OFFSET = 112;
+    static constexpr int BOTTOM_OFFSET = 38;
 
     //missions text size
     static constexpr int CHAR_W = 8;

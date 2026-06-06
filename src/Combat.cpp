@@ -16,7 +16,7 @@
 
 #include "Render.h"
 #include "Textures.h"
-
+#include "QuestManager.h"
 #include "Log.h"
 
 //  Posiciones predefinidas en pantalla
@@ -321,7 +321,7 @@ bool Combat::CombatIsFinished() const
     return b;
 }
 
-void Combat::ResetBonusStats(Character* c)
+void Combat::ResetBonusStats()
 {
     //clear bonus stats ans effects
     for (Character* c : alliedParty->GetMembers()) {
@@ -374,9 +374,9 @@ void Combat::StartCombat()
     for (Character* c : alliedParty->GetMembers()) {
         //save previous states in combat
         preCombatValues[c] = c->TakePreCombatValues();
-
-        ResetBonusStats(c);
     }
+
+    ResetBonusStats();
 
     // Apply lane bonuses after resetting so they are the only bonuses active
     ApplyLaneBonuses();
@@ -692,13 +692,20 @@ void Combat::CheckDefeat()
     }
 #endif // _DEBUG
 
-    if (IsPartyDefeated(enemyParty))
+    bool enemyDefeated = GetAliveMembers(enemyParty).empty();
+    bool allyDefeated = GetAliveMembers(alliedParty).empty();
+
+#if _DEBUG
+    LOG("is enemy defeated: %d | is allied defeated: %d", enemyDefeated, allyDefeated);
+#endif // _DEBUG
+
+    if (enemyDefeated)
     {
         result = CombatResult::VICTORY;
         state = CombatState::END_COMBAT;
         LOG("|Victory|");
     }
-    else if (IsPartyDefeated(alliedParty))
+    else if (allyDefeated)
     {
         result = CombatResult::DEFEAT;
         state = CombatState::END_COMBAT;
@@ -716,9 +723,7 @@ void Combat::CheckDefeat()
 void Combat::EndCombat()
 {
     //clear bonus stats ans effects
-    for (Character* c : alliedParty->GetMembers()) {
-        ResetBonusStats(c);
-    }
+    ResetBonusStats();
 
     //reset base Values for every character
     for (Character* c : alliedParty->GetMembers()) {
@@ -729,21 +734,15 @@ void Combat::EndCombat()
         }
     }
 
+    int reviveHpPercent = 0;
+
     if (result == CombatResult::VICTORY)
     {
         std::cout << "\n══════════════════════════════════════\n";
         std::cout << "              VICTORY                \n";
         std::cout << "══════════════════════════════════════\n";
-
-        //reset base Values for every character
-        //for (Character* c : alliedParty->GetMembers()) {
-        //    //reset base stats to original
-        //    auto it = preCombatValues.find(c);
-        //    if (it != preCombatValues.end()) {
-        //        c->RestoreBaseStats(it->second);
-        //    }
-        //}
         
+        reviveHpPercent = 10;
     }
     else // DEFEAT
     {
@@ -751,37 +750,43 @@ void Combat::EndCombat()
         std::cout << "              GAME OVER               \n";
         std::cout << "══════════════════════════════════════\n";
 
-        //reset allied party values
-        //for (Character* c : alliedParty->GetMembers()) {
-        //    auto it = preCombatValues.find(c);
-        //    if (it != preCombatValues.end()) {
-        //        c->RestorePreCombatValues(it->second);
-        //    }
-        //}
+        reviveHpPercent = 60;
     }
 
-    // Revivir aliados muertos con 1 HP para el siguiente combate
+    // Revivir aliados muertos con 10 HP para el siguiente combate
     for (Character* c : alliedParty->GetMembers())
     {
-        if (!c->GetIsAlive())
+        if (!c->GetIsAlive() || c->GetPendingToDie())
         {
-            c->SetIsAlive(true);
-            c->SetPendingToDie(false);
+            int reviveHp = (c->GetMaxHP() * reviveHpPercent) / 100;
 
-            c->ModifyCurrentHealth(10);
-            // Forzar isAlive a true y pending to die false
-            c->RestorePreCombatValues({ 10, true, false });
-            LOG("Combat: %s revive con 10 HP para el siguiente combate.", c->GetName().c_str());
+            c->SetPendingToDie(false);
+            c->SetIsAlive(true);
+            c->SetCurrentHealth(reviveHp);
+            c->ClearStatusEffects();
+            c->ResetCurrentInitiative();
+
+#if _DEBUG
+            LOG("Combat: %s revive con %d HP (%d%% de %d) — %s",
+                c->GetName().c_str(),
+                reviveHp,
+                reviveHpPercent,
+                c->GetMaxHP(),
+                result == CombatResult::VICTORY ? "victoria" : "derrota");
+#endif // _DEBUG
         }
     }
 
-    //clean lanes
+    //Clean lanes
     enemyFrontLane.occupant = nullptr;
     enemySideLane.occupant = nullptr;
     enemyBackLane.occupant = nullptr;
 
     preCombatValues.clear();
     runningCombat = false;
+
+    //check quest
+    QuestManager::GetInstance().OnCombatEnd();
 }
 
 //  PLAYER TURN
@@ -923,6 +928,12 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
                 LOG("Added damage pop up to target -> %s", c->GetName().c_str());
                 c->AddDamagePopup(damageDone);
                 c->OnHit();
+
+                //track damage for missions
+                if (IsAllied(user))
+                {
+                    QuestManager::GetInstance().OnCombatDamageDealt(damageDone);
+                }
             }
 #if _DEBUG
             std::cout << user->GetName() << " usa " << skill.GetName()
@@ -1004,6 +1015,12 @@ void Combat::ExecuteSkill(Character* user, Skill& skill, Character* target)
             LOG("Added damage popo Up 1 single target");
             target->AddDamagePopup(damageDone);
             target->OnHit();
+
+            //track damage done
+            if (IsAllied(user))
+            {
+                QuestManager::GetInstance().OnCombatDamageDealt(damageDone);
+            }
         }
 
         // Restar el coste de iniciativa al usuario
@@ -1155,6 +1172,7 @@ void Combat::ForceVictory()
 {
     result = CombatResult::VICTORY;
     state = CombatState::END_COMBAT;
+    EndCombat();
     runningCombat = false;
 }
 
@@ -1162,6 +1180,7 @@ void Combat::ForceDefeat()
 {
     result = CombatResult::DEFEAT;
     state = CombatState::END_COMBAT;
+    EndCombat();
     runningCombat = false;
 }
 
@@ -1279,7 +1298,7 @@ std::vector<Character*> Combat::GetAliveMembers(Party* party)
     std::vector<Character*> alive;
     for (Character* c : party->GetMembers())
     {
-        if (c->GetIsAlive() && !c->GetPendingToDie())
+        if (c->GetIsAlive())
         {
             alive.push_back(c);
         }

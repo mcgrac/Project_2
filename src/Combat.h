@@ -135,7 +135,6 @@ private:
     float damageReductionLane = 0.30f;
 
     void ApplyLaneBonuses();
-
     void AssignEnemyLanes();
 
     std::vector<Character*> actorsQueue;
@@ -148,7 +147,7 @@ private:
 
     bool runningCombat; //control
 
-    void ResetBonusStats(Character* c);
+    void ResetBonusStats();
     void StartCombat();
     bool CalculateInitiative();
     void FillQueue();            // build actorsQueue from everyone >= 100, sorted desc

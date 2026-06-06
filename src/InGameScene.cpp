@@ -108,6 +108,9 @@ void InGameScene::Load()
                 worldMap->SetCurrentIsland(data.currentIslandId);
                 LOG("InGameScene: recursos restaurados — oro %d, isla %d.",
                     data.partyGold, data.currentIslandId);
+
+                //load quest information
+                QuestManager::GetInstance().LoadProgress(SaveLoad::SAVE_PATH);
             }
         }
     }
@@ -156,13 +159,16 @@ void InGameScene::Load()
     //CreateUI();
     UpdateTutorialUI();
     LoadAudio();
-    Engine::GetInstance().audio->PlayFx(islandAmbiance);//remove?
-    //checks if scene starts with tutorial open
-    
+
+    //play music
+    Engine::GetInstance().audio->PlayMusic(mainMusic.c_str());
 }
 
 void InGameScene::Update(float dt)
 {
+    //check music
+    if(!Engine::GetInstance().audio->IsMusicPlaying()) { Engine::GetInstance().audio->PlayMusic(mainMusic.c_str()); }
+
     // Si hay pantalla de fin de partida activa, solo dibujarla
     if (gameOverActive || gameWonActive)
     {
@@ -207,7 +213,7 @@ void InGameScene::Update(float dt)
             );
         }
     }
-    ship->Update(dt);
+    //ship->Update(dt);
     //check if tutorial is open, if it is don't draw the scene and draw it instead.
     /*if (tutorialOpen) {
         Engine::GetInstance().render->DrawTexture(tutorials[tutorialIndex], Engine::GetInstance().render->camera.x, Engine::GetInstance().render->camera.y);
@@ -251,11 +257,7 @@ void InGameScene::Update(float dt)
     worldMap->Update(dt);
 
     //render ship
-    //ship->Update(dt);
-
-    //draw hp ship
-    //Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
-    //shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
+    ship->Update(dt);
 
     //gold counter
     goldCounter.Update(alliedParty->GetGold(), dt);
@@ -308,6 +310,8 @@ void InGameScene::Unload()
     Engine::GetInstance().textures->UnLoad(background);
     Engine::GetInstance().textures->UnLoad(spritesheet);
     Engine::GetInstance().textures->UnLoad(teamButton);
+    Engine::GetInstance().textures->UnLoad(tutorialButton);
+    Engine::GetInstance().textures->UnLoad(questButton);
     Engine::GetInstance().textures->UnLoad(islandHumanTex);
     Engine::GetInstance().textures->UnLoad(islandReptileTex);
     Engine::GetInstance().textures->UnLoad(skullTex);
@@ -344,6 +348,8 @@ void InGameScene::LoadTextures(){
     background = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/WorldMap.png");
     spritesheet = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/EmptyIslandLabel.png");
     teamButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/TeamButton.png");
+    tutorialButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/TutorialButton.png");
+    questButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/QuestButton.png");
     goldBack = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/goldCount.png");
 
     humanButton = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/OneButtonMap_Human.png");
@@ -380,7 +386,7 @@ void InGameScene::LoadTextures(){
 }
 
 void InGameScene::LoadAudio() {
-    islandAmbiance = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/Island_menu/island_ambiance.wav");
+    mainMusic = "Assets/Audio/Music/Map.wav";
     buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
 }
 
@@ -444,8 +450,6 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
 
             ship->MoveToIsland(movement, [this, islandId, toCY, destCol, posBeforeMove]()
             {
-                    // Reposition ship to the right offset of the destination island
-                    // so the next departure starts correctly
                     int destCenterX = 224.0f + 448.0f * (float)destCol;
                     Vector2D destPos = Vector2D(destCenterX + 125.0f, (float)toCY);
                     ship->SetPosition(destPos);
@@ -455,7 +459,6 @@ bool InGameScene::OnUIMouseClickEvent(UIElement* uiElement)
                     // Guardar posición de origen en WorldMap para restaurarla si hay derrota
                     worldMap->SetShipReturnPosition(posBeforeMove);
                     worldMap->TravelTo(islandId);
-                    //worldMap.TravelTo(islandId);
             });
         }
         break;
@@ -767,7 +770,7 @@ void InGameScene::CreateUI()
     SDL_Rect questsBtnBounds = { 100, 600, 72, 72 };
     auto questsBtn = Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 1, "", questsBtnBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, teamButton, 0, questsBtnBounds.w, questsBtnBounds.h
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, questButton, 0, questsBtnBounds.w, questsBtnBounds.h
     );
     questsBtn->isHUD = true; //fixed on screen
 

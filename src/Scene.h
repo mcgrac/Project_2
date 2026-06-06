@@ -50,6 +50,9 @@ public:
 	//getter
 	inline bool GetIgnoreInputThisFrame() const { return ignoreInputThisFrame; }
 
+	// NEW: fade transition
+	void ChangeSceneWithFade(BaseScene* scene);
+
 #pragma endregion
 
 private:
@@ -65,4 +68,13 @@ private:
 	//Destroy and unload all scenes
 	void ClearStack();
 #pragma endregion
+
+	void DrawQuestNotification();
+
+	// Fade system
+	// NEW: transition state
+	bool isTransitioning = false;
+	BaseScene* pendingScene = nullptr;
+
+
 };

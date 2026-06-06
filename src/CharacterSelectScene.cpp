@@ -232,24 +232,9 @@ void CharacterSelectScene::ToggleSelection(int index)
         {
             selectedNames.erase(it);
         }
-
-        //delete c.chara;
-        //c.chara = nullptr;
-
         SetPortraitButtonStateNormal(index);
         LOG("CharacterSelect: %s deseleccionado.", c.name.c_str());
 
-
-        //delete character
-        //for (int i = 0; i < createdCharacters.size(); i++) {
-        //    if (createdCharacters[i] != nullptr) {
-        //        //if selected character name is equal to the name of the character in the vector
-        //        if (createdCharacters[i]->GetName() == c.name) {
-        //            delete createdCharacters[i];
-        //            createdCharacters.erase(createdCharacters.begin() + i);
-        //        }
-        //    }
-        //}
     }
     else
     {
@@ -259,32 +244,10 @@ void CharacterSelectScene::ToggleSelection(int index)
             return;
         }
 
-        //Character* created = CharacterFactory::Create(c.name);
-        //if (created == nullptr)
-        //{
-        //    LOG("CharacterSelect: no se pudo crear el personaje '%s'.", c.name.c_str());
-        //    return;
-        //}
-
-        //c.chara = created;
         c.selected = true;
         selectedNames.push_back(c.name);
         SetPortraitButtonStatePressed(index);
         LOG("CharacterSelect: %s seleccionado (%d/3).", c.name.c_str(), (int)selectedNames.size());
-
-        //create character
-        //LOG("Creando personaje: '%s'", c.name.c_str());
-        //Character* chara = CharacterFactory::Create(c.name);
-        //if (chara != nullptr)
-        //{
-        //    //alliedParty->AddMember(c);
-        //    //add character to the vector
-        //    createdCharacters.push_back(chara);
-        //}
-        //else
-        //{
-        //    LOG("InGameScene::Load — no se pudo crear el personaje '%s'.", chara->GetName().c_str());
-        //}
     }
 }
 
@@ -309,16 +272,6 @@ void CharacterSelectScene::RenderSelection()
 
 void CharacterSelectScene::ConfirmSelection()
 {
-    //std::vector<Character*> selectedCharacters;
-
-    //for (SelectableCharacter& c : availableCharacters)
-    //{
-    //    if (c.selected && c.chara != nullptr)
-    //    {
-    //        selectedCharacters.push_back(c.chara);
-    //        c.chara = nullptr; // InGameScene es ahora owner, no borrar en Unload
-    //    }
-    //}
 
 #if _DEBUG
     LOG("CharacterSelect: confirmado, lanzando LoadingScene.");
@@ -329,18 +282,11 @@ void CharacterSelectScene::ConfirmSelection()
     }
 #endif // _DEBUG
 
-    //Engine::GetInstance().scene->ReplaceScene(new InGameScene(selectedNames, false));
     Engine::GetInstance().scene->ReplaceScene(new LoadingScene(selectedNames, false));
 }
 
 void CharacterSelectScene::CreateCharactersButtons()
 {
-    //for (int i = 0; i < availableCharacters.size(); i++) {
-    //    const SelectableCharacter& c = availableCharacters[i];
-    //    Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 0 + i, "", c.bounds,
-    //        [this](UIElement* e) {return this->OnUIMouseClickEvent(e); }, {}, spritesheetCharacters, c.portraitCol, 195, 306);
-    //}
-
     //gerbera selection
     SDL_Rect btPos1 = { 81, 60, 195, 306 };
     Engine::GetInstance().uiManager->CreateUIElement(
@@ -414,8 +360,8 @@ void CharacterSelectScene::CreateInterfaceButtons()
 
 void CharacterSelectScene::DrawSelectedIndicator()
 {
-    SDL_Color White = { 255, 255, 255 };
-    SDL_Color Yellow = { 255, 255, 0 };
+    SDL_Color White = { 255, 255, 255, 255 };
+    SDL_Color Yellow = { 255, 255, 0, 255 };
     int selected = selectedNames.size();
 
     std::string selectedStr = std::to_string(selected);

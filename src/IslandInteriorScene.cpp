@@ -79,27 +79,29 @@ void IslandInteriorScene::Load()
     LoadAnimation();
     LoadSound();
     CreateUI();
-    //goldCounter.MoveCounter(1160, 62);
+
     goldCounter.SetPosition(1160, 62);
+
+    //play music 
+    Engine::GetInstance().audio->PlayMusic(musicIsland.c_str());
 }
 
 void IslandInteriorScene::Update(float dt) {
-   
-    //check if music is playing
-    if(isMusicChanged==false){ Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Island" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".wav").c_str()); }
-   
-    isMusicChanged = true;
-    if (!Engine::GetInstance().audio->IsMusicPlaying()) {
-        LOG("Play music again!");
-        //Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/MainMenuScene.wav");
-        Engine::GetInstance().audio->PlayMusic(("Assets/Audio/Music/Island" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".wav").c_str());
-    }
  
-    Draw(dt);
-
     UpdateSound();
+
+    Draw(dt);
     
-    if(!chestOpened){ Engine::GetInstance().render->DrawTexture(moneyCounter, 1121, 30, nullptr, 0); }
+    if (showChest || chestOpened || chestPopped)
+    {
+        DrawChest(dt);
+    }
+    else
+    {
+        Engine::GetInstance().render->DrawTexture(moneyCounter, 1121, 30);
+    }
+
+    //if(!chestOpened){ Engine::GetInstance().render->DrawTexture(moneyCounter, 1121, 30, nullptr, 0); }
  
     goldCounter.Update(alliedParty->GetGold(), dt);
 
@@ -107,12 +109,7 @@ void IslandInteriorScene::Update(float dt) {
 
 void IslandInteriorScene::PostUpdate(float dt)
 {
-    // Nombre de la isla
-   /* Engine::GetInstance().render->DrawText(
-        island->GetName().c_str(),
-        440, 180, 400, 50,
-        { 255, 255, 255, 255 }
-    );*/
+
 }
 
 void IslandInteriorScene::Unload()
@@ -209,113 +206,114 @@ void IslandInteriorScene::Draw(float dt)
     
 }
 
+void IslandInteriorScene::DrawReward()
+{
+    if (rewardAmount > 40)
+    {
+        Engine::GetInstance().render->DrawTexture(
+            emptyCard,
+            REWARD_BOUNDS.x,
+            REWARD_BOUNDS.y
+        );
+    }
+    else if (rewardAmount < 21)
+    {
+        Engine::GetInstance().render->DrawTexture(
+            moneyCard,
+            REWARD_BOUNDS.x,
+            REWARD_BOUNDS.y
+        );
+
+        SDL_Color White = { 255,255,255 };
+
+        int potNum = 0;
+
+        if (rewardAmount >= 10)
+            potNum++;
+
+        std::string price = std::to_string(rewardAmount);
+
+        Engine::GetInstance().render->DrawText(
+            price.c_str(),
+            629 - (12 * potNum),
+            431,
+            23 + (20 * potNum),
+            26,
+            White
+        );
+    }
+    else
+    {
+        if (chestItemTexture != nullptr)
+        {
+            float texW;
+            float texH;
+
+            SDL_GetTextureSize(
+                chestItemTexture,
+                &texW,
+                &texH
+            );
+
+            SDL_Rect firstFrame;
+
+            firstFrame.x = 0;
+            firstFrame.y = 0;
+            firstFrame.w = (int)texW;
+            firstFrame.h = (int)texH / 3;
+
+            Engine::GetInstance().render->DrawTexture(
+                chestItemTexture,
+                REWARD_BOUNDS.x,
+                REWARD_BOUNDS.y,
+                &firstFrame
+            );
+        }
+    }
+}
+
 void IslandInteriorScene::DrawChest(float dt)
 {
     IslandFaction faction = island->GetIslandFaction();
 
+    if (faction != IslandFaction::SIRENS &&
+        faction != IslandFaction::REPTILES)
+    {
+        return;
+    }
 
-    if (faction == IslandFaction::SIRENS || faction == IslandFaction::REPTILES) {
+    Engine::GetInstance().render->DrawTexture(chestBackground, 0, 0);
 
-        Engine::GetInstance().render->DrawTexture(chestBackground, 0, 0);
-        if (animationPlaying) { PlayAnimation(dt); }
-        Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
-        Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
+    Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
+    Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
 
-        SDL_Color White = { 255, 255, 255 };
-        int keys = alliedParty->GetInventory().GetItemCount("key");
-        std::string key = std::to_string(keys);
-        int keyNum = 1;
-        if (keys >= 10) { keyNum += 1; }
-        Engine::GetInstance().render->DrawText((key).c_str(), 1114, 164, 19 * keyNum, 33, White);
+    SDL_Color White = { 255,255,255 };
 
-        SDL_Rect rewardBounds = REWARD_BOUNDS;
+    int keys = alliedParty->GetInventory().GetItemCount("key");
 
-        if (chestPopped) {
-            if (rewardAmount > 40) {
+    std::string key = std::to_string(keys);
 
-                Engine::GetInstance().render->DrawTexture(emptyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
+    int keyNum = 1;
+    if (keys >= 10)
+        keyNum++;
 
-            }
-            else if (rewardAmount < 21) {
+    Engine::GetInstance().render->DrawText(
+        key.c_str(),
+        1114,
+        164,
+        19 * keyNum,
+        33,
+        White
+    );
 
-                Engine::GetInstance().render->DrawTexture(moneyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
+    if (animationPlaying)
+    {
+        PlayAnimation(dt);
+    }
 
-                SDL_Color White = { 255, 255, 255 };
-                int potNum = 0;
-                if (rewardAmount >= 10) { potNum += 1; }
-
-                std::string price = std::to_string(rewardAmount);
-                Engine::GetInstance().render->DrawText((price).c_str(), 629 - (12 * potNum), 431, 23 + (20 * potNum), 26, White);
-            }
-
-        /*
-
-        //chest animation
-        if (chestOpened = true) {
-            //play animation chest
-            animsChest.Update(dt);
-            Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
-            Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
-
-            const SDL_Rect& animFrame = animsChest.GetCurrentFrame();
-
-            Engine::GetInstance().render->DrawTexture(
-                chestSpritesheet,
-                0,
-                0,
-                &animFrame
-            );
-
-            if (animsChest.IsCurrentFinished()) {
-               // chestOpened = false;
-                chestPopped = true;
-                GiveReward();
-            };
-        }
-        SDL_Color White = { 255, 255, 255 };
-        int keys = alliedParty->GetInventory().GetItemCount("key");
-        std::string key = std::to_string(keys);
-        int keyNum = 1;
-        if (keys >= 10) { keyNum += 1; }
-        Engine::GetInstance().render->DrawText((key).c_str(), 1114, 164, 19 * keyNum, 33, White);
-
-        SDL_Rect rewardBounds = REWARD_BOUNDS;
-
-        //chest render items
-        if (chestPopped)
-        {
-            if (rewardAmount > 40)
-            {
-                Engine::GetInstance().render->DrawTexture(emptyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
-            }
-            else if (rewardAmount < 21)
-            {
-                Engine::GetInstance().render->DrawTexture(moneyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
-
-                SDL_Color White = { 255, 255, 255 };
-                int potNum = 0;
-                if (rewardAmount >= 10) { potNum += 1; }
-
-                std::string price = std::to_string(rewardAmount);
-                Engine::GetInstance().render->DrawText((price).c_str(), 629 - (12 * potNum), 431, 23 + (20 * potNum), 26, White);
-            }
-            else
-            {
-                if (chestItemTexture != nullptr)
-                {
-                    float texW, texH;
-                    SDL_GetTextureSize(chestItemTexture, &texW, &texH);
-
-                    SDL_Rect firstFrame;
-                    firstFrame.x = 0;
-                    firstFrame.y = 0;
-                    firstFrame.w = (int)texW;
-                    firstFrame.h = (int)texH / 3;
-
-                    Engine::GetInstance().render->DrawTexture(chestItemTexture, 526, 185, &firstFrame);
-                }
-            }*/
-        }
+    if (chestPopped)
+    {
+        DrawReward();
     }
 }
 
@@ -372,7 +370,8 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
         if (alliedParty->GetInventory().GetItemCount("key") < 1) { break; }
         alliedParty->GetInventory().ConsumeItem("key");
         animationPlaying = true;
-        
+
+        animsChest.ResetClip("idle"); //reset animation so it plays again
         animsChest.SetCurrent("idle");
         animsChest.SetLoop("idle", false);
         break;
@@ -576,26 +575,14 @@ SDL_Rect IslandInteriorScene::GetChestBounds() const
 
 void IslandInteriorScene::LoadSound() {
     buttonPress = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/UIfx/button_press.wav");
+    musicIsland = "Assets/Audio/Music/Island" + SceneUtils::GetFactionString(island->GetIslandFaction()) + ".wav";
 }
 
 void IslandInteriorScene::UpdateSound() {
     //ckeck for type of island to put ambience
     if (!Engine::GetInstance().audio->IsMusicPlaying()) {
         LOG("Play music again!");
-        switch (island->GetIslandFaction()) {
-        case IslandFaction::HUMANS:
-            //play crowd sounds
-            Engine::GetInstance().audio->PlayMusic(humanAmb, 0);
-            break;
-        case IslandFaction::SIRENS:
-            //play wave sounds
-            Engine::GetInstance().audio->PlayMusic(sirenAmb, 0);
-            break;
-        case IslandFaction::REPTILES:
-            //play jungle sounds
-            Engine::GetInstance().audio->PlayMusic(reptileAmb, 0);
-            break;
-        }
+        Engine::GetInstance().audio->PlayMusic(musicIsland.c_str());
     }
 }
 
@@ -689,9 +676,9 @@ void IslandInteriorScene::OpenUIChest()
 void IslandInteriorScene::PlayAnimation(float dt)
 {
     if (chestSpritesheet == nullptr) { LOG("chest spritesheet nullptr"); }
-    anims.Update(dt);
+    animsChest.Update(dt);
 
-    const SDL_Rect& animFrame = anims.GetCurrentFrame();
+    const SDL_Rect& animFrame = animsChest.GetCurrentFrame();
 
     Engine::GetInstance().render->DrawTexture(
         chestSpritesheet,
@@ -700,7 +687,7 @@ void IslandInteriorScene::PlayAnimation(float dt)
         &animFrame
     );
 
-    if (anims.IsCurrentFinished()) {
+    if (animsChest.IsCurrentFinished()) {
         animationPlaying = false; chestPopped = true; GiveReward();
     };
 }

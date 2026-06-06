@@ -20,9 +20,9 @@ void QuestScene::Load()
     int screenH = 0;
     Engine::GetInstance().window->GetWindowSize(screenW, screenH);
 
-    SDL_Rect backBounds = { screenW / 2 - 80, screenH - 60, 160, 40 };
+    SDL_Rect backBounds = { 1188, 30, 72, 72 };
     auto backBtn = Engine::GetInstance().uiManager->CreateUIElement(
-        UIElementType::BUTTON, BACK_BUTTON_ID, "VOLVER", backBounds,
+        UIElementType::BUTTON, BACK_BUTTON_ID, "", backBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
         {}, backButtonTex, 0, backBounds.w, backBounds.h
     );
@@ -49,6 +49,7 @@ void QuestScene::Unload()
     Engine::GetInstance().textures->UnLoad(panelTex);
     Engine::GetInstance().textures->UnLoad(entryTex);
     Engine::GetInstance().textures->UnLoad(backButtonTex);
+    Engine::GetInstance().textures->UnLoad(background);
 
     backgroundTex = nullptr;
     panelTex = nullptr;
@@ -66,7 +67,8 @@ void QuestScene::LoadTextures()
     backgroundTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/quest_background.png");
     panelTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/quest_panel.png");
     entryTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/quest_entry.png");
-    backButtonTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/emptyButton.png");
+    backButtonTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/BackButton2.png");
+    background = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/QuestPage.png");
 }
 
 
@@ -102,7 +104,10 @@ void QuestScene::OnPause()
 
 void QuestScene::DrawBackground()
 {
-    if (backgroundTex != nullptr)
+
+    Engine::GetInstance().render->DrawTexture(background, 0, 0);
+
+   /* if (backgroundTex != nullptr)
     {
         Engine::GetInstance().render->DrawTexture(backgroundTex, 0, 0);
     }
@@ -124,7 +129,7 @@ void QuestScene::DrawBackground()
     Engine::GetInstance().window->GetWindowSize(screenW, screenH);
     const char* title = "MISSIONS";
     int titleW = (int)strlen(title) * CHAR_W;
-    SceneUtils::DrawAutoText(title, screenW / 2 - titleW / 2, 15, { 255, 255, 255, 255 });
+    SceneUtils::DrawAutoText(title, screenW / 2 - titleW / 2, 15, { 255, 255, 255, 255 });*/
 }
 
 
@@ -187,7 +192,7 @@ void QuestScene::DrawPanels()
     }
 
     const int entryStartY = TOP_OFFSET + 40;
-    const int maxEntryBotY = TOP_OFFSET + panelH - ENTRY_PADDING;
+    const int maxEntryBotY = TOP_OFFSET + panelH - ENTRY_PADDING ;
 
     // Columna izquierda: activas
     int curY = entryStartY;

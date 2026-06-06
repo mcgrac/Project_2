@@ -1,5 +1,6 @@
 #include "ParticleSystem.h"
 #include "Engine.h"
+#include "Textures.h"
 #include "Render.h"
 #include <cstdlib>
 #include <cmath>
@@ -11,6 +12,13 @@ ParticleSystem::ParticleSystem(int poolSize)
     {
         p.active = false;
     }
+    LoadTextures();
+}
+
+ParticleSystem::~ParticleSystem()
+{
+    Engine::GetInstance().textures->UnLoad(poisonTexture);
+    Engine::GetInstance().textures->UnLoad(fireTexture);
 }
 
 float ParticleSystem::RandomFloat(float min, float max)
@@ -40,6 +48,7 @@ ParticleEmitterConfig ParticleSystem::GetConfig(ParticleEmitterType type)
         config.speed      = 0.03f;
         config.emitRadius = 20.0f;
         config.emitRate   = 8;
+        config.texturePath = "Assets/Textures/CombatScene/PoisonParticle.png";
     }
     else // FIRE
     {
@@ -54,6 +63,7 @@ ParticleEmitterConfig ParticleSystem::GetConfig(ParticleEmitterType type)
         config.speed      = 0.06f;
         config.emitRadius = 15.0f;
         config.emitRate   = 12;
+        config.texturePath = "Assets/Textures/CombatScene/FireParticle.png";
     }
 
     return config;
@@ -109,13 +119,29 @@ void ParticleSystem::Draw() const
         float lifeRatio = p.life / p.maxLife;
         Uint8 alpha = (Uint8)(lifeRatio * 200.0f);
 
-        SDL_Rect rect;
-        rect.x = (int)p.position.getX() - p.size / 2;
-        rect.y = (int)p.position.getY() - p.size / 2;
-        rect.w = p.size;
-        rect.h = p.size;
+        if (p.texture != nullptr)
+        {
+            SDL_SetTextureBlendMode(p.texture, SDL_BLENDMODE_BLEND);
+            SDL_SetTextureAlphaMod(p.texture, alpha);
 
-        Engine::GetInstance().render->DrawRectangle(rect, p.r, p.g, p.b, alpha, true, false);
+            SDL_Rect rect;
+            rect.x = (int)p.position.getX() - p.size / 2;
+            rect.y = (int)p.position.getY() - p.size / 2;
+            rect.w = p.size;
+            rect.h = p.size;
+
+            Engine::GetInstance().render->DrawTexture(p.texture, rect.x, rect.y, nullptr, 1.0f, 0.0, INT_MAX, INT_MAX, false, alpha / 255.0f);
+        }
+        else
+        {
+            SDL_Rect rect;
+            rect.x = (int)p.position.getX() - p.size / 2;
+            rect.y = (int)p.position.getY() - p.size / 2;
+            rect.w = p.size;
+            rect.h = p.size;
+
+            Engine::GetInstance().render->DrawRectangle(rect, p.r, p.g, p.b, alpha, true, false);
+        }
     }
 }
 
@@ -160,5 +186,25 @@ void ParticleSystem::ResetParticle(int index, const Vector2D& origin, const Part
     p.r = config.r;
     p.g = config.g;
     p.b = config.b;
+
+    if (config.type == ParticleEmitterType::POISON)
+    {
+        p.texture = poisonTexture;
+    }
+    else if (config.type == ParticleEmitterType::FIRE)
+    {
+        p.texture = fireTexture;
+    }
+    else
+    {
+        p.texture = nullptr;
+    }
+
     p.active = true;
+}
+
+void ParticleSystem::LoadTextures()
+{
+    poisonTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/PoisonParticle.png");
+    fireTexture = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/FireParticle.png");
 }

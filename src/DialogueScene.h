@@ -31,8 +31,6 @@ public:
     //void CreateUI();
 
 private:
-
-
     std::string dialogueId;
     std::function<void()> onFinished; //callback to do an action when the dialogue finishes
 

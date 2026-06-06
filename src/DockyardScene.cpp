@@ -73,7 +73,13 @@ const SDL_Rect DockyardScene::GOLD_COUNTER2_BOUNDS = { 860, 164, 119, 64 };
 #pragma endregion
 
 DockyardScene::DockyardScene(Dockyard* dockyard, Party* allied)
-    : dockyard(dockyard), alliedParty(allied), background(nullptr), exitButton(nullptr), ownerSprite(nullptr), showChart(false), goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
+    : dockyard(dockyard),
+    alliedParty(allied),
+    background(nullptr),
+    exitButton(nullptr),
+    ownerSprite(nullptr),
+    showChart(false),
+    goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
 {
     sceneName = "DockyardScene";
 }
@@ -98,6 +104,17 @@ void DockyardScene::Load()
 
 void DockyardScene::Update(float dt)
 {
+    hoveringUpgrade = false;  // se vuelve a true si UIManager dispara el hover este frame
+    hoverPulseTimer += dt;
+
+    if (showChart && !shipImproved)
+    {
+        float mouseX, mouseY;
+        SDL_GetMouseState(&mouseX, &mouseY);
+        hoveringUpgrade = SceneUtils::PointInRect((int)mouseX, (int)mouseY, UPGRADE_BUTTON_BOUNDS);
+    }
+
+
     if (pendingDialogue)
     {
         pendingDialogue = false;
@@ -137,6 +154,7 @@ void DockyardScene::PostUpdate(float dt)
     {
         DrawChartStats();
     }
+    inputConsumed = false;
 }
 
 void DockyardScene::Unload()
@@ -175,6 +193,10 @@ void DockyardScene::LoadSound() {
 
 bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
+    LOG("CLICK ID = %d", uiElement->id);
+    if (inputConsumed) { return true; }
+    inputConsumed = true;
+
     switch (uiElement->id)
     {
     case BACK_BUTTON_ID:
@@ -204,7 +226,7 @@ bool DockyardScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     }
     case IMPROVE_SHIP:
-        if (alliedParty->GetGold() >= COST_IMPROVE_SHIP) {
+        if (alliedParty->GetGold() >= COST_IMPROVE_SHIP && dockyard->GetShip()->GetLevel() < 3) {
             Engine::GetInstance().audio->PlayFx(shipUpgrade);
             alliedParty->AddGold(-COST_IMPROVE_SHIP);
             levelBeforeImprove = dockyard->GetShip()->GetLevel();
@@ -283,6 +305,7 @@ void DockyardScene::PushDialogue()
                 {
                     LOG("DOCKYARD: upgrade");
                     goldCounter.MoveCounter(GOLD_COUNTER2_BOUNDS.x+23, GOLD_COUNTER2_BOUNDS.y+32);
+                    Engine::GetInstance().uiManager->RemoveElementsByRange(0, 100);
                     CreateChartButtons();
                     showChart = true;
                 }
@@ -335,9 +358,33 @@ void DockyardScene::DrawChartStats()
     Engine::GetInstance().render->DrawText(frontHpStr.c_str(), FRONT_HEALTH_BOUND.x, FRONT_HEALTH_BOUND.y, FRONT_HEALTH_BOUND.w, FRONT_HEALTH_BOUND.h, { 255, 255, 255, 255 });
     Engine::GetInstance().render->DrawText(leftLevelStr.c_str(), LEVEL1_BOUNDS.x, LEVEL1_BOUNDS.y, LEVEL1_BOUNDS.w, LEVEL1_BOUNDS.h, { 255, 255, 255, 255 });
 
-    // Columna derecha: stats nuevos tras la mejora (solo si se ha mejorado)
-    if (shipImproved)
+    // Columna derecha: hover tiene prioridad sobre stats fijos
+    if (dockyard->GetShip()->GetLevel() < 3 && hoveringUpgrade)
     {
+        int nextLevel = dockyard->GetShip()->GetLevel() + 1;
+
+        float pulse = (std::sin(hoverPulseTimer * 0.3f) + 1.0f) * 0.5f;
+        Uint8 alpha = static_cast<Uint8>(80 + pulse * 175);
+        SDL_Color previewColor = { 100, 255, 100, alpha };
+
+        std::string backPowerNewStr = "+" + std::to_string(Lane::BASE_BACK_POWER * nextLevel);
+        std::string sidePowerNewStr = "+" + std::to_string(Lane::BASE_SIDE_POWER * nextLevel);
+        std::string sideSpeedNewStr = "+" + std::to_string(Lane::BASE_SIDE_SPEED * nextLevel);
+        std::string frontSpeedNewStr = "+" + std::to_string(Lane::BASE_FRONT_SPEED * nextLevel);
+        std::string frontHpNewStr = "+" + std::to_string(Lane::BASE_FRONT_HEALTH * nextLevel);
+        std::string rightLevelStr = std::to_string(nextLevel);
+
+        Engine::GetInstance().render->DrawText(backPowerNewStr.c_str(), BACK_POWER_BOUNDS2.x, BACK_POWER_BOUNDS2.y, BACK_POWER_BOUNDS2.w, BACK_POWER_BOUNDS2.h, previewColor);
+        Engine::GetInstance().render->DrawText(sidePowerNewStr.c_str(), SIDE_POWER_BOUND2.x, SIDE_POWER_BOUND2.y, SIDE_POWER_BOUND2.w, SIDE_POWER_BOUND2.h, previewColor);
+        Engine::GetInstance().render->DrawText(sideSpeedNewStr.c_str(), SIDE_SPEED_BOUND2.x, SIDE_SPEED_BOUND2.y, SIDE_SPEED_BOUND2.w, SIDE_SPEED_BOUND2.h, previewColor);
+        Engine::GetInstance().render->DrawText(frontSpeedNewStr.c_str(), FRONT_SPEED_BOUND2.x, FRONT_SPEED_BOUND2.y, FRONT_SPEED_BOUND2.w, FRONT_SPEED_BOUND2.h, previewColor);
+        Engine::GetInstance().render->DrawText(frontHpNewStr.c_str(), FRONT_HEALTH_BOUND2.x, FRONT_HEALTH_BOUND2.y, FRONT_HEALTH_BOUND2.w, FRONT_HEALTH_BOUND2.h, previewColor);
+        Engine::GetInstance().render->DrawText(rightLevelStr.c_str(), LEVEL2_BOUNDS.x, LEVEL2_BOUNDS.y, LEVEL2_BOUNDS.w, LEVEL2_BOUNDS.h, previewColor);
+    }
+    else if (shipImproved)
+    {
+        // Stats fijos solo cuando NO hay hover
+        int shipLevel = dockyard->GetShip()->GetLevel();
         std::string backPowerNewStr = "+" + std::to_string(Lane::BASE_BACK_POWER * shipLevel);
         std::string sidePowerNewStr = "+" + std::to_string(Lane::BASE_SIDE_POWER * shipLevel);
         std::string sideSpeedNewStr = "+" + std::to_string(Lane::BASE_SIDE_SPEED * shipLevel);

@@ -3,6 +3,8 @@
 #include "Vector2D.h"
 #include <SDL3/SDL.h>
 
+struct SDL_Texture;
+
 struct Particle
 {
     Vector2D position;
@@ -12,6 +14,7 @@ struct Particle
     int size;
     Uint8 r, g, b;
     bool active;       // true = visible y viva, false = en el pool esperando
+    SDL_Texture* texture = nullptr;  // nullptr = dibuja rectángulo (fallback)
 };
 
 enum class ParticleEmitterType
@@ -31,13 +34,14 @@ struct ParticleEmitterConfig
     float speed;
     float emitRadius;  // radio alrededor del origen en el que aparecen
     int emitRate;      // particulas por segundo
+    std::string texturePath;  // vacío = sin textura
 };
 
 class ParticleSystem
 {
 public:
     ParticleSystem(int poolSize = 200);
-    ~ParticleSystem() = default;
+    ~ParticleSystem();
 
     void Update(float dt);
     void Draw() const;
@@ -49,13 +53,15 @@ public:
 
 private:
     std::vector<Particle> pool;
+    SDL_Texture* poisonTexture = nullptr;
+    SDL_Texture* fireTexture = nullptr;
 
     // Devuelve el indice de una particula inactiva del pool, o -1 si el pool esta lleno
     int GetInactiveParticle() const;
 
     // Reinicia una particula del pool con nuevos valores
     void ResetParticle(int index, const Vector2D& origin, const ParticleEmitterConfig& config);
-
+    void LoadTextures();
 
     static ParticleEmitterConfig GetConfig(ParticleEmitterType type);
     static float RandomFloat(float min, float max);

@@ -10,7 +10,7 @@
 			<anim name="idle" tile="2" loop="true"/>
 			<anim name="dead" tile="46" loop="false"/>
 
-			<anim name="bird_flying" tile="93" loop="false"/>
+			<anim name="birds_flying" tile="93" loop="false"/>
 			<anim name="paper_bird_projectile" tile="97" loop="false"/>
 
 		</animations>
@@ -38,7 +38,7 @@
     />
 
 	<skills>
-		<skill id="bird_flying" initiativeCost="100" />
+		<skill id="birds_flying" initiativeCost="100" />
 		<skill id="paper_bird_projectile" initiativeCost="130" />
 	</skills>
 
