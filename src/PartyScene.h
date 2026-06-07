@@ -87,7 +87,7 @@ private:
 #pragma region TEXTURES
     // -------------Texturas ----------
     SDL_Texture* background = nullptr;
-    SDL_Texture* statsPanelTexture = nullptr;  // fondo del panel de stats
+
     SDL_Texture* portraitTexture = nullptr;  // portrait grande del personaje actual
     std::string loadedPortraitName = "";        // para saber si hay que recargar
     SDL_Texture* abilityIconsTexture = nullptr;
@@ -95,9 +95,103 @@ private:
 
     // Texturas árbol de mejoras
     SDL_Texture* upgradeIconsTexture = nullptr;  // spritesheet por personaje
-    SDL_Texture* gemsTexture = nullptr;  // spritesheet gemas estática
+
+    SDL_Texture* Gem5 = nullptr;
+    SDL_Texture* Gem10 = nullptr;
+    SDL_Texture* Gem15 = nullptr;
     SDL_Texture* linesTexture = nullptr;  // imagen líneas estática
     SDL_Texture* backButton = nullptr;
+
+    //character icons
+    SDL_Texture* markusIcon = nullptr;
+    SDL_Texture* gerberaIcon = nullptr;
+    SDL_Texture* theresiaIcon = nullptr;
+    SDL_Texture* fatuusIcon = nullptr;
+    SDL_Texture* jochiIcon = nullptr;
+    SDL_Texture* ignisIcon = nullptr;
+
+    //Skill Descriptions
+    SDL_Texture* markusSkill0 = nullptr;
+    SDL_Texture* markusSkill1 = nullptr;
+    SDL_Texture* markusSkill2 = nullptr;
+    SDL_Texture* markusSkill3 = nullptr;
+    SDL_Texture* markusSkill4 = nullptr;
+
+    SDL_Texture* gerberaSkill0 = nullptr;
+    SDL_Texture* gerberaSkill1 = nullptr;
+    SDL_Texture* gerberaSkill2 = nullptr;
+    SDL_Texture* gerberaSkill3 = nullptr;
+    SDL_Texture* gerberaSkill4 = nullptr;
+
+    SDL_Texture* ignisSkill0 = nullptr;
+    SDL_Texture* ignisSkill1 = nullptr;
+    SDL_Texture* ignisSkill2 = nullptr;
+    SDL_Texture* ignisSkill3 = nullptr;
+    SDL_Texture* ignisSkill4 = nullptr;
+
+    SDL_Texture* theresiaSkill0 = nullptr;
+    SDL_Texture* theresiaSkill1 = nullptr;
+    SDL_Texture* theresiaSkill2 = nullptr;
+    SDL_Texture* theresiaSkill3 = nullptr;
+    SDL_Texture* theresiaSkill4 = nullptr;
+
+    SDL_Texture* fatuusSkill0 = nullptr;
+    SDL_Texture* fatuusSkill1 = nullptr;
+    SDL_Texture* fatuusSkill2 = nullptr;
+    SDL_Texture* fatuusSkill3 = nullptr;
+    SDL_Texture* fatuusSkill4 = nullptr;
+ 
+
+    SDL_Texture* jochiSkill0 = nullptr;
+    SDL_Texture* jochiSkill1 = nullptr;
+    SDL_Texture* jochiSkill2 = nullptr;
+    SDL_Texture* jochiSkill3 = nullptr;
+    SDL_Texture* jochiSkill4 = nullptr;
+
+    //AscensionDescriptions
+    SDL_Texture* fatuusAscension0 = nullptr;
+    SDL_Texture* fatuusAscension1 = nullptr;
+    SDL_Texture* fatuusAscension2 = nullptr;
+    SDL_Texture* fatuusAscension3 = nullptr;
+    SDL_Texture* fatuusAscension4 = nullptr;
+    SDL_Texture* fatuusAscension5 = nullptr;
+
+    SDL_Texture* gerberaAscension0 = nullptr;
+    SDL_Texture* gerberaAscension1 = nullptr;
+    SDL_Texture* gerberaAscension2 = nullptr;
+    SDL_Texture* gerberaAscension3 = nullptr;
+    SDL_Texture* gerberaAscension4 = nullptr;
+    SDL_Texture* gerberaAscension5 = nullptr;
+
+    SDL_Texture* ignisAscension0 = nullptr;
+    SDL_Texture* ignisAscension1 = nullptr;
+    SDL_Texture* ignisAscension2 = nullptr;
+    SDL_Texture* ignisAscension3 = nullptr;
+    SDL_Texture* ignisAscension4 = nullptr;
+    SDL_Texture* ignisAscension5 = nullptr;
+
+    SDL_Texture* jochiAscension0 = nullptr;
+    SDL_Texture* jochiAscension1 = nullptr;
+    SDL_Texture* jochiAscension2 = nullptr;
+    SDL_Texture* jochiAscension3 = nullptr;
+    SDL_Texture* jochiAscension4 = nullptr;
+    SDL_Texture* jochiAscension5 = nullptr;
+
+    SDL_Texture* markusAscension0 = nullptr;
+    SDL_Texture* markusAscension1 = nullptr;
+    SDL_Texture* markusAscension2 = nullptr;
+    SDL_Texture* markusAscension3 = nullptr;
+    SDL_Texture* markusAscension4 = nullptr;
+    SDL_Texture* markusAscension5 = nullptr;
+
+    SDL_Texture* theresiaAscension0 = nullptr;
+    SDL_Texture* theresiaAscension1 = nullptr;
+    SDL_Texture* theresiaAscension2 = nullptr;
+    SDL_Texture* theresiaAscension3 = nullptr;
+    SDL_Texture* theresiaAscension4 = nullptr;
+    SDL_Texture* theresiaAscension5 = nullptr;
+
+
 #pragma endregion
 
     void LoadBackground(Character* c);
@@ -148,6 +242,9 @@ private:
     void LoadTextures();
     void UnloadTextures();
 
+    void LoadSkillDescriptions();
+    void LoadAscensionDescriptions();
+
     //tooltip
     void DrawSkillTooltip();
     TooltipRenderer tooltipRenderer;
@@ -187,7 +284,7 @@ private:
     static const SDL_Rect STATS_PANEL_RECT;
     static const SDL_Rect INV_SLOT_RECT;       // posición base, Y se desplaza por índice
     static const SDL_Rect SKILL_ICON_RECT;     // posición base, X se desplaza por índice
-    static const SDL_Rect UPGRADE_RECT;        // posición base, Y se desplaza por tier
+
     static const SDL_Rect TAB_RECT;            // posición base, X se desplaza por índice
     static const SDL_Rect NAME_RECT;           //letrero
 
@@ -195,38 +292,37 @@ private:
     // Posición del primer stat dentro del panel
     static constexpr int STAT_VALUE_X = 250;
     static constexpr int STAT_START_Y = 100;
-    static constexpr int STAT_LINE_GAP = 45;
+    static constexpr int STAT_LINE_GAP = 47;
 
     // Tamaño del texto
     static constexpr int STAT_TEXT_W = 45;
-    static constexpr int STAT_TEXT_H = 30;
+    static constexpr int STAT_TEXT_H = 20;
     //-----------------------------
 
     //--------- Layout árbol de mejoras
-    static constexpr int TREE_START_X = 400;
-    static constexpr int TREE_START_Y = 500;
+
 
     static constexpr int GEM_W = 72;
     static constexpr int GEM_H = 72;
 
     static constexpr int UPGRADE_ICON_W = 72;
     static constexpr int UPGRADE_ICON_H = 72;
-    static constexpr int UPGRADE_ICON_GAP = 10;   // gap vertical entre A y B
+
 
     static constexpr int LINE_W = 114; //line ascension
     static constexpr int LINE_H = 116; //line ascension
     //---------------------------
 
-    static constexpr int HP_BAR_Y = 390;
-    static constexpr int EXP_BAR_Y = 405;
+    static constexpr int HP_BAR_Y = 315;
+    static constexpr int EXP_BAR_Y = 296;
     static constexpr int BAR_W = 220;
     static constexpr int BAR_H = 12;
     //-------------------------------
 
-    static constexpr int INV_SLOT_GAP = 10;
-    static constexpr int SKILL_ICON_GAP = 10;
+    static constexpr int INV_SLOT_GAP = 7;
+    static constexpr int SKILL_ICON_GAP = 6;
     static constexpr int UPGRADE_BTN_GAP = 10;
-    static constexpr int TAB_GAP = 10;
+    static constexpr int TAB_GAP = 36;
 
     //audio variables
     int buttonPress;
