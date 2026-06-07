@@ -1,38 +1,5 @@
 <?xml version="1.0"?>
 <savedata>
-	<world currentIslandId="3" shipLevel="2" />
-	<party gold="1970" consumables="0">
-		<character name="Jochi" health="95" isAlive="true" experience="50" level="1">
-			<upgrades>
-				<tier index="0" chosen="" />
-				<tier index="1" chosen="" />
-				<tier index="2" chosen="" />
-			</upgrades>
-			<equippedItems />
-		</character>
-		<character name="Fatuus" health="100" isAlive="true" experience="50" level="1">
-			<upgrades>
-				<tier index="0" chosen="" />
-				<tier index="1" chosen="" />
-				<tier index="2" chosen="" />
-			</upgrades>
-			<equippedItems />
-		</character>
-		<character name="Ignis" health="115" isAlive="true" experience="50" level="1">
-			<upgrades>
-				<tier index="0" chosen="" />
-				<tier index="1" chosen="" />
-				<tier index="2" chosen="" />
-			</upgrades>
-			<equippedItems />
-		</character>
-	</party>
-	<quests>
-		<quest id="1" progress="0" status="active" />
-		<quest id="2" progress="0" status="active" />
-		<quest id="3" progress="0" status="active" />
-		<quest id="4" progress="0" status="active" />
-		<quest id="5" progress="0" status="active" />
-		<quest id="6" progress="0" status="active" />
-	</quests>
+	<world currentIslandId="0" shipCurrentHp="-1" shipLevel="1" />
+	<party gold="0" consumables="0" />
 </savedata>

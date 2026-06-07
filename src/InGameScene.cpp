@@ -238,7 +238,7 @@ void InGameScene::Update(float dt)
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
     {
         Engine::GetInstance().audio->PlayFx(buttonPress);
-        PushSceneFromInGame(new PauseScene(alliedParty, worldMap->GetCurrentIslandId(), ship->GetLevel()));
+        PushSceneFromInGame(new PauseScene(alliedParty, worldMap->GetCurrentIslandId(), ship->GetLevel(), ship->GetCurrentHp()));
         return;
     }
 

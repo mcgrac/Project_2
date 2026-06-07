@@ -213,6 +213,12 @@ void IslandScene::OnResume()
                 inGameScene->SetPendingGameOver(true);
             }
 
+            // derrota contra el boss -> game over
+            if (island->GetIslandFaction() == IslandFaction::BOSS)
+            {
+                inGameScene->SetPendingGameOver(true);
+            }
+
         }
         else
         {
