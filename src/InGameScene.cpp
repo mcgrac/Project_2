@@ -260,7 +260,7 @@ void InGameScene::PostUpdate(float dt)
         //render background
         Engine::GetInstance().render->DrawTexture(background, 0, 0);
         Engine::GetInstance().render->DrawTexture(goldBack, 1121, 30, nullptr, 0);
-        Engine::GetInstance().render->DrawTexture(shipPanelTex, 40, 8, nullptr, false);
+        Engine::GetInstance().render->DrawTexture(shipPanelTex, 1090, 590, nullptr, false);
 
         shipHpBar.Draw(ship->GetCurrentHp(), ship->GetMaxHp());
         ship->Draw(dt);
@@ -348,7 +348,7 @@ void InGameScene::LoadTextures(){
     shipPanelTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/BoatHealthBarEXP.png");
     shipHpBar.chunkW = 10;
     shipHpBar.chunkH = 12;
-    shipHpBar.position = Vector2D(90.0f, 25.0f); // ajusta al layout del panel
+    shipHpBar.position = Vector2D(1140.0f, 608.0f); // ajusta al layout del panel
     shipHpBar.LoadTexture("Assets/Textures/CombatScene/HealthPoint.png");
 
 }
