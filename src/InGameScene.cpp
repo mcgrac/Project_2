@@ -26,7 +26,7 @@
 // First button id reserved for combat button; island buttons start from this offset
 static const int ISLAND_BUTTON_ID_OFFSET = 100;
 
-InGameScene::InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* _worldMap, bool _isContinue)
+InGameScene::InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* _worldMap, bool _isContinue, int _loadedShiplevel)
     : prebuiltCharacters(_prebuiltCharacters)
     , worldMap(_worldMap)
     , alliedParty(nullptr)
@@ -41,6 +41,7 @@ InGameScene::InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* 
     , shipPanelTex(nullptr)
     , goldCounter(0, "Assets/Textures/Animations/coin.png", 1144, 62)
     , pendingStartIsland(false)
+    , loadedShipLevel(_loadedShiplevel)
 {
     sceneName = "InGameScene";
 }
@@ -127,6 +128,25 @@ void InGameScene::Load()
 
     //ship
     ship = new Ship();
+    if (isContinue && loadedShipLevel > 1)
+    {
+        int levelsToGain = loadedShipLevel - 1;
+        for (int i = 0; i < levelsToGain; i++)
+        {
+            ship->LevelUp();
+        }
+        LOG("InGameScene: barco restaurado a nivel %d.", ship->GetLevel());
+    }
+
+    if (isContinue)
+    {
+        SaveData data = SaveLoad::Load();
+        if (data.exists && data.shipCurrentHp > 0)
+        {
+            ship->SetHealth(data.shipCurrentHp);
+            LOG("InGameScene: HP barco restaurado a %d/%d.", ship->GetCurrentHp(), ship->GetMaxHp());
+        }
+    }
 
     if (isContinue)
     {
@@ -218,7 +238,7 @@ void InGameScene::Update(float dt)
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
     {
         Engine::GetInstance().audio->PlayFx(buttonPress);
-        PushSceneFromInGame(new PauseScene(alliedParty, worldMap->GetCurrentIslandId()));
+        PushSceneFromInGame(new PauseScene(alliedParty, worldMap->GetCurrentIslandId(), ship->GetLevel()));
         return;
     }
 

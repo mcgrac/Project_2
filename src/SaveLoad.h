@@ -11,6 +11,8 @@ struct SaveData
     int currentIslandId = 0;
     int partyGold = 0;
     int consumables = 0;
+    int shipLevel = 1;
+    int shipCurrentHp = -1;
 
     //specific characters saving
     struct CharacterSave
@@ -36,7 +38,7 @@ public:
     static constexpr const char* SAVE_PATH = "Assets/Save/SaveData.xml";
 
     // Guarda el estado actual de la party y la isla en la que está el jugador
-    static void Save(Party* party, int currentIslandId);
+    static void Save(Party* party, int currentIslandId, int shipLevel, int shipCurrentHp);
 
     // Carga el fichero de guardado y devuelve los datos.
     // Si no existe el fichero, devuelve SaveData con exists=false.

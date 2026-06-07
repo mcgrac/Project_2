@@ -31,6 +31,8 @@ void SaveLoad::ClearSave()
     pugi::xml_document doc;
     pugi::xml_node root = doc.append_child("savedata");
     root.append_child("world").append_attribute("currentIslandId").set_value(0);
+    root.child("world").append_attribute("shipCurrentHp").set_value(-1);
+    root.child("world").append_attribute("shipLevel").set_value(1);
     pugi::xml_node partyNode = root.append_child("party");
     partyNode.append_attribute("gold").set_value(0);
     partyNode.append_attribute("consumables").set_value(0);
@@ -47,7 +49,7 @@ void SaveLoad::ClearSave()
 }
 
 //Save
-void SaveLoad::Save(Party* party, int currentIslandId)
+void SaveLoad::Save(Party* party, int currentIslandId, int shipLevel, int shipCurrentHp)
 {
     if (party == nullptr)
     {
@@ -60,6 +62,8 @@ void SaveLoad::Save(Party* party, int currentIslandId)
 
     pugi::xml_node worldNode = root.append_child("world");
     worldNode.append_attribute("currentIslandId").set_value(currentIslandId);
+    worldNode.append_attribute("shipLevel").set_value(shipLevel);
+    worldNode.append_attribute("shipCurrentHp").set_value(shipCurrentHp);
 
     //each character's state
     pugi::xml_node partyNode = root.append_child("party");
@@ -135,6 +139,8 @@ SaveData SaveLoad::Load()
 
     pugi::xml_node root = doc.child("savedata");
     data.currentIslandId = root.child("world").attribute("currentIslandId").as_int();
+    data.shipLevel = root.child("world").attribute("shipLevel").as_int(1);  // default 1 si no existe
+    data.shipCurrentHp = root.child("world").attribute("shipCurrentHp").as_int(-1);
 
     pugi::xml_node partyNode = root.child("party");
     data.partyGold = partyNode.attribute("gold").as_int();

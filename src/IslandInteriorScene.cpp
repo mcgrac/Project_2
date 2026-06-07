@@ -224,7 +224,7 @@ void IslandInteriorScene::DrawReward()
             REWARD_BOUNDS.y
         );
 
-        SDL_Color White = { 255,255,255 };
+        SDL_Color White = { 255,255,255, 255 };
 
         int potNum = 0;
 
@@ -287,7 +287,7 @@ void IslandInteriorScene::DrawChest(float dt)
     Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
     Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
 
-    SDL_Color White = { 255,255,255 };
+    SDL_Color White = { 255,255,255, 255 };
 
     int keys = alliedParty->GetInventory().GetItemCount("key");
 

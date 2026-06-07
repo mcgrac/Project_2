@@ -7,7 +7,7 @@ struct SDL_Texture;
 class PauseScene : public BaseScene
 {
 public:
-    PauseScene(Party* allied, int currentIslandId);
+    PauseScene(Party* allied, int currentIslandId, int _shipLevel);
     ~PauseScene();
 
     void Load() override;
@@ -27,6 +27,7 @@ public:
 private:
     Party* alliedParty;  
     int currentIslandId;
+    int shipLevel;
 
     SDL_Texture* buttons;
     SDL_Texture* background;

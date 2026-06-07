@@ -110,7 +110,7 @@ void ShopScene::Update(float dt)
         Engine::GetInstance().render->DrawTexture(moneyCounter, 990, 70);
         Engine::GetInstance().render->DrawTexture(keyCounter, 990, 147);
 
-        SDL_Color White = { 255, 255, 255 };
+        SDL_Color White = { 255, 255, 255, 255 };
         int keys = alliedParty->GetInventory().GetItemCount("key");
         std::string key = std::to_string(keys);
         keyNum = 1;
@@ -129,7 +129,7 @@ void ShopScene::Update(float dt)
 
                 Engine::GetInstance().render->DrawTexture(moneyCard, REWARD_BOUNDS.x, REWARD_BOUNDS.y);
                 
-                SDL_Color White = { 255, 255, 255 };
+                SDL_Color White = { 255, 255, 255, 255 };
                 potNum = 0;
                 if (rewardAmount >= 10) { potNum += 1; }
 
@@ -166,7 +166,7 @@ void ShopScene::Update(float dt)
         Engine::GetInstance().render->DrawTexture(otherCounter, 961, 207);
         Engine::GetInstance().render->DrawTexture(characterSprite, CHARACTER_BOUNDS.x, CHARACTER_BOUNDS.y);
 
-        SDL_Color White = { 255, 255, 255 };
+        SDL_Color White = { 255, 255, 255, 255 };
         int consumable = alliedParty->GetInventory().GetItemCount("consumable");
         potNum = 1;
         if(consumable>= 10){ potNum += 1; }

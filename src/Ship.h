@@ -32,7 +32,8 @@ public:
     bool IsAlive() const;
     bool IsMoving() const { return isMoving; }
 
-    void SetPosition(Vector2D newPosition) { position = newPosition; }
+    inline void SetPosition(Vector2D newPosition) { position = newPosition; }
+    inline void SetHealth(int i) { currentHp = i; }
     void TakeDamage(int amount);
     void Heal(int amount);
     void LevelUp();
