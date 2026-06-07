@@ -146,7 +146,7 @@ void IslandScene::EnterIsland()
     worldMap->ConfirmTravel();  // confirm travel
 
     //save data
-    SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId());
+    SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId(), ship->GetLevel(), ship->GetCurrentHp());
 
     PushSceneFromIsland(new IslandInteriorScene(island, alliedParty, ship));
 }
@@ -157,7 +157,7 @@ void IslandScene::AttackIsland()
         alliedParty ? alliedParty->GetMemberCount() : -1);
 
     //save data
-    SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId());
+    SaveLoad::Save(alliedParty, worldMap->GetCurrentIslandId(), ship->GetLevel(), ship->GetCurrentHp());
 
     // Guardar posición del barco antes del combate
     shipPositionBeforeCombat = ship->GetPosition();
@@ -169,6 +169,7 @@ void IslandScene::AttackIsland()
     }
 
     combatPending = true;
+
     lastCombatWon = false;
 
     CombatScene* combat = new CombatScene(alliedParty, ship->GetLevel(), island->GetIslandFaction(), island->GetLevel());

@@ -33,7 +33,6 @@ private:
     bool pendingPop = false;
     bool inputConsumed = false;
     bool hoveringUpgrade = false;
-    float hoverPulseTimer = 0.0f;
 
     Dockyard* dockyard; 
     Party* alliedParty;  
@@ -58,15 +57,14 @@ private:
     SDL_Texture* moneyCounter;
     SDL_Texture* owner;
     SDL_Texture* fullBack;
-
+    SDL_Texture* maxLevel;
 #pragma endregion
 
     void CreateChartButtons();
     void DrawChartStats();
 
     bool showChart;
-    bool shipImproved = false;
-    int levelBeforeImprove = 1;
+    //int levelBeforeImprove = 1;
     static constexpr int COST_IMPROVE_SHIP = 50;
 
 #pragma region POSITIONS

@@ -16,7 +16,7 @@ class Character;
 class InGameScene : public BaseScene
 {
 public:
-    InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* _worldMap, bool _isContinue);
+    InGameScene(std::vector<Character*> _prebuiltCharacters, WorldMap* _worldMap, bool _isContinue, int _loadedShiplevel);
     ~InGameScene();
 
     void Load() override;
@@ -95,7 +95,7 @@ private:
     DynamicBar shipHpBar;
 
     bool isContinue;
-
+    int loadedShipLevel = 1;
     void CreateIslandButtons();   // builds one button per island using screen-space layout
 
     //ship

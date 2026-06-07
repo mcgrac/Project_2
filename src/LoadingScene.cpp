@@ -139,8 +139,9 @@ void LoadingScene::Update(float dt)
     SDL_Texture* skullTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/EnemySymbol.png");
     loadedWorldMap->ConnectVisuals(humanTex, reptileTex, skullTex);
 
+    int savedShipLevel = (isContinue && loadedSaveData.exists) ? loadedSaveData.shipLevel : 1;
     LOG("LoadingScene: carga completada, lanzando InGameScene.");
-    Engine::GetInstance().scene->ReplaceScene(new InGameScene(loadedCharacters, loadedWorldMap, isContinue));
+    Engine::GetInstance().scene->ReplaceScene(new InGameScene(loadedCharacters, loadedWorldMap, isContinue, savedShipLevel));
 }
 
 void LoadingScene::PostUpdate(float dt)
