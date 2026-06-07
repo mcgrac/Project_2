@@ -10,10 +10,11 @@
 #include "Log.h"
 #include "SettingsScene.h"
 
-PauseScene::PauseScene(Party* allied, int currentIslandId, int _shipLevel)
+PauseScene::PauseScene(Party* allied, int currentIslandId, int _shipLevel, int _currentShipHP)
     : alliedParty(allied)
     , currentIslandId(currentIslandId)
     , shipLevel(_shipLevel)
+    , currentShipHP(_currentShipHP)
 {
     sceneName = "PauseScene";
 }
@@ -85,7 +86,7 @@ bool PauseScene::OnUIMouseClickEvent(UIElement* uiElement)
 
     case 3:
         LOG("PauseScene: Save and return main menu.");
-        SaveLoad::Save(alliedParty, currentIslandId, shipLevel);
+        SaveLoad::Save(alliedParty, currentIslandId, shipLevel, currentShipHP);
         Engine::GetInstance().scene->ReplaceScene(new MainMenuScene());
         break;
 
