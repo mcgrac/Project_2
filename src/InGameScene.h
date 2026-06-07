@@ -76,7 +76,6 @@ private:
     SDL_Texture* islandHumanTex;
     SDL_Texture* islandReptileTex;
     SDL_Texture* skullTex;
-#pragma endregion
 
     //tutorial button textures
     SDL_Texture* tutorialOpenButton; //open/close tutorial
@@ -84,6 +83,9 @@ private:
     SDL_Texture* tutorialRightButton;
 
     std::vector<SDL_Texture*> tutorials; //vector withe the tutorial slides' textures
+#pragma endregion
+
+
     int tutorialIndex = 0; 
     int slidesNum = 7;
     bool tutorialOpen = true; //checks if tutorial is open or not

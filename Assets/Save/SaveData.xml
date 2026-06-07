@@ -2,7 +2,7 @@
 <savedata>
 	<world currentIslandId="0" />
 	<party gold="0" consumables="0">
-		<character name="Fatuus" health="100" isAlive="true" experience="0" level="1">
+		<character name="Jochi" health="95" isAlive="true" experience="0" level="1">
 			<upgrades>
 				<tier index="0" chosen="" />
 				<tier index="1" chosen="" />
@@ -10,7 +10,7 @@
 			</upgrades>
 			<equippedItems />
 		</character>
-		<character name="Jochi" health="95" isAlive="true" experience="0" level="1">
+		<character name="Fatuus" health="100" isAlive="true" experience="0" level="1">
 			<upgrades>
 				<tier index="0" chosen="" />
 				<tier index="1" chosen="" />
