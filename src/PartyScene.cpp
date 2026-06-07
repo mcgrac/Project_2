@@ -15,12 +15,12 @@
 #include <SDL3/SDL.h>
 #include <sstream>
 
-const SDL_Rect PartyScene::PORTRAIT_RECT = { 20,   80,  220, 300 };
+const SDL_Rect PartyScene::PORTRAIT_RECT = { 514,   10,  220, 300 };
 const SDL_Rect PartyScene::STATS_PANEL_RECT = { 20,  300,  484, 431 };
-const SDL_Rect PartyScene::INV_SLOT_RECT = { 425,  80,   64,  64 };
-const SDL_Rect PartyScene::SKILL_ICON_RECT = { 640,  80,   64,  64 };
-const SDL_Rect PartyScene::UPGRADE_RECT = { 640, 380,  280,  50 };
-const SDL_Rect PartyScene::TAB_RECT = { 1050, 20,   60,  60 };
+const SDL_Rect PartyScene::INV_SLOT_RECT = { 420,  11,   64,  64 };
+const SDL_Rect PartyScene::SKILL_ICON_RECT = { 709,  246,   64,  64 };
+
+const SDL_Rect PartyScene::TAB_RECT = { 514, 10,   64,  64 };
 const SDL_Rect PartyScene::NAME_RECT = { 20, 30, 336, 81 };
 
 #pragma region POSITIONS
@@ -37,7 +37,7 @@ const SDL_Rect PartyScene::Stat_Bounds = { 624, 92, 16, 28 };
 
 #pragma region Gems
 
-const SDL_Rect PartyScene::Gem_Bounds = { 624, 92, 16, 28 };
+const SDL_Rect PartyScene::Gem_Bounds = { 503, 395, 72, 72 };
 
 #pragma endregion
 #pragma region LEVEL
@@ -96,7 +96,7 @@ void PartyScene::Update(float dt)
     Engine::GetInstance().render->DrawRectangle(bg, 5, 5, 20, 230, true, false);
 
     RenderBackground(selected);
-    RenderCharacterName();
+    //RenderCharacterName();
     RenderMemberTabs();
     RenderStats(selected);
     RenderBars(selected);
@@ -125,10 +125,97 @@ void PartyScene::Unload()
 
 void PartyScene::UnloadTextures()
 {
+
+    Engine::GetInstance().textures->UnLoad(markusSkill0);
+    Engine::GetInstance().textures->UnLoad(markusSkill1);
+    Engine::GetInstance().textures->UnLoad(markusSkill2);
+    Engine::GetInstance().textures->UnLoad(markusSkill3);
+    Engine::GetInstance().textures->UnLoad(markusSkill4);
+
+    Engine::GetInstance().textures->UnLoad(gerberaSkill0);
+    Engine::GetInstance().textures->UnLoad(gerberaSkill1);
+    Engine::GetInstance().textures->UnLoad(gerberaSkill2);
+    Engine::GetInstance().textures->UnLoad(gerberaSkill3);
+    Engine::GetInstance().textures->UnLoad(gerberaSkill4);
+
+
+    Engine::GetInstance().textures->UnLoad(theresiaSkill0);
+    Engine::GetInstance().textures->UnLoad(theresiaSkill1);
+    Engine::GetInstance().textures->UnLoad(theresiaSkill2);
+    Engine::GetInstance().textures->UnLoad(theresiaSkill3);
+    Engine::GetInstance().textures->UnLoad(theresiaSkill4);
+
+    Engine::GetInstance().textures->UnLoad(ignisSkill0);
+    Engine::GetInstance().textures->UnLoad(ignisSkill1);
+    Engine::GetInstance().textures->UnLoad(ignisSkill2);
+    Engine::GetInstance().textures->UnLoad(ignisSkill3);
+    Engine::GetInstance().textures->UnLoad(ignisSkill4);
+
+    Engine::GetInstance().textures->UnLoad(fatuusSkill0);
+    Engine::GetInstance().textures->UnLoad(fatuusSkill1);
+    Engine::GetInstance().textures->UnLoad(fatuusSkill2);
+    Engine::GetInstance().textures->UnLoad(fatuusSkill3);
+    Engine::GetInstance().textures->UnLoad(fatuusSkill4);
+
+
+    Engine::GetInstance().textures->UnLoad(markusAscension0);
+    Engine::GetInstance().textures->UnLoad(markusAscension1);
+    Engine::GetInstance().textures->UnLoad(markusAscension2);
+    Engine::GetInstance().textures->UnLoad(markusAscension3);
+    Engine::GetInstance().textures->UnLoad(markusAscension4);
+    Engine::GetInstance().textures->UnLoad(markusAscension5);
+
+    Engine::GetInstance().textures->UnLoad(gerberaAscension0);
+    Engine::GetInstance().textures->UnLoad(gerberaAscension1);
+    Engine::GetInstance().textures->UnLoad(gerberaAscension2);
+    Engine::GetInstance().textures->UnLoad(gerberaAscension3);
+    Engine::GetInstance().textures->UnLoad(gerberaAscension4);
+    Engine::GetInstance().textures->UnLoad(gerberaAscension5);
+
+    Engine::GetInstance().textures->UnLoad(theresiaAscension0);
+    Engine::GetInstance().textures->UnLoad(theresiaAscension1);
+    Engine::GetInstance().textures->UnLoad(theresiaAscension2);
+    Engine::GetInstance().textures->UnLoad(theresiaAscension3);
+    Engine::GetInstance().textures->UnLoad(theresiaAscension4);
+    Engine::GetInstance().textures->UnLoad(theresiaAscension5);
+
+    Engine::GetInstance().textures->UnLoad(fatuusAscension0);
+    Engine::GetInstance().textures->UnLoad(fatuusAscension1);
+    Engine::GetInstance().textures->UnLoad(fatuusAscension2);
+    Engine::GetInstance().textures->UnLoad(fatuusAscension3);
+    Engine::GetInstance().textures->UnLoad(fatuusAscension4);
+    Engine::GetInstance().textures->UnLoad(fatuusAscension5);
+
+    Engine::GetInstance().textures->UnLoad(jochiAscension0);
+    Engine::GetInstance().textures->UnLoad(jochiAscension1);
+    Engine::GetInstance().textures->UnLoad(jochiAscension2);
+    Engine::GetInstance().textures->UnLoad(jochiAscension3);
+    Engine::GetInstance().textures->UnLoad(jochiAscension4);
+    Engine::GetInstance().textures->UnLoad(jochiAscension5);
+
+    Engine::GetInstance().textures->UnLoad(ignisAscension0);
+    Engine::GetInstance().textures->UnLoad(ignisAscension1);
+    Engine::GetInstance().textures->UnLoad(ignisAscension2);
+    Engine::GetInstance().textures->UnLoad(ignisAscension3);
+    Engine::GetInstance().textures->UnLoad(ignisAscension4);
+    Engine::GetInstance().textures->UnLoad(ignisAscension5);
+
+    Engine::GetInstance().textures->UnLoad(markusIcon);
+    Engine::GetInstance().textures->UnLoad(gerberaIcon);
+    Engine::GetInstance().textures->UnLoad(theresiaIcon);
+    Engine::GetInstance().textures->UnLoad(jochiIcon);
+    Engine::GetInstance().textures->UnLoad(fatuusIcon);
+    Engine::GetInstance().textures->UnLoad(ignisIcon);
+
+
+    Engine::GetInstance().textures->UnLoad(jochiSkill0);
+
     Engine::GetInstance().textures->UnLoad(background);
-    Engine::GetInstance().textures->UnLoad(statsPanelTexture);
+
     Engine::GetInstance().textures->UnLoad(abilityIconsTexture);
-    Engine::GetInstance().textures->UnLoad(gemsTexture);
+    Engine::GetInstance().textures->UnLoad(Gem5);
+    Engine::GetInstance().textures->UnLoad(Gem10);
+    Engine::GetInstance().textures->UnLoad(Gem15);
     Engine::GetInstance().textures->UnLoad(linesTexture);
     Engine::GetInstance().textures->UnLoad(upgradeIconsTexture);
     hpBar.UnloadTexture();
@@ -141,6 +228,7 @@ void PartyScene::UnloadTextures()
         loadedPortraitName = "";
     }
 }
+
 #pragma endregion
 
 
@@ -231,7 +319,10 @@ void PartyScene::RenderLevel(Character* c)
     int level = c->GetLevel();
     std::string levelStr = std::to_string(level);
     SDL_Color col = { 255,255,255,255 };
-    Engine::GetInstance().render->DrawText(levelStr.c_str(), level_Bounds.x, level_Bounds.y, level_Bounds.w, level_Bounds.h, col);
+
+    if(level<10){ Engine::GetInstance().render->DrawText(levelStr.c_str(), 40, 313, 15, 28, col); }
+    else{ Engine::GetInstance().render->DrawText(levelStr.c_str(), 34, 313, 27, 28, col); }
+ 
 }
 
 #pragma region LOAD
@@ -240,14 +331,26 @@ void PartyScene::LoadTextures()
     auto& members = alliedParty->GetMembers();
     Character* c = members[selectedMemberIndex];
 
+    markusIcon = Engine::GetInstance().textures->Load("Assets/Textures/Teams/markusIcon.png");
+    gerberaIcon = Engine::GetInstance().textures->Load("Assets/Textures/Teams/gerberaIcon.png");
+    theresiaIcon = Engine::GetInstance().textures->Load("Assets/Textures/Teams/theresiaIcon.png");
+    ignisIcon = Engine::GetInstance().textures->Load("Assets/Textures/Teams/ignisIcon.png");
+    fatuusIcon = Engine::GetInstance().textures->Load("Assets/Textures/Teams/fatuusIcon.png");
+    jochiIcon = Engine::GetInstance().textures->Load("Assets/Textures/Teams/jochiIcon.png");
+
     LoadBackground(c);
     LoadStatsTable();
     LoadCharacterNames(c);
+    LoadSkillDescriptions();
+    LoadAscensionDescriptions();
 
     std::string path = "Assets/Textures/CombatScene/" + c->GetName() + "/AbilityIcons.png";
     abilityIconsTexture = Engine::GetInstance().textures->Load(path.c_str());
 
-    gemsTexture = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gems.png");
+
+    Gem5 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gem5.png");
+    Gem10 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gem10.png");
+    Gem15 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gem15.png");
     linesTexture = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Lines.png");
 
     std::string upgPath = "Assets/Textures/Teams/" + c->GetName() + "/Upgrades.png";
@@ -257,18 +360,103 @@ void PartyScene::LoadTextures()
 
     hpBar.chunkW = 24;
     hpBar.chunkH = 20;
-    hpBar.position = Vector2D(100.0f, 330.0f);
+    hpBar.position = Vector2D(89.0f, 315.0f);
     hpBar.leftToRight = true;
     hpBar.maxChunks = 18;
-    hpBar.chunkOverlap = 3;
+    hpBar.chunkOverlap = 4;
     hpBar.LoadTexture("Assets/Textures/Teams/HealthPoint.png");
 
     xpBar.chunkW = 24;
     xpBar.chunkH = 8;
-    xpBar.position = Vector2D(20.0f, 410.0f);
+    xpBar.position = Vector2D(89.0f, 296.0f);
     xpBar.leftToRight = true;
     xpBar.maxChunks = 18;
+    xpBar.chunkOverlap = 4;
     xpBar.LoadTexture("Assets/Textures/Teams/EXPPoint.png");
+}
+
+void PartyScene::LoadSkillDescriptions()
+{
+    markusSkill0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/skill0.png");
+    markusSkill1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/skill1.png");
+    markusSkill2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/skill2.png");
+    markusSkill3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/skill3.png");
+    markusSkill4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/skill4.png");
+
+    gerberaSkill0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/skill0.png");
+    gerberaSkill1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/skill1.png");
+    gerberaSkill2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/skill2.png");
+    gerberaSkill3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/skill3.png");
+    gerberaSkill4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/skill4.png");
+
+    theresiaSkill0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/skill0.png");
+    theresiaSkill1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/skill1.png");
+    theresiaSkill2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/skill2.png");
+    theresiaSkill3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/skill3.png");
+    theresiaSkill4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/skill4.png");
+
+    jochiSkill0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/skill0.png");
+    jochiSkill1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/skill1.png");
+    jochiSkill2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/skill2.png");
+    jochiSkill3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/skill3.png");
+    jochiSkill4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/skill4.png");
+
+    fatuusSkill0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/skill0.png");
+    fatuusSkill1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/skill1.png");
+    fatuusSkill2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/skill2.png");
+    fatuusSkill3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/skill3.png");
+    fatuusSkill4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/skill4.png");
+
+    ignisSkill0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/skill0.png");
+    ignisSkill1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/skill1.png");
+    ignisSkill2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/skill2.png");
+    ignisSkill3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/skill3.png");
+    ignisSkill4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/skill4.png");
+}
+
+void PartyScene::LoadAscensionDescriptions()
+{
+    markusAscension0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/ascension0.png");
+    markusAscension1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/ascension1.png");
+    markusAscension2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/ascension2.png");
+    markusAscension3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/ascension3.png");
+    markusAscension4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/ascension4.png");
+    markusAscension5 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Markus/ascension5.png");
+
+    gerberaAscension0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/ascension0.png");
+    gerberaAscension1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/ascension1.png");
+    gerberaAscension2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/ascension2.png");
+    gerberaAscension3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/ascension3.png");
+    gerberaAscension4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/ascension4.png");
+    gerberaAscension5 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Gerbera/ascension5.png");
+
+    ignisAscension0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/ascension0.png");
+    ignisAscension1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/ascension1.png");
+    ignisAscension2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/ascension2.png");
+    ignisAscension3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/ascension3.png");
+    ignisAscension4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/ascension4.png");
+    ignisAscension5 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Ignis/ascension5.png");
+
+    theresiaAscension0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/ascension0.png");
+    theresiaAscension1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/ascension1.png");
+    theresiaAscension2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/ascension2.png");
+    theresiaAscension3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/ascension3.png");
+    theresiaAscension4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/ascension4.png");
+    theresiaAscension5 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Theresia/ascension5.png");
+
+    jochiAscension0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/ascension0.png");
+    jochiAscension1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/ascension1.png");
+    jochiAscension2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/ascension2.png");
+    jochiAscension3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/ascension3.png");
+    jochiAscension4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/ascension4.png");
+    jochiAscension5 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Jochi/ascension5.png");
+
+    fatuusAscension0 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/ascension0.png");
+    fatuusAscension1 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/ascension1.png");
+    fatuusAscension2 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/ascension2.png");
+    fatuusAscension3 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/ascension3.png");
+    fatuusAscension4 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/ascension4.png");
+    fatuusAscension5 = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Fatuus/ascension5.png");
 }
 
 void PartyScene::LoadBackground(Character* c)
@@ -280,7 +468,7 @@ void PartyScene::LoadBackground(Character* c)
 
 void PartyScene::LoadStatsTable()
 {
-    statsPanelTexture = Engine::GetInstance().textures->Load("Assets/Textures/Teams/StatChart.png");
+
 }
 
 void PartyScene::LoadCharacterNames(Character* c)
@@ -325,13 +513,41 @@ void PartyScene::RenderMemberTabs()
             r = 80; g = 80; b = 80;
         }
 
-        Engine::GetInstance().render->DrawRectangle(tab, r, g, b, 255, true, false);
+        if (members[i]->GetName() == "Markus") {
+            Engine::GetInstance().render->DrawTexture(markusIcon, tab.x, tab.y);
+       }
+        else if (members[i]->GetName() == "Gerbera") {
+            Engine::GetInstance().render->DrawTexture(gerberaIcon, tab.x, tab.y);
+        }
+        else if (members[i]->GetName() == "Theresia") {
+            Engine::GetInstance().render->DrawTexture(theresiaIcon, tab.x, tab.y);
+        }
+        else if (members[i]->GetName() == "Ignis") {
+            Engine::GetInstance().render->DrawTexture(ignisIcon, tab.x, tab.y);
+        }
+        else if (members[i]->GetName() == "Fatuus") {
+            Engine::GetInstance().render->DrawTexture(fatuusIcon, tab.x, tab.y);
+        }
+        else if (members[i]->GetName() == "Jochi") {
+            Engine::GetInstance().render->DrawTexture(jochiIcon, tab.x, tab.y);
+        }
+
+        if (members[i]->GetLevel() >= 20) {
+            SDL_Color Yellow = { 255, 255, 0 };
+            std::string lvl = std::to_string(members[i]->GetLevel());
+            Engine::GetInstance().render->DrawText((lvl).c_str(), 522 + 100 * i, 16, 18, 12, Yellow);
+        }
+        else {
+            SDL_Color White = { 255, 255, 255 };
+            std::string lvl = std::to_string(members[i]->GetLevel());
+            Engine::GetInstance().render->DrawText((lvl).c_str(), 522 + 100 * i, 16, 18, 12, White);
+        }
+
+     
 
         // Nombre abreviado dentro del tab
         std::string abbr = members[i]->GetName().substr(0, 2);
-        Engine::GetInstance().render->DrawText(
-            abbr.c_str(), tab.x + 10, tab.y + 15, 40, 30, { 255, 255, 255, 255 }
-        );
+
     }
 }
 
@@ -378,30 +594,35 @@ void PartyScene::RenderBars(Character* c)
 void PartyScene::RenderStats(Character* c)
 {
     // Fondo del panel de stats
-    if (statsPanelTexture != nullptr)
-    {
-        Engine::GetInstance().render->DrawTexture(
-            statsPanelTexture,
-            STATS_PANEL_RECT.x,
-            STATS_PANEL_RECT.y
-        );
-    }
 
     SDL_Color col = { 255,255,255,255 };
 
     // Posición base RELATIVA al panel
-    int textX = STATS_PANEL_RECT.x + STAT_VALUE_X;
-    int y = STATS_PANEL_RECT.y + STAT_START_Y;
+    int textX = 406;
+    int textW = 24;
+    int y = 378;
 
     auto DrawValue = [&](int value)
     {
+            if (value < 10) {
+                textX = 418;
+                textW = 12;
+            }
+            else if (value < 100) {
+                textX = 406;
+                textW = 24;
+            }
+            else {
+                textX = 398;
+                textW = 32;
+            }
             std::string txt = std::to_string(value);
 
             Engine::GetInstance().render->DrawText(
                 txt.c_str(),
                 textX,
                 y,
-                STAT_TEXT_W,
+                textW,
                 STAT_TEXT_H,
                 col
             );
@@ -435,8 +656,8 @@ void PartyScene::RenderInventorySlots(Character* c)
         SDL_Rect slot = { INV_SLOT_RECT.x, INV_SLOT_RECT.y + i * (INV_SLOT_RECT.h + INV_SLOT_GAP), INV_SLOT_RECT.w, INV_SLOT_RECT.h };
 
         // Fondo del slot
-        Engine::GetInstance().render->DrawRectangle(slot, 40, 40, 40, 255, true, false);
-        Engine::GetInstance().render->DrawRectangle(slot, 80, 80, 80, 255, false, false);
+        //Engine::GetInstance().render->DrawRectangle(slot, 40, 40, 40, 255, true, false);
+        //Engine::GetInstance().render->DrawRectangle(slot, 80, 80, 80, 255, false, false);
 
         // Dibujar textura del item si el slot está ocupado
         if (i < (int)equipped.size() && equipped[i] != nullptr)
@@ -503,23 +724,34 @@ void PartyScene::RenderUpgradeTree(Character* c)
 
     const auto& tiers = tree->GetTiers();
 
+
+    if (c->GetLevel() >= 5) {
+        Engine::GetInstance().render->DrawTexture(Gem5, 503, 395);
+    }
+
+    if (c->GetLevel() >= 10) {
+        Engine::GetInstance().render->DrawTexture(Gem10, 755, 395);
+    }
+
+    if (c->GetLevel() >= 15) {
+        Engine::GetInstance().render->DrawTexture(Gem15, 1006, 395);
+    }
+
     for (int t = 0; t < (int)tiers.size(); ++t)
     {
-        int gemOffset = t * (GEM_W + UPGRADE_ICON_W + UPGRADE_ICON_GAP);
-        int gemX = TREE_START_X + gemOffset;
-        int gemY = TREE_START_Y;
 
+/*
         // Dibujar gema (columna t de la spritesheet, fila 0 = normal)
         SDL_Rect gemSrc = { t * GEM_W, 0, GEM_W, GEM_H };
         Engine::GetInstance().render->DrawTexture(gemsTexture, gemX, gemY, &gemSrc);
-
+*/
         // Dibujar línea entre gema y siguiente bloque (excepto en el último tier)
-        if (t < (int)tiers.size() - 1)
+       /* if (t < (int)tiers.size() - 1)
         {
-            int lineX = gemX + GEM_W + UPGRADE_ICON_W;
-            int lineY = TREE_START_Y + (GEM_H / 2) - (LINE_H / 2);
+            int lineX =  GEM_W + UPGRADE_ICON_W;
+            int lineY =  (GEM_H / 2) - (LINE_H / 2);
             Engine::GetInstance().render->DrawTexture(linesTexture, lineX, lineY);
-        }
+        }*/
 
         // Dibujar iconos de mejora
         bool available = tiers[t].IsAvailable(c->GetLevel());
@@ -527,8 +759,8 @@ void PartyScene::RenderUpgradeTree(Character* c)
         bool aChosen = unlocked && (tiers[t].GetChosen() == &tiers[t].GetOptionA());
         bool bChosen = unlocked && (tiers[t].GetChosen() == &tiers[t].GetOptionB());
 
-        int iconX = gemX + GEM_W;
-
+        int iconX = 627 + 254 * t;
+       
         // ---- Opción A ----
         SDL_Rect iconASrc = { (t * 2) * UPGRADE_ICON_W, 0, UPGRADE_ICON_W, UPGRADE_ICON_H };
         if (aChosen)
@@ -545,7 +777,7 @@ void PartyScene::RenderUpgradeTree(Character* c)
             ResetTextureTint(upgradeIconsTexture); // normal disponible
         }
         Engine::GetInstance().render->DrawTexture(
-            upgradeIconsTexture, iconX, TREE_START_Y, &iconASrc
+            upgradeIconsTexture, iconX, 340, &iconASrc
         );
         ResetTextureTint(upgradeIconsTexture);
 
@@ -565,7 +797,7 @@ void PartyScene::RenderUpgradeTree(Character* c)
             ResetTextureTint(upgradeIconsTexture); // normal disponible
         }
         Engine::GetInstance().render->DrawTexture(
-            upgradeIconsTexture, iconX, TREE_START_Y + UPGRADE_ICON_H + UPGRADE_ICON_GAP, &iconBSrc
+            upgradeIconsTexture, iconX, 451, &iconBSrc
         );
         ResetTextureTint(upgradeIconsTexture);
 
@@ -574,8 +806,8 @@ void PartyScene::RenderUpgradeTree(Character* c)
         int mx = mousePos.x;
         int my = mousePos.y;
 
-        SDL_Rect iconARect = { iconX, TREE_START_Y, UPGRADE_ICON_W, UPGRADE_ICON_H };
-        SDL_Rect iconBRect = { iconX, TREE_START_Y + UPGRADE_ICON_H + UPGRADE_ICON_GAP, UPGRADE_ICON_W, UPGRADE_ICON_H };
+        SDL_Rect iconARect = { iconX, 340, UPGRADE_ICON_W, UPGRADE_ICON_H };
+        SDL_Rect iconBRect = { iconX, 451, UPGRADE_ICON_W, UPGRADE_ICON_H };
 
         if (SceneUtils::PointInRect(mx, my, iconARect))
         {
@@ -624,7 +856,7 @@ void PartyScene::RefreshButtons()
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,
             SKILL_BTN_BASE + i,
-            skills[i].GetName().c_str(),
+            "",
             icon,
             [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {},
             abilityIconsTexture, i, icon.w, icon.h
@@ -645,47 +877,13 @@ void PartyScene::RefreshButtons()
     }
 
     // --------------Botón cerrar------------
-    SDL_Rect closeBounds = { 20, 20, 72, 72 };
+    SDL_Rect closeBounds = { 1188, 10, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, BACK_BTN, "", closeBounds,
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {},
         backButton, 0, closeBounds.w, closeBounds.h
     );
 
-    // ----------Botones de ascensiones del personaje seleccionado--------------
-    //if (selectedMemberIndex < (int)members.size())
-    //{
-    //    Character* c = members[selectedMemberIndex];
-    //    UpgradeTree* tree = c->GetUpgradeTree();
-    //    if (tree != nullptr)
-    //    {
-    //        const auto& tiers = tree->GetTiers();
-    //        for (int t = 0; t < (int)tiers.size(); ++t)
-    //        {
-    //            bool available = tiers[t].IsAvailable(c->GetLevel());
-    //            bool unlocked = tiers[t].IsUnlocked();
-    //            bool canChoose = available && !unlocked;
-
-    //            int baseY = UPGRADE_RECT.y + t * (UPGRADE_RECT.h * 2 + UPGRADE_BTN_GAP * 3);
-
-    //            // Solo crear botones clickables si se puede elegir
-    //            if (canChoose)
-    //            {
-    //                SDL_Rect btnA = { UPGRADE_RECT.x, baseY, UPGRADE_RECT.w, UPGRADE_RECT.h };
-    //                Engine::GetInstance().uiManager->CreateUIElement(
-    //                    UIElementType::BUTTON, UPGRADE_BTN_BASE + t * 10 + 0, "", btnA,
-    //                    [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
-    //                );
-
-    //                SDL_Rect btnB = { UPGRADE_RECT.x, baseY + UPGRADE_RECT.h + UPGRADE_BTN_GAP, UPGRADE_RECT.w, UPGRADE_RECT.h };
-    //                Engine::GetInstance().uiManager->CreateUIElement(
-    //                    UIElementType::BUTTON, UPGRADE_BTN_BASE + t * 10 + 1, "", btnB,
-    //                    [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }
-    //                );
-    //            }
-    //        }
-    //    }
-    //}
 
     //------------background-----------------
     if (background != nullptr) {
@@ -706,18 +904,18 @@ void PartyScene::RefreshButtons()
 
             if (canChoose)
             {
-                int gemOffset = t * (GEM_W + UPGRADE_ICON_W + UPGRADE_ICON_GAP);
-                int iconX = TREE_START_X + GEM_W + gemOffset;
+                
+                int iconX = 627 + 252*t;
 
                 // columnas en spritesheet: t*2 = opcionA, t*2+1 = opcionB
-                SDL_Rect btnA = { iconX, TREE_START_Y, UPGRADE_ICON_W, UPGRADE_ICON_H };
+                SDL_Rect btnA = { iconX, 340, UPGRADE_ICON_W, UPGRADE_ICON_H };
                 Engine::GetInstance().uiManager->CreateUIElement(
                     UIElementType::BUTTON, UPGRADE_BTN_BASE + t * 10 + 0, "", btnA,
                     [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {},
                     upgradeIconsTexture, t * 2, btnA.w, btnA.h
                 );
 
-                SDL_Rect btnB = { iconX, TREE_START_Y + UPGRADE_ICON_H + UPGRADE_ICON_GAP, UPGRADE_ICON_W, UPGRADE_ICON_H };
+                SDL_Rect btnB = { iconX, 451, UPGRADE_ICON_W, UPGRADE_ICON_H };
 
                 Engine::GetInstance().uiManager->CreateUIElement(
                     UIElementType::BUTTON, UPGRADE_BTN_BASE + t * 10 + 1, "", btnB,
@@ -746,11 +944,95 @@ void PartyScene::DrawSkillTooltip()
     auto& skills = c->GetSkills();
     if (hoveredSkillIdx >= (int)skills.size()) { return; }
 
-    tooltipRenderer.Draw(
-        skills[hoveredSkillIdx].GetFullDescription(),
-        SKILL_ICON_RECT.x,
-        SKILL_ICON_RECT.y + SKILL_ICON_RECT.h + 10
-    );
+    if (c->GetName() == "Markus") {
+        switch (hoveredSkillIdx){
+            case 0: Engine::GetInstance().render->DrawTexture(markusSkill0, 501, 90);
+                break;
+            case 1: Engine::GetInstance().render->DrawTexture(markusSkill1, 501, 90);
+                break;
+            case 2: Engine::GetInstance().render->DrawTexture(markusSkill2, 501, 90);
+                break;
+            case 3: Engine::GetInstance().render->DrawTexture(markusSkill3, 501, 90);
+                break;
+            case 4: Engine::GetInstance().render->DrawTexture(markusSkill4, 501, 90);
+                break;
+        }
+    }
+    else if (c->GetName() == "Gerbera") {
+        switch (hoveredSkillIdx) {
+        case 0: Engine::GetInstance().render->DrawTexture(gerberaSkill0, 501, 90);
+            break;
+        case 1: Engine::GetInstance().render->DrawTexture(gerberaSkill1, 501, 90);
+            break;
+        case 2: Engine::GetInstance().render->DrawTexture(gerberaSkill2, 501, 90);
+            break;
+        case 3: Engine::GetInstance().render->DrawTexture(gerberaSkill3, 501, 90);
+            break;
+        case 4: Engine::GetInstance().render->DrawTexture(gerberaSkill4, 501, 90);
+            break;
+        }
+    }
+    else if (c->GetName() == "Ignis") {
+        switch (hoveredSkillIdx) {
+        case 0: Engine::GetInstance().render->DrawTexture(ignisSkill0, 501, 90);
+            break;
+        case 1: Engine::GetInstance().render->DrawTexture(ignisSkill1, 501, 90);
+            break;
+        case 2: Engine::GetInstance().render->DrawTexture(ignisSkill2, 501, 90);
+            break;
+        case 3: Engine::GetInstance().render->DrawTexture(ignisSkill3, 501, 90);
+            break;
+        case 4: Engine::GetInstance().render->DrawTexture(ignisSkill4, 501, 90);
+            break;
+        }
+    }
+    else if (c->GetName() == "Theresia") {
+        switch (hoveredSkillIdx) {
+        case 0: Engine::GetInstance().render->DrawTexture(theresiaSkill0, 501, 90);
+            break;
+        case 1: Engine::GetInstance().render->DrawTexture(theresiaSkill1, 501, 90);
+            break;
+        case 2: Engine::GetInstance().render->DrawTexture(theresiaSkill2, 501, 90);
+            break;
+        case 3: Engine::GetInstance().render->DrawTexture(theresiaSkill3, 501, 90);
+            break;
+        case 4: Engine::GetInstance().render->DrawTexture(theresiaSkill4, 501, 90);
+            break;
+        }
+    }
+    else if (c->GetName() == "Fatuus") {
+        switch (hoveredSkillIdx) {
+        case 0: Engine::GetInstance().render->DrawTexture(fatuusSkill0, 501, 90);
+            break;
+        case 1: Engine::GetInstance().render->DrawTexture(fatuusSkill1, 501, 90);
+            break;
+        case 2: Engine::GetInstance().render->DrawTexture(fatuusSkill2, 501, 90);
+            break;
+        case 3: Engine::GetInstance().render->DrawTexture(fatuusSkill3, 501, 90);
+            break;
+        case 4: Engine::GetInstance().render->DrawTexture(fatuusSkill4, 501, 90);
+            break;
+        }
+    }
+    else if (c->GetName() == "Jochi") {
+        switch (hoveredSkillIdx) {
+        case 0: Engine::GetInstance().render->DrawTexture(jochiSkill0, 501, 90);
+            break;
+        case 1: Engine::GetInstance().render->DrawTexture(jochiSkill1, 501, 90);
+            break;
+        case 2: Engine::GetInstance().render->DrawTexture(jochiSkill2, 501, 90);
+            break;
+        case 3: Engine::GetInstance().render->DrawTexture(jochiSkill3, 501, 90);
+            break;
+        case 4: Engine::GetInstance().render->DrawTexture(jochiSkill4, 501, 90);
+            break;
+        }
+    }
+
+    
+
+
+
 }
 
 void PartyScene::DrawUpgradeTooltip()
@@ -776,12 +1058,148 @@ void PartyScene::DrawUpgradeTooltip()
 
     if (upgrade == nullptr) { return; }
 
-    tooltipRenderer.Draw(
-        upgrade->GetFullDescription(),
-        TREE_START_X,
-        TREE_START_Y + GEM_H + UPGRADE_ICON_H + 20
-    );
+//draw description ascension
 
+    if (c->GetName() == "Markus") {
+        if (upgrade->name == "") {
+            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+        }
+        else if (upgrade->name == "") {
+            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+        }
+        else if (upgrade->name == "") {
+            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+        }
+        else if (upgrade->name == "") {
+            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+        }
+        else if (upgrade->name == "") {
+            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+        }
+        else if (upgrade->name == "") {
+            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+        }
+    }
+    else if (c->GetName() == "Gerbera") {
+        if (upgrade->name == "Poisoned Points") {
+            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+        }
+        else if (upgrade->name == "Serrated Points") {
+            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+        }
+        else if (upgrade->name == "Swift Shooting") {
+            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+        }
+        else if (upgrade->name == "Steady Shooting") {
+            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+        }
+        else if (upgrade->name == "Fire Lotus") {
+            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+        }
+        else if (upgrade->name == "Thorned Rose") {
+            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+        }
+    }
+    else if (c->GetName() == "Ignis") {
+        if (upgrade->name == "Life Surge") {
+            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+        }
+        else if (upgrade->name == "Power Surge") {
+            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+        }
+        else if (upgrade->name == "Quick Metabolism") {
+            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+        }
+        else if (upgrade->name == "Uncontrolled Overgrowth") {
+            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+        }
+        else if (upgrade->name == "Jungle's Heart") {
+            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+        }
+        else if (upgrade->name == "Fire Spirit") {
+            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+        }
+    }
+    else if (c->GetName() == "Markus") {
+        if (upgrade->name == "Deadlier Rays") {
+            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+        }
+        else if (upgrade->name == "Morning Light") {
+            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+        }
+        else if (upgrade->name == "Day Break") {
+            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+        }
+        else if (upgrade->name == "Purifier") {
+            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+        }
+        else if (upgrade->name == "Fight") {
+            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+        }
+        else if (upgrade->name == "Flight") {
+            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+        }
+    }
+    else if (c->GetName() == "Theresia") {
+        if (upgrade->name == "Heavy Armor") {
+            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+        }
+        else if (upgrade->name == "Light Armor") {
+            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+        }
+        else if (upgrade->name == "Solar Cape") {
+            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+        }
+        else if (upgrade->name == "Moonsilver Pendant") {
+            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+        }
+        else if (upgrade->name == "Immovable Object") {
+            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+        }
+        else if (upgrade->name == "Crown's Will") {
+            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+        }
+    }
+    else if (c->GetName() == "Fatuus") {
+        if (upgrade->name == "Sharp-Ended Scales") {
+            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+        }
+        else if (upgrade->name == "Reinforced Scales") {
+            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+        }
+        else if (upgrade->name == "Apex Predator") {
+            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+        }
+        else if (upgrade->name == "Elementalist") {
+            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+        }
+        else if (upgrade->name == "Specialization") {
+            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+        }
+        else if (upgrade->name == "Adaptability") {
+            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+        }
+    }
+    else if (c->GetName() == "Jochi") {
+        if (upgrade->name == "Artifact Studies") {
+            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+        }
+        else if (upgrade->name == "Alchemy Studies") {
+            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+        }
+        else if (upgrade->name == "Quick Spelling") {
+            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+        }
+        else if (upgrade->name == "Elemental Scepter") {
+            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+        }
+        else if (upgrade->name == "Immesurable Power") {
+            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+        }
+        else if (upgrade->name == "Poisoned Blood") {
+            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+        }
+        }
     hoveredUpgradeT = -1;
     hoveredUpgradeOption = -1;
 }
