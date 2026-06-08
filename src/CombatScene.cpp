@@ -981,7 +981,7 @@ void CombatScene::DrawTurnOrderTable()
     constexpr int CELL_GAP = 8; // (1280 - 6*200) / 5 gaps = ~13px entre celdas
 
     SDL_Color white = { 255, 255, 255, 255 };
-    SDL_Color yellow = { 255, 220,   0, 255 };
+    SDL_Color yellow = { 255, 220, 0, 255 };
 
     std::vector<Character*> rows;
     if (current != nullptr)
