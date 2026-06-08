@@ -154,7 +154,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("shield_bash", [](int cost) {
-        Skill s("Shield Bash", DamageType::Physical, 5, 100.0f, cost, "shield_bash", MultiplierStat::DURABILITY);
+        Skill s("Shield Bash", DamageType::Physical, 5, 1.0f, cost, "shield_bash", MultiplierStat::DURABILITY);
         s.SetDescription("Deal 5 (+durability) Physical damage");
         s.AddEffect({
             "Reduce initiative by 15 + level",
@@ -174,12 +174,6 @@ SkillRegistry::SkillRegistry()
 
                 int damageFirePower = (int)(6 * (1 + caster->GetFirePower() / 100.0f));
                 target->SetBurned(true, damageFirePower, caster);
-
-                //if ((int)caster->GetFirePower() > 0)
-                //{
-                //    int damageFirePower = (int)(10 * (1 + caster->GetFirePower() / 100.0f));
-                //    target->SetBurned(true, damageFirePower, caster);
-                //}
             }
             });
         return s;
@@ -382,6 +376,8 @@ SkillRegistry::SkillRegistry()
     Register("yellow_tornado", [](int cost) {
         Skill s("Yellow Tornado", DamageType::Magical, 5, 0.1f, cost, "yellow_tornado");
         s.SetDescription("Deal 5(+10% Power) Magic Damage");
+        s.SetHasAreaEffect(true);
+        s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
             "Reduce the Initiative by 20",
             [](Character* caster, Character* target) {
@@ -450,14 +446,21 @@ SkillRegistry::SkillRegistry()
         return s;
         });
 
-    //falta
     Register("explosion", [](int cost) {
-        Skill s("Explosion", DamageType::Physical, 15, 0.25f, cost, "explosion");
+        Skill s("Explosion", DamageType::Physical, 0, 0.0f, cost, "explosion");
         s.SetDescription("Deal 15(+25% Power) Physical Damage");
         s.AddEffect({
-            "If the target dies (has 15(+25% Power) + 15(+25% Power)*Enemy's Durability/100 Health or less), deal 5(+30% Power) Magic Damage to the enemy party",
+            "If the target is full live, Fatuus wins",
             [](Character* caster, Character* target) {
 
+                int currentHpTarget = target->GetCurrentHP();
+                int maxHptarget = target->GetMaxHP();
+                if (currentHpTarget = maxHptarget) { caster->AddInitiative(30); }
+
+                int baseDamage = 20;
+                float multiplierPower = 0.35f;
+                int totalDamage = baseDamage + (caster->GetTotalPower() * multiplierPower);
+                target->ReceivePhysicalDamage(totalDamage, caster);
             }
             });
         return s;
