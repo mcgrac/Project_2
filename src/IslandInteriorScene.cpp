@@ -423,6 +423,7 @@ bool IslandInteriorScene::OnUIMouseClickEvent(UIElement* uiElement)
 
         if (alliedParty->GetInventory().EquipItem(character->GetName(), equippable))
         {
+            equippable->Use(character);
             selectedItem->SetPurchased(true);
             chestPopped = false;
             rewardAmount = 0;

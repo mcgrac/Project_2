@@ -302,6 +302,7 @@
     <Xml Include="Assets\Characters\Raptor.xml" />
     <Xml Include="Assets\Characters\Rex.xml" />
     <Xml Include="Assets\Characters\Theresia.xml" />
+    <Xml Include="Assets\Characters\ToxicJelly.xml" />
     <Xml Include="Assets\Items\Items.xml" />
     <Xml Include="Assets\Maps\world.xml" />
     <Xml Include="Assets\Quests\quests.xml" />

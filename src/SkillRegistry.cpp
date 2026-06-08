@@ -245,7 +245,7 @@ SkillRegistry::SkillRegistry()
                 float dmgPerStack = 1.0f + (caster->GetTotalPower() * 0.03f);
                 int bonusDmg = (int)(dmgPerStack * fireStacks);
                 target->ReceivePhysicalDamage(bonusDmg, caster);
-                target->SetBurned(false, 0, nullptr);
+                target->SetBurned(false, 0, caster);
             }
             });
         return s;
@@ -777,14 +777,14 @@ SkillRegistry::SkillRegistry()
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
-            "Inflict 1 (+2% Power) Poison to all enemies, increase their total posion by 40(+40%Power)% and reduce the healing Power by 10",
+            "Inflict 1 (+2% Power) Poison to all enemies, increase their total posion by 15(+30%Power)% and reduce the healing Power by 10",
             [](Character* caster, Character* target) {
                 int poisonDamage = (int)(1 + (caster->GetTotalPower() * 0.02f));
                 target->SetPoisoned(true, poisonDamage, caster);
 
                 //increase poison by 40%
                 int poisonDamageDebug = target->GetPoisonDamage();
-                float poisonDamageIncrease = 0.4f + (caster->GetTotalPower() * 0.4f);
+                float poisonDamageIncrease = 0.15f + (caster->GetTotalPower() * 0.003f);
                 int damage = (int)target->GetPoisonDamage() * poisonDamageIncrease;
                 target->SetPoisoned(true, damage, caster);
 #if _DEBUG
@@ -853,13 +853,19 @@ SkillRegistry::SkillRegistry()
     Register("electric_ball", [](int cost) {
         Skill s("Electric Ball", DamageType::Magical, 3, 0.15f, cost, "electric_ball");
         s.SetHasAreaEffect(true);
-        s.SetAreaEffectTargetAllies(false);
+        s.SetAreaEffectTargetAllies(true);
         s.SetDescription("Deal 3(+15% Power) magic damage");
         s.AddEffect({
             "Reduce the enemy's Power by 10(+10% Power)%",
             [](Character* caster, Character* target) {
-                float reducedPower = 0.1f + (caster->GetTotalPower() * 0.1f);
-                target->ModifyBasePower(-1 * (target->GetTotalPower() * reducedPower));
+                float percentage = 0.10f + (caster->GetTotalPower() * 0.001f);
+                int reduction = (int)(target->GetTotalPower() * percentage);
+                LOG("ElectricBall effect | caster: %s power: %d | target: %s power before: %d | percentage: %.4f | reduction: %d | power after: %d",
+                    caster->GetName().c_str(), caster->GetTotalPower(),
+                    target->GetName().c_str(), target->GetTotalPower(),
+                    percentage, reduction,
+                    target->GetTotalPower() - reduction);
+                target->ModifyBasePower(-reduction);
             }
             });
         return s;

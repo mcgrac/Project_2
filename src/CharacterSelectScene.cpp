@@ -131,7 +131,7 @@ void CharacterSelectScene::LoadTextures(){
     tutorialOpenButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/tutorialOpenButton.png");
     tutorialLeftButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/left.png");
     tutorialRightButton = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/right.png");
-
+    littleIconsSpritesheet = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/littleIcons.png");
 
    
     for (int i = 0; i < 6; i++) {
@@ -165,6 +165,8 @@ void CharacterSelectScene::UnloadTextures()
     Engine::GetInstance().textures->UnLoad(backgroundJochi1);
     Engine::GetInstance().textures->UnLoad(backgroundFatuus1);
     Engine::GetInstance().textures->UnLoad(backgroundMarkus1);
+    Engine::GetInstance().textures->UnLoad(littleIconsSpritesheet);
+
     //tutorial
     for (int i = 0; i < 6; i++) { Engine::GetInstance().textures->UnLoad(tutorials[i]); }
     Engine::GetInstance().textures->UnLoad(tutorialOpenButton);
@@ -202,11 +204,14 @@ bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
 
         //delete character buttons if switched
         if (switched) {
-            Engine::GetInstance().uiManager->RemoveElementsByRange(0, 8);
+            Engine::GetInstance().uiManager->RemoveElementsByRange(2, 8);
             Engine::GetInstance().uiManager->RemoveElementsByRange(10, 12);
+            CreateLittleIcons();
         }
         else {
-            CreateCharactersButtons();
+
+            Engine::GetInstance().uiManager->CleanUp();
+            CreateUI();
         }
 
         break;
@@ -224,6 +229,13 @@ bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
 
         if (uiElement->id >= 2 && uiElement->id < 2 + availableCharacters.size()) {
             ToggleSelection(uiElement->id - 2);
+            //if (switched) {
+            //    //do nothing
+            //}
+            //else {
+            //    ToggleSelection(uiElement->id - 2);
+            //}
+            //ToggleSelection(uiElement->id - 2);
         }
         break;
     }
@@ -272,12 +284,9 @@ void CharacterSelectScene::RenderSelection()
         if (IsPortraitHoveredOrSelected(i))
         {
           
-
             backName = c.name;
         }
     }
-
-  
 }
 
 void CharacterSelectScene::ConfirmSelection()
@@ -381,6 +390,18 @@ void CharacterSelectScene::DrawSelectedIndicator()
     
 }
 
+void CharacterSelectScene::CreateLittleIcons()
+{
+    for (int i = 0; i < 6; i++) {
+        SDL_Rect btnPos = {36, 116 + (i * 85) , 64, 64};
+
+        Engine::GetInstance().uiManager->CreateUIElement(
+            UIElementType::BUTTON, i + 2, "", btnPos,
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, littleIconsSpritesheet, 0 + i, btnPos.w, btnPos.h
+        );
+    }
+}
+
 void CharacterSelectScene::SetPortraitButtonStatePressed(int index)
 {
     int targetId = 2 + index;
@@ -407,7 +428,7 @@ void CharacterSelectScene::SetPortraitButtonStateNormal(int index)
 
 bool CharacterSelectScene::IsPortraitHoveredOrSelected(int index) const
 {
-    int targetId = 2 + index;  // tus botones de portrait empiezan en id 2
+    int targetId = 2 + index; 
     for (const auto& element : Engine::GetInstance().uiManager->UIElementsList)
     {
         if (element->id == targetId)
