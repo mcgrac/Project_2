@@ -450,7 +450,7 @@ SkillRegistry::SkillRegistry()
         Skill s("Explosion", DamageType::Physical, 0, 0.0f, cost, "explosion");
         s.SetDescription("Deal 15(+25% Power) Physical Damage");
         s.AddEffect({
-            "If the target is full live, Fatuus wins",
+            "If the target is full live when attacking, Fatuus gets 30 initiative",
             [](Character* caster, Character* target) {
 
                 int currentHpTarget = target->GetCurrentHP();
