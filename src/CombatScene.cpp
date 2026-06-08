@@ -92,13 +92,24 @@ void CombatScene::Unload()
     for (auto& pair : characterIcons)
     {
         Engine::GetInstance().textures->UnLoad(pair.second);
+        pair.second = nullptr;
     }
     characterIcons.clear();
+
+    for (auto& pair : characterIconsLarge)
+    {
+        Engine::GetInstance().textures->UnLoad(pair.second);
+        pair.second = nullptr;
+    }
+    characterIconsLarge.clear();
+
     for (auto& pair : characterIconsButtons)
     {
         Engine::GetInstance().textures->UnLoad(pair.second);
+        pair.second = nullptr;
     }
     characterIconsButtons.clear();
+
     delete combat;
     combat = nullptr;
 
@@ -146,6 +157,10 @@ void CombatScene::LoadTextures()
                 }
                 std::string path = "Assets/Textures/CombatScene/Icons/" + folder + "/" + name + "Icon.png";
                 characterIcons[name] = Engine::GetInstance().textures->Load(path.c_str());
+
+                //load large icons
+                //std::string path2 = "Assets/Textures/CombatScene/Icons/" + folder + "/" + name + "IconLarge.png";
+                // characterIconsLarge[name] = Engine::GetInstance().render->LoadTexture(path2.c_str());
             }
         };
 
@@ -168,6 +183,9 @@ void CombatScene::LoadTextures()
     loadIconButtonsForParty(alliedParty);
     loadIconButtonsForParty(enemyParty);
 
+    // TODO: cargar texturas grandes cuando estén disponibles
+    // characterIconsLarge[name] = Engine::GetInstance().render->LoadTexture("path/to/" + name + "_large.png");
+ 
     //hp bar
     hpBar.chunkW = HP_CHUNK_W;
     hpBar.chunkH = HP_CHUNK_H;
@@ -917,7 +935,7 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
         }
         else
         {
-            iconX = panelX + PANEL_W - ICON_W;
+            iconX = panelX + (PANEL_W - ICON_W) + 20;
         }
         int iconY = panelY + ICON_OFFSET_Y;
         Engine::GetInstance().render->DrawTexture(it->second, iconX, iconY, nullptr, false);
@@ -927,16 +945,52 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
     int level = c->GetLevel();
     std::string levelStr = std::to_string(level);
     SDL_Color col = { 255,255,255,255 };
-    Vector2D pos;
+    int textX, textY, textW, textH;
+
+    //ALIADOS
+    //dos numeros
+    //en x = 4; y = 9; w=18 h=12
+    //un numero
+    //en x= 10; y = 9 w= 10; h = 12
+
+    //ENEMIGOS
+    //dos numeros
+    //en x = 206; y = 9; w=18 h=12
+    //un numero
+    //en x= 212; y = 9 w= 10; h = 12
 
     if (isAlly) {
-        pos = { (float)(LEVEL_OFFSET_X + panelX), (float)(panelY + LEVEL_OFFSET_Y) };
+        textY = panelY + 9;
+        textH = 12;
+        if (level >= 10)
+        {
+            textX = panelX + 4;
+            textW = 18;
+        }
+        else
+        {
+            textX = panelX + 10;
+            textW = 10;
+        }
+        //pos = { (float)(LEVEL_OFFSET_X + panelX), (float)(panelY + LEVEL_OFFSET_Y) };
     }
     else { //enemy
-        pos = { (float)(LEVEL_OFFSET_X_ENEMY + panelX), (float)(panelY + LEVEL_OFFSET_Y_ENEMY) };
+        textY = panelY + 9;
+        textH = 12;
+        if (level >= 10)
+        {
+            textX = panelX + 211;
+            textW = 18;
+        }
+        else
+        {
+            textX = panelX + 217;
+            textW = 10;
+        }
+        //pos = { (float)(LEVEL_OFFSET_X_ENEMY + panelX), (float)(panelY + LEVEL_OFFSET_Y_ENEMY) };
     }
 
-    Engine::GetInstance().render->DrawText(levelStr.c_str(), (int)pos.getX(), (int)pos.getY(), LEVEL_W, LEVEL_H, col);
+    Engine::GetInstance().render->DrawText(levelStr.c_str(), textX, textY, textW, textH, col);
 
     // 4 - hp and initiative bar initialization
     int hpBarX;
@@ -979,6 +1033,8 @@ void CombatScene::DrawTurnOrderTable()
     constexpr int CELL_H = 80;
     constexpr int ICON_SIZE = 64;
     constexpr int CELL_GAP = 8; // (1280 - 6*200) / 5 gaps = ~13px entre celdas
+    constexpr int ICON_SIZE_CURRENT = 74; // más grande para el actor activo
+    constexpr int INI_TEXT_H = 14;
 
     SDL_Color white = { 255, 255, 255, 255 };
     SDL_Color yellow = { 255, 220, 0, 255 };
@@ -1019,24 +1075,41 @@ void CombatScene::DrawTurnOrderTable()
             Engine::GetInstance().render->DrawRectangle(cellRect, 30, 30, 50, 200, true, false);
         }
 
-        // Icono a la izquierda de la celda
+        // Icono centrado — tamaño fijo para todos
         auto it = characterIcons.find(c->GetName());
         if (it != characterIcons.end() && it->second != nullptr)
         {
+
             int iconY = TABLE_Y + (CELL_H - ICON_SIZE) / 2;
             Engine::GetInstance().render->DrawTexture(it->second, cellX + 4, iconY, nullptr, false);
         }
-/*
-        // Nombre a la derecha del icono
-        SDL_Rect textRect = { cellX + ICON_SIZE + 16, TABLE_Y + (CELL_H / 2) - 8, 75, 25 };
-        Engine::GetInstance().render->DrawText(c->GetName().c_str(),
-            textRect.x, textRect.y, textRect.w, textRect.h,
-            isCurrent ? yellow : white);
+
+        //draw the current icon large
+        //auto it = characterIcons.find(c->GetName());
+        //if (it != characterIcons.end() && it->second != nullptr)
+        //{
+        //    SDL_Texture* iconTex = it->second;
+        //    if (isCurrent)
+        //    {
+        //        auto itLarge = characterIconsLarge.find(c->GetName());
+        //        if (itLarge != characterIconsLarge.end() && itLarge->second != nullptr)
+        //        {
+        //            iconTex = itLarge->second;
+        //        }
+        //    }
+        //    int iconY = TABLE_Y + (CELL_H - ICON_SIZE) / 2;
+        //    Engine::GetInstance().render->DrawTexture(iconTex, cellX + 4, iconY, nullptr, false);
+        //}
+
+        // Iniciativa debajo de la celda
         int currInitiative = c->GetCurrentInitiative();
-        std::string Ini = std::to_string(currInitiative);
-        Engine::GetInstance().render->DrawText(Ini.c_str(),
-            textRect.x, textRect.y, textRect.w, textRect.h,
-            isCurrent ? yellow : white); */
+        std::string iniText = std::to_string(currInitiative);
+        int textY = TABLE_Y + CELL_H + 2;
+        Engine::GetInstance().render->DrawText(
+            iniText.c_str(),
+            cellX, textY, CELL_W, INI_TEXT_H,
+            isCurrent ? yellow : white
+        );
     }
 }
 
