@@ -10,7 +10,7 @@
 			</upgrades>
 			<equippedItems />
 		</character>
-		<character name="Fatuus" health="100" isAlive="true" experience="0" level="1">
+		<character name="Ignis" health="105" isAlive="true" experience="0" level="1">
 			<upgrades>
 				<tier index="0" chosen="" />
 				<tier index="1" chosen="" />
@@ -18,7 +18,7 @@
 			</upgrades>
 			<equippedItems />
 		</character>
-		<character name="Ignis" health="105" isAlive="true" experience="0" level="1">
+		<character name="Fatuus" health="100" isAlive="true" experience="0" level="1">
 			<upgrades>
 				<tier index="0" chosen="" />
 				<tier index="1" chosen="" />

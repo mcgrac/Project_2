@@ -144,6 +144,7 @@ private:
     SDL_Texture* initiativeBarChunkTexture;
     SDL_Texture* nextRound;
     SDL_Texture* arrow;
+    SDL_Texture* backSkill;
     SDL_Texture* poisonIcon;
     SDL_Texture* burnIcon;
     SDL_Texture* potionIcon;
