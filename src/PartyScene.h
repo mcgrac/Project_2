@@ -193,7 +193,7 @@ private:
     SDL_Texture* theresiaAscension4 = nullptr;
     SDL_Texture* theresiaAscension5 = nullptr;
 
-
+    SDL_Texture* selectedMember = nullptr;
 #pragma endregion
 
     void LoadBackground(Character* c);
@@ -234,7 +234,7 @@ private:
 
     //render level
     void RenderLevel(Character* c);
-
+    
     // Recrea los botones de la UI al cambiar de personaje
     void RefreshButtons();
     void ClearButtons();

@@ -70,7 +70,7 @@ void PartyScene::LoadSound() {
 void PartyScene::Update(float dt)
 {
 #if _DEBUG
-    //debug->add 1000 gold pressing 2
+    //debug->level up
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
     {
         Character* c = alliedParty->GetMembers()[selectedMemberIndex];
@@ -78,13 +78,6 @@ void PartyScene::Update(float dt)
 
     }
 #endif // _DEBUG
-
-
-    // Cerrar con ESC
-    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
-    {
-        Engine::GetInstance().scene->PopScene();
-    }
 
     auto& members = alliedParty->GetMembers();
     if (members.empty()) return;
@@ -221,6 +214,8 @@ void PartyScene::UnloadTextures()
     Engine::GetInstance().textures->UnLoad(Gem15);
     Engine::GetInstance().textures->UnLoad(linesTexture);
     Engine::GetInstance().textures->UnLoad(upgradeIconsTexture);
+    Engine::GetInstance().textures->UnLoad(selectedMember);
+
     hpBar.UnloadTexture();
     xpBar.UnloadTexture();
 
@@ -342,6 +337,7 @@ void PartyScene::LoadTextures()
     jochiIcon = Engine::GetInstance().textures->Load("Assets/Textures/Teams/jochiIcon.png");
 
     noBootPanel = Engine::GetInstance().textures->Load("Assets/Textures/Teams/NoBootPanel.png");
+    selectedMember = Engine::GetInstance().textures->Load("Assets/Textures/Teams/Selector.png");
 
     LoadBackground(c);
     LoadStatsTable();
@@ -493,9 +489,8 @@ void PartyScene::LoadCharacterNames(Character* c)
 }
 #pragma endregion
 
-
-
 #pragma region RENDER
+
 void PartyScene::RenderBackground(Character* c)
 {
     Engine::GetInstance().render->DrawTexture(background, 0, 0);
@@ -508,19 +503,9 @@ void PartyScene::RenderMemberTabs()
     {
         SDL_Rect tab = { TAB_RECT.x + i * (TAB_RECT.w + TAB_GAP), TAB_RECT.y, TAB_RECT.w, TAB_RECT.h };
 
-        Uint8 r, g, b;
-        if (i == selectedMemberIndex)
-        {
-            r = 255; g = 215; b = 0;    // dorado si está seleccionado
-        }
-        else
-        {
-            r = 80; g = 80; b = 80;
-        }
-
         if (members[i]->GetName() == "Markus") {
             Engine::GetInstance().render->DrawTexture(markusIcon, tab.x, tab.y);
-       }
+        }
         else if (members[i]->GetName() == "Gerbera") {
             Engine::GetInstance().render->DrawTexture(gerberaIcon, tab.x, tab.y);
         }
@@ -538,21 +523,28 @@ void PartyScene::RenderMemberTabs()
         }
 
         if (members[i]->GetLevel() >= 20) {
-            SDL_Color Yellow = { 255, 255, 0 };
+            SDL_Color Yellow = { 255, 255, 0, 255 };
             std::string lvl = std::to_string(members[i]->GetLevel());
-            Engine::GetInstance().render->DrawText((lvl).c_str(), 522 + 100 * i, 16, 18, 12, Yellow);
+            Engine::GetInstance().render->DrawText((lvl).c_str(), 518 + (100 * i), 16, 17, 12, Yellow);
+        }
+        else if (members[i]->GetLevel() < 10) {
+            SDL_Color White = { 255, 255, 255, 255 };
+            std::string lvl = std::to_string(members[i]->GetLevel());
+            Engine::GetInstance().render->DrawText((lvl).c_str(), 522 + (100 * i), 16, 10, 12, White);
         }
         else {
-            SDL_Color White = { 255, 255, 255 };
+            SDL_Color White = { 255, 255, 255, 255 };
             std::string lvl = std::to_string(members[i]->GetLevel());
-            Engine::GetInstance().render->DrawText((lvl).c_str(), 522 + 100 * i, 16, 18, 12, White);
+            Engine::GetInstance().render->DrawText((lvl).c_str(), 518 + (100 * i), 16, 17, 12, White);
         }
 
-     
-
-        // Nombre abreviado dentro del tab
-        std::string abbr = members[i]->GetName().substr(0, 2);
-
+        if (i == selectedMemberIndex)
+        {
+            if (selectedMember != nullptr)
+            {
+                Engine::GetInstance().render->DrawTexture(selectedMember, tab.x, tab.y);
+            }
+        }
     }
 }
 
@@ -660,10 +652,6 @@ void PartyScene::RenderInventorySlots(Character* c)
     {
         SDL_Rect slot = { INV_SLOT_RECT.x, INV_SLOT_RECT.y + i * (INV_SLOT_RECT.h + INV_SLOT_GAP), INV_SLOT_RECT.w, INV_SLOT_RECT.h };
 
-        // Fondo del slot
-        //Engine::GetInstance().render->DrawRectangle(slot, 40, 40, 40, 255, true, false);
-        //Engine::GetInstance().render->DrawRectangle(slot, 80, 80, 80, 255, false, false);
-
         // Dibujar textura del item si el slot está ocupado
         if (i < (int)equipped.size() && equipped[i] != nullptr)
         {
@@ -745,19 +733,6 @@ void PartyScene::RenderUpgradeTree(Character* c)
     for (int t = 0; t < (int)tiers.size(); ++t)
     {
 
-/*
-        // Dibujar gema (columna t de la spritesheet, fila 0 = normal)
-        SDL_Rect gemSrc = { t * GEM_W, 0, GEM_W, GEM_H };
-        Engine::GetInstance().render->DrawTexture(gemsTexture, gemX, gemY, &gemSrc);
-*/
-        // Dibujar línea entre gema y siguiente bloque (excepto en el último tier)
-       /* if (t < (int)tiers.size() - 1)
-        {
-            int lineX =  GEM_W + UPGRADE_ICON_W;
-            int lineY =  (GEM_H / 2) - (LINE_H / 2);
-            Engine::GetInstance().render->DrawTexture(linesTexture, lineX, lineY);
-        }*/
-
         // Dibujar iconos de mejora
         bool available = tiers[t].IsAvailable(c->GetLevel());
         bool unlocked = tiers[t].IsUnlocked();
@@ -784,6 +759,7 @@ void PartyScene::RenderUpgradeTree(Character* c)
         Engine::GetInstance().render->DrawTexture(
             upgradeIconsTexture, iconX, 340, &iconASrc
         );
+
         ResetTextureTint(upgradeIconsTexture);
 
         // ---- Opción B ----

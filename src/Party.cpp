@@ -16,7 +16,7 @@ Party::Party(const std::string& name)
 
 Party::~Party()
 {
-    // Party NO es owner de Characters ni Items — no hace delete aquí
+
 }
 
 //  members

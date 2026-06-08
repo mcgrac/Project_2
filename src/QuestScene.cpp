@@ -28,6 +28,29 @@ void QuestScene::Load()
     );
     backBtn->isHUD = true;
 
+    // Botones de pagina
+    constexpr int ARROW_W = 42;
+    constexpr int ARROW_H = 42;
+    const int arrowY = screenH - BOTTOM_OFFSET - ARROW_H - 4- 600;
+    const int centerX = screenW / 2;
+
+    SDL_Rect prevBounds = { centerX - 150 - ARROW_W, arrowY, ARROW_W, ARROW_H };
+    SDL_Rect nextBounds = { centerX + 150, arrowY, ARROW_W, ARROW_H };
+
+    auto prevBtn = Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, PAGE_PREV_ID, "", prevBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+        {}, arrowLeftTex, 0, ARROW_W, ARROW_H
+    );
+    prevBtn->isHUD = true;
+
+    auto nextBtn = Engine::GetInstance().uiManager->CreateUIElement(
+        UIElementType::BUTTON, PAGE_NEXT_ID, "", nextBounds,
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); },
+        {}, arrowRightTex, 0, ARROW_W, ARROW_H
+    );
+    nextBtn->isHUD = true;
+
     LOG("QuestScene cargada.");
 }
 
@@ -50,11 +73,15 @@ void QuestScene::Unload()
     Engine::GetInstance().textures->UnLoad(entryTex);
     Engine::GetInstance().textures->UnLoad(backButtonTex);
     Engine::GetInstance().textures->UnLoad(background);
+    Engine::GetInstance().textures->UnLoad(arrowRightTex);
+    Engine::GetInstance().textures->UnLoad(arrowLeftTex);
 
     backgroundTex = nullptr;
     panelTex = nullptr;
     entryTex = nullptr;
     backButtonTex = nullptr;
+    arrowLeftTex = nullptr;
+    arrowRightTex = nullptr;
 
     Engine::GetInstance().uiManager->CleanUp();
 
@@ -69,14 +96,43 @@ void QuestScene::LoadTextures()
     entryTex = Engine::GetInstance().textures->Load("Assets/Textures/UI/quest_entry.png");
     backButtonTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/BackButton2.png");
     background = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/QuestPage.png");
+
+    arrowLeftTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/leftBlue.png");
+    arrowRightTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/rightBlue.png");
 }
 
 
 bool QuestScene::OnUIMouseClickEvent(UIElement* uiElement)
 {
-    if (uiElement->id == BACK_BUTTON_ID)
+    const std::vector<Quest>& allQuests = QuestManager::GetInstance().GetQuests();
+
+    int activeCount = 0;
+    int completedCount = 0;
+    for (const Quest& q : allQuests)
     {
+        if (q.status == QuestStatus::ACTIVE) { activeCount++; }
+        else if (q.status == QuestStatus::COMPLETED) { completedCount++; }
+    }
+
+    int pagesLeft = (activeCount + ENTRIES_PER_PAGE - 1) / ENTRIES_PER_PAGE;
+    int pagesRight = (completedCount + ENTRIES_PER_PAGE - 1) / ENTRIES_PER_PAGE;
+    if (pagesLeft < 1) { pagesLeft = 1; }
+    if (pagesRight < 1) { pagesRight = 1; }
+    int totalPages = pagesLeft > pagesRight ? pagesLeft : pagesRight;
+
+    switch (uiElement->id)
+    {
+    case BACK_BUTTON_ID:
         Engine::GetInstance().scene->PopScene();
+        break;
+    case PAGE_NEXT_ID:
+        currentPage = (currentPage + 1) % totalPages;
+        break;
+    case PAGE_PREV_ID:
+        currentPage = (currentPage - 1 + totalPages) % totalPages;
+        break;
+    default:
+        break;
     }
     return true;
 }
@@ -141,7 +197,6 @@ void QuestScene::DrawPanels()
 
     const int panelH = screenH - TOP_OFFSET - BOTTOM_OFFSET;
     const int halfW = screenW / 2 - PANEL_MARGIN * 2;
-
     const int leftX = PANEL_MARGIN;
     const int leftY = TOP_OFFSET;
     const int rightX = screenW / 2 + PANEL_MARGIN;
@@ -169,51 +224,69 @@ void QuestScene::DrawPanels()
     DrawPanel(leftX, leftY, halfW, panelH);
     DrawPanel(rightX, rightY, halfW, panelH);
 
-    // Cabeceras de columna
-    SceneUtils::DrawAutoText("ACTIVES", leftX + ENTRY_PADDING, leftY + ENTRY_PADDING, { 255, 215, 0,  255 });
-    SceneUtils::DrawAutoText("COMPLETED", rightX + ENTRY_PADDING, rightY + ENTRY_PADDING, { 80,  200, 80, 255 });
-
     // Clasificar quests
     const std::vector<Quest>& allQuests = QuestManager::GetInstance().GetQuests();
-
     std::vector<const Quest*> active;
     std::vector<const Quest*> completed;
-
     for (const Quest& q : allQuests)
     {
-        if (q.status == QuestStatus::ACTIVE)
-        {
-            active.push_back(&q);
-        }
-        else if (q.status == QuestStatus::COMPLETED)
-        {
-            completed.push_back(&q);
-        }
+        if (q.status == QuestStatus::ACTIVE) { active.push_back(&q); }
+        else if (q.status == QuestStatus::COMPLETED) { completed.push_back(&q); }
     }
 
-    const int entryStartY = TOP_OFFSET + 40;
-    const int maxEntryBotY = TOP_OFFSET + panelH - ENTRY_PADDING ;
+    // Construir paginas: vector de vectores de 5
+    std::vector<std::vector<const Quest*>> pagesLeft;
+    std::vector<std::vector<const Quest*>> pagesRight;
 
-    // Columna izquierda: activas
-    int curY = entryStartY;
-    for (const Quest* q : active)
+    for (int i = 0; i < (int)active.size(); i += ENTRIES_PER_PAGE)
     {
-        if (curY + ENTRY_HEIGHT > maxEntryBotY)
+        std::vector<const Quest*> page;
+        for (int j = i; j < i + ENTRIES_PER_PAGE && j < (int)active.size(); j++)
         {
-            break;
+            page.push_back(active[j]);
         }
+        pagesLeft.push_back(page);
+    }
+    if (pagesLeft.empty()) { pagesLeft.push_back({}); }
+
+    for (int i = 0; i < (int)completed.size(); i += ENTRIES_PER_PAGE)
+    {
+        std::vector<const Quest*> page;
+        for (int j = i; j < i + ENTRIES_PER_PAGE && j < (int)completed.size(); j++)
+        {
+            page.push_back(completed[j]);
+        }
+        pagesRight.push_back(page);
+    }
+    if (pagesRight.empty()) { pagesRight.push_back({}); }
+
+    // Clampear currentPage por si acaso
+    int safePageLeft = currentPage < (int)pagesLeft.size() ? currentPage : (int)pagesLeft.size() - 1;
+    int safePageRight = currentPage < (int)pagesRight.size() ? currentPage : (int)pagesRight.size() - 1;
+
+    // Cabeceras
+    std::string leftHeader = "ACTIVES    " + std::to_string(currentPage + 1) + "/" + std::to_string((int)pagesLeft.size());
+    std::string rightHeader = "COMPLETED  " + std::to_string(currentPage + 1) + "/" + std::to_string((int)pagesRight.size());
+    SceneUtils::DrawAutoText(leftHeader.c_str(), leftX + ENTRY_PADDING, leftY + ENTRY_PADDING, { 255, 215, 0,  255 });
+    SceneUtils::DrawAutoText(rightHeader.c_str(), rightX + ENTRY_PADDING, rightY + ENTRY_PADDING, { 80,  200, 80, 255 });
+
+    const int entryStartY = TOP_OFFSET + 40;
+    const int maxEntryBotY = TOP_OFFSET + panelH - ENTRY_PADDING;
+
+    // Columna izquierda
+    int curY = entryStartY;
+    for (const Quest* q : pagesLeft[safePageLeft])
+    {
+        if (curY + ENTRY_HEIGHT > maxEntryBotY) { break; }
         DrawQuestEntry(*q, leftX + ENTRY_PADDING, curY, halfW - ENTRY_PADDING * 2, false);
         curY += ENTRY_HEIGHT + ENTRY_PADDING;
     }
 
-    // Columna derecha: completadas
+    // Columna derecha
     curY = entryStartY;
-    for (const Quest* q : completed)
+    for (const Quest* q : pagesRight[safePageRight])
     {
-        if (curY + ENTRY_HEIGHT > maxEntryBotY)
-        {
-            break;
-        }
+        if (curY + ENTRY_HEIGHT > maxEntryBotY) { break; }
         DrawQuestEntry(*q, rightX + ENTRY_PADDING, curY, halfW - ENTRY_PADDING * 2, true);
         curY += ENTRY_HEIGHT + ENTRY_PADDING;
     }

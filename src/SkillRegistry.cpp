@@ -378,7 +378,7 @@ SkillRegistry::SkillRegistry()
         Skill s("Light Twister", DamageType::Magical, 5, 0.1f, cost, "yellow_tornado");
         s.SetDescription("Deal 5(+10% Power) Magic Damage");
         s.SetHasAreaEffect(true);
-        s.SetAreaEffectTargetAllies(true);
+        s.SetAreaEffectTargetAllies(false);
         s.AddEffect({
             "Reduce the Initiative by 20",
             [](Character* caster, Character* target) {

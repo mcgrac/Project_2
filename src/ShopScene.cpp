@@ -185,6 +185,7 @@ void ShopScene::Update(float dt)
         Engine::GetInstance().render->DrawTexture(moneyCounter, 1121, 30, nullptr, 0);
     }
 
+#if _DEBUG
     //debug->add 1000 gold pressing F12
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_0) == KEY_DOWN)
     {
@@ -192,6 +193,7 @@ void ShopScene::Update(float dt)
         alliedParty->AddGold(1000);
         LOG("Party Gold is: %d", alliedParty->GetGold());
     }
+#endif // _DEBUG
 
     goldCounter.Update(alliedParty->GetGold(), dt);
    

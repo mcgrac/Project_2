@@ -199,6 +199,16 @@ bool CharacterSelectScene::OnUIMouseClickEvent(UIElement* uiElement)
         break;
     case 9:
         switched = !switched;
+
+        //delete character buttons if switched
+        if (switched) {
+            Engine::GetInstance().uiManager->RemoveElementsByRange(0, 8);
+            Engine::GetInstance().uiManager->RemoveElementsByRange(10, 12);
+        }
+        else {
+            CreateCharactersButtons();
+        }
+
         break;
     case 10:
         tutorialOpen = !tutorialOpen;
@@ -350,7 +360,6 @@ void CharacterSelectScene::CreateInterfaceButtons()
         [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, switchButton, 0, switchButtonBounds.w, switchButtonBounds.h
     );
 
-    //OpenTutorial
     SDL_Rect openBounds = { 4, 85, 72, 72 };
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, 10, "", openBounds,
