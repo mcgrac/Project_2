@@ -182,6 +182,7 @@ bool Audio::PlayMusic(const char* path, float fadeTime) {
         return false;
     }
 
+    music_looping_ = true;
     LOG("Audio: playing music %s", path);
     return true;
 }

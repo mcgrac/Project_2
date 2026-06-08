@@ -48,6 +48,8 @@ private:
         Uint32 len{ 0 };  // bytes
     };
 
+    bool music_looping_ = false;
+
     // Device and default output format
     SDL_AudioDeviceID device_{ 0 };
     SDL_AudioSpec     device_spec_{};

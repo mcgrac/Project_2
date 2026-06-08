@@ -27,7 +27,7 @@
 	</quest>
 
 	<quest id="6" name="Brute Strength" reward_gold="250">
-		<description>Have a character with 20 Power points.</description>
+		<description>Have a character with 200 Power points.</description>
 		<condition type="STAT_THRESHOLD" stat="power" amount="200"/>
 	</quest>
 
