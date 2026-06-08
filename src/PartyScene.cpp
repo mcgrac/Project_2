@@ -70,7 +70,7 @@ void PartyScene::LoadSound() {
 void PartyScene::Update(float dt)
 {
 #if _DEBUG
-    //debug->add 1000 gold pressing 2
+    //debug->level up
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
     {
         Character* c = alliedParty->GetMembers()[selectedMemberIndex];
@@ -78,13 +78,6 @@ void PartyScene::Update(float dt)
 
     }
 #endif // _DEBUG
-
-
-    // Cerrar con ESC
-    if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
-    {
-        Engine::GetInstance().scene->PopScene();
-    }
 
     auto& members = alliedParty->GetMembers();
     if (members.empty()) return;

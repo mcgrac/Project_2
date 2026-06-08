@@ -97,8 +97,8 @@ void QuestScene::LoadTextures()
     backButtonTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/BackButton2.png");
     background = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/QuestPage.png");
 
-    arrowLeftTex = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/left.png");
-    arrowRightTex = Engine::GetInstance().textures->Load("Assets/Textures/CharacterSelectScene/right.png");
+    arrowLeftTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/leftBlue.png");
+    arrowRightTex = Engine::GetInstance().textures->Load("Assets/Textures/MainMap/rightBlue.png");
 }
 
 
