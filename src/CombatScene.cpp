@@ -85,6 +85,7 @@ void CombatScene::Unload()
     Engine::GetInstance().textures->UnLoad(continueLose);
     Engine::GetInstance().textures->UnLoad(continueWin);
     Engine::GetInstance().textures->UnLoad(potionEmpty);
+    Engine::GetInstance().textures->UnLoad(backSkill);
 
     hpBar.UnloadTexture();
     initiativeBar.UnloadTexture();
@@ -139,6 +140,7 @@ void CombatScene::LoadTextures()
     laneFatuus = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneFatuus.png");
     laneJochi = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneJochi.png");
     laneIgnis = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/laneIgnis.png");
+    backSkill = Engine::GetInstance().textures->Load("Assets/Textures/CombatScene/BackSkill.png");
 
     // Cargar icono de cada personaje dinámicamente desde las parties
     auto loadIconForParty = [&](Party* party)
@@ -947,18 +949,6 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
     SDL_Color col = { 255,255,255,255 };
     int textX, textY, textW, textH;
 
-    //ALIADOS
-    //dos numeros
-    //en x = 4; y = 9; w=18 h=12
-    //un numero
-    //en x= 10; y = 9 w= 10; h = 12
-
-    //ENEMIGOS
-    //dos numeros
-    //en x = 206; y = 9; w=18 h=12
-    //un numero
-    //en x= 212; y = 9 w= 10; h = 12
-
     if (isAlly) {
         textY = panelY + 9;
         textH = 12;
@@ -972,7 +962,6 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
             textX = panelX + 10;
             textW = 10;
         }
-        //pos = { (float)(LEVEL_OFFSET_X + panelX), (float)(panelY + LEVEL_OFFSET_Y) };
     }
     else { //enemy
         textY = panelY + 9;
@@ -987,7 +976,6 @@ void CombatScene::DrawCharacterPanel(Character* c, int panelX, int panelY, bool 
             textX = panelX + 217;
             textW = 10;
         }
-        //pos = { (float)(LEVEL_OFFSET_X_ENEMY + panelX), (float)(panelY + LEVEL_OFFSET_Y_ENEMY) };
     }
 
     Engine::GetInstance().render->DrawText(levelStr.c_str(), textX, textY, textW, textH, col);
@@ -1320,7 +1308,7 @@ void CombatScene::ShowTargetPanel()
         20,
         "",
         backBounds,
-        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {},  abilityIcons, 0, backBounds.w, backBounds.h
+        [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, backSkill, 0, backBounds.w, backBounds.h
     );
 }
 
@@ -1548,9 +1536,9 @@ void CombatScene::CreateUI()
         Engine::GetInstance().uiManager->CreateUIElement(
             UIElementType::BUTTON,
             20,
-            "< Back",
+            "",
             backBounds,
-            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, abilityIcons, 0, backBounds.w, backBounds.h
+            [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, backSkill, 0, backBounds.w, backBounds.h
         );
     }
     else if (uiState == CombatUIState::SELECTING_SKILL) {
