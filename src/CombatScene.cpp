@@ -299,6 +299,7 @@ void CombatScene::Update(float dt)
         return;
     }
 
+#if _DEBUG
     // Testing: F1 = victory, F2 = defeat
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
     {
@@ -310,6 +311,7 @@ void CombatScene::Update(float dt)
         LOG("CombatScene [TEST]: forzando DERROTA.");
         combat->ForceDefeat();
     }
+#endif // _DEBUG
 
     // Core combat UI
     UpdateCombatUI();

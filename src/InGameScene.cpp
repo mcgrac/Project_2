@@ -242,7 +242,7 @@ void InGameScene::Update(float dt)
         return;
     }
 
-    // debug testing
+#if _DEBUG
     // Debug: F9 = game over, F10 = game won
     if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
     {
@@ -254,6 +254,9 @@ void InGameScene::Update(float dt)
         ShowEndScreen(true);
         return;
     }
+#endif // _DEBUG
+
+
 
     worldMap->Update(dt);
 
