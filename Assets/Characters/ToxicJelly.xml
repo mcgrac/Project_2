@@ -36,7 +36,7 @@
         power="4"
 		durability="1"
         speed="5"
-		poisonPower="5"
+		poisonPower="3"
     />
 
 	<skills>

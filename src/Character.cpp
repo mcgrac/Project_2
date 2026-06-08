@@ -63,7 +63,7 @@ void Character::Update(float dt)
 void Character::Heal(int amount)
 {
 	int currentHealth = health;
-	currentHealth += amount * (1 + healingPower);
+	currentHealth += amount * (1 + (healingPower/100.0f));
 	health = std::min(maxHealth, currentHealth);
 }
 
@@ -265,13 +265,18 @@ void Character::SetBurned(bool state, int damage, Character* attacker)
 {
 	isBurned = state;
 
+	int baseDamage = damage;
+	float firePower = attacker->GetFirePower() / 100.0f;
+	float fireMultiplier = 1.0f + firePower;
+	int totalFireDamage = (int)(damage * fireMultiplier);
+
 	if(isBurned) //if character burns
 	{
 		if (burnedStatMod > 0) { //if already burned
-			burnedStatMod += damage;
+			burnedStatMod += totalFireDamage;
 		}
 		else {
-			burnedStatMod = damage;
+			burnedStatMod = totalFireDamage;
 		}
 
 		burnedBy = attacker; //the one that takes the kill by burning is the last character that burn
@@ -286,13 +291,18 @@ void Character::SetPoisoned(bool state, int damage, Character* attacker)
 {
 	isPoisoned = state;
 
+	int baseDamage = damage;
+	float poisonPower = attacker->GetPoisonPower() / 100.0f;
+	float poisonMultiplier = 1.0f + poisonPower;
+	int totalPoisonDamage = (int)(damage * poisonMultiplier);
+
 	if(isPoisoned)
 	{
 		if (poisonStatMod > 0) { //if already poisoned
-			poisonStatMod += damage;
+			poisonStatMod += totalPoisonDamage;
 		}
 		else {
-			poisonStatMod = damage;
+			poisonStatMod = totalPoisonDamage;
 		}
 
 		poisonedBy = attacker; //the one that takes the kill by poisoning is the last character that poison

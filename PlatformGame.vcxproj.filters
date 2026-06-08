@@ -547,5 +547,8 @@
     <Xml Include="Assets\Characters\BigBird.xml">
       <Filter>Configuration FIles</Filter>
     </Xml>
+    <Xml Include="Assets\Characters\ToxicJelly.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

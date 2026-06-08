@@ -1,5 +1,47 @@
 <?xml version="1.0"?>
 <savedata>
-	<world currentIslandId="0" shipCurrentHp="-1" shipLevel="1" />
-	<party gold="0" consumables="0" />
+	<world currentIslandId="26" shipLevel="3" shipCurrentHp="140" />
+	<party gold="87" consumables="4">
+		<character name="Gerbera" health="116" isAlive="true" experience="70" level="7">
+			<upgrades>
+				<tier index="0" chosen="Poisoned Points" />
+				<tier index="1" chosen="" />
+				<tier index="2" chosen="" />
+			</upgrades>
+			<equippedItems>
+				<item name="Sinner's End" />
+			</equippedItems>
+		</character>
+		<character name="Fatuus" health="113" isAlive="true" experience="50" level="8">
+			<upgrades>
+				<tier index="0" chosen="Sharp-Ended Scales" />
+				<tier index="1" chosen="" />
+				<tier index="2" chosen="" />
+			</upgrades>
+			<equippedItems>
+				<item name="Charybdis Fang" />
+				<item name="Rainbow Mage Cap" />
+			</equippedItems>
+		</character>
+		<character name="Ignis" health="339" isAlive="true" experience="70" level="7">
+			<upgrades>
+				<tier index="0" chosen="Life Surge" />
+				<tier index="1" chosen="" />
+				<tier index="2" chosen="" />
+			</upgrades>
+			<equippedItems>
+				<item name="Heart of the Heavens" />
+				<item name="Heart of the Heavens" />
+				<item name="Heart of the Jungle" />
+			</equippedItems>
+		</character>
+	</party>
+	<quests>
+		<quest id="1" progress="0" status="completed" />
+		<quest id="2" progress="0" status="completed" />
+		<quest id="3" progress="0" status="completed" />
+		<quest id="4" progress="0" status="active" />
+		<quest id="5" progress="1492" status="active" />
+		<quest id="6" progress="0" status="completed" />
+	</quests>
 </savedata>
