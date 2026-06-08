@@ -250,13 +250,6 @@ private:
     static constexpr int INIT_CHUNK_W = 12;
     static constexpr int INIT_CHUNK_H = 10;
     static constexpr int INIT_MAX_CHUNKS = 10;
-    // Posicion del nivel del personaje relativa al panel
-    //static constexpr int LEVEL_OFFSET_X = 10;
-    //static constexpr int LEVEL_OFFSET_Y = 10;
-    //static constexpr int LEVEL_OFFSET_X_ENEMY = 190;
-    //static constexpr int LEVEL_OFFSET_Y_ENEMY = 10;
-    //static constexpr int LEVEL_W = 20;
-    //static constexpr int LEVEL_H = 20;
     // Posiciones en pantalla de los paneles aliados (izquierda, apilados verticalmente)
     static constexpr int ALLIED_PANEL_X = 10;
     static constexpr int ALLIED_PANEL_START_Y = 400;

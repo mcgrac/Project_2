@@ -1199,7 +1199,7 @@ void CombatScene::CreateEnemyParty()
 
     // Recompensas del combate
     enemyParty->SetXPReward(50);
-    enemyParty->SetGoldReward(20);
+    enemyParty->SetGoldReward(40);
 
     LOG("CombatScene: party enemiga creada con %d miembros, nivel %d.",
         enemyParty->GetMemberCount(), islandLevel);
