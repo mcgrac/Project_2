@@ -52,9 +52,6 @@ public:
     inline Vector2D GetShipReturnPosition() const { return shipReturnPosition; }
 
 private:
-    //
-    //void UpdateWorld();
-    //
 
     std::unordered_map<int, Vector2D> islandShipPositions;
 
@@ -63,10 +60,6 @@ private:
     // Current island and selection
     int currentIslandId = -1;
     int pendingIslandId;  // isla a la que el jugador intenta viajar, aún no confirmada
-
-    //
-    //int selectedChildIndex = 0;   // 0 or 1
-    //
     
     Vector2D shipReturnPosition;
 
