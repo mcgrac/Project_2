@@ -81,6 +81,7 @@ private:
     void CreateInterfaceButtons();
 
     void DrawSelectedIndicator();
+    void CreateLittleIcons();
 
     void SetPortraitButtonStatePressed(int index);
     void SetPortraitButtonStateNormal(int index);
@@ -117,7 +118,8 @@ private:
     SDL_Texture* tutorialOpenButton;
     SDL_Texture* tutorialLeftButton;
     SDL_Texture* tutorialRightButton;
-    
+    SDL_Texture* littleIconsSpritesheet;
+
     std::vector<SDL_Texture*> tutorials;
     int tutorialIndex = 0;
     bool tutorialOpen = true;
