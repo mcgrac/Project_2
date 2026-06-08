@@ -34,8 +34,8 @@ SkillRegistry::SkillRegistry()
 #pragma region MARKUS
     Register("red_dance", [](int cost)
         {
-            Skill s("Red Dance", DamageType::Magical, 10, 0.15f, cost, "red_dance");
-            s.SetDescription("Deal 10(+15 power) Magical damage");
+            Skill s("Fire Cleanse", DamageType::Magical, 10, 0.15f, cost, "red_dance");
+            s.SetDescription("Deal 10(+15% power) Magical damage");
             s.AddEffect({
                 "Inflict 10 Fire",
                 [](Character* caster, Character* target) {
@@ -49,7 +49,7 @@ SkillRegistry::SkillRegistry()
 
     //incomplete
     Register("laser_upward", [](int cost) {
-        Skill s("Laser Upward", DamageType::None, 0, 0.0f, cost, "laser_upward");
+        Skill s("Heaven's Light", DamageType::None, 0, 0.0f, cost, "laser_upward");
         s.SetDescription("");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
@@ -63,21 +63,21 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("blue_dance", [](int cost) {
-        Skill s("Blue Dance", DamageType::Magical, 0, 0.0f, cost, "blue_dance");
+        Skill s("Enhancing Ritual", DamageType::Magical, 0, 0.0f, cost, "blue_dance");
         s.SetDescription("");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
-            "Increate base team power by 20",
+            "Increate base team power by 25",
             [](Character* caster, Character* target) {
-                target->ModifyBonusPower(20);
+                target->ModifyBonusPower(25);
             }
             });
         return s;
         });
 
     Register("flame", [](int cost) {
-        Skill s("Flame", DamageType::None, 0, 0.0f, cost, "flame");
+        Skill s("Divine Flame", DamageType::None, 0, 0.0f, cost, "flame");
         s.SetDescription("");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(false);
@@ -116,10 +116,10 @@ SkillRegistry::SkillRegistry()
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
-            "Grant your team 5 Durability and 10 Initiative",
+            "Grant your team 10 Durability and 30 Initiative",
             [](Character* caster, Character* target) {
-                target->ModifyBonusDurability(5);
-                target->AddInitiative(10);
+                target->ModifyBonusDurability(10);
+                target->AddInitiative(30);
             }
             });
         return s;
@@ -131,10 +131,10 @@ SkillRegistry::SkillRegistry()
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
-            "Grant your team 5% more Power and Speed",
+            "Grant your team 20% more Power and Speed",
             [](Character* caster, Character* target) {
-                target->ModifyBonusPower(target->GetTotalPower() * 0.05f);
-                target->ModifyBonusSpeed(target->GetTotalPower() * 0.05f);
+                target->ModifyBonusPower(target->GetTotalPower() * 0.20f);
+                target->ModifyBonusSpeed(target->GetTotalPower() * 0.20f);
             }
             });
         return s;
@@ -183,8 +183,8 @@ SkillRegistry::SkillRegistry()
 #pragma region GERBERA
 
     Register("fire_charge", [](int cost) {
-        Skill s("Fire Charge", DamageType::Physical, 10, 0.20f, cost, "fire_charge");
-        s.SetDescription("Deal 10 (+20% power) Physical damage");
+        Skill s("Firey Arrow", DamageType::Physical, 8, 0.20f, cost, "fire_charge");
+        s.SetDescription("Deal 8 (+20% power) Physical damage");
         s.AddEffect({
             "Inflict 3 Fire",
             [](Character* caster, Character* target) {
@@ -199,17 +199,18 @@ SkillRegistry::SkillRegistry()
         Skill s("Charge Arrow", DamageType::None, 0, 0.0f, cost, "charge_arrow");
         s.SetDescription("");
         s.AddEffect({
-            "Gain 20 power and 130 initiative",
+            "Gain 15 power, 30 Speed and 50 initiative",
             [](Character* caster, Character* target) {
-                caster->AddInitiative(130);
-                caster->ModifyBonusPower(20);
+                caster->AddInitiative(50);
+                caster->ModifyBonusPower(15);
+                caster->ModifyBonusSpeed(30);
             }
             });
         return s;
         });
 
     Register("green_arrow", [](int cost) {
-        Skill s("Green Arrow", DamageType::Physical, 20, 0.1f, cost, "green_arrow");
+        Skill s("Poisoned Arrow", DamageType::Physical, 20, 0.1f, cost, "green_arrow");
         s.SetDescription("Deal 20 (+10% power) Physical damage");
         s.AddEffect({
             "Inflict 7 poison",
@@ -222,12 +223,12 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("charged_arrow", [](int cost) {
-        Skill s("Charged Arrow", DamageType::None, 0, 0.0f, cost, "charged_arrow");
+        Skill s("Power Channeling", DamageType::None, 0, 0.0f, cost, "charged_arrow");
         s.SetDescription("");
         s.AddEffect({
-            "Waste all Initiative and gain 50% of it as Power",
+            "Waste all Initiative and gain 30% of it as Power",
             [](Character* caster, Character* target) {
-                caster->ModifyBonusPower((int)(caster->GetCurrentInitiative() * 0.5f));
+                caster->ModifyBonusPower((int)(caster->GetCurrentInitiative() * 0.3f));
                 caster->ResetCurrentInitiative();
             }
             });
@@ -235,7 +236,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("fire_arrow_2", [](int cost) {
-        Skill s("Fire Arrow 2", DamageType::Physical, 15, 0.1f, cost, "fire_arrow_2");
+        Skill s("Fire Blast", DamageType::Physical, 15, 0.1f, cost, "fire_arrow_2");
         s.SetDescription("Deal 15 (+10% power) Physical damage");
         s.AddEffect({
             "Deal 1(+3% power) bonus damage per fire stack and reset fire to 0",
@@ -253,8 +254,8 @@ SkillRegistry::SkillRegistry()
 
 #pragma region IGNIS
     Register("slash_fire", [](int cost) {
-        Skill s("Slash Fire", DamageType::Physical, 15, 0.2f, cost, "slash_fire");
-        s.SetDescription("Deal 15(+20%Power) Physical Damage ");
+        Skill s("Vulcanic Smash", DamageType::Physical, 10, 0.2f, cost, "slash_fire");
+        s.SetDescription("Deal 10(+20%Power) Physical Damage ");
         s.AddEffect({
             "Apply 5(+1% Power) Fire",
             [](Character* caster, Character* target) {
@@ -281,20 +282,20 @@ SkillRegistry::SkillRegistry()
 
     Register("taunt", [](int cost) {
         Skill s("Taunt", DamageType::Physical, 0, 0.0f, cost, "taunt");
-        s.SetDescription("Gain 5(+100/(MaxHealth/CurrentHealth) Power, 50 Initiative and 20 Lifesteal");
+        s.SetDescription("Gain 5(+20% Max Health) Power, 30 Initiative and 10 Lifesteal");
         s.AddEffect({
             "",
             [](Character* caster, Character* target) {
-                caster->ModifyBonusPower((int)(5 + (100 / (caster->GetMaxHP() / caster->GetCurrentHP()))));
-                caster->AddInitiative(50);
-                caster->ModifyLifesteal(20);
+                caster->ModifyBonusPower((int)(5 + (0.2f * caster->GetMaxHP())));
+                caster->AddInitiative(30);
+                caster->ModifyLifesteal(10);
             }
             });
         return s;
         });
 
     Register("self_heal", [](int cost) {
-        Skill s("Self Heal", DamageType::None, 0, 0.0f, cost, "self_heal");
+        Skill s("Recover", DamageType::None, 0, 0.0f, cost, "self_heal");
         s.SetDescription("Heal 10(+15% Power)% Health");
         s.AddEffect({
             "",
@@ -307,7 +308,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("double_hit", [](int cost) {
-        Skill s("Double Hit", DamageType::Physical, 0, 0.0f, cost, "double_hit");
+        Skill s("Death Spindle", DamageType::Physical, 0, 0.0f, cost, "double_hit");
         s.SetDescription("Deal 10(+50%Power+10%MaxHealth) Physical Damage");
         s.AddEffect({
             "",
@@ -322,8 +323,8 @@ SkillRegistry::SkillRegistry()
 
 #pragma region JOCHI
     Register("yellow_projectile", [](int cost) {
-        Skill s("Yellow Projectile", DamageType::Magical, 3, 0.35f, cost, "yellow_projectile");
-        s.SetDescription("Deal 3 (+35% Power) magic damage");
+        Skill s("Diminishing Strike", DamageType::Magical, 3, 0.25f, cost, "yellow_projectile");
+        s.SetDescription("Deal 3 (+25% Power) magic damage");
         s.AddEffect({
             "Reduce his Power by 5(+10% Power)",
             [](Character* caster, Character* target) {
@@ -336,7 +337,7 @@ SkillRegistry::SkillRegistry()
 
     //revisar
     Register("green_fire", [](int cost) {
-        Skill s("Green Fire", DamageType::None, 0, 0.0f, cost, "green_fire");
+        Skill s("Black Spell", DamageType::None, 0, 0.0f, cost, "green_fire");
         s.SetDescription("Apply me 5 Fire and Posion and double that amount to the enemy party");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(false);
@@ -358,7 +359,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("green_orbs", [](int cost) {
-        Skill s("Green Orbs", DamageType::Physical, 0, 0.0f, cost, "green_orbs");
+        Skill s("Rejuvenation", DamageType::Physical, 0, 0.0f, cost, "green_orbs");
         s.SetDescription("Heal 10(+30%Power)% of the missing health of all the party members");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
@@ -374,7 +375,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("yellow_tornado", [](int cost) {
-        Skill s("Yellow Tornado", DamageType::Magical, 5, 0.1f, cost, "yellow_tornado");
+        Skill s("Light Twister", DamageType::Magical, 5, 0.1f, cost, "yellow_tornado");
         s.SetDescription("Deal 5(+10% Power) Magic Damage");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(false);
@@ -388,7 +389,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("yellow_explosion", [](int cost) {
-        Skill s("Yellow Explosion", DamageType::Physical, 0, 0.0f, cost, "yellow_explosion");
+        Skill s("Cataclysm", DamageType::Physical, 0, 0.0f, cost, "yellow_explosion");
         s.SetDescription("");
         s.AddEffect({
             "Burn for 4 and deal 150% of the current fire on the enemy (+50% Power) as magic damage",
@@ -406,7 +407,7 @@ SkillRegistry::SkillRegistry()
 
 #pragma region FATUUS
     Register("tail_slap", [](int cost) {
-        Skill s("Tail Slap", DamageType::Physical, 3, 0.35f, cost, "tail_slap");
+        Skill s("Execute", DamageType::Physical, 3, 0.35f, cost, "tail_slap");
         s.SetDescription("Deal 3(+35% Power) Physical Damage");
         s.AddEffect({
             "Deal 20(+20% Power) magic damage if the target is below 30% Health",
@@ -447,7 +448,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("explosion", [](int cost) {
-        Skill s("Explosion", DamageType::Physical, 0, 0.0f, cost, "explosion");
+        Skill s("Outbreak", DamageType::Physical, 0, 0.0f, cost, "explosion");
         s.SetDescription("Deal 15(+25% Power) Physical Damage");
         s.AddEffect({
             "If the target is full live when attacking, Fatuus gets 30 initiative",
@@ -467,7 +468,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("projectile", [](int cost) {
-        Skill s("Projectile", DamageType::None, 0, 0.0f, cost, "projectile");
+        Skill s("Extinguishing Fire", DamageType::None, 0, 0.0f, cost, "projectile");
         s.SetDescription("");
         s.AddEffect({
             "Deal 5(+40% Power -50% of the Enemy's Durability) Physical Damage",
@@ -487,7 +488,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("laser", [](int cost) {
-        Skill s("Laser", DamageType::Physical, 3, 0.2f, cost, "laser");
+        Skill s("Extinguishing Laser", DamageType::Physical, 3, 0.2f, cost, "laser");
         s.SetDescription("Deal 3(+20% Power) Physical Damage to all enemies");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(false);
