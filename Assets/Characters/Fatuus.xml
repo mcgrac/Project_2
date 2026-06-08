@@ -43,7 +43,7 @@
 	<skills>
 		<skill id="tail_slap" initiativeCost="155" />
 		<skill id="poison_orb" initiativeCost="130" />
-		<skill id="explosion" initiativeCost="95" />
+		<skill id="explosion" initiativeCost="120" />
 		<skill id="projectile" initiativeCost="110" />
 		<skill id="laser" initiativeCost="105" />
 	</skills>
