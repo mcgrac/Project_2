@@ -35,7 +35,7 @@ SkillRegistry::SkillRegistry()
     Register("red_dance", [](int cost)
         {
             Skill s("Fire Cleanse", DamageType::Magical, 10, 0.15f, cost, "red_dance");
-            s.SetDescription("Deal 10(+15 power) Magical damage");
+            s.SetDescription("Deal 10(+15% power) Magical damage");
             s.AddEffect({
                 "Inflict 10 Fire",
                 [](Character* caster, Character* target) {
@@ -68,9 +68,9 @@ SkillRegistry::SkillRegistry()
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(true);
         s.AddEffect({
-            "Increate base team power by 20",
+            "Increate base team power by 25",
             [](Character* caster, Character* target) {
-                target->ModifyBonusPower(20);
+                target->ModifyBonusPower(25);
             }
             });
         return s;
@@ -282,11 +282,11 @@ SkillRegistry::SkillRegistry()
 
     Register("taunt", [](int cost) {
         Skill s("Taunt", DamageType::Physical, 0, 0.0f, cost, "taunt");
-        s.SetDescription("Gain 5(+100/(MaxHealth/CurrentHealth) Power, 30 Initiative and 10 Lifesteal");
+        s.SetDescription("Gain 5(+20% Max Health) Power, 30 Initiative and 10 Lifesteal");
         s.AddEffect({
             "",
             [](Character* caster, Character* target) {
-                caster->ModifyBonusPower((int)(5 + (100 / (caster->GetMaxHP() / caster->GetCurrentHP()))));
+                caster->ModifyBonusPower((int)(5 + (0.2f * caster->GetMaxHP())));
                 caster->AddInitiative(30);
                 caster->ModifyLifesteal(10);
             }
@@ -308,7 +308,7 @@ SkillRegistry::SkillRegistry()
         });
 
     Register("double_hit", [](int cost) {
-        Skill s("Double Hit", DamageType::Physical, 0, 0.0f, cost, "double_hit");
+        Skill s("Death Spindle", DamageType::Physical, 0, 0.0f, cost, "double_hit");
         s.SetDescription("Deal 10(+50%Power+10%MaxHealth) Physical Damage");
         s.AddEffect({
             "",

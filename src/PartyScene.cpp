@@ -109,6 +109,7 @@ void PartyScene::Update(float dt)
 
 void PartyScene::PostUpdate(float dt)
 {
+    Engine::GetInstance().render->DrawTexture(noBootPanel, 501, 90);
     DrawSkillTooltip();
     DrawUpgradeTooltip();
     DrawInventoryTooltip();
@@ -125,6 +126,8 @@ void PartyScene::Unload()
 
 void PartyScene::UnloadTextures()
 {
+
+    Engine::GetInstance().textures->UnLoad(noBootPanel);
 
     Engine::GetInstance().textures->UnLoad(markusSkill0);
     Engine::GetInstance().textures->UnLoad(markusSkill1);
@@ -337,6 +340,8 @@ void PartyScene::LoadTextures()
     ignisIcon = Engine::GetInstance().textures->Load("Assets/Textures/Teams/ignisIcon.png");
     fatuusIcon = Engine::GetInstance().textures->Load("Assets/Textures/Teams/fatuusIcon.png");
     jochiIcon = Engine::GetInstance().textures->Load("Assets/Textures/Teams/jochiIcon.png");
+
+    noBootPanel = Engine::GetInstance().textures->Load("Assets/Textures/Teams/NoBootPanel.png");
 
     LoadBackground(c);
     LoadStatsTable();
@@ -1061,143 +1066,123 @@ void PartyScene::DrawUpgradeTooltip()
 //draw description ascension
 
     if (c->GetName() == "Markus") {
-        if (upgrade->name == "") {
-            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+        if (upgrade->name == "Deadlier Rays") {
+            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 545);
         }
-        else if (upgrade->name == "") {
-            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+        else if (upgrade->name == "Morning Light") {
+            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 545);
         }
-        else if (upgrade->name == "") {
-            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+        else if (upgrade->name == "Day Break") {
+            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 545);
         }
-        else if (upgrade->name == "") {
-            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+        else if (upgrade->name == "Purifier") {
+            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 545);
         }
-        else if (upgrade->name == "") {
-            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+        else if (upgrade->name == "Fight") {
+            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 545);
         }
-        else if (upgrade->name == "") {
-            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+        else if (upgrade->name == "Flight") {
+            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 545);
         }
     }
     else if (c->GetName() == "Gerbera") {
         if (upgrade->name == "Poisoned Points") {
-            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+            Engine::GetInstance().render->DrawTexture(gerberaAscension0, 501, 545);
         }
         else if (upgrade->name == "Serrated Points") {
-            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+            Engine::GetInstance().render->DrawTexture(gerberaAscension1, 501, 545);
         }
         else if (upgrade->name == "Swift Shooting") {
-            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+            Engine::GetInstance().render->DrawTexture(gerberaAscension2, 501, 545);
         }
         else if (upgrade->name == "Steady Shooting") {
-            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+            Engine::GetInstance().render->DrawTexture(gerberaAscension3, 501, 545);
         }
         else if (upgrade->name == "Fire Lotus") {
-            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+            Engine::GetInstance().render->DrawTexture(gerberaAscension4, 501, 545);
         }
         else if (upgrade->name == "Thorned Rose") {
-            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+            Engine::GetInstance().render->DrawTexture(gerberaAscension5, 501, 545);
         }
     }
     else if (c->GetName() == "Ignis") {
         if (upgrade->name == "Life Surge") {
-            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+            Engine::GetInstance().render->DrawTexture(ignisAscension0, 501, 545);
         }
         else if (upgrade->name == "Power Surge") {
-            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+            Engine::GetInstance().render->DrawTexture(ignisAscension1, 501, 545);
         }
         else if (upgrade->name == "Quick Metabolism") {
-            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+            Engine::GetInstance().render->DrawTexture(ignisAscension2, 501, 545);
         }
         else if (upgrade->name == "Uncontrolled Overgrowth") {
-            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+            Engine::GetInstance().render->DrawTexture(ignisAscension3, 501, 545);
         }
         else if (upgrade->name == "Jungle's Heart") {
-            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+            Engine::GetInstance().render->DrawTexture(ignisAscension4, 501, 545);
         }
         else if (upgrade->name == "Fire Spirit") {
-            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
-        }
-    }
-    else if (c->GetName() == "Markus") {
-        if (upgrade->name == "Deadlier Rays") {
-            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
-        }
-        else if (upgrade->name == "Morning Light") {
-            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
-        }
-        else if (upgrade->name == "Day Break") {
-            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
-        }
-        else if (upgrade->name == "Purifier") {
-            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
-        }
-        else if (upgrade->name == "Fight") {
-            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
-        }
-        else if (upgrade->name == "Flight") {
-            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+            Engine::GetInstance().render->DrawTexture(ignisAscension5, 501, 545);
         }
     }
     else if (c->GetName() == "Theresia") {
         if (upgrade->name == "Heavy Armor") {
-            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+            Engine::GetInstance().render->DrawTexture(theresiaAscension0, 501, 545);
         }
         else if (upgrade->name == "Light Armor") {
-            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+            Engine::GetInstance().render->DrawTexture(theresiaAscension1, 501, 545);
         }
         else if (upgrade->name == "Solar Cape") {
-            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+            Engine::GetInstance().render->DrawTexture(theresiaAscension2, 501, 545);
         }
         else if (upgrade->name == "Moonsilver Pendant") {
-            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+            Engine::GetInstance().render->DrawTexture(theresiaAscension3, 501, 545);
         }
         else if (upgrade->name == "Immovable Object") {
-            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+            Engine::GetInstance().render->DrawTexture(theresiaAscension4, 501, 545);
         }
         else if (upgrade->name == "Crown's Will") {
-            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+            Engine::GetInstance().render->DrawTexture(theresiaAscension5, 501, 546);
         }
     }
     else if (c->GetName() == "Fatuus") {
         if (upgrade->name == "Sharp-Ended Scales") {
-            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+            Engine::GetInstance().render->DrawTexture(fatuusAscension0, 501, 545);
         }
         else if (upgrade->name == "Reinforced Scales") {
-            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+            Engine::GetInstance().render->DrawTexture(fatuusAscension1, 501, 545);
         }
         else if (upgrade->name == "Apex Predator") {
-            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+            Engine::GetInstance().render->DrawTexture(fatuusAscension2, 501, 545);
         }
         else if (upgrade->name == "Elementalist") {
-            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+            Engine::GetInstance().render->DrawTexture(fatuusAscension3, 501, 545);
         }
         else if (upgrade->name == "Specialization") {
-            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+            Engine::GetInstance().render->DrawTexture(fatuusAscension4, 501, 545);
         }
         else if (upgrade->name == "Adaptability") {
-            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+            Engine::GetInstance().render->DrawTexture(fatuusAscension5, 501, 545);
         }
     }
     else if (c->GetName() == "Jochi") {
         if (upgrade->name == "Artifact Studies") {
-            Engine::GetInstance().render->DrawTexture(markusAscension0, 501, 546);
+            Engine::GetInstance().render->DrawTexture(jochiAscension0, 501, 545);
         }
         else if (upgrade->name == "Alchemy Studies") {
-            Engine::GetInstance().render->DrawTexture(markusAscension1, 501, 546);
+            Engine::GetInstance().render->DrawTexture(jochiAscension1, 501, 545);
         }
         else if (upgrade->name == "Quick Spelling") {
-            Engine::GetInstance().render->DrawTexture(markusAscension2, 501, 546);
+            Engine::GetInstance().render->DrawTexture(jochiAscension2, 501, 545);
         }
         else if (upgrade->name == "Elemental Scepter") {
-            Engine::GetInstance().render->DrawTexture(markusAscension3, 501, 546);
+            Engine::GetInstance().render->DrawTexture(jochiAscension3, 501, 545);
         }
         else if (upgrade->name == "Immesurable Power") {
-            Engine::GetInstance().render->DrawTexture(markusAscension4, 501, 546);
+            Engine::GetInstance().render->DrawTexture(jochiAscension4, 501, 545);
         }
         else if (upgrade->name == "Poisoned Blood") {
-            Engine::GetInstance().render->DrawTexture(markusAscension5, 501, 546);
+            Engine::GetInstance().render->DrawTexture(jochiAscension5, 501, 545);
         }
         }
     hoveredUpgradeT = -1;

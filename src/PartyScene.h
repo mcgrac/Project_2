@@ -93,6 +93,8 @@ private:
     SDL_Texture* abilityIconsTexture = nullptr;
     SDL_Texture* nameTexture = nullptr;
 
+    SDL_Texture* noBootPanel = nullptr;
+
     // Texturas árbol de mejoras
     SDL_Texture* upgradeIconsTexture = nullptr;  // spritesheet por personaje
 
