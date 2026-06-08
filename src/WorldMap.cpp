@@ -239,8 +239,8 @@ void WorldMap::RenderWorld(float dt, bool playerInTutorial)
             int x = (int)island->GetX();
             int y = (int)island->GetY();
 
-            int offsetX = -10;
-            int offsetY = -10;
+            int offsetX = -63;
+            int offsetY = 5;
 
             if (island->GetSkullSprite() != nullptr)
             {
