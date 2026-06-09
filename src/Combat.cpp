@@ -792,6 +792,19 @@ void Combat::EndCombat()
 //  PLAYER TURN
 void Combat::PlayerTurn()
 {
+    bool aliveEnemyBool = false;
+    //check if there are enemy characters alive
+    for (Character* c : enemyParty->GetMembers()) {
+        if (c->GetIsAlive()) {
+            aliveEnemyBool = true; //there is at least one alive allied
+        }
+    }
+
+    if (aliveEnemyBool = false) {
+        state = CombatState::CHECK_DEFEAT; // go to check phase
+        return;
+    }
+
     auto& skills = currentActor->GetSkills(); // vector de hasta 5 Skills
 
     // Mostrar habilidades disponibles
@@ -848,6 +861,19 @@ void Combat::PlayerTurn()
 //  ENEMY TURN — habilidad y target aleatorios
 void Combat::EnemyTurn()
 {
+    bool aliveAlliesBool = false;
+    //check if there are allied characters alive
+    for (Character* c : alliedParty->GetMembers()) {
+        if (c->GetIsAlive()) {
+            aliveAlliesBool = true; //there is at least one alive allied
+        }
+    }
+
+    if (aliveAlliesBool = false) {
+        state = CombatState::CHECK_DEFEAT; // go to check phase
+        return;
+    }
+
     static std::mt19937 rng(std::random_device{}());
 
     auto& skills = currentActor->GetSkills(); // los enemigos tienen 2
