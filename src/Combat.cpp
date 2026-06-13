@@ -445,12 +445,12 @@ bool Combat::CalculateInitiative()
         if (c->GetIsAlive())
         {
             int before = c->GetCurrentInitiative();
-            int bonus = 50;
+            int bonus = 30;
             int totalSpeedTemp = c->GetTotalSpeed();
             LOG("Total Speed: %d\n", totalSpeedTemp);
             if(totalSpeedTemp>1){
-                bonus += 6*log2(totalSpeedTemp);
-                LOG("Total Speed: %f\n", 6 * log2(totalSpeedTemp));
+                bonus += 1.3f * totalSpeedTemp / (totalSpeedTemp + 100.0f) * 100.0f;
+                LOG("Extra: %f\n", 1.3f * totalSpeedTemp / (totalSpeedTemp + 100.0f) * 100.0f);
             }
             LOG("Total Bonus: %d\n", bonus);
             c->AddInitiative(bonus);
