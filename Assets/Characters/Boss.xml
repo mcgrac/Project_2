@@ -35,7 +35,7 @@
 
 	<levelScaling
         maxHealth="40"
-        power="8"
+        power="10"
 		durability="1"
         speed="8"
 		firePower="5"

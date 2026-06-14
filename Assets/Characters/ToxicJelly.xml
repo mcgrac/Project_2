@@ -18,7 +18,7 @@
 	</visuals>
 	
 	<stats
-        health="100"
+        health="115"
         maxHealth="100"
         power="20"
         durability="0"
@@ -34,7 +34,7 @@
 	<levelScaling
         maxHealth="8"
         power="4"
-		durability="1"
+		durability="2"
         speed="5"
 		poisonPower="3"
     />

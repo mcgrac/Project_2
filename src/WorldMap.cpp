@@ -266,7 +266,7 @@ void WorldMap::RenderWorld(float dt, bool playerInTutorial)
             current->GetHeight() + 10
         };
         // Un recuadro amarillo brillante para saber dónde estamos
-        Engine::GetInstance().render->DrawRectangle(highlight, 255, 255, 0, 100);
+        //Engine::GetInstance().render->DrawRectangle(highlight, 255, 255, 0, 100);
     }
     }
     

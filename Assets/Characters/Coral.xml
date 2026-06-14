@@ -23,7 +23,7 @@
         power="40"
         durability="15"
         maxDurability="70"
-        speed="40"
+        speed="55"
         lifesteal="0"
         healingPower="0"
         poisonPower="0"
@@ -32,8 +32,8 @@
     />
 
 	<levelScaling
-        maxHealth="6"
-        power="2"
+        maxHealth="8"
+        power="3"
 		durability="1"
         speed="3"
 		healingPower="20"

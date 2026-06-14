@@ -33,9 +33,10 @@
     />
 
 	<levelScaling
-        maxHealth="6"
-        power="6"
+        maxHealth="9"
+        power="5"
         speed="4"
+		durability="2"
 		lifesteal="1"
     />
 

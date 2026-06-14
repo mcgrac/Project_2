@@ -33,7 +33,7 @@
 
 	<levelScaling
         maxHealth="5"
-        power="7"
+        power="8"
 		durability="1"
         speed="6"
     />

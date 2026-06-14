@@ -18,12 +18,12 @@
 	</visuals>
 	
 	<stats
-        health="70"
+        health="75"
         maxHealth="70"
         power="0"
         durability="0"
         maxDurability="70"
-        speed="40"
+        speed="50"
         lifesteal="0"
         healingPower="0"
         poisonPower="0"

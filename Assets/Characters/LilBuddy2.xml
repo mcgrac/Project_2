@@ -19,7 +19,7 @@
 	</visuals>
 	
 	<stats
-        health="60"
+        health="80"
         maxHealth="60"
         power="0"
         durability="5"
@@ -33,7 +33,7 @@
     />
 
 	<levelScaling
-        maxHealth="1"
+        maxHealth="2"
         power="1"
 		durability="1"
 		firePower="1"

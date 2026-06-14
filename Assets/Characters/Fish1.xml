@@ -20,7 +20,7 @@
 	<stats
         health="40"
         maxHealth="40"
-        power="60"
+        power="50"
         durability="0"
         maxDurability="70"
         speed="40"
@@ -32,10 +32,10 @@
     />
 
 	<levelScaling
-        maxHealth="6"
+        maxHealth="7"
         power="6"
         speed="5"
-		lifesteal="2"
+		lifesteal="3"
     />
 
 	<skills>

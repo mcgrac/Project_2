@@ -574,7 +574,7 @@ void InGameScene::CreateIslandButtons()
         }
         else if (faction == IslandFaction::FISH)
         {
-            Engine::GetInstance().uiManager->CreateUIElement(
+           Engine::GetInstance().uiManager->CreateUIElement(
                 UIElementType::BUTTON, buttonId, label.c_str(), bounds,
                 [this](UIElement* e) { return this->OnUIMouseClickEvent(e); }, {}, fishButton, 0, bounds.w, bounds.h
             );
@@ -671,7 +671,7 @@ void InGameScene::ShowEndScreen(bool won)
     Engine::GetInstance().uiManager->CleanUp();
 
     //return main menu
-    SDL_Rect btnBounds = { 539, 509, 202, 63 };
+    SDL_Rect btnBounds = {539, 509, 202, 63};
     Engine::GetInstance().uiManager->CreateUIElement(
         UIElementType::BUTTON, MAIN_MENU_BUTTON_ID, "",
         btnBounds,

@@ -122,7 +122,7 @@ private:
 
     std::vector<SDL_Texture*> tutorials;
     int tutorialIndex = 0;
-    bool tutorialOpen = true;
+    bool tutorialOpen = false;
     
 
     //audio variables

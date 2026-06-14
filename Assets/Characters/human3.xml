@@ -17,9 +17,9 @@
 	</visuals>
 	
 	<stats
-        health="77"
+        health="81"
         maxHealth="77"
-        power="40"
+        power="35"
         durability="30"
         maxDurability="70"
         speed="35"
@@ -31,8 +31,8 @@
     />
 
 	<levelScaling
-        maxHealth="4"
-        power="5"
+        maxHealth="5"
+        power="4"
 		durability="1"
         speed="2"
     />

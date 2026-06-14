@@ -338,19 +338,19 @@ SkillRegistry::SkillRegistry()
     //revisar
     Register("green_fire", [](int cost) {
         Skill s("Black Spell", DamageType::None, 0, 0.0f, cost, "green_fire");
-        s.SetDescription("Apply me 5 Fire and Posion and double that amount to the enemy party");
+        s.SetDescription("Apply me 3 Fire and Posion and double that amount to the enemy party");
         s.SetHasAreaEffect(true);
         s.SetAreaEffectTargetAllies(false);
         s.AddEffect({
             "",
             [](Character* caster, Character* target) {
-                int damagePoisonPowerAlly = (int)(5 * (1 + caster->GetPoisonPower() / 100.0f));
-                int damageFirePowerAlly = (int)(5 * (1 + caster->GetFirePower() / 100.0f));
+                int damagePoisonPowerAlly = (int)(3 * (1 + caster->GetPoisonPower() / 100.0f));
+                int damageFirePowerAlly = (int)(3 * (1 + caster->GetFirePower() / 100.0f));
                 caster->SetBurned(true, damagePoisonPowerAlly, caster);
                 caster->SetPoisoned(true, damageFirePowerAlly, caster);
 
-                int damagePoisonPowerEnemy = (int)(10 * (1 + caster->GetPoisonPower() / 100.0f));
-                int damageFirePowerEnemy = (int)(10 * (1 + caster->GetFirePower() / 100.0f));
+                int damagePoisonPowerEnemy = (int)(6 * (1 + caster->GetPoisonPower() / 100.0f));
+                int damageFirePowerEnemy = (int)(6 * (1 + caster->GetFirePower() / 100.0f));
                 target->SetBurned(true, damagePoisonPowerEnemy, caster);
                 target->SetPoisoned(true, damageFirePowerEnemy, caster);
             }
@@ -707,7 +707,7 @@ SkillRegistry::SkillRegistry()
 #pragma region PEARL
 
     Register("water_surge", [](int cost) {
-        Skill s("Water Surge", DamageType::Magical, 15, 1.0f, cost, "water_surge", MultiplierStat::DURABILITY);
+        Skill s("Water Surge", DamageType::Magical, 20, 1.0f, cost, "water_surge", MultiplierStat::DURABILITY);
         s.AddEffect({
             "Deal 15(+Enemy's Durability) Magic Damage and reduce the Speed by 20%",
             [](Character* caster, Character* target) {

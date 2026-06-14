@@ -88,7 +88,7 @@ private:
 
     int tutorialIndex = 0; 
     int slidesNum = 7;
-    bool tutorialOpen = true; //checks if tutorial is open or not
+    bool tutorialOpen = false; //checks if tutorial is open or not
 
     void UpdateTutorialUI();
 

@@ -21,7 +21,7 @@
         health="120"
         maxHealth="120"
         power="25"
-        durability="5"
+        durability="15"
         maxDurability="70"
         speed="25"
         lifesteal="0"
@@ -32,7 +32,7 @@
     />
 
     <levelScaling
-        maxHealth="2"
+        maxHealth="5"
         power="7"
         speed="5"
     />
