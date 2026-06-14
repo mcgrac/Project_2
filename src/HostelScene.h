@@ -55,6 +55,7 @@ private:
 
 #pragma region TEXTURES
     SDL_Texture* exitButton;
+    SDL_Texture* exitButton2;
     SDL_Texture* background;
     SDL_Texture* fullBackground;
     SDL_Texture* ownerSprite;
